@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.3",
-  "description": "Pookimon Champions ONLINE v6.3 AI practice mode",
+  "version": "0.6.3-2",
+  "description": "Pookimon Champions ONLINE v6.3.2 AI room cleanup hotfix",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

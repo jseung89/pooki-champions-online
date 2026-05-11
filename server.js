@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.3",
+    version: "6.3.2",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -321,6 +321,51 @@ function scheduleRoom(fn, delay) {
 function clearBattleTimer() {
   if (currentRoom?.timer) clearTimeout(currentRoom.timer);
   if (currentRoom) currentRoom.timer = null;
+}
+
+
+function resetRoomToWaiting(reason = "reset_room") {
+  const roomName = currentRoom?.name || "방";
+  clearBattleTimer();
+  if (currentRoom) {
+    currentRoom.resolveInProgress = false;
+    currentRoom.battle = newBattleState();
+    battle = currentRoom.battle;
+    battle.phase = dataReady ? PHASE.WAITING : PHASE.LOADING;
+    log("방이 초기화되었습니다.");
+    opLog(`[ROOM_RESET] ${roomName} ${reason}`);
+    emitState();
+    emitLobbyState();
+  }
+}
+
+function cleanupOrphanAI(reason = "orphan_ai") {
+  if (!battle || !currentRoom) return false;
+
+  const p1HumanConnected = !!battle.players.p1.socketId && !String(battle.players.p1.socketId).startsWith("AI:");
+  const p2HumanConnected = !!battle.players.p2.socketId && !String(battle.players.p2.socketId).startsWith("AI:");
+  const p1AI = !!battle.players.p1.isAI;
+  const p2AI = !!battle.players.p2.isAI;
+
+  // AI전에서 사람이 사라지고 AI만 남은 경우 방 잠김 방지
+  if ((battle.aiMatch || p1AI || p2AI) && !p1HumanConnected && !p2HumanConnected) {
+    resetRoomToWaiting(`${reason}_ai_only`);
+    return true;
+  }
+
+  // 현재 설계상 AI는 P2만 허용. P1 빈자리 + P2 AI는 무조건 고장난 잔여 상태.
+  if (p2AI && !p1HumanConnected) {
+    resetRoomToWaiting(`${reason}_p2_ai_without_p1`);
+    return true;
+  }
+
+  return false;
+}
+
+function cleanupAllOrphanAIRooms(reason = "sweep") {
+  for (const room of rooms.values()) {
+    withRoom(room.id, () => cleanupOrphanAI(reason));
+  }
 }
 
 function log(text) {
@@ -674,6 +719,7 @@ function roomStatusLabel(room) {
 }
 
 function publicRoomSummary(room) {
+  withRoom(room.id, () => cleanupOrphanAI("public_room_summary"));
   return {
     id: room.id,
     name: room.name,
@@ -693,6 +739,7 @@ function publicRoomSummary(room) {
 }
 
 function publicLobbyState() {
+  cleanupAllOrphanAIRooms("public_lobby_state");
   return {
     dataReady,
     rooms: [...rooms.values()].map(publicRoomSummary),
@@ -1477,15 +1524,11 @@ function leaveCurrentRoom(socket, reason = "leave") {
       opLog(`[${reason.toUpperCase()}] ${currentRoom.name} ${battle.players[role].label} 이탈`);
       log(`${battle.players[role].label}이 방을 나갔습니다. 관전자가 빈자리에 참가할 수 있습니다.`);
       resetPlayerBattleChoices(role, { keepTeam: [PHASE.ACTION_SELECT, PHASE.TURN_RESOLVE, PHASE.FORCE_SWITCH].includes(battle.phase) });
-      if (battle.aiMatch && role === "p1") {
-        const preserved = { p1: null, p2: null };
-        currentRoom.battle = newBattleState(preserved);
-        battle = currentRoom.battle;
-        battle.phase = dataReady ? PHASE.WAITING : PHASE.LOADING;
-        log("AI 연습전이 종료되었습니다.");
-        emitState();
+      if ((battle.aiMatch || battle.players.p2.isAI) && role === "p1") {
+        resetRoomToWaiting(`${reason}_ai_match_p1_leave`);
       } else {
         pauseRoomForMissingPlayer(`${reason}_${role}`);
+        cleanupOrphanAI(`${reason}_${role}`);
       }
     } else if (role === "spectator") {
       socket.leave(`spectators:${roomId}`);
@@ -1575,6 +1618,7 @@ function joinRoom(socket, roomId, token) {
   socket.leave("lobby");
 
   withRoom(roomId, () => {
+    cleanupOrphanAI("join_room_before_assign");
     const cleanToken = normalizeToken(token);
     const role = assignRoleForConnection(cleanToken);
     let playerToken = null;
@@ -1801,6 +1845,8 @@ io.on("connection", (socket) => {
     socket.leave("lobby");
 
     withRoom(roomId, () => {
+      cleanupOrphanAI("start_ai_before_check");
+
       // 이미 사람이 플레이 중인 방은 AI 연습전으로 덮어쓰지 않는다.
       if (battle.players.p1.socketId || battle.players.p2.socketId || battle.players.p1.isAI || battle.players.p2.isAI) {
         socket.emit("roomError", { message: "이미 사용 중인 방입니다. 다른 방에서 AI 대전을 시작해주세요." });
@@ -1961,7 +2007,13 @@ io.on("connection", (socket) => {
         opLog(`[DISCONNECT] ${currentRoom.name} ${battle.players[role].label} 연결 끊김 - 재접속 대기`);
         log(`${battle.players[role].label} 연결 끊김. 재접속 또는 관전자 참가를 기다립니다.`);
         resetPlayerBattleChoices(role, { keepTeam: [PHASE.ACTION_SELECT, PHASE.TURN_RESOLVE, PHASE.FORCE_SWITCH].includes(battle.phase) });
-        pauseRoomForMissingPlayer(`disconnect_${role}`);
+
+        if ((battle.aiMatch || battle.players.p2.isAI) && role === "p1") {
+          resetRoomToWaiting(`disconnect_${role}_ai_match`);
+        } else {
+          pauseRoomForMissingPlayer(`disconnect_${role}`);
+          cleanupOrphanAI(`disconnect_${role}`);
+        }
         return;
       }
       emitState();
