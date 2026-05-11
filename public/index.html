@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>정승의 푸끼몬 챔피언스 ONLINE v6.0</title>
+  
+  <style>
+    * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    :root{
+      --navy:#071946;
+      --navy2:#0a2f86;
+      --blue:#2563eb;
+      --blue2:#3b82f6;
+      --sky:#eaf3ff;
+      --line:#bfd4ff;
+      --panel:#ffffff;
+      --text:#13203d;
+      --muted:#64708f;
+      --green:#22c55e;
+      --red:#dc2626;
+      --purple:#7c3aed;
+      --gold:#facc15;
+    }
+    body{
+      margin:0;
+      min-height:100vh;
+      background:linear-gradient(180deg,#7fb0ff 0%,#4f7ee8 35%,#0a2463 100%);
+      color:var(--text);
+      padding:10px;
+    }
+    .game{
+      width:min(1640px,100%);
+      margin:0 auto;
+      background:rgba(255,255,255,.97);
+      border:4px solid #1d4ed8;
+      border-radius:26px;
+      overflow:hidden;
+      box-shadow:0 26px 70px rgba(7,25,70,.35);
+      position:relative;
+    }
+
+    .topbar{
+      background:linear-gradient(90deg,#071946 0%,#0b2f86 50%,#071946 100%);
+      color:white;
+      padding:12px 18px;
+      display:grid;
+      grid-template-columns:1.2fr 1.05fr .95fr;
+      gap:14px;
+      align-items:center;
+    }
+    .brand{display:flex; align-items:center; gap:14px;}
+    .brand-badge{
+      width:54px; height:54px; border-radius:17px;
+      display:grid; place-items:center; font-size:28px;
+      background:linear-gradient(135deg,#3b82f6,#1745bd);
+      box-shadow:inset 0 0 0 2px rgba(255,255,255,.18),0 10px 22px rgba(0,0,0,.2);
+    }
+    .title{font-size:22px; font-weight:950; letter-spacing:-.3px;}
+    .role{font-size:15px; font-weight:850; opacity:.95; margin-top:3px;}
+
+    .header-center{
+      background:#fff;
+      color:var(--text);
+      border-radius:24px;
+      padding:10px 16px;
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:10px;
+      align-items:center;
+    }
+    .mini-block{display:grid; gap:4px; text-align:center;}
+    .mini-label{font-size:12px; font-weight:850; color:var(--muted);}
+    .mini-value{font-size:18px; font-weight:950;}
+    .role-chip{
+      display:inline-flex; justify-content:center; align-items:center;
+      padding:8px 14px; border-radius:999px;
+      background:linear-gradient(180deg,#3b82f6,#1d4ed8);
+      color:white; font-weight:950; min-width:120px; justify-self:center;
+      box-shadow:0 8px 18px rgba(37,99,235,.28);
+    }
+    .timer-wrap{display:flex; align-items:center; justify-content:center; gap:8px;}
+    .timer{background:none;color:var(--blue);min-width:auto;padding:0;border-radius:0;text-align:left;font-size:38px;font-weight:950;line-height:1;}
+    .timer-unit{font-size:16px;font-weight:950;color:var(--text);margin-left:4px;}
+
+    .header-right{
+      background:#fff;
+      color:var(--text);
+      border-radius:20px;
+      padding:10px 14px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .conn-pill{
+      display:flex; align-items:center; gap:8px;
+      font-size:14px; font-weight:950;
+      border:1px solid #dce7ff;
+      background:#f6f9ff;
+      padding:8px 12px;
+      border-radius:999px;
+    }
+    .conn-dot{width:10px;height:10px;border-radius:999px;background:#94a3b8;}
+    .conn-dot.on{background:#22c55e; box-shadow:0 0 0 4px rgba(34,197,94,.12);}
+
+    .battle{
+      padding:10px;
+      display:grid;
+      grid-template-columns:320px 1fr 320px;
+      gap:12px;
+      background:linear-gradient(180deg,#eef6ff,#dbeafe);
+      align-items:stretch;
+    }
+    .opponent,.mine{
+      background:rgba(255,255,255,.94);
+      border:2px solid var(--line);
+      border-radius:22px;
+      padding:14px;
+      position:relative;
+      min-height:430px;
+      display:grid;
+      align-content:space-between;
+      box-shadow:0 10px 22px rgba(18,45,108,.12);
+    }
+    .mine{border-color:#78a9ff;}
+    .poke-info{display:grid; gap:10px; max-width:100%;}
+    .opponent .poke-info{margin-left:0;}
+    .name-row{display:grid; gap:6px; font-weight:950; font-size:17px;}
+    .name-main{display:flex; flex-wrap:wrap; gap:6px; align-items:center; font-size:19px; line-height:1.2;}
+    .type-pill{display:inline-block; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:950; background:#e7f0ff; color:#0b57d0; margin-left:3px;}
+    .status{display:inline-flex;align-items:center;justify-content:center;padding:5px 11px; border-radius:999px; font-size:12px; background:#e5e7eb; color:#334155; font-weight:900; white-space:nowrap;}
+    .status.burn{background:#fed7aa;color:#9a3412}.status.poison{background:#e9d5ff;color:#6b21a8}.status.paralyze{background:#fef08a;color:#854d0e}.status.sleep{background:#bfdbfe;color:#1e40af}
+    .hp-row{display:grid; grid-template-columns:34px 1fr 78px; gap:8px; align-items:center; font-size:13px; font-weight:900;}
+    .hpbar{height:15px; background:#e5e7eb; border-radius:999px; border:1px solid #d5ddec; overflow:hidden;}
+    .hpfill{height:100%; background:linear-gradient(90deg,#22c55e,#84cc16); transition:width 520ms ease;}
+    .stage-row{display:flex; flex-wrap:wrap; gap:6px; font-size:12px; font-weight:850; color:#475569;} .info-extra{margin-top:8px;display:grid;gap:6px;font-size:12px;color:#334155;font-weight:800}.info-line{padding:7px 9px;border-radius:12px;background:#f4f8ff;border:1px solid #dbe8ff;}
+    .stage{display:inline-block; padding:5px 9px; border-radius:999px; background:#eff6ff; margin-right:0;}
+    .section-label{font-size:13px; font-weight:950; color:#29467e; margin-bottom:6px;}
+
+    .arena-panel{
+      background:rgba(255,255,255,.92);
+      border:2px solid var(--line);
+      border-radius:24px;
+      padding:10px;
+      display:grid;
+      grid-template-rows:1fr auto;
+      gap:10px;
+      box-shadow:0 10px 22px rgba(18,45,108,.12);
+    }
+    .arena-stage{
+      position:relative;
+      min-height:430px;
+      border-radius:22px;
+      overflow:hidden;
+      border:2px solid #1b6cec;
+      background:
+        radial-gradient(circle at 15% 13%, rgba(255,255,255,.95) 0 5%, transparent 6%),
+        radial-gradient(circle at 22% 15%, rgba(255,255,255,.84) 0 4%, transparent 5%),
+        radial-gradient(circle at 70% 12%, rgba(255,255,255,.95) 0 6%, transparent 7%),
+        radial-gradient(circle at 77% 14%, rgba(255,255,255,.82) 0 4%, transparent 5%),
+        linear-gradient(180deg,#55bfff 0%,#9bdcff 30%,#caefff 42%,#7fc978 43%,#52a55d 74%,#377243 100%);
+      box-shadow:inset 0 -100px 140px rgba(14,73,33,.26);
+    }
+    .arena-stage::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(ellipse at 18% 44%, rgba(64,126,77,.78) 0 12%, transparent 13%),
+        radial-gradient(ellipse at 82% 43%, rgba(64,126,77,.72) 0 11%, transparent 12%),
+        radial-gradient(ellipse at 50% 77%, rgba(219,188,118,.98) 0 16%, rgba(180,142,80,.85) 17% 21%, transparent 22%),
+        radial-gradient(ellipse at 18% 76%, rgba(27,96,49,.88) 0 17%, transparent 18%),
+        radial-gradient(ellipse at 84% 77%, rgba(43,105,50,.88) 0 17%, transparent 18%),
+        linear-gradient(180deg,rgba(255,255,255,.05) 0%, transparent 40%, rgba(0,0,0,.14) 100%);
+      pointer-events:none;
+    }
+    .arena-stage::after{
+      content:"";
+      position:absolute;
+      left:0; right:0; top:33%; height:18%;
+      background:
+        linear-gradient(90deg, transparent 0%, rgba(255,255,255,.22) 28%, rgba(255,255,255,.32) 50%, rgba(255,255,255,.22) 72%, transparent 100%),
+        radial-gradient(ellipse at 30% 78%, rgba(25,76,36,.55) 0 13%, transparent 14%),
+        radial-gradient(ellipse at 70% 78%, rgba(25,76,36,.55) 0 13%, transparent 14%);
+      pointer-events:none;
+      z-index:1;
+    }
+    .vs-mark{
+      position:absolute; left:50%; top:48%; transform:translate(-50%,-50%);
+      color:white; font-size:70px; font-weight:1000; text-shadow:0 8px 24px rgba(0,0,0,.28);
+      z-index:2;
+    }
+    .field-deco{
+      position:absolute; inset:0; pointer-events:none; z-index:1;
+      background:
+        radial-gradient(ellipse at 8% 39%, rgba(45,116,61,.9) 0 8%, transparent 9%),
+        radial-gradient(ellipse at 92% 39%, rgba(45,116,61,.85) 0 8%, transparent 9%),
+        linear-gradient(90deg, transparent 0 7%, rgba(255,255,255,.13) 8%, transparent 9% 91%, rgba(255,255,255,.13) 92%, transparent 93% 100%);
+      opacity:.75;
+    }
+    .sprite-row{display:block; min-height:auto; position:static;}
+    .sprite-wrap{display:grid; align-items:end; justify-items:center; position:absolute; z-index:3;}
+    .mine-sprite{left:10%; bottom:24px;}
+    .opponent-sprite{right:11%; bottom:88px;}
+    .sprite{width:auto; height:132px; max-width:190px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 18px 14px rgba(15,23,42,.28)); transition:transform 300ms cubic-bezier(.2,.9,.2,1),opacity 300ms ease,filter 300ms ease;}
+    .opponent .sprite{width:auto;height:132px;max-width:190px;}
+    .sprite.attack-up{transform:translate(44px,-32px) scale(1.07);}
+    .sprite.attack-down{transform:translate(-44px,32px) scale(1.07);}
+    .sprite.hit{transform:translateX(-16px) scale(.95); opacity:.7; filter:brightness(1.35) drop-shadow(0 18px 14px rgba(15,23,42,.25));}
+    .sprite.fainted{opacity:0 !important; filter:grayscale(1) brightness(.4); transform:rotate(-5deg) translateY(12px); pointer-events:none;}
+    .effect{position:absolute; inset:0; pointer-events:none; display:none; place-items:center; font-size:64px; z-index:4; animation:burst 680ms ease forwards;}
+    .effect.show{display:grid}@keyframes burst{0%{transform:scale(.35);opacity:0}35%{transform:scale(1.05);opacity:1}100%{transform:scale(1.45);opacity:0}}
+    .projectile{position:absolute; left:0; top:0; width:46px; height:46px; display:grid; place-items:center; font-size:38px; z-index:7; pointer-events:none; filter:drop-shadow(0 10px 10px rgba(0,0,0,.25)); opacity:0;}
+    .projectile.fly{animation:projectileFly var(--flight-ms,620ms) cubic-bezier(.2,.85,.2,1) forwards;}
+    .projectile.mine-to-enemy{--sx:22%;--sy:70%;--ex:76%;--ey:54%;}
+    .projectile.enemy-to-mine{--sx:78%;--sy:54%;--ex:23%;--ey:70%;}
+    @keyframes projectileFly{0%{left:var(--sx);top:var(--sy);transform:translate(-50%,-50%) scale(.6) rotate(-18deg);opacity:0}15%{opacity:1}75%{opacity:1}100%{left:var(--ex);top:var(--ey);transform:translate(-50%,-50%) scale(1.12) rotate(18deg);opacity:0}}
+    .buff-rise{position:absolute; inset:0; pointer-events:none; display:none; place-items:center; z-index:8;}
+    .buff-rise.show{display:grid; animation:buffRise 900ms ease forwards;}
+    .buff-rise span{font-size:48px; font-weight:1000; color:#22c55e; text-shadow:0 4px 12px rgba(0,0,0,.25);}
+    @keyframes buffRise{0%{transform:translateY(20px) scale(.7);opacity:0}25%{opacity:1}70%{opacity:1}100%{transform:translateY(-45px) scale(1.12);opacity:0}}
+    .damage-pop{position:absolute; top:8px; right:14px; background:#dc2626; color:white; padding:6px 11px; border-radius:999px; font-size:18px; font-weight:950; animation:pop 780ms ease forwards; pointer-events:none; z-index:6;}
+    .heal-pop{background:#16a34a;}@keyframes pop{0%{transform:translateY(20px) scale(.8);opacity:0}25%{transform:translateY(0) scale(1.1);opacity:1}78%{transform:translateY(-22px) scale(1);opacity:1}100%{transform:translateY(-38px) scale(.9);opacity:0}}
+    .battle-message{min-height:52px; padding:13px 18px; background:linear-gradient(180deg,#081a4d,#0c2a7c); color:white; border:2px solid #8ab4ff; border-radius:18px; font-weight:950; font-size:22px; display:flex; align-items:center; box-shadow:0 10px 22px rgba(15,23,42,.16);}
+    .battle-message.waiting{background:#334155; border-color:#cbd5e1;}
+
+    .bench{display:grid; gap:10px; margin-top:8px;}
+    .bench-card{border:2px solid #d8e5ff; background:#f8fbff; border-radius:16px; padding:12px; font-size:13px; font-weight:850;}
+    .bench-card.active{border-color:#2563eb;background:#eff6ff}.bench-card.fainted{opacity:.45;background:#f1f5f9}
+
+    .controls{padding:12px; background:#f3f7ff; color:var(--text); display:grid; grid-template-columns:1.12fr .7fr .72fr .7fr; gap:12px; align-items:stretch;}
+    .buttons{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; align-content:start; max-height:310px; overflow-y:auto; padding-right:2px; background:#fff; border:2px solid #d8e7ff; border-radius:20px; padding:12px;}
+    .control-title{grid-column:1/-1; font-weight:950; color:#1d3f8f; font-size:17px;}
+    .move-help{background:#fff; border:2px solid #d8e7ff; border-radius:20px; padding:14px; color:#243454; line-height:1.55; font-size:14px; min-height:100%; overflow:hidden;} .move-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.move-stat{background:#f4f8ff;border:1px solid #dbe8ff;border-radius:12px;padding:8px;font-weight:850}.recommend{margin-top:10px;padding:9px 10px;border-radius:13px;background:#ecfdf5;color:#047857;font-weight:950}.battle-summary{display:grid;gap:8px}.summary-line{display:flex;justify-content:space-between;gap:8px;background:#f4f8ff;border:1px solid #dbe8ff;border-radius:12px;padding:8px 10px;font-size:13px;font-weight:850}.summary-line b{color:#0d2a78}
+    .move-help b{color:#11244f}.move-help .tag{display:inline-block;padding:4px 10px;border-radius:999px;margin-right:6px;font-size:11px;font-weight:900;background:#eef4ff;color:#164bc5}
+    button{border:0; color:white; background:#1d4ed8; padding:13px 12px; border-radius:16px; font-size:15px; font-weight:950; cursor:pointer; box-shadow:0 7px 0 #1e3a8a; transition:transform .08s ease,box-shadow .08s ease,opacity .12s ease;}
+    button:hover:not(:disabled){transform:translateY(-1px)}button:active:not(:disabled){transform:translateY(5px);box-shadow:0 2px 0 #1e3a8a}button:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}
+    .move-btn{background:#0f766e;box-shadow:0 7px 0 #115e59;text-align:left}.move-btn.eff-super{background:#ef4444;box-shadow:0 7px 0 #b91c1c}.move-btn.eff-neutral{background:#0f766e;box-shadow:0 7px 0 #115e59}.move-btn.eff-resist{background:#64748b;box-shadow:0 7px 0 #475569}.move-btn.eff-immune{background:#1f2937;box-shadow:0 7px 0 #111827}.move-btn.eff-status{background:#7c3aed;box-shadow:0 7px 0 #5b21b6}
+    .switch-btn{background:#2563eb;box-shadow:0 7px 0 #1d4ed8;text-align:left}.reset-btn{background:#dc2626;box-shadow:0 7px 0 #991b1b}
+    .meta{display:block;font-size:12px;opacity:.92;margin-top:5px;font-weight:750}
+    .logs{height:245px; overflow-y:auto; background:#fff; border:2px solid #d8e7ff; border-radius:20px; padding:13px; font-size:14px; line-height:1.55; color:#243454;}
+    .chat-panel{display:grid; grid-template-rows:auto 1fr auto; gap:8px; background:#fff; border:2px solid #d8e7ff; border-radius:20px; padding:12px;}
+    .chat-title{color:#1d3f8f;font-weight:950;font-size:14px}.chat-messages{height:190px;overflow-y:auto;background:#fbfdff;border-radius:16px;border:1px solid #d8e7ff;padding:10px;font-size:13px;line-height:1.45}
+    .chat-line{margin-bottom:6px;word-break:break-word}.chat-line.mine-chat{color:#2056d4}.chat-name{font-weight:950;margin-right:5px}
+    .chat-form{display:grid;grid-template-columns:1fr 70px;gap:8px}.chat-form input{min-width:0;border:1px solid #d8e7ff;border-radius:14px;padding:11px 12px;font-weight:800;outline:none}.chat-form button{padding:10px 8px;border-radius:14px;font-size:13px;box-shadow:0 5px 0 #1e3a8a}
+
+    .team-screen{padding:14px; background:linear-gradient(180deg,#eef6ff,#dbeafe); display:none;}
+    .team-screen.show{display:block;}
+    .team-layout{display:grid; grid-template-columns:minmax(0,1fr) 390px; gap:14px;}
+    .team-main{background:#fff; border:2px solid #c3d8ff; border-radius:24px; padding:20px 24px; box-shadow:0 12px 28px rgba(18,45,108,.12);}
+    .team-head{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:16px;}
+    .team-title{font-size:22px; font-weight:1000; color:#0d2a78;}
+    .team-sub{margin-top:4px; color:#53627e; font-weight:800; font-size:14px;}
+    .team-timer{display:flex; align-items:center; gap:8px; font-weight:950; color:#0d2a78;}
+    .team-timer b{font-size:34px; color:#f2b300;}
+    .selected-row{display:grid; grid-template-columns:1fr 54px 1fr; gap:14px; align-items:center; margin-bottom:18px;}
+    .selected-slot{border:3px solid #2563eb; border-radius:18px; padding:12px 18px; display:grid; grid-template-columns:104px 1fr; gap:16px; align-items:center; min-height:150px; background:linear-gradient(180deg,#fff,#f7fbff); position:relative; overflow:hidden;}
+    .selected-slot.empty{border-style:dashed; display:grid; grid-template-columns:1fr; place-items:center; color:#61708f;}
+    .selected-slot img{width:96px; height:96px; object-fit:contain; image-rendering:pixelated;}
+    .slot-role{position:absolute; left:0; top:0; padding:8px 26px; border-radius:0 0 16px 0; background:#3b82f6; color:#fff; font-weight:950;}
+    .slot-role.sub{background:#5b7cff;}
+    .selected-arrow{text-align:center; font-size:38px; font-weight:1000; color:#183372;}
+    .candidate-title{display:flex; align-items:center; gap:12px; margin:8px 0 12px; color:#0d2a78; font-weight:950;}
+    .candidate-title::before,.candidate-title::after{content:""; flex:1; height:1px; background:#cbdaf5;}
+    .candidate-grid{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px;}
+    .team-btn{background:#fff; color:#17233d; box-shadow:0 5px 0 #cbdaf5; min-height:174px; text-align:left; display:grid; grid-template-rows:auto 58px auto 1fr; gap:6px; align-items:start; border:1px solid #d8e5ff; border-radius:14px; padding:9px;}
+    .team-btn.selected{background:#eaf2ff; box-shadow:0 5px 0 #6ea0ff; outline:3px solid #2563eb;}
+    .team-btn img{width:58px; height:58px; object-fit:contain; image-rendering:pixelated; justify-self:center;}
+    .card-num{display:inline-grid; place-items:center; width:24px; height:24px; border-radius:9px; background:#eef4ff; color:#3058c9; font-weight:950; font-size:12px;}
+    .candidate-name{text-align:center; font-size:15px; font-weight:950;}
+    .move-list{display:grid; gap:2px; font-size:11px; color:#50607d; font-weight:750; margin-top:4px;}
+    .side-box{background:linear-gradient(180deg,#09245f,#061a43); color:white; border:2px solid #1c57da; border-radius:24px; padding:14px; display:grid; gap:12px; overflow:hidden; box-shadow:0 16px 36px rgba(7,25,70,.26);}
+    .side-title{font-size:18px; font-weight:950;}
+    .opponent-mini-grid{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:8px;}
+    .mini-mon{background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.14); border-radius:10px; padding:5px; text-align:center; min-width:0;}
+    .mini-mon img{width:42px; height:42px; object-fit:contain; image-rendering:pixelated;}
+    .side-info{background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:12px; font-size:13px; line-height:1.65; color:#dbe8ff;}
+    .participants{display:grid; gap:8px;}
+    .participant-line{display:flex; justify-content:space-between; align-items:center; padding:9px 10px; border-radius:14px; background:rgba(255,255,255,.07);}
+    .participant-badge{font-size:11px; font-weight:950; border-radius:999px; padding:4px 8px; background:#2563eb;}
+    .team-submit{width:100%; font-size:22px; padding:18px 14px; border-radius:18px; background:linear-gradient(180deg,#3b82f6,#1d4ed8); box-shadow:0 8px 0 #173a97;}
+    .team-caption{font-size:12px; color:#dbe8ff; text-align:center; font-weight:750;}
+    .overlay{position:absolute; inset:0; background:rgba(7,25,70,.86); color:white; display:none; z-index:20; place-items:center; text-align:center; padding:24px;}
+    .overlay.show{display:grid}.overlay h2{font-size:38px;margin:0 0 12px}.overlay p{margin:6px 0}.overlay button{margin-top:14px}
+
+    @media(max-width:1300px){
+      .topbar{grid-template-columns:1fr}
+      .battle{grid-template-columns:1fr}
+      .controls{grid-template-columns:1fr 1fr}
+      .team-layout{grid-template-columns:1fr}
+      .candidate-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    }
+    @media(max-width:900px){
+      .controls{grid-template-columns:1fr}
+      .candidate-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .selected-row{grid-template-columns:1fr}
+      .selected-arrow{display:none}
+    }
+
+    .game.hidden{display:none;}
+    .lobby{width:min(1240px,100%); margin:0 auto; min-height:calc(100vh - 20px); display:grid; align-content:center; gap:18px;}
+    .lobby-card{background:rgba(255,255,255,.97); border:4px solid #1d4ed8; border-radius:28px; padding:26px; box-shadow:0 28px 80px rgba(3,7,18,.28);}
+    .lobby-head{display:flex;justify-content:space-between;gap:20px;align-items:flex-end;margin-bottom:22px;}
+    .lobby-title{font-size:34px;font-weight:1000;color:#071946;line-height:1.05;}
+    .lobby-sub{margin-top:8px;color:#475569;font-weight:850;}
+    .room-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;}
+    .room-card{position:relative;overflow:hidden;border:3px solid #bcd2ff;border-radius:24px;padding:18px;background:linear-gradient(180deg,#fff,#edf5ff);box-shadow:0 12px 28px rgba(18,45,108,.13);display:grid;gap:12px;min-height:250px;}
+    .room-card::before{content:"";position:absolute;inset:auto -20% -34% -20%;height:58%;background:radial-gradient(ellipse at 50% 0%,rgba(37,99,235,.22),transparent 70%);pointer-events:none;}
+    .room-icon{font-size:42px}.room-name{font-size:24px;font-weight:1000;color:#0d2a78}.room-status{display:inline-flex;width:max-content;padding:6px 11px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-weight:950;font-size:13px}.room-status.battle{background:#fee2e2;color:#dc2626}.room-status.select{background:#fef3c7;color:#b45309}.room-meta{display:grid;gap:7px;font-size:14px;font-weight:850;color:#334155}.room-enter{align-self:end;width:100%;position:relative;z-index:2}.lobby-note{font-weight:850;color:#eaf3ff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.25)}
+    .leave-room-btn{background:#475569;box-shadow:0 7px 0 #334155;}.claim-player-btn{background:#16a34a;box-shadow:0 7px 0 #166534;}.claim-player-btn:disabled{background:#94a3b8;box-shadow:0 7px 0 #64748b;cursor:not-allowed;}.top-exit-btn{background:#475569;box-shadow:0 7px 0 #334155;}.top-exit-btn:hover{filter:brightness(1.08);}
+    .sprite.switch-out{animation:switchOut 620ms ease forwards;}
+    .sprite.switch-in{animation:switchIn 760ms cubic-bezier(.18,.9,.22,1.25) forwards;}
+    @keyframes switchOut{0%{transform:scale(1);opacity:1;filter:brightness(1) drop-shadow(0 18px 14px rgba(15,23,42,.28))}60%{transform:scale(.45) translateY(22px);opacity:.55;filter:brightness(1.8)}100%{transform:scale(.18) translateY(32px);opacity:0;filter:brightness(2.2)}}
+    @keyframes switchIn{0%{transform:scale(.2) translateY(38px);opacity:0;filter:brightness(2.2)}45%{opacity:1;filter:brightness(1.7)}100%{transform:scale(1) translateY(0);opacity:1;filter:brightness(1) drop-shadow(0 18px 14px rgba(15,23,42,.28))}}
+    .summon-ring{position:absolute;width:120px;height:48px;border:4px solid rgba(147,197,253,.95);border-radius:50%;z-index:6;pointer-events:none;opacity:0;filter:drop-shadow(0 0 14px rgba(59,130,246,.8));animation:summonRing 760ms ease forwards;}
+    .summon-ring.mine-ring{left:calc(10% + 45px);bottom:44px}.summon-ring.enemy-ring{right:calc(11% + 35px);bottom:104px}
+    @keyframes summonRing{0%{transform:scale(.35);opacity:0}35%{opacity:1}100%{transform:scale(1.55);opacity:0}}
+    .ghost-clone{position:absolute;z-index:9;pointer-events:none;object-fit:contain;image-rendering:pixelated;filter:grayscale(1) brightness(1.55) drop-shadow(0 0 16px rgba(255,255,255,.75));opacity:.62;--ghost-rotate:70deg;animation:ghostAscend 1500ms ease-out forwards;}
+    .ghost-clone.mine-ghost{--ghost-rotate:-70deg;}
+    .ghost-clone.enemy-ghost{--ghost-rotate:70deg;}
+    @keyframes ghostAscend{0%{transform:translateY(0) rotate(var(--ghost-rotate)) scale(.95);opacity:.62}45%{opacity:.48}100%{transform:translateY(-150px) rotate(var(--ghost-rotate)) scale(.82);opacity:0}}
+    .sprite.faint-dead{animation:faintDead 950ms ease forwards;transform-origin:50% 100%;--faint-rotate:70deg;}
+    .sprite.faint-dead.mine-dead{--faint-rotate:-70deg;}
+    .sprite.faint-dead.enemy-dead{--faint-rotate:70deg;}
+    @keyframes faintDead{0%{filter:grayscale(0);opacity:1;transform:rotate(0) translateY(0)}55%{filter:grayscale(1) brightness(.85);opacity:.88;transform:rotate(var(--faint-rotate)) translateY(16px)}100%{filter:grayscale(1) brightness(.72);opacity:.45;transform:rotate(var(--faint-rotate)) translateY(22px)}}
+
+  </style>
+
+</head>
+<body>
+  <main class="lobby" id="lobbyScreen">
+    <section class="lobby-card">
+      <div class="lobby-head">
+        <div>
+          <div class="lobby-title">정승의 푸끼몬 챔피언스 LAN</div>
+          <div class="lobby-sub">방을 선택하면 빈 플레이어 자리로 자동 입장합니다. 자리가 없으면 관전자입니다.</div>
+        </div>
+        <button onclick="requestLobby()">새로고침</button>
+      </div>
+      <div class="room-grid" id="roomGrid"></div>
+    </section>
+    <div class="lobby-note" id="lobbyNote">서버 연결 중...</div>
+  </main>
+
+  <main class="game hidden" id="gameScreen">
+    
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">🛡️</div>
+        <div>
+          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.0</div>
+          <div class="role" id="roleText">서버 연결 중...</div>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="mini-block">
+          <div class="mini-label">역할</div>
+          <div class="role-chip" id="roleChip">플레이어 대기</div>
+        </div>
+        <div class="mini-block">
+          <div class="mini-label">현재 단계</div>
+          <div class="mini-value" id="phaseText">로딩 중</div>
+        </div>
+        <div class="mini-block">
+          <div class="mini-label">남은 시간</div>
+          <div class="timer-wrap">
+            <span>🕒</span>
+            <div><span class="timer" id="timer">-</span><span class="timer-unit">초</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <div class="conn-pill"><span class="conn-dot off" id="roomP1Dot"></span><span id="roomP1Text">P1 대기</span></div>
+        <div class="conn-pill"><span class="conn-dot off" id="roomP2Dot"></span><span id="roomP2Text">P2 대기</span></div>
+        <div class="conn-pill"><span>👁️</span><span id="roomSpectators">관전자 0명</span></div>
+        <button class="leave-room-btn" onclick="leaveRoom()" style="padding:9px 12px;border-radius:12px;font-size:13px;box-shadow:0 4px 0 #334155;">로비</button>
+      </div>
+    </header>
+
+
+    <section class="team-screen" id="teamScreen"></section>
+
+    
+    <section class="battle" id="battleScreen">
+      <aside class="mine">
+        <div class="poke-info" id="myInfo"></div>
+        <div>
+          <div class="section-label">교체 포켓몬</div>
+          <div class="bench" id="bench"></div>
+        </div>
+      </aside>
+
+      <div class="arena-panel">
+        <div class="arena-stage">
+          <div class="field-deco"></div>
+          <div class="vs-mark">VS</div>
+          <div class="sprite-wrap mine-sprite">
+            <img id="mySprite" class="sprite" alt="내 포켓몬" />
+            <div class="effect" id="myEffect"></div>
+          </div>
+          <div class="sprite-wrap opponent-sprite">
+            <img id="opponentSprite" class="sprite" alt="상대 포켓몬" />
+            <div class="effect" id="opponentEffect"></div>
+          </div>
+        </div>
+        <div class="battle-message waiting" id="battleMessage">데이터를 준비하는 중...</div>
+      </div>
+
+      <aside class="opponent">
+        <div class="poke-info" id="opponentInfo"></div>
+        <div id="battleSummaryPanel">
+          <div class="section-label">전투 요약</div>
+          <div class="move-help" style="min-height:128px;">배틀이 시작되면 요약 정보가 표시됩니다.</div>
+        </div>
+      </aside>
+    </section>
+
+    
+    <section class="controls">
+      <div class="buttons" id="buttons"></div>
+      <div class="move-help" id="moveHelp">기술 위에 마우스를 올리면 설명이 나옵니다.</div>
+      <div>
+        <div class="logs" id="logs"></div>
+        <button id="mainActionButton" class="reset-btn" style="margin-top:10px;width:100%;" onclick="mainGameAction()">항복</button>
+      </div>
+      <div class="chat-panel">
+        <div class="chat-title">채팅</div>
+        <div class="chat-messages" id="chatMessages"></div>
+        <form class="chat-form" onsubmit="sendChat(event)">
+          <input id="chatInput" maxlength="120" autocomplete="off" placeholder="메시지 입력..." />
+          <button type="submit">전송</button>
+        </form>
+      </div>
+    </section>
+
+    <div class="overlay" id="overlay">
+      <div>
+        <h2 id="overlayTitle">로딩 중</h2>
+        <p id="overlayDesc">데이터를 준비하고 있습니다.</p>
+        <button id="overlayResetButton" class="reset-btn" onclick="requestRematch()" style="display:none;">다시 하기</button>
+      </div>
+    </div>
+  </main>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v600";
+    const existingPlayerToken = localStorage.getItem(PLAYER_TOKEN_KEY) || "";
+    const socket = io({ auth: { playerToken: existingPlayerToken } });
+
+    const STATUS_KO = { burn: "화상", poison: "독", paralyze: "마비", sleep: "수면" };
+    const EFFECT_ICON = { normal:"💥", fire:"🔥", water:"🌊", electric:"⚡", grass:"🍃", ice:"❄️", fighting:"👊", poison:"☠️", ground:"🪨", flying:"💨", psychic:"🔮", bug:"🐛", rock:"🪨", ghost:"👻", dragon:"🐉", dark:"🌑", steel:"⚙️", fairy:"✨" };
+    const TYPE_KO_FALLBACK = { normal:"노말", fire:"불꽃", water:"물", electric:"전기", grass:"풀", ice:"얼음", fighting:"격투", poison:"독", ground:"땅", flying:"비행", psychic:"에스퍼", bug:"벌레", rock:"바위", ghost:"고스트", dragon:"드래곤", dark:"악", steel:"강철", fairy:"페어리" };
+    const SUPER = { normal:[], fire:["grass","ice","bug","steel"], water:["fire","ground","rock"], electric:["water","flying"], grass:["water","ground","rock"], ice:["grass","ground","flying","dragon"], fighting:["normal","ice","rock","dark","steel"], poison:["grass","fairy"], ground:["fire","electric","poison","rock","steel"], flying:["grass","fighting","bug"], psychic:["fighting","poison"], bug:["grass","psychic","dark"], rock:["fire","ice","flying","bug"], ghost:["psychic","ghost"], dragon:["dragon"], dark:["psychic","ghost"], steel:["ice","rock","fairy"], fairy:["fighting","dragon","dark"] };
+    const RESIST = { normal:["rock","steel"], fire:["fire","water","rock","dragon"], water:["water","grass","dragon"], electric:["electric","grass","dragon"], grass:["fire","grass","poison","flying","bug","dragon","steel"], ice:["fire","water","ice","steel"], fighting:["poison","flying","psychic","bug","fairy"], poison:["poison","ground","rock","ghost"], ground:["grass","bug"], flying:["electric","rock","steel"], psychic:["psychic","steel"], bug:["fire","fighting","poison","flying","ghost","steel","fairy"], rock:["fighting","ground","steel"], ghost:["dark"], dragon:["steel"], dark:["fighting","dark","fairy"], steel:["fire","water","electric","steel"], fairy:["fire","poison","steel"] };
+    const IMMUNE = { normal:["ghost"], fighting:["ghost"], poison:["steel"], ground:["flying"], electric:["ground"], psychic:["dark"], ghost:["normal"], dragon:["fairy"], fire:[], water:[], grass:[], ice:[], flying:[], bug:[], rock:[], dark:[], steel:[], fairy:[] };
+    const DELAY = { turnStart:420, switch:780, moveText:440, lunge:320, effect:420, damage:540, miss:620, stat:760, faint:1550, status:620, message:560, end:420 };
+
+    let myRole = null, currentState = null, visualState = null;
+    let lastEventIds = new Set(), eventQueue = Promise.resolve(), localTimer = null;
+    let animationBusy = false, selectedTeamIds = [], hoveredMoveIndex = 0;
+    let lastActionByRole = { p1: "아직 없음", p2: "아직 없음" };
+
+    socket.on("lobbyState", (lobby) => {
+      renderLobby(lobby);
+    });
+
+    socket.on("roomError", ({ message }) => {
+      document.getElementById("lobbyNote").textContent = message || "방 입장에 실패했습니다.";
+    });
+
+    socket.on("joinedRoom", ({ role, playerToken, roomId, roomName, roomIcon }) => {
+      if (playerToken) localStorage.setItem(`${PLAYER_TOKEN_KEY}_${roomId}`, playerToken);
+      currentRoomId = roomId;
+      myRole = role;
+      currentState = null;
+      visualState = null;
+      selectedTeamIds = [];
+      lastEventIds = new Set();
+      eventQueue = Promise.resolve();
+      document.getElementById("lobbyScreen").style.display = "none";
+      document.getElementById("gameScreen").classList.remove("hidden");
+      const roleLabel = role === "p1" ? "플레이어 1" : role === "p2" ? "플레이어 2" : "관전자";
+      document.getElementById("roleText").textContent = `${roomIcon || "🏟️"} ${roomName || "방"} / ${roleLabel}`;
+      const chip = document.getElementById("roleChip");
+      if (chip) chip.textContent = roleLabel;
+      const claimBtn = document.getElementById("claimPlayerButton");
+      if (claimBtn) claimBtn.style.display = role === "spectator" ? "inline-block" : "none";
+      updateRoomExitButtons();
+    });
+
+    socket.on("state", ({ role, state }) => {
+      if (!myRole) myRole = role;
+      const incomingEvents = state.events || [];
+      const freshEvents = incomingEvents.filter(ev => !lastEventIds.has(ev.id));
+      if (freshEvents.length > 0 && currentState) {
+        prepareVisualState(currentState);
+        animationBusy = true;
+      }
+      currentState = state;
+      render();
+      enqueueEvents(incomingEvents);
+    });
+
+    function renderLobby(lobby){
+      const grid=document.getElementById("roomGrid");
+      const note=document.getElementById("lobbyNote");
+      if(!grid)return;
+      const rooms=lobby?.rooms||[];
+      note.textContent = lobby?.dataReady ? "4개 룸 중 하나를 선택하세요." : "포켓몬 데이터를 준비 중입니다. 잠시만 기다려주세요.";
+      grid.innerHTML=rooms.map(room=>{
+        const filled=(room.p1Connected?1:0)+(room.p2Connected?1:0);
+        const statusClass=room.phase==="TEAM_SELECT"?"select":(room.phase==="ACTION_SELECT"||room.phase==="TURN_RESOLVE"||room.phase==="FORCE_SWITCH"?"battle":"");
+        return `<article class="room-card">
+          <div class="room-icon">${room.icon||"🏟️"}</div>
+          <div class="room-name">${room.name}</div>
+          <div><span class="room-status ${statusClass}">${room.status}</span></div>
+          <div class="room-meta">
+            <div>플레이어 ${filled}/2</div>
+            <div>P1 ${room.p1Connected?"참가중":"빈자리"} · P2 ${room.p2Connected?"참가중":"빈자리"}</div>
+            <div>관전자 ${room.spectatorCount||0}명</div>
+            <div>${room.winner?`승자: ${room.winner}`:""}</div>
+          </div>
+          <button class="room-enter" onclick="joinRoom('${room.id}')">입장하기</button>
+        </article>`;
+      }).join("");
+    }
+
+    function joinRoom(roomId){
+      const token=localStorage.getItem(`${PLAYER_TOKEN_KEY}_${roomId}`)||"";
+      socket.emit("joinRoom",{roomId,playerToken:token});
+    }
+
+    function leaveRoom(){
+      socket.emit("leaveRoom");
+      document.getElementById("gameScreen").classList.add("hidden");
+      document.getElementById("lobbyScreen").style.display = "grid";
+      myRole=null; currentRoomId=null; currentState=null; visualState=null;
+      requestLobby();
+    }
+
+    function requestLobby(){ socket.emit("requestLobby"); }
+
+    function claimPlayerSlot(){
+      socket.emit("claimPlayerSlot");
+    }
+
+    function typeKo(type){ return currentState?.typeKo?.[type] || TYPE_KO_FALLBACK[type] || type; }
+    function opponentRole(){ return myRole === "p1" ? "p2" : "p1"; }
+    function activePokemon(playerKey){
+      const p=currentState?.players?.[playerKey];
+      if(!p || !Array.isArray(p.team) || p.team.length===0) return null;
+      return p.team[p.activeIndex] || p.team.find(mon=>!mon.fainted) || p.team[0] || null;
+    }
+    function clonePokemonForVisual(p){ if(!p) return null; return {...p, types:[...(p.types||[])], moves:[...(p.moves||[])], stats:{...(p.stats||{})}, statStages:{...(p.statStages||{})}, volatile:{...(p.volatile||{})}}; }
+    function prepareVisualState(baseState){ if(!baseState||animationBusy)return; const s={p1:null,p2:null}; for(const pk of ["p1","p2"]){ const p=baseState.players[pk]; if(p?.team?.length) s[pk]={activeIndex:p.activeIndex, team:p.team.map(clonePokemonForVisual)}; } visualState=s; }
+    function visualActivePokemon(pk){
+      if(visualState?.[pk]?.team?.length){
+        const vp=visualState[pk];
+        return vp.team[vp.activeIndex] || vp.team.find(mon=>!mon.fainted) || vp.team[0] || null;
+      }
+      return activePokemon(pk);
+    }
+    function visualPlayerTeam(pk){
+      if(visualState?.[pk]?.team?.length) return visualState[pk].team;
+      return currentState?.players?.[pk]?.team || [];
+    }
+    function visualActiveIndex(pk){
+      if(visualState?.[pk]) return visualState[pk].activeIndex;
+      return currentState?.players?.[pk]?.activeIndex ?? 0;
+    }
+    function applyVisualSwitch(pk,to){ if(!visualState?.[pk])return; const idx=visualState[pk].team.findIndex(p=>p.name===to); if(idx>=0) visualState[pk].activeIndex=idx; }
+    function applyVisualDamage(pk,hp){ const m=visualActivePokemon(pk); if(m) m.hp=Math.max(0,hp); }
+    function applyVisualHeal(pk,hp){ applyVisualDamage(pk,hp); }
+    function applyVisualFaint(pk){ const m=visualActivePokemon(pk); if(m){m.hp=0;m.fainted=true;} }
+    function applyVisualStatus(pk,status){ const m=visualActivePokemon(pk); if(m)m.status=status; }
+    function applyVisualStat(pk,stat,amount){ const m=visualActivePokemon(pk); if(m)m.statStages[stat]=Math.max(-6,Math.min(6,(m.statStages[stat]||0)+amount)); }
+    function syncVisualToFinal(){ visualState=null; renderBattleView(); renderButtons(); }
+
+    function hpPct(p){ return p?.maxHp ? Math.max(0,Math.round((p.hp/p.maxHp)*100)) : 0; }
+    function spriteScale(p){
+      const raw = Number(p?.spriteScale || 1);
+      if (!Number.isFinite(raw)) return 1;
+      return Math.max(0.75, Math.min(1.65, raw));
+    }
+    function applySpriteSize(img, pokemon){
+      const raw = Number(pokemon?.spriteScale || 1);
+      const scale = Number.isFinite(raw) ? Math.max(0.78, Math.min(1.65, raw)) : 1;
+      const isMySprite = img.id === "mySprite";
+      const baseHeight = isMySprite ? 160 : 148;
+      const height = Math.round(baseHeight * scale);
+      img.style.height = `${height}px`;
+      img.style.width = "auto";
+      img.style.maxWidth = `${Math.round(height * 1.62)}px`;
+    }
+    function statusText(p){ return p?.status ? STATUS_KO[p.status] : "정상"; }
+    function formatStage(v){ return v>0 ? `+${v}` : `${v}`; }
+    function phaseText(phase){ return {LOADING:"로딩 중", TEAM_SELECT:"팀 선택", ACTION_SELECT:"행동 선택", FORCE_SWITCH:"강제 교체", TURN_RESOLVE:"턴 처리 중", GAME_OVER:"게임 종료"}[phase] || "대기 중"; }
+
+    function updateRoomExitButtons(){
+      const inRoom = !!currentRoomId && !!currentState && currentState.phase !== "LOBBY";
+      const topBtn = document.getElementById("topLobbyExitButton");
+      const overlayExitBtn = document.getElementById("overlayLobbyExitButton");
+
+      if(topBtn) topBtn.style.display = inRoom ? "inline-block" : "none";
+
+      if(overlayExitBtn){
+        const showOverlayExit = inRoom && ["LOADING","WAITING","TEAM_SELECT","GAME_OVER"].includes(currentState?.phase);
+        overlayExitBtn.style.display = showOverlayExit ? "inline-block" : "none";
+      }
+    }
+
+    function renderRoomInfo(){
+      updateRoomExitButtons();
+      const info = currentState?.roomInfo || {
+        spectatorCount: 0,
+        p1Connected: !!currentState?.players?.p1?.connected,
+        p2Connected: !!currentState?.players?.p2?.connected
+      };
+      const p1Dot = document.getElementById("roomP1Dot");
+      const p2Dot = document.getElementById("roomP2Dot");
+      const p1Text = document.getElementById("roomP1Text");
+      const p2Text = document.getElementById("roomP2Text");
+      const specs = document.getElementById("roomSpectators");
+      if (p1Dot) p1Dot.className = `conn-dot ${info.p1Connected ? "on" : "off"}`;
+      if (p2Dot) p2Dot.className = `conn-dot ${info.p2Connected ? "on" : "off"}`;
+      if (p1Text) p1Text.textContent = `P1 ${info.p1Connected ? "연결됨" : "대기"}`;
+      if (p2Text) p2Text.textContent = `P2 ${info.p2Connected ? "연결됨" : "대기"}`;
+      if (specs) specs.textContent = `${info.roomName ? info.roomName + " · " : ""}관전자 ${info.spectatorCount || 0}명`;
+      const claimBtn = document.getElementById("claimPlayerButton");
+      if (claimBtn) {
+        const hasEmptySeat = !info.p1Connected || !info.p2Connected;
+        claimBtn.style.display = myRole === "spectator" ? "inline-block" : "none";
+        claimBtn.disabled = !hasEmptySeat;
+        claimBtn.textContent = hasEmptySeat ? "플레이어로 참가" : "플레이어 자리 없음";
+      }
+    }
+
+    function rawEffectiveness(moveType, defenderTypes=[]){ let mult=1; for(const t of defenderTypes){ if(IMMUNE[moveType]?.includes(t)) mult*=0; else if(SUPER[moveType]?.includes(t)) mult*=2; else if(RESIST[moveType]?.includes(t)) mult*=0.5; } return mult; }
+    function battleEffectiveness(moveType, defenderTypes=[]){ const raw=rawEffectiveness(moveType,defenderTypes); if(raw===0)return 0; if(raw>=2)return 2; if(raw<=0.5)return 0.5; return 1; }
+    function effectText(mult){ if(mult===0)return "효과 없음"; if(mult>=2)return "효과 2배"; if(mult<1)return "효과 0.5배"; return "효과 1배"; }
+    function moveButtonClass(move,mult){ if(!move||move.power===0)return "eff-status"; if(mult===0)return "eff-immune"; if(mult>=2)return "eff-super"; if(mult<1)return "eff-resist"; return "eff-neutral"; }
+    function moveDescription(move){ if(!move)return""; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
+    function buildMoveHelp(move,enemy){
+      if(!move)return"기술 위에 마우스를 올리면 설명이 나옵니다.";
+      const mine = (myRole==="p1"||myRole==="p2") ? activePokemon(myRole) : null;
+      const mult = battleEffectiveness(move.type,enemy?.types||[]);
+      const effectLabel = move.power===0 ? "변화기" : effectText(mult);
+      const stab = mine?.types?.includes(move.type);
+      const stabText = stab ? "자속 적용" : "자속 없음";
+      const category = move.power>0 ? "공격기" : "변화기";
+      const recommend = move.power===0 ? "추천: 상황을 흔드는 보조 선택" :
+        mult>=2 ? "추천: 지금 강하게 압박 가능" :
+        mult===0 ? "비추천: 현재 상대에게 효과 없음" :
+        mult<1 ? "비추천: 피해량이 낮음" :
+        stab ? "추천: 안정적인 자속 공격" : "보통: 견제용 공격";
+      const danger=move.recharge?`<div style="margin-top:8px;color:#b91c1c;font-weight:950;">⚠ 사용 후 다음 턴 반동으로 행동 불가</div>`:"";
+      const immune=mult===0&&move.power>0?`<div style="margin-top:8px;color:#b91c1c;font-weight:950;">⚠ 현재 상대에게 효과가 없습니다.</div>`:"";
+      return `
+        <div><b style="font-size:18px;">${move.name}</b> <span class="tag">${typeKo(move.type)}</span><span class="tag">${category}</span><span class="tag">${effectLabel}</span></div>
+        <div class="move-grid">
+          <div class="move-stat">위력<br/><b>${move.power>0?move.power:"-"}</b></div>
+          <div class="move-stat">명중<br/><b>${move.accuracy}</b></div>
+          <div class="move-stat">상대 효과<br/><b>${move.power>0?effectLabel:"상태 변화"}</b></div>
+          <div class="move-stat">자속<br/><b>${stabText}</b></div>
+        </div>
+        <div style="margin-top:10px;">${moveDescription(move)}</div>
+        <div style="margin-top:8px;opacity:.9;">${enemy?`현재 상대 ${enemy.name} 기준으로 계산 중입니다.`:"상대 기준 상성을 계산합니다."}</div>
+        <div class="recommend">${recommend}</div>
+        ${danger}${immune}`;
+    }
+
+    function updateMoveHelp(idx){ hoveredMoveIndex=idx; const mine=activePokemon(myRole); const enemy=visualActivePokemon(opponentRole()); const panel=document.getElementById("moveHelp"); if(panel&&mine?.moves?.[idx]) panel.innerHTML=buildMoveHelp(mine.moves[idx],enemy); }
+    function showCustomEffect(el,content){ el.textContent=content; el.classList.remove("show"); void el.offsetWidth; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),760); }
+
+    function render(){
+      if(!currentState||!myRole)return;
+      document.getElementById("phaseText").textContent=phaseText(currentState.phase);
+      renderRoomInfo();
+      updateMainActionButton();
+      renderOverlay();
+
+      const teamMode=currentState.phase==="TEAM_SELECT";
+      const nonBattleMode=currentState.phase==="LOADING" || currentState.phase==="WAITING" || teamMode;
+      document.getElementById("teamScreen").classList.toggle("show",teamMode);
+      document.getElementById("battleScreen").style.display=nonBattleMode?"none":"grid";
+      const controlsEl=document.querySelector(".controls");
+      if(controlsEl) controlsEl.style.display=nonBattleMode?"none":"grid";
+
+      if(currentState.phase==="LOADING"){ renderEmptyBattle(); startLocalTimer(); return; }
+      if(teamMode){ renderTeamSelect(); startLocalTimer(); return; }
+      if(currentState.phase==="WAITING"){ renderEmptyBattle(); startLocalTimer(); return; }
+
+      renderBattleView();
+      if(myRole==="spectator") document.getElementById("buttons").innerHTML=`<div class="control-title">관전 중입니다.</div>`;
+      else renderButtons();
+      renderLogs();
+      startLocalTimer();
+    }
+
+    function renderOverlay(){
+      const overlay=document.getElementById("overlay"), title=document.getElementById("overlayTitle"), desc=document.getElementById("overlayDesc"), btn=document.getElementById("overlayResetButton");
+      if(currentState.phase==="LOADING"){ overlay.classList.add("show"); title.textContent="포켓몬 데이터 로딩 중"; desc.textContent="처음 실행이면 캐시를 만들고 있습니다. 터미널 상태를 확인하세요."; btn.style.display="none"; updateRoomExitButtons(); setMessage("데이터를 준비하는 중...",true); return; }
+      if(currentState.phase==="WAITING"){ overlay.classList.add("show"); title.textContent="상대 접속 대기"; desc.textContent="친구가 IP 주소로 접속하면 팀 선택이 시작됩니다."; btn.style.display="none"; updateRoomExitButtons(); setMessage("상대 접속을 기다리는 중...",true); return; }
+      if(currentState.phase==="GAME_OVER"){ if(animationBusy){ overlay.classList.remove("show"); return; } overlay.classList.add("show"); title.textContent=`${currentState.winner} 승리!`; desc.textContent="다시 하기 버튼으로 새 후보를 받아 재시작할 수 있습니다."; btn.style.display="inline-block"; updateRoomExitButtons(); setMessage(`${currentState.winner} 승리!`,false); return; }
+      overlay.classList.remove("show"); btn.style.display="none";
+    }
+
+    function renderEmptyBattle(){ clearGhostResidues(); document.getElementById("opponentInfo").innerHTML=`<div class="name-row"><span>상대 포켓몬 대기</span></div>`; document.getElementById("myInfo").innerHTML=`<div class="name-row"><span>내 포켓몬 대기</span></div>`; document.getElementById("bench").innerHTML=""; document.getElementById("opponentSprite").removeAttribute("src"); document.getElementById("mySprite").removeAttribute("src"); }
+
+
+    function statusEffectText(p){
+      if(!p?.status) return "상태 효과: 없음";
+      if(p.status==="burn") return "상태 효과: 화상 피해 / 공격 약화";
+      if(p.status==="poison") return "상태 효과: 매 턴 독 피해";
+      if(p.status==="paralyze") return "상태 효과: 마비 / 행동 실패 가능";
+      if(p.status==="sleep") return "상태 효과: 수면 / 행동 불가";
+      return "상태 효과: 적용 중";
+    }
+
+    function lastActionText(playerKey){
+      return lastActionByRole?.[playerKey] || "아직 없음";
+    }
+
+    function bestMoveForCurrentMatchup(attacker, defender){
+      if(!attacker?.moves?.length || !defender?.types?.length) return null;
+      const scored = attacker.moves.map(move => {
+        const mult = move.power > 0 ? battleEffectiveness(move.type, defender.types) : 0.2;
+        const stab = attacker.types?.includes(move.type) ? 1.5 : 1;
+        const score = (move.power || 35) * mult * stab * ((move.accuracy || 100) / 100);
+        return { move, score, mult, stab };
+      }).sort((a,b)=>b.score-a.score);
+      return scored[0] || null;
+    }
+
+    function firstMoveOrderHint(){
+      const a=activePokemon("p1"), b=activePokemon("p2");
+      if(!a||!b) return "-";
+      const sa=(a.stats?.speed || 0) + (a.statStages?.speed || 0) * 10;
+      const sb=(b.stats?.speed || 0) + (b.statStages?.speed || 0) * 10;
+      if(sa===sb) return "동속";
+      return sa>sb ? "플레이어 1" : "플레이어 2";
+    }
+
+    function renderBattleSummary(){
+      const mineKey = (myRole==="p1" || myRole==="p2") ? myRole : "p1";
+      const enemyKey = mineKey==="p1" ? "p2" : "p1";
+      const mine = activePokemon(mineKey);
+      const enemy = activePokemon(enemyKey);
+      const best = bestMoveForCurrentMatchup(mine, enemy);
+      const bestLabel = best?.move ? `${best.move.name} (${best.move.power>0?effectText(best.mult):"변화기"})` : "-";
+      return `
+        <div class="section-label">전투 요약</div>
+        <div class="battle-summary">
+          <div class="summary-line"><span>현재 턴</span><b>${currentState?.turn || 1}턴</b></div>
+          <div class="summary-line"><span>선공 예상</span><b>${firstMoveOrderHint()}</b></div>
+          <div class="summary-line"><span>추천 기술</span><b>${bestLabel}</b></div>
+          <div class="summary-line"><span>내 최근 행동</span><b>${lastActionText(mineKey)}</b></div>
+          <div class="summary-line"><span>상대 최근 행동</span><b>${lastActionText(enemyKey)}</b></div>
+        </div>`;
+    }
+
+    function renderPokemonInfo(id,p,label,playerKey=null){
+      const el=document.getElementById(id);
+      if(!p){
+        el.innerHTML=`<div class="name-row"><span class="name-main">${label} 대기</span></div>`;
+        return;
+      }
+      const types=(p.types||[]).map(t=>`<span class="type-pill">${typeKo(t)}</span>`).join("");
+      const statusBadge=`<span class="status ${p.status||""}">${statusText(p)}</span>`;
+      const lock=p.volatile?.rechargeTurns>0?`<span class="status">반동</span>`:"";
+      el.innerHTML=`
+        <div class="name-row">
+          <div class="name-main">${label} ${p.name} <small>Lv.50</small></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;">${types}${statusBadge}${lock}</div>
+        </div>
+        <div class="hp-row"><span>HP</span><div class="hpbar"><div class="hpfill" style="width:${hpPct(p)}%"></div></div><span>${p.hp}/${p.maxHp}</span></div>
+        <div>
+          <div class="section-label">능력 변화</div>
+          <div class="stage-row">
+            <span class="stage">공격 ${formatStage(p.statStages.attack)}</span>
+            <span class="stage">방어 ${formatStage(p.statStages.defense)}</span>
+            <span class="stage">스피드 ${formatStage(p.statStages.speed)}</span>
+          </div>
+        </div>
+        <div class="info-extra">
+          <div class="info-line">최근 행동: ${playerKey ? lastActionText(playerKey) : "아직 없음"}</div>
+          <div class="info-line">${statusEffectText(p)}</div>
+        </div>`;
+    }
+
+    function getDisplayPokemon(playerKey){
+      if(!currentState?.players?.[playerKey]) return null;
+      return visualActivePokemon(playerKey) || activePokemon(playerKey);
+    }
+
+    function clearGhostResidues(){
+      document.querySelectorAll(".ghost-clone").forEach(el=>el.remove());
+    }
+
+    function clearTransientSpriteState(sprite){
+      if(!sprite) return;
+      sprite.classList.remove("faint-dead","mine-dead","enemy-dead","switch-out","switch-in","attack-up","attack-down","hit","fainted");
+      sprite.style.opacity="";
+      sprite.style.filter="";
+      sprite.style.transform="";
+    }
+
+    function prepareSpriteForPokemon(sprite, pokemon, side){
+      if(!sprite || !pokemon) return;
+      const key = `${side}:${pokemon.id}:${pokemon.name}:${pokemon.fainted ? "dead" : "alive"}`;
+      const changed = sprite.dataset.spriteKey !== key;
+      if(changed || !pokemon.fainted){
+        clearTransientSpriteState(sprite);
+      } else {
+        sprite.classList.remove("faint-dead","mine-dead","enemy-dead","switch-out","switch-in","attack-up","attack-down","hit");
+        sprite.style.opacity="";
+        sprite.style.filter="";
+        sprite.style.transform="";
+      }
+      sprite.dataset.spriteKey = key;
+    }
+
+    function renderBattleView(){
+      if(!currentState?.players) return;
+
+      const mineKey = (myRole==="p1" || myRole==="p2") ? myRole : "p1";
+      const enemyKey = (mineKey==="p1") ? "p2" : "p1";
+
+      const mine = getDisplayPokemon(mineKey);
+      const enemy = getDisplayPokemon(enemyKey);
+
+      if(!mine || !enemy){
+        renderEmptyBattle();
+        const msg=document.getElementById("battleMessage");
+        if(msg) {
+          msg.textContent="배틀 데이터를 준비하는 중입니다...";
+          msg.classList.add("waiting");
+        }
+        return;
+      }
+
+      renderPokemonInfo("opponentInfo", enemy, myRole==="spectator" ? "P2" : "상대 몬스터", enemyKey);
+      renderPokemonInfo("myInfo", mine, myRole==="spectator" ? "P1" : "내 몬스터", mineKey);
+
+      const enemySprite=document.getElementById("opponentSprite");
+      const mySprite=document.getElementById("mySprite");
+
+      if(enemySprite){
+        prepareSpriteForPokemon(enemySprite, enemy, "enemy");
+        enemySprite.src=enemy.frontSprite || "";
+        enemySprite.alt=enemy.name || "상대 포켓몬";
+        applySpriteSize(enemySprite, enemy);
+        enemySprite.classList.toggle("fainted",!!enemy.fainted);
+      }
+
+      if(mySprite){
+        prepareSpriteForPokemon(mySprite, mine, "mine");
+        mySprite.src=mine.backSprite || mine.frontSprite || "";
+        mySprite.alt=mine.name || "내 포켓몬";
+        applySpriteSize(mySprite, mine);
+        mySprite.classList.toggle("fainted",!!mine.fainted);
+      }
+
+      renderBenchFor(mineKey);
+      const summary=document.getElementById("battleSummaryPanel");
+      if(summary) summary.innerHTML=renderBattleSummary();
+    }
+
+    function renderBench(){
+      if(myRole!=="p1"&&myRole!=="p2")return;
+      renderBenchFor(myRole);
+    }
+
+    function renderBenchFor(playerKey){
+      const benchEl=document.getElementById("bench");
+      if(!benchEl || !currentState?.players?.[playerKey]) return;
+
+      const team=visualPlayerTeam(playerKey);
+      const activeIdx=visualActiveIndex(playerKey);
+
+      if(!team.length){
+        benchEl.innerHTML=`<div class="bench-card">교체 포켓몬 준비 중</div>`;
+        return;
+      }
+
+      benchEl.innerHTML=team.map((p,idx)=>`
+        <div class="bench-card ${idx===activeIdx?"active":""} ${p.fainted?"fainted":""}">
+          <div style="font-size:15px;font-weight:950;">${idx===activeIdx?"현재 ":""}${p.name}</div>
+          <div style="margin-top:4px;">HP ${p.hp}/${p.maxHp}</div>
+        </div>`).join("");
+    }
+
+    function renderTeamSelect(){
+      const screen=document.getElementById("teamScreen");
+      if(!screen || !currentState) return;
+
+      const roomInfo = currentState.roomInfo || { spectatorCount: 0, p1Connected: false, p2Connected: false };
+
+      if(myRole!=="p1" && myRole!=="p2"){
+        screen.innerHTML=`
+          <div class="team-layout">
+            <div class="team-main">
+              <div class="team-head">
+                <div>
+                  <div class="team-title">관전 모드</div>
+                  <div class="team-sub">플레이어들이 팀을 선택하면 배틀이 시작됩니다.</div>
+                </div>
+                <div class="team-timer">관전자 <b>${roomInfo.spectatorCount || 0}</b>명</div>
+              </div>
+            </div>
+            <aside class="side-box">
+              <div class="side-title">룸 정보</div>
+              <div class="side-info">
+                P1: ${roomInfo.p1Connected ? "연결됨" : "대기"}<br/>
+                P2: ${roomInfo.p2Connected ? "연결됨" : "대기"}<br/>
+                관전자: ${roomInfo.spectatorCount || 0}명
+              </div>
+            </aside>
+          </div>`;
+        return;
+      }
+
+      const player=currentState.players?.[myRole];
+      const enemy=currentState.players?.[opponentRole()];
+
+      if(!player || !enemy){
+        screen.innerHTML=`<div class="team-main"><div class="team-title">팀 선택 정보를 준비하는 중...</div></div>`;
+        return;
+      }
+
+      if(player.teamReady){
+        screen.innerHTML=`
+          <div class="team-layout">
+            <div class="team-main">
+              <div class="team-title">팀 선택 완료!</div>
+              <div class="team-sub">상대 플레이어의 선택을 기다리는 중입니다.</div>
+            </div>
+            <aside class="side-box">
+              <div class="side-title">참가자</div>
+              <div class="participants">
+                <div class="participant-line"><span>플레이어 1</span><span class="participant-badge">${roomInfo.p1Connected ? "연결됨" : "대기"}</span></div>
+                <div class="participant-line"><span>플레이어 2</span><span class="participant-badge" style="background:#dc2626;">${roomInfo.p2Connected ? "연결됨" : "대기"}</span></div>
+                <div class="participant-line"><span>관전자</span><span class="participant-badge" style="background:#475569;">${roomInfo.spectatorCount || 0}명</span></div>
+              </div>
+            </aside>
+          </div>`;
+        return;
+      }
+
+      if(!Array.isArray(player.candidatePool) || player.candidatePool.length===0){
+        screen.innerHTML=`<div class="team-main"><div class="team-title">후보 포켓몬 생성 중...</div><div class="team-sub">잠시만 기다려주세요.</div></div>`;
+        return;
+      }
+
+      const selectedMon=selectedTeamIds.map(id => player.candidatePool.find(p => p.id === id)).filter(Boolean);
+
+      const selectedSlot=(p,slot)=>p?`
+        <div class="selected-slot">
+          <div class="slot-role ${slot===2?"sub":""}">${slot===1?"선두":"교체"}</div>
+          <img src="${p.frontSprite}" alt="${p.name}" />
+          <div>
+            <div style="font-size:26px;font-weight:1000;line-height:1.05;">${p.name}</div>
+            <div style="margin-top:6px;">${p.types.map(t=>`<span class="type-pill">${typeKo(t)}</span>`).join("")}</div>
+            <div style="margin-top:8px;font-weight:900;">Lv.50 · HP ${p.stats.hp}</div>
+          </div>
+        </div>`:`
+        <div class="selected-slot empty">
+          <div>
+            <div style="font-size:18px;font-weight:950;">${slot===1?"선두":"교체"} 슬롯</div>
+            <div style="margin-top:6px;font-size:13px;">후보 카드를 클릭하세요.</div>
+          </div>
+        </div>`;
+
+      const renderCard=(p,disabled=false,idx=0)=>`
+        <button class="team-btn ${selectedTeamIds.includes(p.id)?"selected":""}" ${disabled?"disabled":""} onclick="${disabled?"":"toggleTeam("+p.id+")"}">
+          <span class="card-num">${idx+1}</span>
+          <img src="${p.frontSprite}" alt="${p.name}" />
+          <div class="candidate-name">${p.name}</div>
+          <div style="text-align:center;">${p.types.map(t=>`<span class="type-pill">${typeKo(t)}</span>`).join("")}</div>
+          <div class="move-list">
+            <div>• ${p.moves[0]?.name || "-"}</div>
+            <div>• ${p.moves[1]?.name || "-"}</div>
+            <div>• ${p.moves[2]?.name || "-"}</div>
+            <div>• ${p.moves[3]?.name || "-"}</div>
+          </div>
+        </button>`;
+
+      screen.innerHTML=`
+        <div class="team-layout">
+          <div class="team-main">
+            <div class="team-head">
+              <div>
+                <div class="team-title">팀을 선택해주세요</div>
+                <div class="team-sub">선두 1마리와 교체 1마리를 선택하세요. 첫 번째 선택이 선두입니다.</div>
+              </div>
+              <div class="team-timer">남은 시간 <b>50</b>초</div>
+            </div>
+
+            <div class="selected-row">
+              ${selectedSlot(selectedMon[0],1)}
+              <div class="selected-arrow">↔</div>
+              ${selectedSlot(selectedMon[1],2)}
+            </div>
+
+            <div class="candidate-title">후보 포켓몬 (12)</div>
+            <div class="candidate-grid">${(player.candidatePool||[]).map((p,idx)=>renderCard(p,false,idx)).join("")}</div>
+          </div>
+
+          <aside class="side-box">
+            <div>
+              <div class="side-title">상대 팀 미리보기</div>
+              <div class="opponent-mini-grid">
+                ${(enemy.candidatePool||[]).slice(0,12).map((p,idx)=>`<div class="mini-mon" title="${p.name}"><span style="display:block;font-size:10px;font-weight:900;opacity:.75;">${idx+1}</span><img src="${p.frontSprite}" alt="${p.name}" /></div>`).join("")}
+              </div>
+            </div>
+
+            <div>
+              <div class="side-title">룸 정보</div>
+              <div class="side-info">
+                룸 이름: 정승의 푸끼몬 LAN<br/>
+                대전 규칙: 2마리 싱글 배틀<br/>
+                레벨 제한: Lv.50 고정<br/>
+                승리 조건: 상대 팀 포켓몬을 모두 쓰러뜨린다
+              </div>
+            </div>
+
+            <div>
+              <div class="side-title">참가자</div>
+              <div class="participants">
+                <div class="participant-line"><span>플레이어 1</span><span class="participant-badge">${roomInfo.p1Connected ? "연결됨" : "대기"}</span></div>
+                <div class="participant-line"><span>플레이어 2</span><span class="participant-badge" style="background:#dc2626;">${roomInfo.p2Connected ? "연결됨" : "대기"}</span></div>
+                <div class="participant-line"><span>관전자</span><span class="participant-badge" style="background:#475569;">${roomInfo.spectatorCount || 0}명</span></div>
+              </div>
+            </div>
+
+            <button class="team-submit" ${selectedTeamIds.length!==2?"disabled":""} onclick="submitTeam()">이 팀으로 출전 →</button>
+            <div class="team-caption">선두와 교체 포켓몬을 선택하면 출전할 수 있습니다.</div>
+          </aside>
+        </div>`;
+    }
+
+
+    function renderButtonsWaiting(text){
+      document.getElementById("buttons").innerHTML=`<div class="control-title">${text}</div>`;
+      const help=document.getElementById("moveHelp");
+      if(help) help.innerHTML="기술 위에 마우스를 올리면 설명이 나옵니다.";
+    }
+
+    function renderButtons(){
+      const buttons=document.getElementById("buttons"); const player=currentState.players[myRole]; const mine=activePokemon(myRole); const selected=!!player.selectedAction;
+      if(!mine){ buttons.innerHTML=`<div class="control-title">배틀 데이터를 준비하는 중입니다.</div>`; return; }
+      if (currentState.players[opponentRole()] && !currentState.players[opponentRole()].connected && currentState.phase !== "GAME_OVER") {
+        // 게임 상태는 유지하고 상대 재접속을 기다립니다.
+      }
+      if(animationBusy){ buttons.innerHTML=`<div class="control-title">배틀 연출 중입니다.</div>`; return; }
+      if(currentState.phase==="GAME_OVER"){ buttons.innerHTML=`<div class="control-title">게임 종료</div>`; return; }
+      if(selected){ buttons.innerHTML=`<div class="control-title">선택 완료! 상대를 기다리는 중...</div>`; return; }
+      if(currentState.phase==="FORCE_SWITCH"&&currentState.forceSwitchPlayers.includes(myRole)){ buttons.innerHTML=`<div class="control-title">교체할 포켓몬을 선택하세요. 15초 제한</div>${player.team.map((p,idx)=>`<button class="switch-btn" ${idx===player.activeIndex||p.fainted?"disabled":""} onclick="selectSwitch(${idx})">${p.name}<span class="meta">HP ${p.hp}/${p.maxHp}</span></button>`).join("")}`; return; }
+      if(currentState.phase!=="ACTION_SELECT"){ buttons.innerHTML=`<div class="control-title">턴 처리 중입니다.</div>`; return; }
+      if(mine.volatile?.rechargeTurns>0){ buttons.innerHTML=`<div class="control-title">${mine.name}은/는 파괴광선의 반동으로 움직일 수 없습니다.</div><div class="move-help">이번 턴은 기술과 교체를 모두 사용할 수 없습니다.</div>`; return; }
+
+      const enemy=visualActivePokemon(opponentRole()); const helpMove=mine.moves[Math.min(hoveredMoveIndex,mine.moves.length-1)]||mine.moves[0];
+      const helpPanel=document.getElementById("moveHelp");
+      if(helpPanel) helpPanel.innerHTML=buildMoveHelp(helpMove,enemy);
+      buttons.innerHTML=`<div class="control-title">${mine.name}의 행동 선택 / 20초 제한</div>${mine.moves.map((m,idx)=>{ const mult=battleEffectiveness(m.type,enemy?.types||[]); const cls=moveButtonClass(m,mult); const label=m.power>0?effectText(mult):"변화기"; return `<button class="move-btn ${cls}" onclick="selectMove(${idx})" onmouseenter="updateMoveHelp(${idx})" onfocus="updateMoveHelp(${idx})">${m.name}<span class="meta">${typeKo(m.type)} / ${m.power>0?"위력 "+m.power:"변화기"} / 명중 ${m.accuracy} / ${label}</span></button>`; }).join("")}${player.team.map((p,idx)=>idx===player.activeIndex?"":`<button class="switch-btn" ${p.fainted?"disabled":""} onclick="selectSwitch(${idx})">교체: ${p.name}<span class="meta">HP ${p.hp}/${p.maxHp}</span></button>`).join("")}`;
+    }
+
+    function renderLogs(){
+      const logs=document.getElementById("logs");
+      const recent=(currentState.logs||[]).slice(-8);
+      logs.innerHTML=recent.map(line=>`<div style="margin-bottom:6px;">• ${escapeHtml(line)}</div>`).join("");
+      logs.scrollTop=logs.scrollHeight;
+      renderChat();
+    }
+    function renderChat(){ const box=document.getElementById("chatMessages"); if(!box||!currentState)return; const messages=currentState.chatMessages||[]; box.innerHTML=messages.map(msg=>`<div class="chat-line ${msg.role===myRole?"mine-chat":""}"><span class="chat-name">${escapeHtml(msg.name||msg.role)}:</span><span>${escapeHtml(msg.text||"")}</span></div>`).join(""); box.scrollTop=box.scrollHeight; }
+    function sendChat(event){ event.preventDefault(); const input=document.getElementById("chatInput"); const text=input.value.trim(); if(!text)return; socket.emit("chatMessage",{text}); input.value=""; }
+    function startLocalTimer(){ if(localTimer)clearInterval(localTimer); function tick(){ if(!currentState||!currentState.timerEndAt||["GAME_OVER","WAITING","TEAM_SELECT","LOADING"].includes(currentState.phase)||animationBusy){ document.getElementById("timer").textContent=animationBusy?"…":"-"; return; } const remain=Math.max(0,Math.ceil((currentState.timerEndAt-Date.now())/1000)); document.getElementById("timer").textContent=remain; } tick(); localTimer=setInterval(tick,250); }
+    function toggleTeam(id){ if(currentState.phase!=="TEAM_SELECT")return; const idx=selectedTeamIds.indexOf(id); if(idx>=0) selectedTeamIds.splice(idx,1); else { if(selectedTeamIds.length>=2)return; selectedTeamIds.push(id); } renderTeamSelect(); }
+    function submitTeam(){ if(selectedTeamIds.length!==2)return; socket.emit("selectTeam",{ids:selectedTeamIds}); }
+    function selectMove(moveIndex){ if(animationBusy)return; socket.emit("selectAction",{type:"move",moveIndex}); }
+    function selectSwitch(targetIndex){ if(animationBusy)return; socket.emit("selectAction",{type:"switch",targetIndex}); }
+    function updateMainActionButton(){
+      const btn=document.getElementById("mainActionButton");
+      if(!btn||!currentState)return;
+      if(currentState.phase==="GAME_OVER"){
+        btn.textContent="다시 하기";
+        btn.disabled=false;
+      } else if(["TEAM_SELECT","ACTION_SELECT","FORCE_SWITCH","TURN_RESOLVE"].includes(currentState.phase)){
+        btn.textContent="항복";
+        btn.disabled=false;
+      } else {
+        btn.textContent="항복";
+        btn.disabled=true;
+      }
+    }
+
+    function mainGameAction(){
+      if(!currentState)return;
+      if(currentState.phase==="GAME_OVER"){
+        requestRematch();
+        return;
+      }
+      surrenderGame();
+    }
+
+    function requestRematch(){
+      if(!currentState || currentState.phase!=="GAME_OVER")return;
+      selectedTeamIds=[];
+      lastEventIds.clear();
+      animationBusy=false;
+      eventQueue=Promise.resolve();
+      visualState=null;
+      socket.emit("rematch");
+    }
+
+    function surrenderGame(){
+      if(!currentState || !["TEAM_SELECT","ACTION_SELECT","FORCE_SWITCH","TURN_RESOLVE"].includes(currentState.phase)) return;
+      if(!confirm("정말 항복하시겠습니까?")) return;
+      socket.emit("surrender");
+    }
+
+    function enqueueEvents(events){ const fresh=[]; for(const ev of events){ if(lastEventIds.has(ev.id))continue; lastEventIds.add(ev.id); fresh.push(ev); } if(fresh.length===0)return; eventQueue=eventQueue.then(async()=>{ animationBusy=true; renderButtons(); await sleep(DELAY.turnStart); for(const ev of fresh) await playEventSlow(ev); await sleep(DELAY.end); animationBusy=false; syncVisualToFinal(); if(currentState?.phase==="ACTION_SELECT")setMessage("행동을 선택하세요.",false); else if(currentState?.phase==="FORCE_SWITCH")setMessage("교체할 포켓몬을 선택하세요.",false); renderButtons(); renderOverlay(); startLocalTimer(); }); if(lastEventIds.size>200) lastEventIds=new Set([...lastEventIds].slice(-100)); }
+
+    async function playEventSlow(ev){
+      if(!myRole||myRole==="spectator"){ if(ev.text)setMessage(ev.text,true); await sleep(DELAY.message); return; }
+      if(ev.type==="turnStart"){ setMessage(ev.text||`${ev.turn}턴`,true); await sleep(DELAY.turnStart); return; }
+      if(ev.type==="message"||ev.type==="warning"){ setMessage(ev.type==="warning"?`⚠ ${ev.text}`:ev.text,ev.type!=="warning"); await sleep(ev.type==="warning"?DELAY.message+250:DELAY.message); return; }
+      if(ev.type==="switch"){
+        lastActionByRole[ev.player]=`교체: ${ev.to}`;
+        const isMineSwitch=ev.player===myRole;
+        const who=isMineSwitch?"내":"상대";
+        const sprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        const arena=document.querySelector(".arena-stage");
+        setMessage(`${who} ${ev.from} 돌아와!`,true);
+        if(sprite){ clearTransientSpriteState(sprite); sprite.classList.add("switch-out"); }
+        const ring=document.createElement("div");
+        ring.className=`summon-ring ${isMineSwitch?"mine-ring":"enemy-ring"}`;
+        arena?.appendChild(ring);
+        await sleep(640);
+        applyVisualSwitch(ev.player,ev.to);
+        renderBattleView();
+        const newSprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        if(newSprite){ clearTransientSpriteState(newSprite); newSprite.classList.add("switch-in"); setTimeout(()=>newSprite.classList.remove("switch-in"),820); }
+        setMessage(`${who} ${ev.to}, 가라!`,true);
+        setTimeout(()=>ring.remove(),780);
+        await sleep(DELAY.switch+420);
+        return;
+      }
+      if(ev.type==="move"){
+        lastActionByRole[ev.attacker]=ev.moveName || "기술 사용";
+        const isMine=ev.attacker===myRole;
+        const attackerEl=isMine?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        const attackerWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite");
+        const attackerEffect=isMine?document.getElementById("myEffect"):document.getElementById("opponentEffect");
+        const defenderEffect=isMine?document.getElementById("opponentEffect"):document.getElementById("myEffect");
+        const who=isMine?"내":"상대";
+        setMessage(`${who} ${ev.attackerName}의 ${ev.moveName}!`,true);
+        await sleep(DELAY.moveText);
+        if(ev.outcome==="miss"){ await sleep(120); return; }
+        if(ev.isStatusMove){
+          showBuffRise(attackerWrap,1);
+          showCustomEffect(attackerEffect,"⬆️");
+          await sleep(DELAY.effect+240);
+          return;
+        }
+        attackerEl.classList.add(isMine?"attack-up":"attack-down");
+        await sleep(DELAY.lunge);
+        attackerEl.classList.remove("attack-up","attack-down");
+        await showProjectile(isMine, ev.moveType);
+        showEffect(defenderEffect,ev.moveType);
+        await sleep(DELAY.effect);
+        return;
+      }
+      if(ev.type==="damage"||ev.type==="statusDamage"){ const targetKey=ev.defender||ev.target; const isMineHit=targetKey===myRole; const targetSprite=isMineHit?document.getElementById("mySprite"):document.getElementById("opponentSprite"); const targetWrap=isMineHit?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); setMessage(`${isMineHit?"내":"상대"} ${ev.defenderName||ev.name||"포켓몬"}이 ${ev.amount} 피해를 입었다!`,true); targetSprite.classList.add("hit"); showDamage(targetWrap,ev.amount); await sleep(180); applyVisualDamage(targetKey,ev.hp); renderBattleView(); await sleep(220); targetSprite.classList.remove("hit"); await sleep(DELAY.damage-400); return; }
+      if(ev.type==="heal"){ const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const effectEl=isMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); showCustomEffect(effectEl,"💚"); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(DELAY.damage); return; }
+      if(ev.type==="miss"){ const attackerMine=ev.attacker===myRole; const attackerEffect=attackerMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage("하지만 공격은 빗나갔다!",true); showCustomEffect(attackerEffect,"💦"); await sleep(DELAY.miss); return; }
+      if(ev.type==="stat"){
+        const isMineTarget=ev.target===myRole;
+        const statKo={attack:"공격",defense:"방어",speed:"스피드"}[ev.stat]||ev.stat;
+        const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect");
+        const wrap=isMineTarget?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite");
+        const arrows=(ev.amount>0?"⬆️":"⬇️").repeat(Math.min(3,Math.abs(ev.amount)));
+        setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}의 ${statKo}이/가 ${ev.amount>0?"올라갔다!":"떨어졌다!"}`,true);
+        applyVisualStat(ev.target,ev.stat,ev.amount);
+        renderBattleView();
+        showBuffRise(wrap,ev.amount);
+        showCustomEffect(effectEl,arrows);
+        await sleep(DELAY.stat+220);
+        return;
+      }
+      if(ev.type==="status"){ const isMineTarget=ev.target===myRole; const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect"); const icon={burn:"🔥",poison:"☠️",paralyze:"⚡",sleep:"💤"}[ev.status]||"❗"; setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`,true); applyVisualStatus(ev.target,ev.status); renderBattleView(); showCustomEffect(effectEl,icon); await sleep(DELAY.status); return; }
+      if(ev.type==="skip"){ const isMineTarget=ev.player===myRole; const text=ev.text||(ev.reason==="sleep"?"잠들어 움직일 수 없다...":ev.reason==="recharge"?"반동으로 움직일 수 없다!":"몸이 저려 움직일 수 없다!"); setMessage(`${isMineTarget?"내":"상대"} 포켓몬은 ${text}`,true); await sleep(DELAY.status); return; }
+      if(ev.type==="faint"){
+        const isMine=ev.target===myRole;
+        setMessage(`${isMine?"내":"상대"} ${ev.name||"포켓몬"}이 쓰러졌다!`,true);
+        const sprite=isMine?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        const rect=sprite?.getBoundingClientRect();
+        const arena=document.querySelector(".arena-stage");
+        const arenaRect=arena?.getBoundingClientRect();
+        if(sprite){
+          sprite.classList.remove("fainted","switch-out","switch-in","attack-up","attack-down","hit");
+          sprite.classList.add("faint-dead", isMine ? "mine-dead" : "enemy-dead");
+        }
+        await sleep(780);
+        if(sprite&&arena&&rect&&arenaRect){
+          const ghost=sprite.cloneNode(true);
+          ghost.className=`ghost-clone ${isMine ? "mine-ghost" : "enemy-ghost"}`;
+          ghost.style.left=`${rect.left-arenaRect.left}px`;
+          ghost.style.top=`${rect.top-arenaRect.top}px`;
+          ghost.style.width=`${rect.width}px`;
+          ghost.style.height=`${rect.height}px`;
+          arena.appendChild(ghost);
+          sprite.style.opacity="0";
+          sprite.style.pointerEvents="none";
+          setTimeout(()=>ghost.remove(),1650);
+        }
+        await sleep(920);
+        applyVisualFaint(ev.target);
+        renderBattleView();
+        const finalSprite=isMine?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        if(finalSprite){
+          finalSprite.classList.remove("faint-dead","mine-dead","enemy-dead");
+          finalSprite.classList.add("fainted");
+          finalSprite.style.opacity="";
+        }
+        await sleep(900);
+        return;
+      }
+      if(ev.type==="gameOver"){ await sleep(2400); setMessage(`${ev.winner} 승리!`,false); await sleep(1200); }
+    }
+    function showProjectile(fromMine, moveType){
+      const arena=document.querySelector(".arena-stage");
+      if(!arena) return Promise.resolve();
+      const p=document.createElement("div");
+      p.className=`projectile ${fromMine?"mine-to-enemy":"enemy-to-mine"}`;
+      p.textContent=EFFECT_ICON[moveType]||"💥";
+      p.style.setProperty("--flight-ms","640ms");
+      arena.appendChild(p);
+      void p.offsetWidth;
+      p.classList.add("fly");
+      return new Promise(resolve=>setTimeout(()=>{p.remove(); resolve();},680));
+    }
+
+    function showBuffRise(el,amount=1){
+      if(!el) return;
+      const holder=document.createElement("div");
+      holder.className="buff-rise";
+      holder.innerHTML=`<span>${amount>=0?"⬆️⬆️":"⬇️⬇️"}</span>`;
+      el.appendChild(holder);
+      void holder.offsetWidth;
+      holder.classList.add("show");
+      setTimeout(()=>holder.remove(),920);
+    }
+
+    function showEffect(el,moveType){ el.textContent=EFFECT_ICON[moveType]||"💥"; el.classList.remove("show"); void el.offsetWidth; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),760); }
+    function showDamage(wrap,amount,heal=false){ const pop=document.createElement("div"); pop.className=`damage-pop ${heal?"heal-pop":""}`; pop.textContent=typeof amount==="string"?amount:`-${amount}`; wrap.appendChild(pop); setTimeout(()=>pop.remove(),840); }
+    function setMessage(text,muted=false){ const el=document.getElementById("battleMessage"); el.textContent=text; el.classList.toggle("waiting",muted); }
+    function sleep(ms){ return new Promise(resolve=>setTimeout(resolve,ms)); }
+    function escapeHtml(text){ return String(text).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+  </script>
+</body>
+</html>
