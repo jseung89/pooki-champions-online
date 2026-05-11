@@ -591,7 +591,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v630";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v634";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -1260,7 +1260,7 @@
           <div class="team-layout">
             <div class="team-main">
               <div class="team-title">팀 선택 완료!</div>
-              <div class="team-sub">상대 플레이어의 선택을 기다리는 중입니다.</div>
+              <div class="team-sub">${enemy?.isAI ? "AI가 팀을 준비 중입니다. 곧 배틀이 시작됩니다." : "상대 플레이어의 선택을 기다리는 중입니다."}</div>
             </div>
             <aside class="side-box">
               <div class="side-title">참가자</div>
