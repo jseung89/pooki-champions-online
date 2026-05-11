@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.3-4",
-  "description": "Pookimon Champions ONLINE v6.3.4 AI team select escape hotfix",
+  "version": "0.6.3-5",
+  "description": "Pookimon Champions ONLINE v6.3.5 AI turn resolve watchdog hotfix",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -1,3 +1,13 @@
+## v6.3.5 - AI 턴 처리 stuck 핫픽스
+
+- AI 대전에서 `배틀 시작!` 이후 `턴 처리 중`에 멈추던 문제 수정
+- `TURN_RESOLVE` 상태에서 `ACTION_SELECT`로 넘어가지 않는 경우를 감시하는 watchdog 추가
+- AI전 배틀 시작 후 0.8초 / 1.8초 / 3초에 stuck 탈출 재시도
+- `scheduleRoom` 단일 예약에만 의존하지 않고 roomId 기반 직접 `setTimeout` 호출 추가
+- AI전에서 ACTION_SELECT 진입 로그 추가
+- 기존 AI 팀 선택 탈출 / AI 방 정리 / 로그인 유지 기능 유지
+
+
 ## v6.3.4 - AI 팀 선택 탈출 핫픽스
 
 - AI 대전에서 `TEAM_SELECT` 상태에 멈추던 문제 추가 수정

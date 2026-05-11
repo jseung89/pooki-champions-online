@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.3.4",
+    version: "6.3.5",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -511,7 +511,14 @@ function forceStartAIBattleIfReady(reason = "force_start_ai_battle") {
   opLog(`[AI] TEAM_SELECT stuck 탈출 → 배틀 시작: ${reason}`);
 
   emitState();
-  scheduleRoom(() => startActionSelect(), 800);
+
+  const roomId = currentRoom?.id;
+  if (roomId) {
+    setTimeout(() => withRoom(roomId, () => startActionSelect()), 800);
+  } else {
+    scheduleRoom(() => startActionSelect(), 800);
+  }
+  scheduleAIActionSelectWatchdog(`force_start_${reason}`);
   return true;
 }
 
@@ -526,6 +533,35 @@ function sweepAIBattleStart(reason = "sweep_ai_battle_start") {
   ensureAITeamReady(`${reason}_ai_only_ready`);
   emitState();
   return false;
+}
+
+
+function forceActionSelectIfTurnResolveStuck(reason = "turn_resolve_watchdog") {
+  if (!battle?.players?.p2?.isAI) return false;
+  if (battle.phase !== PHASE.TURN_RESOLVE) return false;
+  if (!battle.players.p1.teamReady || !battle.players.p2.teamReady) return false;
+  if (battle.winner) return false;
+
+  opLog(`[AI] TURN_RESOLVE stuck 탈출 → ACTION_SELECT: ${reason}`);
+  startActionSelect();
+  return true;
+}
+
+function scheduleAIActionSelectWatchdog(reason = "ai_action_select_watchdog") {
+  const roomId = currentRoom?.id;
+  if (!roomId) return;
+
+  setTimeout(() => {
+    withRoom(roomId, () => forceActionSelectIfTurnResolveStuck(`${reason}_800ms`));
+  }, 800);
+
+  setTimeout(() => {
+    withRoom(roomId, () => forceActionSelectIfTurnResolveStuck(`${reason}_1800ms`));
+  }, 1800);
+
+  setTimeout(() => {
+    withRoom(roomId, () => forceActionSelectIfTurnResolveStuck(`${reason}_3000ms`));
+  }, 3000);
 }
 
 function moveExpectedValue(move, attacker, defender) {
@@ -893,7 +929,18 @@ function maybeStartBattle() {
   addEvent({ type: "message", text: "배틀 시작!" });
   opLog("[GAME] 배틀 시작");
   emitState();
-  scheduleRoom(() => startActionSelect(), 1200);
+
+  if (battle.players.p2.isAI) {
+    const roomId = currentRoom?.id;
+    if (roomId) {
+      setTimeout(() => withRoom(roomId, () => startActionSelect()), 800);
+    } else {
+      scheduleRoom(() => startActionSelect(), 800);
+    }
+    scheduleAIActionSelectWatchdog("maybe_start_battle_ai");
+  } else {
+    scheduleRoom(() => startActionSelect(), 1200);
+  }
 }
 
 function autoRechargeActions() {
@@ -911,6 +958,7 @@ function startActionSelect() {
   if (currentRoom) currentRoom.resolveInProgress = false;
   battle.phase = PHASE.ACTION_SELECT;
   battle.events = [];
+  if (battle.players.p2.isAI) opLog("[AI] ACTION_SELECT 진입 완료");
   battle.players.p1.selectedAction = null;
   battle.players.p2.selectedAction = null;
 

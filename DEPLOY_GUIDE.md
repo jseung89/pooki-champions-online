@@ -138,3 +138,8 @@ v6.3
 ## v6.3.4 - AI 팀 선택 탈출 핫픽스
 
 - AI전 TEAM_SELECT stuck 탈출 로직 추가
+
+
+## v6.3.5 - AI 턴 처리 stuck 핫픽스
+
+- AI전 TURN_RESOLVE stuck watchdog 추가
