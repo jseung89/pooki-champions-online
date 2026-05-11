@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.3.5",
+    version: "6.3.7",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -488,7 +488,7 @@ function maybeStartAIBattle(reason = "maybe_start_ai_battle") {
 
 function forceStartAIBattleIfReady(reason = "force_start_ai_battle") {
   if (!battle?.players?.p2?.isAI) return false;
-  if (battle.phase !== PHASE.TEAM_SELECT) return false;
+  if (battle.phase !== PHASE.TEAM_SELECT && battle.phase !== PHASE.TURN_RESOLVE) return false;
 
   ensureAITeamReady(`${reason}_ensure_ai`);
 
@@ -497,29 +497,11 @@ function forceStartAIBattleIfReady(reason = "force_start_ai_battle") {
     return false;
   }
 
-  clearBattleTimer();
-  if (currentRoom) currentRoom.resolveInProgress = false;
-
-  battle.phase = PHASE.TURN_RESOLVE;
-  battle.events = [];
-  battle.forceSwitchPlayers = [];
-  battle.players.p1.selectedAction = null;
-  battle.players.p2.selectedAction = null;
-
   log("배틀 시작!");
   addEvent({ type: "message", text: "배틀 시작!" });
-  opLog(`[AI] TEAM_SELECT stuck 탈출 → 배틀 시작: ${reason}`);
+  opLog(`[AI] TEAM_SELECT → ACTION_SELECT 직접 시작: ${reason}`);
 
-  emitState();
-
-  const roomId = currentRoom?.id;
-  if (roomId) {
-    setTimeout(() => withRoom(roomId, () => startActionSelect()), 800);
-  } else {
-    scheduleRoom(() => startActionSelect(), 800);
-  }
-  scheduleAIActionSelectWatchdog(`force_start_${reason}`);
-  return true;
+  return forceAIActionSelectNow(`force_start_${reason}`);
 }
 
 function sweepAIBattleStart(reason = "sweep_ai_battle_start") {
@@ -542,9 +524,8 @@ function forceActionSelectIfTurnResolveStuck(reason = "turn_resolve_watchdog") {
   if (!battle.players.p1.teamReady || !battle.players.p2.teamReady) return false;
   if (battle.winner) return false;
 
-  opLog(`[AI] TURN_RESOLVE stuck 탈출 → ACTION_SELECT: ${reason}`);
-  startActionSelect();
-  return true;
+  opLog(`[AI] TURN_RESOLVE stuck 탈출 → ACTION_SELECT 직접 진입: ${reason}`);
+  return forceAIActionSelectNow(`watchdog_${reason}`);
 }
 
 function scheduleAIActionSelectWatchdog(reason = "ai_action_select_watchdog") {
@@ -923,24 +904,21 @@ function maybeStartBattle() {
     return;
   }
 
+  if (battle.players.p2.isAI) {
+    log("배틀 시작!");
+    addEvent({ type: "message", text: "배틀 시작!" });
+    opLog("[AI] maybeStartBattle → ACTION_SELECT 직접 시작");
+    forceAIActionSelectNow("maybe_start_battle_ai_direct");
+    return;
+  }
+
   battle.phase = PHASE.TURN_RESOLVE;
   battle.events = [];
   log("배틀 시작!");
   addEvent({ type: "message", text: "배틀 시작!" });
   opLog("[GAME] 배틀 시작");
   emitState();
-
-  if (battle.players.p2.isAI) {
-    const roomId = currentRoom?.id;
-    if (roomId) {
-      setTimeout(() => withRoom(roomId, () => startActionSelect()), 800);
-    } else {
-      scheduleRoom(() => startActionSelect(), 800);
-    }
-    scheduleAIActionSelectWatchdog("maybe_start_battle_ai");
-  } else {
-    scheduleRoom(() => startActionSelect(), 1200);
-  }
+  scheduleRoom(() => startActionSelect(), 1200);
 }
 
 function autoRechargeActions() {
@@ -980,6 +958,41 @@ function startActionSelect() {
 
   emitState();
   scheduleRoom(() => maybeQueueAIAction("turn_start"), 450);
+}
+
+
+function forceAIActionSelectNow(reason = "force_ai_action_select_now") {
+  if (!battle?.players?.p2?.isAI) return false;
+  if (battle.phase === PHASE.GAME_OVER) return false;
+  if (!battle.players.p1.teamReady || !battle.players.p2.teamReady) return false;
+
+  clearBattleTimer();
+  if (currentRoom) currentRoom.resolveInProgress = false;
+
+  battle.phase = PHASE.ACTION_SELECT;
+  battle.events = [];
+  battle.players.p1.selectedAction = null;
+  battle.players.p2.selectedAction = null;
+  battle.forceSwitchPlayers = [];
+  battle.timerEndAt = Date.now() + 20000;
+
+  autoRechargeActions();
+
+  opLog(`[AI] ACTION_SELECT 직접 진입: ${reason}`);
+
+  const roomId = currentRoom?.id;
+  if (roomId) {
+    currentRoom.timer = setTimeout(() => withRoom(roomId, () => {
+      if (battle.phase === PHASE.ACTION_SELECT) resolveTurn();
+    }), 20000);
+  }
+
+  emitState();
+  setTimeout(() => {
+    if (roomId) withRoom(roomId, () => maybeQueueAIAction(`direct_${reason}`));
+  }, 450);
+
+  return true;
 }
 
 function startForceSwitch(players) {

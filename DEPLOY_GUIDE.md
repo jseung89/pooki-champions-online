@@ -143,3 +143,13 @@ v6.3
 ## v6.3.5 - AI 턴 처리 stuck 핫픽스
 
 - AI전 TURN_RESOLVE stuck watchdog 추가
+
+
+## v6.3.6 - AI 기술 선택 직접 진입 핫픽스
+
+- AI전 TEAM_SELECT에서 ACTION_SELECT로 직접 진입
+
+
+## v6.3.7 - 로그인 모달 겹침 UI 핫픽스
+
+- 로그인 버튼/안내문구 겹침 수정

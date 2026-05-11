@@ -431,6 +431,63 @@
     .ai-enter{background:linear-gradient(180deg,#7c3aed,#5b21b6)!important;box-shadow:0 5px 0 #3b0764!important}
     .ai-enter:disabled{opacity:.45;cursor:not-allowed}
 
+  
+    /* v6.3.7 로그인 모달 겹침 UI 핫픽스 */
+    .login-card{
+      box-sizing:border-box!important;
+      max-height:calc(100vh - 48px)!important;
+      overflow:visible!important;
+      padding:28px 28px 30px!important;
+      display:flex!important;
+      flex-direction:column!important;
+      gap:12px!important;
+    }
+    .login-card input{
+      box-sizing:border-box!important;
+      min-height:46px!important;
+      margin:0!important;
+      flex:0 0 auto!important;
+    }
+    .login-card button[type="submit"],
+    #loginButton{
+      box-sizing:border-box!important;
+      width:100%!important;
+      min-height:48px!important;
+      height:48px!important;
+      margin:2px 0 0!important;
+      padding:0 16px!important;
+      display:flex!important;
+      align-items:center!important;
+      justify-content:center!important;
+      line-height:1!important;
+      white-space:nowrap!important;
+      word-break:keep-all!important;
+      flex:0 0 auto!important;
+    }
+    .login-help{
+      position:static!important;
+      display:block!important;
+      margin:0!important;
+      padding:2px 0 0!important;
+      min-height:auto!important;
+      line-height:1.35!important;
+      color:#475569!important;
+      font-size:12px!important;
+      font-weight:800!important;
+      flex:0 0 auto!important;
+    }
+    .login-error{
+      position:static!important;
+      display:block!important;
+      margin:0!important;
+      min-height:18px!important;
+      line-height:1.35!important;
+      color:#dc2626!important;
+      font-size:13px!important;
+      font-weight:900!important;
+      flex:0 0 auto!important;
+    }
+
   </style>
 
 </head>
@@ -591,7 +648,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v635";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v637";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
