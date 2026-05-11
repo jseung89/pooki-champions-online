@@ -35,8 +35,8 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.2.2",
-    name: "정승의 푸끼몬 챔피언스 ONLINE v6.2.2",
+    version: "6.2.4",
+    name: "정승의 푸끼몬 챔피언스 ONLINE v6.2.4.4",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
       name: room.name,
@@ -1426,61 +1426,95 @@ function joinRoom(socket, roomId, token) {
 }
 
 
-// ===== v6.2.2 UNIQUE LOGIN HELPERS =====
-function isUserIdActive(userId, socketId) {
+
+// ===== v6.2.4 UNIQUE LOGIN HELPERS =====
+function normalizeClientId(value) {
+  return String(value || "").trim().replace(/[^0-9A-Za-z_\-]/g, "").slice(0, 80);
+}
+
+function getActiveUserOwner(userId) {
+  const clean = cleanUserId(userId);
+  if (!clean) return null;
+  const owner = activeUserIds.get(clean);
+  if (!owner) return null;
+
+  // v6.2.1/v6.2.2 호환: 예전 값이 socketId 문자열이면 객체로 보정
+  if (typeof owner === "string") {
+    const normalized = { socketId: owner, clientId: null };
+    activeUserIds.set(clean, normalized);
+    return normalized;
+  }
+
+  return owner;
+}
+
+function isUserIdActive(userId, socketId, clientId = null) {
   const clean = cleanUserId(userId);
   if (!clean) return false;
 
-  const ownerSocketId = activeUserIds.get(clean);
-  if (!ownerSocketId) return false;
+  const owner = getActiveUserOwner(clean);
+  if (!owner || !owner.socketId) return false;
 
   // 같은 소켓은 재로그인 허용
-  if (ownerSocketId === socketId) return false;
+  if (owner.socketId === socketId) return false;
 
-  // 이미 끊긴 소켓이면 점유 해제
-  if (!io.sockets.sockets.has(ownerSocketId)) {
+  // 이전 소켓이 이미 끊긴 상태면 점유 해제
+  if (!io.sockets.sockets.has(owner.socketId)) {
     activeUserIds.delete(clean);
+    return false;
+  }
+
+  // 같은 브라우저/기기(clientId)는 재접속/새로고침으로 보고 허용
+  const normalizedClientId = normalizeClientId(clientId);
+  if (normalizedClientId && owner.clientId && owner.clientId === normalizedClientId) {
     return false;
   }
 
   return true;
 }
 
-function reserveUserId(socket, userId) {
+function reserveUserId(socket, userId, clientId = null) {
   const clean = cleanUserId(userId);
+  const normalizedClientId = normalizeClientId(clientId || socket.data.clientId);
 
   if (!clean || clean.length < 2 || clean.length > 12) {
     return { ok: false, message: "아이디는 2~12자로 입력해주세요." };
   }
 
-  if (isUserIdActive(clean, socket.id)) {
+  if (isUserIdActive(clean, socket.id, normalizedClientId)) {
     return { ok: false, message: "이미 접속 중인 아이디입니다. 다른 아이디를 사용해주세요." };
   }
 
   const previous = cleanUserId(socket.data.userId);
-  if (previous && previous !== clean && activeUserIds.get(previous) === socket.id) {
-    activeUserIds.delete(previous);
+  if (previous && previous !== clean) {
+    const previousOwner = getActiveUserOwner(previous);
+    if (previousOwner?.socketId === socket.id) activeUserIds.delete(previous);
   }
 
-  activeUserIds.set(clean, socket.id);
+  socket.data.clientId = normalizedClientId || socket.data.clientId || null;
   socket.data.userId = clean;
+  activeUserIds.set(clean, { socketId: socket.id, clientId: socket.data.clientId || null });
 
   return { ok: true, userId: clean };
 }
 
 function releaseUserId(socket) {
   const userId = cleanUserId(socket?.data?.userId);
-  if (userId && activeUserIds.get(userId) === socket.id) {
+  if (!userId) return;
+
+  const owner = getActiveUserOwner(userId);
+  if (owner?.socketId === socket.id) {
     activeUserIds.delete(userId);
   }
 }
 
 function assertUniqueLoginHelpers() {
   const missing = [];
+  if (!activeUserIds || typeof activeUserIds.set !== "function") missing.push("activeUserIds");
+  if (typeof normalizeClientId !== "function") missing.push("normalizeClientId");
   if (typeof isUserIdActive !== "function") missing.push("isUserIdActive");
   if (typeof reserveUserId !== "function") missing.push("reserveUserId");
   if (typeof releaseUserId !== "function") missing.push("releaseUserId");
-  if (!activeUserIds || typeof activeUserIds.set !== "function") missing.push("activeUserIds");
   if (missing.length) throw new Error(`Unique login helpers missing: ${missing.join(", ")}`);
 }
 
@@ -1490,9 +1524,13 @@ io.on("connection", (socket) => {
   socket.data.role = null;
   socket.data.connectedAt = Date.now();
   socket.data.userId = null;
+  socket.data.clientId = normalizeClientId(socket.handshake?.auth?.clientId);
   const authUserId = cleanUserId(socket.handshake?.auth?.userId);
-  if (authUserId && !isUserIdActive(authUserId, socket.id)) {
-    reserveUserId(socket, authUserId);
+  if (authUserId) {
+    const reserved = reserveUserId(socket, authUserId, socket.data.clientId);
+    if (!reserved.ok) {
+      socket.emit("loginError", { message: reserved.message });
+    }
   }
   updateOnlineUser(socket);
   socket.emit("lobbyState", publicLobbyState());
@@ -1503,14 +1541,14 @@ io.on("connection", (socket) => {
     socket.emit("lobbyState", publicLobbyState());
   });
 
-  socket.on("loginUser", ({ userId } = {}) => {
+  socket.on("loginUser", ({ userId, clientId } = {}) => {
     const clean = cleanUserId(userId);
     if (!clean || clean.length < 2) {
       socket.emit("loginError", { message: "아이디는 2~12자로 입력해주세요." });
       return;
     }
 
-    const reserved = reserveUserId(socket, clean);
+    const reserved = reserveUserId(socket, clean, clientId);
     if (!reserved.ok) {
       socket.emit("loginError", { message: reserved.message });
       return;
@@ -1528,7 +1566,7 @@ io.on("connection", (socket) => {
       });
     }
 
-    socket.emit("loginOk", { userId: reserved.userId });
+    socket.emit("loginOk", { userId: reserved.userId, clientId: socket.data.clientId || null });
     emitOnlineState();
   });
 
@@ -1683,7 +1721,7 @@ io.on("connection", (socket) => {
 async function start() {
   assertUniqueLoginHelpers();
   console.log("========================================");
-  console.log(" 정승의 푸끼몬 챔피언스 ONLINE v6.2.2");
+  console.log(" 정승의 푸끼몬 챔피언스 ONLINE v6.2.4.4");
   console.log("========================================");
   console.log("[BOOT] 서버 시작 중...");
   console.log("[ROOM] 4룸 모드: 태초마을 / 회색시티 / 블루시티 / 무지개시티");

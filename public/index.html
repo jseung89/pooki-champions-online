@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>정승의 푸끼몬 챔피언스 ONLINE v6.2.2</title>
+  <title>정승의 푸끼몬 챔피언스 ONLINE v6.2.4.4</title>
   
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -244,8 +244,8 @@
 
     .ranking-row{display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:13px}
     .ranking-rank{font-weight:950;color:#ffd166}.ranking-name{font-weight:950;color:#fff}.ranking-meta{font-size:12px;color:#cfe2ff;text-align:right}.ranking-score{font-weight:950;color:#93c5fd}
-    .lobby-chat-card{min-height:260px}.lobby-chat-messages{height:170px;overflow-y:auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:10px;font-size:13px;line-height:1.45;color:#fff}
-    .lobby-chat-line{margin-bottom:7px;word-break:break-word}.lobby-chat-name{font-weight:950;color:#93c5fd;margin-right:6px}.lobby-chat-form{display:grid;grid-template-columns:1fr 62px;gap:8px;margin-top:8px}
+    .lobby-chat-card{min-height:260px}.lobby-chat-messages{height:170px;overflow-y:auto;background:#f8fbff;border:1px solid #d8e7ff;border-radius:14px;padding:10px;font-size:13px;line-height:1.45;color:#071b4d}
+    .lobby-chat-line{margin-bottom:7px;word-break:break-word;color:#071b4d;font-weight:800}.lobby-chat-name{font-weight:950;color:#2563eb;margin-right:6px}.lobby-chat-form{display:grid;grid-template-columns:1fr 62px;gap:8px;margin-top:8px}
     .lobby-chat-form input{min-width:0;border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:10px 11px;font-weight:800;outline:none}.lobby-chat-form button{border:0;border-radius:12px;background:#2563eb;color:#fff;font-weight:950;box-shadow:0 4px 0 #1e3a8a}
     .rank-result{font-size:13px;color:#14532d;background:#dcfce7;border:1px solid #86efac;border-radius:12px;padding:9px 10px;margin-top:9px;font-weight:900}
 
@@ -356,6 +356,33 @@
     .small-btn{padding:8px 10px!important;border-radius:12px!important;font-size:12px!important;box-shadow:0 3px 0 #1e3a8a!important;}
     @media(max-width:1050px){.lobby-shell{grid-template-columns:1fr}.room-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
+  
+    /* v6.2.3 로비 채팅 가독성 핫픽스 */
+    #lobbyChatMessages{background:#f8fbff!important;color:#071b4d!important;border-color:#d8e7ff!important;}
+    #lobbyChatMessages .lobby-chat-line{color:#071b4d!important;font-weight:800;}
+    #lobbyChatMessages .lobby-chat-name{color:#2563eb!important;font-weight:950;}
+
+  
+    /* v6.2.4 우측 패널 가독성 + 로그인 유지 핫픽스 */
+    .side-lobby-card{
+      background:#f8fbff!important;
+      color:#071b4d!important;
+      border-color:#bfd5ff!important;
+    }
+    .side-lobby-title{color:#071b4d!important;font-weight:950!important;}
+    #rankingBox{color:#071b4d!important;}
+    #rankingBox .ranking-row{color:#071b4d!important;border-bottom:1px solid #d8e7ff!important;}
+    #rankingBox .ranking-rank{color:#f59e0b!important;font-weight:950!important;}
+    #rankingBox .ranking-name{color:#071b4d!important;font-weight:950!important;}
+    #rankingBox .ranking-score{color:#2563eb!important;font-weight:950!important;}
+    #rankingBox .ranking-meta{color:#334155!important;font-weight:850!important;}
+    #lobbyChatMessages{background:#fff!important;color:#071b4d!important;border-color:#d8e7ff!important;}
+    #lobbyChatMessages .lobby-chat-line{color:#071b4d!important;font-weight:850!important;}
+    #lobbyChatMessages .lobby-chat-name{color:#2563eb!important;font-weight:950!important;}
+    #lobbyChatMessages div{color:inherit;}
+    .lobby-chat-form input{color:#071b4d!important;background:#fff!important;}
+    .lobby-chat-form input::placeholder{color:#64748b!important;}
+
   </style>
 
 </head>
@@ -378,7 +405,7 @@
       <section class="lobby-card">
         <div class="lobby-head">
           <div>
-            <div class="lobby-title">정승의 푸끼몬 챔피언스 ONLINE v6.2.2</div>
+            <div class="lobby-title">정승의 푸끼몬 챔피언스 ONLINE v6.2.4.4</div>
             <div class="lobby-sub">로그인 후 방을 선택하면 빈 플레이어 자리로 자동 입장합니다. 자리가 없으면 관전자입니다.</div>
           </div>
           <div class="lobby-userbar">
@@ -418,7 +445,7 @@
       <div class="brand">
         <div class="brand-badge">🛡️</div>
         <div>
-          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.2.2</div>
+          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.2.4.4</div>
           <div class="role" id="roleText">서버 연결 중...</div>
         </div>
       </div>
@@ -516,11 +543,17 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v620";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v624";
     const USER_ID_KEY = "pooki_user_id";
+    const CLIENT_ID_KEY = "pooki_client_id";
+    let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
+    if(!existingClientId){
+      existingClientId = `${Date.now().toString(36)}_${Math.random().toString(36).slice(2,12)}`;
+      localStorage.setItem(CLIENT_ID_KEY, existingClientId);
+    }
     const existingPlayerToken = localStorage.getItem(PLAYER_TOKEN_KEY) || "";
     const existingUserId = localStorage.getItem(USER_ID_KEY) || "";
-    const socket = io({ auth: { playerToken: existingPlayerToken, userId: existingUserId } });
+    const socket = io({ auth: { playerToken: existingPlayerToken, userId: existingUserId, clientId: existingClientId } });
     let myUserId = existingUserId;
 
     function setLoginError(message){ const el=document.getElementById("loginError"); if(el) el.textContent=message||""; }
@@ -545,7 +578,7 @@
       localStorage.setItem(USER_ID_KEY,userId);
       myUserId=userId;
       updateLoginUi();
-      socket.emit("loginUser",{userId});
+      socket.emit("loginUser",{userId, clientId: existingClientId});
       socket.emit("requestLobby");
       return false;
     }
@@ -587,7 +620,7 @@
     });
 
     socket.on("connect", () => {
-      if (myUserId) socket.emit("loginUser", { userId: myUserId });
+      if (myUserId) socket.emit("loginUser", { userId: myUserId, clientId: existingClientId });
       socket.emit("requestLobby");
     });
 
@@ -598,11 +631,16 @@
     });
 
     socket.on("loginError", ({ message }) => {
-      localStorage.removeItem(USER_ID_KEY);
-      myUserId = "";
-      setLoginError(message || "로그인에 실패했습니다.");
+      const msg = message || "로그인에 실패했습니다.";
+      setLoginError(msg);
+      // 다른 기기/브라우저의 중복 아이디일 때는 로그인창을 유지하되 입력값은 남긴다.
+      if (msg.includes("이미 접속 중")) {
+        myUserId = "";
+      }
+
       updateLoginUi();
-      document.getElementById("loginOverlay")?.classList.remove("hidden");
+      const overlay = document.getElementById("loginOverlay");
+      if (overlay) overlay.classList.remove("hidden");
     });
 
     socket.on("logoutOk", () => {
@@ -680,7 +718,7 @@
             </div>
             <div class="ranking-meta">${r.wins}승 ${r.losses}패<br/>연승 ${r.streak}</div>
           </div>
-        `).join("") : `<div style="color:#cfe2ff;font-weight:850;">아직 기록이 없습니다.</div>`;
+        `).join("") : `<div style="color:#64748b;font-weight:850;">아직 기록이 없습니다.</div>`;
       }
 
       const lobbyChatBox=document.getElementById("lobbyChatMessages");
@@ -690,7 +728,7 @@
             <span class="lobby-chat-name">${escapeHtml(m.name||"손님")}:</span>
             <span>${escapeHtml(m.text||"")}</span>
           </div>
-        `).join("") : `<div style="color:#cfe2ff;font-weight:850;">아직 메시지가 없습니다.</div>`;
+        `).join("") : `<div style="color:#64748b;font-weight:850;">아직 메시지가 없습니다.</div>`;
         lobbyChatBox.scrollTop=lobbyChatBox.scrollHeight;
       }
 
@@ -735,7 +773,7 @@
         return;
       }
       const token=localStorage.getItem(`${PLAYER_TOKEN_KEY}_${roomId}`)||"";
-      socket.emit("loginUser",{userId:localStorage.getItem(USER_ID_KEY)});
+      socket.emit("loginUser",{userId:localStorage.getItem(USER_ID_KEY), clientId: existingClientId});
       socket.emit("joinRoom",{roomId,playerToken:token});
     }
 

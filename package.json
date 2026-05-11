@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.2-2",
-  "description": "Pookimon Champions ONLINE v6.2.2 unique login hotfix with patch notes",
+  "version": "0.6.2-4",
+  "description": "Pookimon Champions ONLINE v6.2.4 readability and login persistence hotfix",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
