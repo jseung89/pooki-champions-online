@@ -35,8 +35,8 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.2.5",
-    name: "정승의 푸끼몬 챔피언스 ONLINE v6.2.5.5",
+    version: "6.3",
+    name: "정승의 푸끼몬 챔피언스 ONLINE v6.3",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
       name: room.name,
@@ -146,6 +146,15 @@ function playerDisplayName(role) {
 
 function recordMatchResult(winnerRole, reason = "game_over") {
   if (!battle || battle.rankingRecorded) return null;
+  if (isAIMatch()) {
+    battle.rankingRecorded = true;
+    battle.rankingResult = {
+      reason: "ai_practice",
+      practice: true,
+      message: "AI 연습전은 랭킹에 반영되지 않습니다.",
+    };
+    return battle.rankingResult;
+  }
   if (winnerRole !== "p1" && winnerRole !== "p2") return null;
 
   const loserRole = winnerRole === "p1" ? "p2" : "p1";
@@ -249,6 +258,7 @@ function emptyPlayer(role) {
     selectedAction: null,
     timeoutCount: 0,
     userId: null,
+    isAI: false,
   };
 }
 
@@ -277,6 +287,8 @@ function newBattleState(preservedSockets = {}) {
     winnerRole: null,
     rankingRecorded: false,
     rankingResult: null,
+    aiMatch: false,
+    aiName: null,
     pausedFromBattle: false,
   };
 }
@@ -331,6 +343,150 @@ function opponentOf(pk) {
   return pk === "p1" ? "p2" : "p1";
 }
 
+
+// ===== v6.3 AI PRACTICE HELPERS =====
+const AI_NAMES = ["AI 웅이", "AI 이슬이", "AI 로켓단", "AI 챔피언", "AI 잠만보장인", "AI 피카츄광인"];
+
+function randomAIName() {
+  return AI_NAMES[Math.floor(Math.random() * AI_NAMES.length)] || "AI 트레이너";
+}
+
+function isPlayerReadyForBattle(role) {
+  const player = battle?.players?.[role];
+  if (!player) return false;
+  return !!player.socketId || !!player.isAI;
+}
+
+function isBattleReady() {
+  return isPlayerReadyForBattle("p1") && isPlayerReadyForBattle("p2");
+}
+
+function ensureAIPlayer() {
+  const aiName = battle.aiName || randomAIName();
+  battle.aiMatch = true;
+  battle.aiName = aiName;
+
+  const ai = battle.players.p2;
+  ai.socketId = `AI:${currentRoom?.id || "room"}`;
+  ai.playerToken = `AI_TOKEN:${currentRoom?.id || "room"}`;
+  ai.label = aiName;
+  ai.userId = aiName;
+  ai.isAI = true;
+  ai.timeoutCount = 0;
+  ai.selectedAction = null;
+
+  return ai;
+}
+
+function isAIMatch() {
+  return !!battle?.aiMatch || !!battle?.players?.p1?.isAI || !!battle?.players?.p2?.isAI;
+}
+
+function aiScorePokemon(p) {
+  if (!p) return 0;
+  let score = (p.stats?.hp || p.maxHp || 0) * 0.8;
+  score += (p.stats?.attack || 0) * 1.1;
+  score += (p.stats?.speed || 0) * 0.7;
+  score += Array.isArray(p.moves) ? p.moves.reduce((sum, m) => sum + ((m.power || 0) * ((m.accuracy || 100) / 100)), 0) * 0.15 : 0;
+  if (p.isLegendary || p.isMythical) score += 30;
+  return score + Math.random() * 8;
+}
+
+function selectAITeam() {
+  const ai = battle.players.p2;
+  if (!ai?.isAI) return;
+  if (!Array.isArray(ai.candidatePool) || ai.candidatePool.length === 0) {
+    ai.candidatePool = createDraft(pokemonPool, 12);
+  }
+
+  const picks = [...ai.candidatePool]
+    .sort((a, b) => aiScorePokemon(b) - aiScorePokemon(a))
+    .slice(0, 2);
+
+  ai.selectedTeamIds = picks.map((p) => p.id);
+  ai.team = picks.map((p) => createBattlePokemon(p));
+  ai.teamReady = ai.team.length === 2;
+  ai.activeIndex = 0;
+  ai.selectedAction = null;
+
+  log(`${ai.label}이 출전 포켓몬 2마리를 선택했습니다.`);
+  opLog(`[AI] ${ai.label} 팀 자동 선택 완료`);
+}
+
+function moveExpectedValue(move, attacker, defender) {
+  if (!move) return -9999;
+  if (move.heal) {
+    const hpRatio = attacker?.maxHp ? attacker.hp / attacker.maxHp : 1;
+    return hpRatio < 0.35 ? 130 : hpRatio < 0.55 ? 70 : 5;
+  }
+  if (move.statChange && !move.power) {
+    return Math.random() < 0.25 ? 35 : 8;
+  }
+  const power = move.power || 0;
+  const accuracy = (move.accuracy ?? 100) / 100;
+  const effectiveness = battleEffectiveness(move.type || "normal", defender?.types || []);
+  const priorityBonus = move.priority ? 12 : 0;
+  const stab = attacker?.types?.includes(move.type) ? 1.15 : 1;
+  return power * accuracy * effectiveness * stab + priorityBonus + Math.random() * 12;
+}
+
+function chooseAIAction(role = "p2") {
+  const player = battle.players[role];
+  const opponentKey = opponentOf(role);
+  const mon = active(role);
+  const enemy = active(opponentKey);
+
+  if (!player?.isAI || !mon || mon.fainted) {
+    const switchIndex = player?.team?.findIndex((p, idx) => idx !== player.activeIndex && !p.fainted);
+    if (switchIndex >= 0) return { type: "switch", targetIndex: switchIndex, auto: true };
+    return null;
+  }
+
+  if (hasActionLock(mon)) return { type: "recharge", auto: true };
+
+  const moves = Array.isArray(mon.moves) ? mon.moves : [];
+  if (!moves.length) return null;
+
+  let bestIndex = 0;
+  let bestScore = -9999;
+
+  moves.forEach((move, idx) => {
+    const score = moveExpectedValue(move, mon, enemy);
+    if (score > bestScore) {
+      bestScore = score;
+      bestIndex = idx;
+    }
+  });
+
+  return { type: "move", moveIndex: bestIndex, auto: true };
+}
+
+function maybeQueueAIAction(reason = "auto") {
+  if (battle.phase !== PHASE.ACTION_SELECT && battle.phase !== PHASE.FORCE_SWITCH) return;
+  const ai = battle.players.p2;
+  if (!ai?.isAI) return;
+
+  if (battle.phase === PHASE.FORCE_SWITCH) {
+    if (battle.forceSwitchPlayers.includes("p2")) {
+      ai.selectedAction = chooseAIAction("p2");
+      opLog(`[AI] 강제 교체 선택: ${actionName("p2", ai.selectedAction)}`);
+      resolveForceSwitch();
+    }
+    return;
+  }
+
+  if (!ai.selectedAction) {
+    ai.selectedAction = chooseAIAction("p2");
+    opLog(`[AI] 행동 선택(${reason}): ${actionName("p2", ai.selectedAction)}`);
+  }
+
+  if (battle.players.p1.selectedAction && battle.players.p2.selectedAction) {
+    scheduleRoom(() => resolveTurn(), 350);
+  } else {
+    emitState();
+  }
+}
+
 function hasAlivePokemon(pk) {
   return battle.players[pk].team.some((p) => !p.fainted);
 }
@@ -341,7 +497,7 @@ function hasAliveBench(pk) {
 }
 
 function bothPlayersConnected() {
-  return !!battle?.players?.p1?.socketId && !!battle?.players?.p2?.socketId;
+  return isBattleReady();
 }
 
 function resetPlayerBattleChoices(role, options = {}) {
@@ -454,7 +610,8 @@ function publicPlayer(player) {
     teamReady: player.teamReady,
     selectedAction: player.selectedAction ? { type: player.selectedAction.type, auto: !!player.selectedAction.auto } : null,
     timeoutCount: player.timeoutCount,
-    connected: !!player.socketId,
+    connected: !!player.socketId || !!player.isAI,
+    isAI: !!player.isAI,
   };
 }
 
@@ -477,8 +634,8 @@ function publicState() {
       roomName: currentRoom?.name,
       roomIcon: currentRoom?.icon,
       spectatorCount: spectatorCount(),
-      p1Connected: !!battle.players.p1.socketId,
-      p2Connected: !!battle.players.p2.socketId,
+      p1Connected: isPlayerReadyForBattle("p1"),
+      p2Connected: isPlayerReadyForBattle("p2"),
       p1Name: battle.players.p1.userId || battle.players.p1.label,
       p2Name: battle.players.p2.userId || battle.players.p2.label,
     },
@@ -488,6 +645,8 @@ function publicState() {
     winner: battle.winner,
     winnerRole: battle.winnerRole,
     rankingResult: battle.rankingResult,
+    aiMatch: !!battle.aiMatch,
+    aiName: battle.aiName,
     rankings: publicRankings(),
     typeKo: TYPE_KO,
   };
@@ -521,14 +680,15 @@ function publicRoomSummary(room) {
     icon: room.icon,
     phase: room.battle.phase,
     status: roomStatusLabel(room),
-    p1Connected: !!room.battle.players.p1.socketId,
-    p2Connected: !!room.battle.players.p2.socketId,
+    p1Connected: !!room.battle.players.p1.socketId || !!room.battle.players.p1.isAI,
+    p2Connected: !!room.battle.players.p2.socketId || !!room.battle.players.p2.isAI,
     p1Name: room.battle.players.p1.userId || room.battle.players.p1.label,
     p2Name: room.battle.players.p2.userId || room.battle.players.p2.label,
     p1Ready: !!room.battle.players.p1.teamReady,
     p2Ready: !!room.battle.players.p2.teamReady,
     spectatorCount: spectatorCount(room.id),
     winner: room.battle.winner,
+    aiMatch: !!room.battle.aiMatch,
   };
 }
 
@@ -586,7 +746,11 @@ function startTeamSelect() {
     player.timeoutCount = 0;
   }
 
-  log("랜덤 후보 12마리가 지급되었습니다. 각자 출전할 포켓몬 2마리를 선택하세요.");
+  if (battle.players.p2.isAI) {
+    selectAITeam();
+  }
+
+  log(battle.players.p2.isAI ? "AI 연습전입니다. 출전할 포켓몬 2마리를 선택하세요." : "랜덤 후보 12마리가 지급되었습니다. 각자 출전할 포켓몬 2마리를 선택하세요.");
   opLog("[GAME] 팀 선택 시작");
   emitState();
 }
@@ -645,6 +809,7 @@ function startActionSelect() {
   }), 20000);
 
   emitState();
+  scheduleRoom(() => maybeQueueAIAction("turn_start"), 450);
 }
 
 function startForceSwitch(players) {
@@ -678,6 +843,7 @@ function startForceSwitch(players) {
   }), 15000);
 
   emitState();
+  scheduleRoom(() => maybeQueueAIAction("force_switch"), 450);
 }
 
 function doSwitch(pk, targetIndex, auto = false) {
@@ -976,7 +1142,9 @@ function checkWinner() {
     const rankResult = winnerRole ? recordMatchResult(winnerRole, "game_over") : null;
 
     log(`${battle.winner} 승리!`);
-    if (rankResult) {
+    if (rankResult?.practice) {
+      log(rankResult.message || "AI 연습전은 랭킹에 반영되지 않습니다.");
+    } else if (rankResult) {
       log(`랭킹 반영: ${rankResult.winnerName} +30점 / ${rankResult.loserName} -10점`);
     }
 
@@ -1182,15 +1350,18 @@ function handleSurrender(role) {
 
 
 function resetBattleForNewGame() {
+  const wasAIMatch = !!battle.aiMatch || !!battle.players.p2.isAI;
   const sockets = {
     p1: {
       socketId: battle.players.p1.socketId,
       playerToken: battle.players.p1.playerToken,
     },
-    p2: {
-      socketId: battle.players.p2.socketId,
-      playerToken: battle.players.p2.playerToken,
-    },
+    p2: wasAIMatch
+      ? null
+      : {
+          socketId: battle.players.p2.socketId,
+          playerToken: battle.players.p2.playerToken,
+        },
   };
 
   currentRoom.battle = newBattleState(sockets);
@@ -1198,10 +1369,19 @@ function resetBattleForNewGame() {
   currentRoom.resolveInProgress = false;
   clearBattleTimer();
 
-  if (dataReady && sockets.p1?.socketId && sockets.p2?.socketId) {
-    opLog("[REMATCH] 새 게임 시작");
-    startTeamSelect();
-    return;
+  if (dataReady && sockets.p1?.socketId) {
+    if (wasAIMatch) {
+      ensureAIPlayer();
+      opLog("[REMATCH][AI] 새 AI 연습전 시작");
+      startTeamSelect();
+      return;
+    }
+
+    if (sockets.p2?.socketId) {
+      opLog("[REMATCH] 새 게임 시작");
+      startTeamSelect();
+      return;
+    }
   }
 
   battle.phase = dataReady ? PHASE.WAITING : PHASE.LOADING;
@@ -1265,8 +1445,8 @@ function assignRoleForConnection(token) {
   if (existingRole && !battle.players[existingRole].socketId) return existingRole;
 
   // 기존 토큰이 남아 있어도 실제 접속자가 없으면 빈자리로 간주합니다.
-  if (!battle.players.p1.socketId) return "p1";
-  if (!battle.players.p2.socketId) return "p2";
+  if (!battle.players.p1.socketId && !battle.players.p1.isAI) return "p1";
+  if (!battle.players.p2.socketId && !battle.players.p2.isAI) return "p2";
 
   return "spectator";
 }
@@ -1274,6 +1454,7 @@ function assignRoleForConnection(token) {
 function bindSocketToRole(socket, role, token) {
   const player = battle.players[role];
   player.socketId = socket.id;
+  player.isAI = false;
   player.userId = cleanUserId(socket.data.userId) || player.userId || player.label;
   player.label = player.userId || (role === "p1" ? "플레이어 1" : "플레이어 2");
 
@@ -1296,7 +1477,16 @@ function leaveCurrentRoom(socket, reason = "leave") {
       opLog(`[${reason.toUpperCase()}] ${currentRoom.name} ${battle.players[role].label} 이탈`);
       log(`${battle.players[role].label}이 방을 나갔습니다. 관전자가 빈자리에 참가할 수 있습니다.`);
       resetPlayerBattleChoices(role, { keepTeam: [PHASE.ACTION_SELECT, PHASE.TURN_RESOLVE, PHASE.FORCE_SWITCH].includes(battle.phase) });
-      pauseRoomForMissingPlayer(`${reason}_${role}`);
+      if (battle.aiMatch && role === "p1") {
+        const preserved = { p1: null, p2: null };
+        currentRoom.battle = newBattleState(preserved);
+        battle = currentRoom.battle;
+        battle.phase = dataReady ? PHASE.WAITING : PHASE.LOADING;
+        log("AI 연습전이 종료되었습니다.");
+        emitState();
+      } else {
+        pauseRoomForMissingPlayer(`${reason}_${role}`);
+      }
     } else if (role === "spectator") {
       socket.leave(`spectators:${roomId}`);
       emitState();
@@ -1329,7 +1519,7 @@ function claimPlayerSlot(socket) {
   }
 
   withRoom(roomId, () => {
-    const targetRole = !battle.players.p1.socketId ? "p1" : (!battle.players.p2.socketId ? "p2" : null);
+    const targetRole = (!battle.players.p1.socketId && !battle.players.p1.isAI) ? "p1" : ((!battle.players.p2.socketId && !battle.players.p2.isAI) ? "p2" : null);
 
     if (!targetRole) {
       socket.emit("roomError", { message: "빈 플레이어 자리가 없습니다." });
@@ -1427,7 +1617,7 @@ function joinRoom(socket, roomId, token) {
 
 
 
-// ===== v6.2.4 UNIQUE LOGIN HELPERS =====
+// ===== v6.3 UNIQUE LOGIN HELPERS =====
 function normalizeClientId(value) {
   return String(value || "").trim().replace(/[^0-9A-Za-z_\-]/g, "").slice(0, 80);
 }
@@ -1438,7 +1628,7 @@ function getActiveUserOwner(userId) {
   const owner = activeUserIds.get(clean);
   if (!owner) return null;
 
-  // v6.2.1/v6.2.2 호환: 예전 값이 socketId 문자열이면 객체로 보정
+  // v6.3/v6.3 호환: 예전 값이 socketId 문자열이면 객체로 보정
   if (typeof owner === "string") {
     const normalized = { socketId: owner, clientId: null };
     activeUserIds.set(clean, normalized);
@@ -1589,6 +1779,62 @@ io.on("connection", (socket) => {
     socket.emit("logoutOk");
   });
 
+
+  socket.on("startAIMatch", ({ roomId } = {}) => {
+    const cleanUser = cleanUserId(socket.data.userId);
+    if (!cleanUser) {
+      socket.emit("loginError", { message: "로그인 후 AI 대전을 시작할 수 있습니다." });
+      return;
+    }
+
+    if (!rooms.has(roomId)) {
+      socket.emit("roomError", { message: "존재하지 않는 방입니다." });
+      return;
+    }
+
+    if (!dataReady) {
+      socket.emit("roomError", { message: "포켓몬 데이터를 준비 중입니다. 잠시 후 다시 시도해주세요." });
+      return;
+    }
+
+    leaveCurrentRoom(socket, "switch_ai_room");
+    socket.leave("lobby");
+
+    withRoom(roomId, () => {
+      // 이미 사람이 플레이 중인 방은 AI 연습전으로 덮어쓰지 않는다.
+      if (battle.players.p1.socketId || battle.players.p2.socketId || battle.players.p1.isAI || battle.players.p2.isAI) {
+        socket.emit("roomError", { message: "이미 사용 중인 방입니다. 다른 방에서 AI 대전을 시작해주세요." });
+        socket.join("lobby");
+        socket.emit("lobbyState", publicLobbyState());
+        return;
+      }
+
+      const token = bindSocketToRole(socket, "p1", null);
+      socket.data.roomId = roomId;
+      socket.data.role = "p1";
+      updateOnlineUser(socket);
+
+      ensureAIPlayer();
+      assignDrafts(true);
+      selectAITeam();
+
+      socket.emit("joinedRoom", {
+        role: "p1",
+        playerToken: token,
+        roomId,
+        roomName: currentRoom.name,
+        roomIcon: currentRoom.icon,
+        aiMatch: true,
+      });
+
+      log(`${battle.players.p1.label}이 ${battle.players.p2.label}에게 AI 연습전을 신청했습니다.`);
+      opLog(`[AI_MATCH] ${currentRoom.name}: ${battle.players.p1.label} vs ${battle.players.p2.label}`);
+
+      startTeamSelect();
+      emitOnlineState();
+    });
+  });
+
   socket.on("joinRoom", ({ roomId, playerToken } = {}) => {
     joinRoom(socket, roomId, playerToken);
   });
@@ -1642,6 +1888,11 @@ io.on("connection", (socket) => {
       if (!validateAction(role, action)) return;
 
       battle.players[role].selectedAction = action;
+
+      if (battle.players.p2.isAI) {
+        maybeQueueAIAction("player_action");
+      }
+
       emitState();
 
       if (battle.phase === PHASE.ACTION_SELECT) {
@@ -1721,7 +1972,7 @@ io.on("connection", (socket) => {
 async function start() {
   assertUniqueLoginHelpers();
   console.log("========================================");
-  console.log(" 정승의 푸끼몬 챔피언스 ONLINE v6.2.5.5");
+  console.log(" 정승의 푸끼몬 챔피언스 ONLINE v6.3");
   console.log("========================================");
   console.log("[BOOT] 서버 시작 중...");
   console.log("[ROOM] 4룸 모드: 태초마을 / 회색시티 / 블루시티 / 무지개시티");

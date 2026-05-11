@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.2-5",
-  "description": "Pookimon Champions ONLINE v6.2.5 right panel inline color hotfix",
+  "version": "0.6.3",
+  "description": "Pookimon Champions ONLINE v6.3 AI practice mode",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

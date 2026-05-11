@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>정승의 푸끼몬 챔피언스 ONLINE v6.2.5.5</title>
+  <title>정승의 푸끼몬 챔피언스 ONLINE v6.3</title>
   
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -357,13 +357,13 @@
     @media(max-width:1050px){.lobby-shell{grid-template-columns:1fr}.room-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 
   
-    /* v6.2.3 로비 채팅 가독성 핫픽스 */
+    /* v6.3 로비 채팅 가독성 핫픽스 */
     #lobbyChatMessages{background:#f8fbff!important;color:#071b4d!important;border-color:#d8e7ff!important;}
     #lobbyChatMessages .lobby-chat-line{color:#071b4d!important;font-weight:800;}
     #lobbyChatMessages .lobby-chat-name{color:#2563eb!important;font-weight:950;}
 
   
-    /* v6.2.4 우측 패널 가독성 + 로그인 유지 핫픽스 */
+    /* v6.3 우측 패널 가독성 + 로그인 유지 핫픽스 */
     .side-lobby-card{
       background:#f8fbff!important;
       color:#071b4d!important;
@@ -384,7 +384,7 @@
     .lobby-chat-form input::placeholder{color:#64748b!important;}
 
   
-    /* v6.2.5 우측 패널 인라인 색상 보강 */
+    /* v6.3 우측 패널 인라인 색상 보강 */
     .side-lobby-card,
     .side-lobby-card *{
       text-shadow:none!important;
@@ -426,6 +426,11 @@
       border-color:#d8e7ff!important;
     }
 
+  
+    .room-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .ai-enter{background:linear-gradient(180deg,#7c3aed,#5b21b6)!important;box-shadow:0 5px 0 #3b0764!important}
+    .ai-enter:disabled{opacity:.45;cursor:not-allowed}
+
   </style>
 
 </head>
@@ -448,7 +453,7 @@
       <section class="lobby-card">
         <div class="lobby-head">
           <div>
-            <div class="lobby-title">정승의 푸끼몬 챔피언스 ONLINE v6.2.5.5</div>
+            <div class="lobby-title">정승의 푸끼몬 챔피언스 ONLINE v6.3</div>
             <div class="lobby-sub">로그인 후 방을 선택하면 빈 플레이어 자리로 자동 입장합니다. 자리가 없으면 관전자입니다.</div>
           </div>
           <div class="lobby-userbar">
@@ -488,7 +493,7 @@
       <div class="brand">
         <div class="brand-badge">🛡️</div>
         <div>
-          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.2.5.5</div>
+          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.3</div>
           <div class="role" id="roleText">서버 연결 중...</div>
         </div>
       </div>
@@ -586,7 +591,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v625";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v630";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -790,7 +795,10 @@
             <div>관전자 ${room.spectatorCount||0}명</div>
             <div>${room.winner?`승자: ${escapeHtml(room.winner)}`:""}</div>
           </div>
-          <button class="room-enter" ${logged?"":"disabled"} onclick="joinRoom('${room.id}')">입장하기</button>
+          <div class="room-actions">
+            <button class="room-enter" ${logged?"":"disabled"} onclick="joinRoom('${room.id}')">입장하기</button>
+            <button class="room-enter ai-enter" ${(logged && !room.p1Connected && !room.p2Connected) ? "" : "disabled"} onclick="startAIMatch('${room.id}')">AI 대전</button>
+          </div>
         </article>`;
       }).join("");
     }
@@ -818,6 +826,16 @@
       const token=localStorage.getItem(`${PLAYER_TOKEN_KEY}_${roomId}`)||"";
       socket.emit("loginUser",{userId:localStorage.getItem(USER_ID_KEY), clientId: existingClientId});
       socket.emit("joinRoom",{roomId,playerToken:token});
+    }
+
+    function startAIMatch(roomId){
+      if(!localStorage.getItem(USER_ID_KEY)){
+        document.getElementById("loginOverlay")?.classList.remove("hidden");
+        setLoginError("로그인 후 AI 대전을 시작할 수 있습니다.");
+        return;
+      }
+      socket.emit("loginUser",{userId:localStorage.getItem(USER_ID_KEY), clientId: existingClientId});
+      socket.emit("startAIMatch",{roomId});
     }
 
     function leaveRoom(){
@@ -1001,9 +1019,11 @@
         overlay.classList.add("show");
         title.textContent=`${currentState.winner} 승리!`;
         const rr=currentState.rankingResult;
-        desc.innerHTML = rr
-          ? `랭킹 반영 완료<br><div class="rank-result">${escapeHtml(rr.winnerName)} +30점 (${rr.winnerScore}점) / ${escapeHtml(rr.loserName)} -10점 (${rr.loserScore}점)</div>`
-          : "다시 하기 버튼으로 새 후보를 받아 재시작할 수 있습니다.";
+        desc.innerHTML = rr?.practice
+          ? `AI 연습전 결과입니다.<br><div class="rank-result">랭킹에는 반영되지 않습니다.</div>`
+          : (rr
+            ? `랭킹 반영 완료<br><div class="rank-result">${escapeHtml(rr.winnerName)} +30점 (${rr.winnerScore}점) / ${escapeHtml(rr.loserName)} -10점 (${rr.loserScore}점)</div>`
+            : "다시 하기 버튼으로 새 후보를 받아 재시작할 수 있습니다.");
         btn.style.display="inline-block";
         updateRoomExitButtons();
         setMessage(`${currentState.winner} 승리!`,false);
