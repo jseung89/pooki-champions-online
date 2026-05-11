@@ -1,17 +1,17 @@
-{
-  "name": "pooki-lan-champions-v600-deploy-ready",
-  "version": "0.6.0",
-  "description": "Pookimon Champions ONLINE v6.0 deploy-ready multiplayer build",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "check": "node --check server.js && node --check src/dataLoader.js && node --check src/typeChart.js && node --check src/moveLibrary.js && node --check src/moveBuilder.js && node --check src/randomDraft.js && node --check src/battleEngine.js"
-  },
-  "dependencies": {
-    "express": "^4.18.3",
-    "socket.io": "^4.7.5"
-  },
-  "engines": {
-    "node": ">=18"
-  }
+﻿{
+    "name":  "pooki-lan-champions-v600-deploy-ready",
+    "version":  "0.6.0",
+    "description":  "Pookimon Champions ONLINE v6.0 deploy-ready multiplayer build",
+    "main":  "server.js",
+    "scripts":  {
+                    "start":  "node server.js",
+                    "check":  "node --check server.js \u0026\u0026 node --check src/dataLoader.js \u0026\u0026 node --check src/typeChart.js \u0026\u0026 node --check src/moveLibrary.js \u0026\u0026 node --check src/moveBuilder.js \u0026\u0026 node --check src/randomDraft.js \u0026\u0026 node --check src/battleEngine.js"
+                },
+    "dependencies":  {
+                         "express":  "^4.18.3",
+                         "socket.io":  "^4.7.5"
+                     },
+    "engines":  {
+                    "node":  "22.x"
+                }
 }
