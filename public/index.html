@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>정승의 푸끼몬 챔피언스 ONLINE v6.2.4.4</title>
+  <title>정승의 푸끼몬 챔피언스 ONLINE v6.2.5.5</title>
   
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -383,6 +383,49 @@
     .lobby-chat-form input{color:#071b4d!important;background:#fff!important;}
     .lobby-chat-form input::placeholder{color:#64748b!important;}
 
+  
+    /* v6.2.5 우측 패널 인라인 색상 보강 */
+    .side-lobby-card,
+    .side-lobby-card *{
+      text-shadow:none!important;
+    }
+    .side-lobby-card{
+      background:#f8fbff!important;
+      color:#071b4d!important;
+      border-color:#bfd5ff!important;
+    }
+    .side-lobby-title{
+      color:#071b4d!important;
+      font-weight:950!important;
+    }
+    #rankingBox,
+    #rankingBox *{
+      color:#071b4d!important;
+    }
+    #rankingBox .ranking-rank{
+      color:#f59e0b!important;
+    }
+    #rankingBox .ranking-name{
+      color:#071b4d!important;
+    }
+    #rankingBox .ranking-score{
+      color:#2563eb!important;
+    }
+    #rankingBox .ranking-meta{
+      color:#334155!important;
+    }
+    #lobbyChatMessages,
+    #lobbyChatMessages *{
+      color:#071b4d!important;
+    }
+    #lobbyChatMessages .lobby-chat-name{
+      color:#2563eb!important;
+    }
+    #lobbyChatMessages{
+      background:#fff!important;
+      border-color:#d8e7ff!important;
+    }
+
   </style>
 
 </head>
@@ -405,7 +448,7 @@
       <section class="lobby-card">
         <div class="lobby-head">
           <div>
-            <div class="lobby-title">정승의 푸끼몬 챔피언스 ONLINE v6.2.4.4</div>
+            <div class="lobby-title">정승의 푸끼몬 챔피언스 ONLINE v6.2.5.5</div>
             <div class="lobby-sub">로그인 후 방을 선택하면 빈 플레이어 자리로 자동 입장합니다. 자리가 없으면 관전자입니다.</div>
           </div>
           <div class="lobby-userbar">
@@ -445,7 +488,7 @@
       <div class="brand">
         <div class="brand-badge">🛡️</div>
         <div>
-          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.2.4.4</div>
+          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.2.5.5</div>
           <div class="role" id="roleText">서버 연결 중...</div>
         </div>
       </div>
@@ -543,7 +586,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v624";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v625";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -710,25 +753,25 @@
       const rankingBox=document.getElementById("rankingBox");
       if(rankingBox){
         rankingBox.innerHTML = rankings.length ? rankings.map(r=>`
-          <div class="ranking-row">
-            <div class="ranking-rank">${r.rank}</div>
+          <div class="ranking-row" style="display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid #d8e7ff;color:#071b4d!important;">
+            <div class="ranking-rank" style="color:#f59e0b!important;font-weight:950;">${r.rank}</div>
             <div>
-              <div class="ranking-name">${escapeHtml(r.userId)}</div>
-              <div class="ranking-score">${r.score}점</div>
+              <div class="ranking-name" style="color:#071b4d!important;font-weight:950;">${escapeHtml(r.userId)}</div>
+              <div class="ranking-score" style="color:#2563eb!important;font-weight:950;">${r.score}점</div>
             </div>
-            <div class="ranking-meta">${r.wins}승 ${r.losses}패<br/>연승 ${r.streak}</div>
+            <div class="ranking-meta" style="color:#334155!important;font-weight:850;font-size:12px;text-align:right;">${r.wins}승 ${r.losses}패<br/>연승 ${r.streak}</div>
           </div>
-        `).join("") : `<div style="color:#64748b;font-weight:850;">아직 기록이 없습니다.</div>`;
+        `).join("") : `<div style="color:#64748b!important;font-weight:850;">아직 기록이 없습니다.</div>`;
       }
 
       const lobbyChatBox=document.getElementById("lobbyChatMessages");
       if(lobbyChatBox){
         lobbyChatBox.innerHTML = lobbyMessages.length ? lobbyMessages.map(m=>`
-          <div class="lobby-chat-line">
-            <span class="lobby-chat-name">${escapeHtml(m.name||"손님")}:</span>
-            <span>${escapeHtml(m.text||"")}</span>
+          <div class="lobby-chat-line" style="margin-bottom:7px;word-break:break-word;color:#071b4d!important;font-weight:850;">
+            <span class="lobby-chat-name" style="color:#2563eb!important;font-weight:950;margin-right:6px;">${escapeHtml(m.name||"손님")}:</span>
+            <span style="color:#071b4d!important;">${escapeHtml(m.text||"")}</span>
           </div>
-        `).join("") : `<div style="color:#64748b;font-weight:850;">아직 메시지가 없습니다.</div>`;
+        `).join("") : `<div style="color:#64748b!important;font-weight:850;">아직 메시지가 없습니다.</div>`;
         lobbyChatBox.scrollTop=lobbyChatBox.scrollHeight;
       }
 

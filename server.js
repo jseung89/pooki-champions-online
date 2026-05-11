@@ -35,8 +35,8 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.2.4",
-    name: "정승의 푸끼몬 챔피언스 ONLINE v6.2.4.4",
+    version: "6.2.5",
+    name: "정승의 푸끼몬 챔피언스 ONLINE v6.2.5.5",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
       name: room.name,
@@ -1721,7 +1721,7 @@ io.on("connection", (socket) => {
 async function start() {
   assertUniqueLoginHelpers();
   console.log("========================================");
-  console.log(" 정승의 푸끼몬 챔피언스 ONLINE v6.2.4.4");
+  console.log(" 정승의 푸끼몬 챔피언스 ONLINE v6.2.5.5");
   console.log("========================================");
   console.log("[BOOT] 서버 시작 중...");
   console.log("[ROOM] 4룸 모드: 태초마을 / 회색시티 / 블루시티 / 무지개시티");
