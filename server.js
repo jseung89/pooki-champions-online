@@ -35,8 +35,8 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.1.3",
-    name: "정승의 푸끼몬 챔피언스 ONLINE v6.2.1",
+    version: "6.2.2",
+    name: "정승의 푸끼몬 챔피언스 ONLINE v6.2.2",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
       name: room.name,
@@ -74,6 +74,7 @@ const ROOM_DEFS = [
 
 const rooms = new Map();
 const onlineUsers = new Map();
+const activeUserIds = new Map();
 const rankings = new Map();
 const lobbyChatMessages = [];
 
@@ -1424,6 +1425,65 @@ function joinRoom(socket, roomId, token) {
   });
 }
 
+
+// ===== v6.2.2 UNIQUE LOGIN HELPERS =====
+function isUserIdActive(userId, socketId) {
+  const clean = cleanUserId(userId);
+  if (!clean) return false;
+
+  const ownerSocketId = activeUserIds.get(clean);
+  if (!ownerSocketId) return false;
+
+  // 같은 소켓은 재로그인 허용
+  if (ownerSocketId === socketId) return false;
+
+  // 이미 끊긴 소켓이면 점유 해제
+  if (!io.sockets.sockets.has(ownerSocketId)) {
+    activeUserIds.delete(clean);
+    return false;
+  }
+
+  return true;
+}
+
+function reserveUserId(socket, userId) {
+  const clean = cleanUserId(userId);
+
+  if (!clean || clean.length < 2 || clean.length > 12) {
+    return { ok: false, message: "아이디는 2~12자로 입력해주세요." };
+  }
+
+  if (isUserIdActive(clean, socket.id)) {
+    return { ok: false, message: "이미 접속 중인 아이디입니다. 다른 아이디를 사용해주세요." };
+  }
+
+  const previous = cleanUserId(socket.data.userId);
+  if (previous && previous !== clean && activeUserIds.get(previous) === socket.id) {
+    activeUserIds.delete(previous);
+  }
+
+  activeUserIds.set(clean, socket.id);
+  socket.data.userId = clean;
+
+  return { ok: true, userId: clean };
+}
+
+function releaseUserId(socket) {
+  const userId = cleanUserId(socket?.data?.userId);
+  if (userId && activeUserIds.get(userId) === socket.id) {
+    activeUserIds.delete(userId);
+  }
+}
+
+function assertUniqueLoginHelpers() {
+  const missing = [];
+  if (typeof isUserIdActive !== "function") missing.push("isUserIdActive");
+  if (typeof reserveUserId !== "function") missing.push("reserveUserId");
+  if (typeof releaseUserId !== "function") missing.push("releaseUserId");
+  if (!activeUserIds || typeof activeUserIds.set !== "function") missing.push("activeUserIds");
+  if (missing.length) throw new Error(`Unique login helpers missing: ${missing.join(", ")}`);
+}
+
 io.on("connection", (socket) => {
   socket.join("lobby");
   socket.data.roomId = null;
@@ -1621,8 +1681,9 @@ io.on("connection", (socket) => {
 });
 
 async function start() {
+  assertUniqueLoginHelpers();
   console.log("========================================");
-  console.log(" 정승의 푸끼몬 챔피언스 ONLINE v6.2.1");
+  console.log(" 정승의 푸끼몬 챔피언스 ONLINE v6.2.2");
   console.log("========================================");
   console.log("[BOOT] 서버 시작 중...");
   console.log("[ROOM] 4룸 모드: 태초마을 / 회색시티 / 블루시티 / 무지개시티");
