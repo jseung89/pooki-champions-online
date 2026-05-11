@@ -1,0 +1,22 @@
+v6.1.3 로그인 전체 파일 교체판
+
+사용법:
+1. 이 ZIP 안의 파일 전체를 C:\Users\Playdata\Downloads\p600\p600 안에 덮어쓰기
+2. VS Code 터미널에서:
+
+cd C:\Users\Playdata\Downloads\p600\p600
+node --check server.js
+node --check src/moveLibrary.js
+git add .
+git commit -m "Apply v6.1.3 login full files"
+git push
+
+3. Render 자동 배포 확인
+4. 접속 후 Ctrl+F5 강력 새로고침
+
+Render 설정 유지:
+Build Command:
+corepack enable && corepack prepare pnpm@9.12.3 --activate && pnpm install --prod=false --frozen-lockfile=false
+
+Start Command:
+node server.js
