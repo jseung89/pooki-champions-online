@@ -1,6 +1,6 @@
 {
-  "name": "pooki-lan-champions-v600-deploy-ready",
-  "version": "0.6.0",
+  "name": "pooki-lan-champions-v610-login-ranking",
+  "version": "0.6.1",
   "description": "Pookimon Champions ONLINE v6.0 deploy-ready multiplayer build",
   "main": "server.js",
   "scripts": {

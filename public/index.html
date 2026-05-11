@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>정승의 푸끼몬 챔피언스 ONLINE v6.0</title>
+  <title>정승의 푸끼몬 챔피언스 ONLINE v6.1</title>
   
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -309,6 +309,7 @@
     .room-card{position:relative;overflow:hidden;border:3px solid #bcd2ff;border-radius:24px;padding:18px;background:linear-gradient(180deg,#fff,#edf5ff);box-shadow:0 12px 28px rgba(18,45,108,.13);display:grid;gap:12px;min-height:250px;}
     .room-card::before{content:"";position:absolute;inset:auto -20% -34% -20%;height:58%;background:radial-gradient(ellipse at 50% 0%,rgba(37,99,235,.22),transparent 70%);pointer-events:none;}
     .room-icon{font-size:42px}.room-name{font-size:24px;font-weight:1000;color:#0d2a78}.room-status{display:inline-flex;width:max-content;padding:6px 11px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-weight:950;font-size:13px}.room-status.battle{background:#fee2e2;color:#dc2626}.room-status.select{background:#fef3c7;color:#b45309}.room-meta{display:grid;gap:7px;font-size:14px;font-weight:850;color:#334155}.room-enter{align-self:end;width:100%;position:relative;z-index:2}.lobby-note{font-weight:850;color:#eaf3ff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.25)}
+    .lobby-layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}.lobby-side{display:grid;gap:14px}.status-panel{background:rgba(255,255,255,.98);border:3px solid #bcd2ff;border-radius:24px;padding:16px;box-shadow:0 12px 28px rgba(18,45,108,.13)}.status-title{font-size:18px;font-weight:1000;color:#071946;margin-bottom:10px}.status-list{display:grid;gap:7px;font-size:13px;font-weight:850;color:#334155}.status-line{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed #dbeafe;padding-bottom:6px}.rank-score{color:#1d4ed8;font-weight:1000}.login-modal{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;background:linear-gradient(180deg,rgba(7,25,70,.85),rgba(10,47,134,.9))}.login-box{width:min(420px,92vw);background:white;border:4px solid #1d4ed8;border-radius:28px;padding:26px;box-shadow:0 30px 90px rgba(0,0,0,.35);display:grid;gap:14px}.login-box h1{margin:0;color:#071946;font-size:28px}.login-box input{width:100%;padding:13px 14px;border:2px solid #bfd4ff;border-radius:14px;font-weight:900;font-size:16px}.login-help{font-size:13px;color:#64748b;font-weight:800;line-height:1.45}.login-error{min-height:18px;color:#dc2626;font-weight:900;font-size:13px}.hidden-force{display:none!important}@media(max-width:1200px){.lobby-layout{grid-template-columns:1fr}.room-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
     .leave-room-btn{background:#475569;box-shadow:0 7px 0 #334155;}.claim-player-btn{background:#16a34a;box-shadow:0 7px 0 #166534;}.claim-player-btn:disabled{background:#94a3b8;box-shadow:0 7px 0 #64748b;cursor:not-allowed;}.top-exit-btn{background:#475569;box-shadow:0 7px 0 #334155;}.top-exit-btn:hover{filter:brightness(1.08);}
     .sprite.switch-out{animation:switchOut 620ms ease forwards;}
     .sprite.switch-in{animation:switchIn 760ms cubic-bezier(.18,.9,.22,1.25) forwards;}
@@ -330,17 +331,41 @@
 
 </head>
 <body>
+  <div class="login-modal" id="loginModal">
+    <form class="login-box" onsubmit="submitLogin(event)">
+      <h1>푸끼몬 로그인</h1>
+      <div class="login-help">아이디는 로비/채팅/랭킹에 표시됩니다. 현재는 테스트용 간이 로그인입니다.</div>
+      <input id="loginId" maxlength="12" autocomplete="username" placeholder="아이디 2~12자" />
+      <input id="loginPw" type="password" autocomplete="new-password" placeholder="비밀번호 4자 이상" />
+      <input id="loginPw2" type="password" autocomplete="new-password" placeholder="비밀번호 확인" />
+      <button type="submit">입장하기</button>
+      <div class="login-error" id="loginError"></div>
+    </form>
+  </div>
+
   <main class="lobby" id="lobbyScreen">
-    <section class="lobby-card">
-      <div class="lobby-head">
-        <div>
-          <div class="lobby-title">정승의 푸끼몬 챔피언스 LAN</div>
-          <div class="lobby-sub">방을 선택하면 빈 플레이어 자리로 자동 입장합니다. 자리가 없으면 관전자입니다.</div>
+    <div class="lobby-layout">
+      <section class="lobby-card">
+        <div class="lobby-head">
+          <div>
+            <div class="lobby-title">정승의 푸끼몬 챔피언스 ONLINE v6.1</div>
+            <div class="lobby-sub">방을 선택하면 빈 플레이어 자리로 자동 입장합니다. 자리가 없으면 관전자입니다.</div>
+          </div>
+          <button onclick="requestLobby()">새로고침</button>
         </div>
-        <button onclick="requestLobby()">새로고침</button>
-      </div>
-      <div class="room-grid" id="roomGrid"></div>
-    </section>
+        <div class="room-grid" id="roomGrid"></div>
+      </section>
+      <aside class="lobby-side">
+        <section class="status-panel">
+          <div class="status-title">접속자 현황</div>
+          <div class="status-list" id="onlinePanel">로그인 후 표시됩니다.</div>
+        </section>
+        <section class="status-panel">
+          <div class="status-title">랭킹 TOP 10</div>
+          <div class="status-list" id="rankingPanel">아직 기록이 없습니다.</div>
+        </section>
+      </aside>
+    </div>
     <div class="lobby-note" id="lobbyNote">서버 연결 중...</div>
   </main>
 
@@ -350,7 +375,7 @@
       <div class="brand">
         <div class="brand-badge">🛡️</div>
         <div>
-          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.0</div>
+          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.1</div>
           <div class="role" id="roleText">서버 연결 중...</div>
         </div>
       </div>
@@ -448,9 +473,11 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v600";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v610";
+    const USER_ID_KEY = "pooki_user_id_v610";
     const existingPlayerToken = localStorage.getItem(PLAYER_TOKEN_KEY) || "";
-    const socket = io({ auth: { playerToken: existingPlayerToken } });
+    const existingUserId = localStorage.getItem(USER_ID_KEY) || "";
+    const socket = io({ auth: { playerToken: existingPlayerToken, userId: existingUserId } });
 
     const STATUS_KO = { burn: "화상", poison: "독", paralyze: "마비", sleep: "수면" };
     const EFFECT_ICON = { normal:"💥", fire:"🔥", water:"🌊", electric:"⚡", grass:"🍃", ice:"❄️", fighting:"👊", poison:"☠️", ground:"🪨", flying:"💨", psychic:"🔮", bug:"🐛", rock:"🪨", ghost:"👻", dragon:"🐉", dark:"🌑", steel:"⚙️", fairy:"✨" };
@@ -464,6 +491,27 @@
     let lastEventIds = new Set(), eventQueue = Promise.resolve(), localTimer = null;
     let animationBusy = false, selectedTeamIds = [], hoveredMoveIndex = 0;
     let lastActionByRole = { p1: "아직 없음", p2: "아직 없음" };
+    let previousPhase = null;
+
+    function showLogin(show=true){ document.getElementById("loginModal")?.classList.toggle("hidden-force", !show); }
+    function submitLogin(event){
+      event.preventDefault();
+      const userId=document.getElementById("loginId").value.trim();
+      const password=document.getElementById("loginPw").value;
+      const passwordConfirm=document.getElementById("loginPw2").value;
+      socket.emit("login",{userId,password,passwordConfirm});
+    }
+    socket.on("loginStatus", ({loggedIn,userId})=>{
+      if(userId) document.getElementById("loginId").value=userId;
+      showLogin(!loggedIn);
+    });
+    socket.on("loginOk", ({userId})=>{
+      localStorage.setItem(USER_ID_KEY,userId);
+      document.getElementById("loginError").textContent="";
+      showLogin(false);
+      requestLobby();
+    });
+    socket.on("loginError", ({message})=>{ document.getElementById("loginError").textContent=message||"로그인 실패"; });
 
     socket.on("lobbyState", (lobby) => {
       renderLobby(lobby);
@@ -501,7 +549,14 @@
         prepareVisualState(currentState);
         animationBusy = true;
       }
+      const oldPhase = previousPhase;
       currentState = state;
+      if(state.phase === "TEAM_SELECT" && oldPhase !== "TEAM_SELECT"){
+        selectedTeamIds = [];
+        animationBusy = false;
+        hoveredMoveIndex = 0;
+      }
+      previousPhase = state.phase;
       render();
       enqueueEvents(incomingEvents);
     });
@@ -511,7 +566,7 @@
       const note=document.getElementById("lobbyNote");
       if(!grid)return;
       const rooms=lobby?.rooms||[];
-      note.textContent = lobby?.dataReady ? "4개 룸 중 하나를 선택하세요." : "포켓몬 데이터를 준비 중입니다. 잠시만 기다려주세요.";
+      note.textContent = lobby?.dataReady ? `현재 접속자 ${lobby.onlineCount||0}명 · 4개 룸 중 하나를 선택하세요.` : "포켓몬 데이터를 준비 중입니다. 잠시만 기다려주세요.";
       grid.innerHTML=rooms.map(room=>{
         const filled=(room.p1Connected?1:0)+(room.p2Connected?1:0);
         const statusClass=room.phase==="TEAM_SELECT"?"select":(room.phase==="ACTION_SELECT"||room.phase==="TURN_RESOLVE"||room.phase==="FORCE_SWITCH"?"battle":"");
@@ -521,13 +576,32 @@
           <div><span class="room-status ${statusClass}">${room.status}</span></div>
           <div class="room-meta">
             <div>플레이어 ${filled}/2</div>
-            <div>P1 ${room.p1Connected?"참가중":"빈자리"} · P2 ${room.p2Connected?"참가중":"빈자리"}</div>
+            <div>P1 ${room.p1Connected?(room.p1Name||"참가중"):"빈자리"}</div>
+            <div>P2 ${room.p2Connected?(room.p2Name||"참가중"):"빈자리"}</div>
             <div>관전자 ${room.spectatorCount||0}명</div>
             <div>${room.winner?`승자: ${room.winner}`:""}</div>
           </div>
           <button class="room-enter" onclick="joinRoom('${room.id}')">입장하기</button>
         </article>`;
       }).join("");
+
+      const online=document.getElementById("onlinePanel");
+      if(online){
+        const users=lobby?.onlineUsers||[];
+        online.innerHTML = users.length ? users.map(u=>`<div class="status-line"><span>${u.userId}</span><span>${u.roomName} ${roleLabelKo(u.role)}</span></div>`).join("") : "접속자가 없습니다.";
+      }
+      const ranking=document.getElementById("rankingPanel");
+      if(ranking){
+        const ranks=lobby?.rankingTop||[];
+        ranking.innerHTML = ranks.length ? ranks.map((r,i)=>`<div class="status-line"><span>${i+1}. ${r.userId}<br/><small>${r.wins}승 ${r.losses}패</small></span><span class="rank-score">${r.score}</span></div>`).join("") : "아직 기록이 없습니다.";
+      }
+    }
+
+    function roleLabelKo(role){
+      if(role==="p1") return "P1";
+      if(role==="p2") return "P2";
+      if(role==="spectator") return "관전";
+      return "로비";
     }
 
     function joinRoom(roomId){
@@ -628,8 +702,8 @@
       const specs = document.getElementById("roomSpectators");
       if (p1Dot) p1Dot.className = `conn-dot ${info.p1Connected ? "on" : "off"}`;
       if (p2Dot) p2Dot.className = `conn-dot ${info.p2Connected ? "on" : "off"}`;
-      if (p1Text) p1Text.textContent = `P1 ${info.p1Connected ? "연결됨" : "대기"}`;
-      if (p2Text) p2Text.textContent = `P2 ${info.p2Connected ? "연결됨" : "대기"}`;
+      if (p1Text) p1Text.textContent = `P1 ${info.p1Connected ? (info.p1Name || "연결됨") : "대기"}`;
+      if (p2Text) p2Text.textContent = `P2 ${info.p2Connected ? (info.p2Name || "연결됨") : "대기"}`;
       if (specs) specs.textContent = `${info.roomName ? info.roomName + " · " : ""}관전자 ${info.spectatorCount || 0}명`;
       const claimBtn = document.getElementById("claimPlayerButton");
       if (claimBtn) {
