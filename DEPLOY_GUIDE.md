@@ -1,4 +1,4 @@
-# 정승의 푸끼몬 챔피언스 ONLINE v6.0 배포 가이드
+# 정승의 푸끼몬 챔피언스 ONLINE v6.2 배포 가이드
 
 ## 추천 배포
 Railway 단독 배포를 추천합니다.
@@ -54,7 +54,7 @@ https://배포주소/health
 
 정상 응답에 `"ok": true`가 나오면 서버가 살아있는 상태입니다.
 
-## v6.0 포함 기능
+## v6.2 포함 기능
 
 - 4룸 로비
 - 태초마을 / 회색시티 / 블루시티 / 무지개시티
@@ -65,3 +65,24 @@ https://배포주소/health
 - 메타몽 / 마자용 / 루브도 제외
 - 전설/환상 후보 최대 1마리
 - 서버 상태 확인용 /health
+
+
+## Render 권장 설정
+
+Build Command:
+
+```text
+corepack enable && corepack prepare pnpm@9.12.3 --activate && pnpm install --prod=false --frozen-lockfile=false
+```
+
+Start Command:
+
+```text
+node server.js
+```
+
+Health Check Path:
+
+```text
+/health
+```

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>정승의 푸끼몬 챔피언스 ONLINE v6.1.3</title>
+  <title>정승의 푸끼몬 챔피언스 ONLINE v6.2</title>
   
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -241,6 +241,14 @@
     .switch-btn{background:#2563eb;box-shadow:0 7px 0 #1d4ed8;text-align:left}.reset-btn{background:#dc2626;box-shadow:0 7px 0 #991b1b}
     .meta{display:block;font-size:12px;opacity:.92;margin-top:5px;font-weight:750}
     .logs{height:245px; overflow-y:auto; background:#fff; border:2px solid #d8e7ff; border-radius:20px; padding:13px; font-size:14px; line-height:1.55; color:#243454;}
+
+    .ranking-row{display:grid;grid-template-columns:34px 1fr auto;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.12);font-size:13px}
+    .ranking-rank{font-weight:950;color:#ffd166}.ranking-name{font-weight:950;color:#fff}.ranking-meta{font-size:12px;color:#cfe2ff;text-align:right}.ranking-score{font-weight:950;color:#93c5fd}
+    .lobby-chat-card{min-height:260px}.lobby-chat-messages{height:170px;overflow-y:auto;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:10px;font-size:13px;line-height:1.45;color:#fff}
+    .lobby-chat-line{margin-bottom:7px;word-break:break-word}.lobby-chat-name{font-weight:950;color:#93c5fd;margin-right:6px}.lobby-chat-form{display:grid;grid-template-columns:1fr 62px;gap:8px;margin-top:8px}
+    .lobby-chat-form input{min-width:0;border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:10px 11px;font-weight:800;outline:none}.lobby-chat-form button{border:0;border-radius:12px;background:#2563eb;color:#fff;font-weight:950;box-shadow:0 4px 0 #1e3a8a}
+    .rank-result{font-size:13px;color:#14532d;background:#dcfce7;border:1px solid #86efac;border-radius:12px;padding:9px 10px;margin-top:9px;font-weight:900}
+
     .chat-panel{display:grid; grid-template-rows:auto 1fr auto; gap:8px; background:#fff; border:2px solid #d8e7ff; border-radius:20px; padding:12px;}
     .chat-title{color:#1d3f8f;font-weight:950;font-size:14px}.chat-messages{height:190px;overflow-y:auto;background:#fbfdff;border-radius:16px;border:1px solid #d8e7ff;padding:10px;font-size:13px;line-height:1.45}
     .chat-line{margin-bottom:6px;word-break:break-word}.chat-line.mine-chat{color:#2056d4}.chat-name{font-weight:950;margin-right:5px}
@@ -360,6 +368,7 @@
       <input id="loginPassword" type="password" minlength="4" placeholder="비밀번호 4자 이상" />
       <input id="loginPassword2" type="password" minlength="4" placeholder="비밀번호 확인" />
       <button type="submit" id="loginButton">입장하기</button>
+      <div class="login-help">같은 아이디는 동시에 1명만 접속할 수 있습니다.</div>
       <div class="login-error" id="loginError"></div>
     </form>
   </div>
@@ -369,7 +378,7 @@
       <section class="lobby-card">
         <div class="lobby-head">
           <div>
-            <div class="lobby-title">정승의 푸끼몬 챔피언스 ONLINE v6.1.3</div>
+            <div class="lobby-title">정승의 푸끼몬 챔피언스 ONLINE v6.2</div>
             <div class="lobby-sub">로그인 후 방을 선택하면 빈 플레이어 자리로 자동 입장합니다. 자리가 없으면 관전자입니다.</div>
           </div>
           <div class="lobby-userbar">
@@ -390,6 +399,14 @@
           <div class="side-lobby-title">랭킹 TOP 10</div>
           <div id="rankingBox">아직 기록이 없습니다.</div>
         </div>
+        <div class="side-lobby-card lobby-chat-card">
+          <div class="side-lobby-title">로비 채팅</div>
+          <div class="lobby-chat-messages" id="lobbyChatMessages">아직 메시지가 없습니다.</div>
+          <form class="lobby-chat-form" onsubmit="sendLobbyChat(event)">
+            <input id="lobbyChatInput" maxlength="140" autocomplete="off" placeholder="로비 메시지 입력..." />
+            <button type="submit">전송</button>
+          </form>
+        </div>
       </aside>
     </section>
     <div class="lobby-note" id="lobbyNote">서버 연결 중...</div>
@@ -401,7 +418,7 @@
       <div class="brand">
         <div class="brand-badge">🛡️</div>
         <div>
-          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.1.3</div>
+          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.2</div>
           <div class="role" id="roleText">서버 연결 중...</div>
         </div>
       </div>
@@ -499,7 +516,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v600";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v620";
     const USER_ID_KEY = "pooki_user_id";
     const existingPlayerToken = localStorage.getItem(PLAYER_TOKEN_KEY) || "";
     const existingUserId = localStorage.getItem(USER_ID_KEY) || "";
@@ -533,10 +550,12 @@
       return false;
     }
     function logoutUser(){
+      try { socket.emit("logoutUser"); } catch(e) {}
       localStorage.removeItem(USER_ID_KEY);
       myUserId="";
       updateLoginUi();
       setLoginError("");
+      requestLobby();
     }
     window.handleLogin=doLogin;
     window.logoutUser=logoutUser;
@@ -579,8 +598,18 @@
     });
 
     socket.on("loginError", ({ message }) => {
+      localStorage.removeItem(USER_ID_KEY);
+      myUserId = "";
       setLoginError(message || "로그인에 실패했습니다.");
+      updateLoginUi();
       document.getElementById("loginOverlay")?.classList.remove("hidden");
+    });
+
+    socket.on("logoutOk", () => {
+      localStorage.removeItem(USER_ID_KEY);
+      myUserId = "";
+      updateLoginUi();
+      requestLobby();
     });
 
     socket.on("joinedRoom", ({ role, playerToken, roomId, roomName, roomIcon }) => {
@@ -594,10 +623,11 @@
       eventQueue = Promise.resolve();
       document.getElementById("lobbyScreen").style.display = "none";
       document.getElementById("gameScreen").classList.remove("hidden");
-      const roleLabel = role === "p1" ? "플레이어 1" : role === "p2" ? "플레이어 2" : "관전자";
-      document.getElementById("roleText").textContent = `${roomIcon || "🏟️"} ${roomName || "방"} / ${roleLabel}`;
+      const roleLabel = role === "p1" ? "P1" : role === "p2" ? "P2" : "관전자";
+      const userLabel = localStorage.getItem(USER_ID_KEY) || roleLabel;
+      document.getElementById("roleText").textContent = `${roomIcon || "🏟️"} ${roomName || "방"} / ${userLabel} (${roleLabel})`;
       const chip = document.getElementById("roleChip");
-      if (chip) chip.textContent = roleLabel;
+      if (chip) chip.textContent = `${userLabel} · ${roleLabel}`;
       const claimBtn = document.getElementById("claimPlayerButton");
       if (claimBtn) claimBtn.style.display = role === "spectator" ? "inline-block" : "none";
       updateRoomExitButtons();
@@ -622,6 +652,8 @@
       if(!grid)return;
       const rooms=lobby?.rooms||[];
       const online=lobby?.onlineUsers||[];
+      const rankings=lobby?.rankings||[];
+      const lobbyMessages=lobby?.lobbyChatMessages||[];
       const logged=!!localStorage.getItem(USER_ID_KEY);
       note.textContent = logged
         ? (lobby?.dataReady ? `현재 접속자 ${online.length}명 · 4개 룸 중 하나를 선택하세요.` : "포켓몬 데이터를 준비 중입니다. 잠시만 기다려주세요.")
@@ -635,6 +667,31 @@
           const roleKo = u.role==="p1" ? "P1" : u.role==="p2" ? "P2" : u.role==="spectator" ? "관전자" : "로비";
           return `<div class="online-item"><span>${escapeHtml(u.userId||"손님")}</span><span class="online-role">${escapeHtml(u.roomName||"로비")} · ${roleKo}</span></div>`;
         }).join("") : `<div style="color:#64708f;font-weight:850;">접속자가 없습니다.</div>`;
+      }
+
+      const rankingBox=document.getElementById("rankingBox");
+      if(rankingBox){
+        rankingBox.innerHTML = rankings.length ? rankings.map(r=>`
+          <div class="ranking-row">
+            <div class="ranking-rank">${r.rank}</div>
+            <div>
+              <div class="ranking-name">${escapeHtml(r.userId)}</div>
+              <div class="ranking-score">${r.score}점</div>
+            </div>
+            <div class="ranking-meta">${r.wins}승 ${r.losses}패<br/>연승 ${r.streak}</div>
+          </div>
+        `).join("") : `<div style="color:#cfe2ff;font-weight:850;">아직 기록이 없습니다.</div>`;
+      }
+
+      const lobbyChatBox=document.getElementById("lobbyChatMessages");
+      if(lobbyChatBox){
+        lobbyChatBox.innerHTML = lobbyMessages.length ? lobbyMessages.map(m=>`
+          <div class="lobby-chat-line">
+            <span class="lobby-chat-name">${escapeHtml(m.name||"손님")}:</span>
+            <span>${escapeHtml(m.text||"")}</span>
+          </div>
+        `).join("") : `<div style="color:#cfe2ff;font-weight:850;">아직 메시지가 없습니다.</div>`;
+        lobbyChatBox.scrollTop=lobbyChatBox.scrollHeight;
       }
 
       grid.innerHTML=rooms.map(room=>{
@@ -655,6 +712,20 @@
           <button class="room-enter" ${logged?"":"disabled"} onclick="joinRoom('${room.id}')">입장하기</button>
         </article>`;
       }).join("");
+    }
+
+    function sendLobbyChat(event){
+      event.preventDefault();
+      const input=document.getElementById("lobbyChatInput");
+      const text=(input?.value||"").trim();
+      if(!text)return;
+      if(!localStorage.getItem(USER_ID_KEY)){
+        setLoginError("로그인 후 채팅할 수 있습니다.");
+        document.getElementById("loginOverlay")?.classList.remove("hidden");
+        return;
+      }
+      socket.emit("lobbyChatMessage",{text});
+      input.value="";
     }
 
     function joinRoom(roomId){
@@ -680,6 +751,11 @@
 
     function claimPlayerSlot(){
       socket.emit("claimPlayerSlot");
+    }
+
+
+    function playerNameOf(key){
+      return currentState?.players?.[key]?.displayName || currentState?.players?.[key]?.userId || currentState?.roomInfo?.[`${key}Name`] || (key==="p1"?"P1":"P2");
     }
 
     function typeKo(type){ return currentState?.typeKo?.[type] || TYPE_KO_FALLBACK[type] || type; }
@@ -761,8 +837,8 @@
       const specs = document.getElementById("roomSpectators");
       if (p1Dot) p1Dot.className = `conn-dot ${info.p1Connected ? "on" : "off"}`;
       if (p2Dot) p2Dot.className = `conn-dot ${info.p2Connected ? "on" : "off"}`;
-      if (p1Text) p1Text.textContent = `P1 ${info.p1Connected ? "연결됨" : "대기"}`;
-      if (p2Text) p2Text.textContent = `P2 ${info.p2Connected ? "연결됨" : "대기"}`;
+      if (p1Text) p1Text.textContent = info.p1Connected ? `P1 ${info.p1Name || "연결됨"}` : "P1 대기";
+      if (p2Text) p2Text.textContent = info.p2Connected ? `P2 ${info.p2Name || "연결됨"}` : "P2 대기";
       if (specs) specs.textContent = `${info.roomName ? info.roomName + " · " : ""}관전자 ${info.spectatorCount || 0}명`;
       const claimBtn = document.getElementById("claimPlayerButton");
       if (claimBtn) {
@@ -839,7 +915,19 @@
       const overlay=document.getElementById("overlay"), title=document.getElementById("overlayTitle"), desc=document.getElementById("overlayDesc"), btn=document.getElementById("overlayResetButton");
       if(currentState.phase==="LOADING"){ overlay.classList.add("show"); title.textContent="포켓몬 데이터 로딩 중"; desc.textContent="처음 실행이면 캐시를 만들고 있습니다. 터미널 상태를 확인하세요."; btn.style.display="none"; updateRoomExitButtons(); setMessage("데이터를 준비하는 중...",true); return; }
       if(currentState.phase==="WAITING"){ overlay.classList.add("show"); title.textContent="상대 접속 대기"; desc.textContent="친구가 IP 주소로 접속하면 팀 선택이 시작됩니다."; btn.style.display="none"; updateRoomExitButtons(); setMessage("상대 접속을 기다리는 중...",true); return; }
-      if(currentState.phase==="GAME_OVER"){ if(animationBusy){ overlay.classList.remove("show"); return; } overlay.classList.add("show"); title.textContent=`${currentState.winner} 승리!`; desc.textContent="다시 하기 버튼으로 새 후보를 받아 재시작할 수 있습니다."; btn.style.display="inline-block"; updateRoomExitButtons(); setMessage(`${currentState.winner} 승리!`,false); return; }
+      if(currentState.phase==="GAME_OVER"){
+        if(animationBusy){ overlay.classList.remove("show"); return; }
+        overlay.classList.add("show");
+        title.textContent=`${currentState.winner} 승리!`;
+        const rr=currentState.rankingResult;
+        desc.innerHTML = rr
+          ? `랭킹 반영 완료<br><div class="rank-result">${escapeHtml(rr.winnerName)} +30점 (${rr.winnerScore}점) / ${escapeHtml(rr.loserName)} -10점 (${rr.loserScore}점)</div>`
+          : "다시 하기 버튼으로 새 후보를 받아 재시작할 수 있습니다.";
+        btn.style.display="inline-block";
+        updateRoomExitButtons();
+        setMessage(`${currentState.winner} 승리!`,false);
+        return;
+      }
       overlay.classList.remove("show"); btn.style.display="none";
     }
 
@@ -977,8 +1065,8 @@
         return;
       }
 
-      renderPokemonInfo("opponentInfo", enemy, myRole==="spectator" ? "P2" : "상대 몬스터", enemyKey);
-      renderPokemonInfo("myInfo", mine, myRole==="spectator" ? "P1" : "내 몬스터", mineKey);
+      renderPokemonInfo("opponentInfo", enemy, myRole==="spectator" ? `${playerNameOf(enemyKey)} 몬스터` : `${playerNameOf(enemyKey)} 몬스터`, enemyKey);
+      renderPokemonInfo("myInfo", mine, myRole==="spectator" ? `${playerNameOf(mineKey)} 몬스터` : `${playerNameOf(mineKey)} 몬스터`, mineKey);
 
       const enemySprite=document.getElementById("opponentSprite");
       const mySprite=document.getElementById("mySprite");

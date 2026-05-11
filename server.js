@@ -36,7 +36,7 @@ app.get("/health", (req, res) => {
   res.json({
     ok: true,
     version: "6.1.3",
-    name: "정승의 푸끼몬 챔피언스 ONLINE v6.1.3",
+    name: "정승의 푸끼몬 챔피언스 ONLINE v6.2.1",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
       name: room.name,
@@ -74,6 +74,8 @@ const ROOM_DEFS = [
 
 const rooms = new Map();
 const onlineUsers = new Map();
+const rankings = new Map();
+const lobbyChatMessages = [];
 
 
 function cleanUserId(value) {
@@ -94,6 +96,113 @@ function publicOnlineUsers() {
       role: u.role || "lobby",
       connectedAt: u.connectedAt,
     }));
+}
+
+
+function rankingName(value) {
+  return cleanUserId(value) || "손님";
+}
+
+function getRankingRecord(userId) {
+  const name = rankingName(userId);
+  if (!rankings.has(name)) {
+    rankings.set(name, {
+      userId: name,
+      score: 1000,
+      wins: 0,
+      losses: 0,
+      streak: 0,
+      lastDelta: 0,
+      updatedAt: Date.now(),
+    });
+  }
+  return rankings.get(name);
+}
+
+function publicRankings() {
+  return Array.from(rankings.values())
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (b.wins !== a.wins) return b.wins - a.wins;
+      return a.losses - b.losses;
+    })
+    .slice(0, 10)
+    .map((r, idx) => ({
+      rank: idx + 1,
+      userId: r.userId,
+      score: r.score,
+      wins: r.wins,
+      losses: r.losses,
+      streak: r.streak,
+      lastDelta: r.lastDelta,
+    }));
+}
+
+function playerDisplayName(role) {
+  const player = battle?.players?.[role];
+  return rankingName(player?.userId || player?.label || (role === "p1" ? "플레이어 1" : "플레이어 2"));
+}
+
+function recordMatchResult(winnerRole, reason = "game_over") {
+  if (!battle || battle.rankingRecorded) return null;
+  if (winnerRole !== "p1" && winnerRole !== "p2") return null;
+
+  const loserRole = winnerRole === "p1" ? "p2" : "p1";
+  const winnerName = playerDisplayName(winnerRole);
+  const loserName = playerDisplayName(loserRole);
+
+  if (!winnerName || !loserName || winnerName === loserName) return null;
+
+  const winner = getRankingRecord(winnerName);
+  const loser = getRankingRecord(loserName);
+
+  winner.wins += 1;
+  winner.score += 30;
+  winner.streak += 1;
+  winner.lastDelta = 30;
+  winner.updatedAt = Date.now();
+
+  loser.losses += 1;
+  loser.score = Math.max(0, loser.score - 10);
+  loser.streak = 0;
+  loser.lastDelta = -10;
+  loser.updatedAt = Date.now();
+
+  battle.rankingRecorded = true;
+  battle.rankingResult = {
+    reason,
+    winnerRole,
+    loserRole,
+    winnerName,
+    loserName,
+    winnerDelta: 30,
+    loserDelta: -10,
+    winnerScore: winner.score,
+    loserScore: loser.score,
+  };
+
+  opLog(`[RANK] ${winnerName} +30 / ${loserName} -10`);
+  return battle.rankingResult;
+}
+
+function addLobbyChat(socket, text) {
+  const clean = String(text || "").trim().slice(0, 140);
+  if (!clean) return;
+  if (!cleanUserId(socket.data.userId)) {
+    socket.emit("loginError", { message: "로그인 후 채팅할 수 있습니다." });
+    return;
+  }
+
+  const name = displayName(socket);
+  lobbyChatMessages.push({
+    id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    name,
+    text: clean,
+    at: Date.now(),
+  });
+
+  if (lobbyChatMessages.length > 80) lobbyChatMessages.splice(0, lobbyChatMessages.length - 80);
+  emitLobbyState();
 }
 
 function updateOnlineUser(socket) {
@@ -164,6 +273,9 @@ function newBattleState(preservedSockets = {}) {
     events: [],
     chatMessages: [],
     winner: null,
+    winnerRole: null,
+    rankingRecorded: false,
+    rankingResult: null,
     pausedFromBattle: false,
   };
 }
@@ -373,6 +485,9 @@ function publicState() {
     events: battle.events,
     chatMessages: battle.chatMessages.slice(-80),
     winner: battle.winner,
+    winnerRole: battle.winnerRole,
+    rankingResult: battle.rankingResult,
+    rankings: publicRankings(),
     typeKo: TYPE_KO,
   };
 }
@@ -421,6 +536,8 @@ function publicLobbyState() {
     dataReady,
     rooms: [...rooms.values()].map(publicRoomSummary),
     onlineUsers: publicOnlineUsers(),
+    rankings: publicRankings(),
+    lobbyChatMessages: lobbyChatMessages.slice(-80),
   };
 }
 
@@ -451,6 +568,9 @@ function startTeamSelect() {
   battle.phase = PHASE.TEAM_SELECT;
   battle.turn = 1;
   battle.winner = null;
+  battle.winnerRole = null;
+  battle.rankingRecorded = false;
+  battle.rankingResult = null;
   battle.events = [];
   battle.forceSwitchPlayers = [];
   assignDrafts(false);
@@ -820,25 +940,48 @@ function checkWinner() {
   const p1Alive = hasAlivePokemon("p1");
   const p2Alive = hasAlivePokemon("p2");
 
-  if (!p1Alive && !p2Alive) battle.winner = "무승부";
-  else if (!p1Alive) battle.winner = "플레이어 2";
-  else if (!p2Alive) battle.winner = "플레이어 1";
+  let winnerRole = null;
+
+  if (!p1Alive && !p2Alive) {
+    battle.winner = "무승부";
+    battle.winnerRole = null;
+  } else if (!p1Alive) {
+    winnerRole = "p2";
+    battle.winner = playerDisplayName("p2");
+    battle.winnerRole = "p2";
+  } else if (!p2Alive) {
+    winnerRole = "p1";
+    battle.winner = playerDisplayName("p1");
+    battle.winnerRole = "p1";
+  }
 
   if (battle.players.p1.timeoutCount >= 3) {
-    battle.winner = "플레이어 2";
-    addEvent({ type: "warning", text: "플레이어 1이 3회 연속 시간 초과로 패배했습니다!" });
+    winnerRole = "p2";
+    battle.winner = playerDisplayName("p2");
+    battle.winnerRole = "p2";
+    addEvent({ type: "warning", text: `${playerDisplayName("p1")}이 3회 연속 시간 초과로 패배했습니다!` });
   }
   if (battle.players.p2.timeoutCount >= 3) {
-    battle.winner = "플레이어 1";
-    addEvent({ type: "warning", text: "플레이어 2가 3회 연속 시간 초과로 패배했습니다!" });
+    winnerRole = "p1";
+    battle.winner = playerDisplayName("p1");
+    battle.winnerRole = "p1";
+    addEvent({ type: "warning", text: `${playerDisplayName("p2")}이 3회 연속 시간 초과로 패배했습니다!` });
   }
 
   if (battle.winner) {
     battle.phase = PHASE.GAME_OVER;
     clearBattleTimer();
+
+    const rankResult = winnerRole ? recordMatchResult(winnerRole, "game_over") : null;
+
     log(`${battle.winner} 승리!`);
+    if (rankResult) {
+      log(`랭킹 반영: ${rankResult.winnerName} +30점 / ${rankResult.loserName} -10점`);
+    }
+
     opLog(`[GAME_OVER] ${battle.winner} 승리`);
-    addEvent({ type: "gameOver", winner: battle.winner });
+    addEvent({ type: "gameOver", winner: battle.winner, winnerRole, rankingResult: rankResult });
+    emitLobbyState();
     return true;
   }
 
@@ -1000,24 +1143,31 @@ function setGameOverBySurrender(loserRole) {
   const winnerRole = winnerRoleForLoser(loserRole);
   if (!winnerRole) return false;
 
-  const loser = battle.players[loserRole];
-  const winner = battle.players[winnerRole];
+  const loserName = playerDisplayName(loserRole);
+  const winnerName = playerDisplayName(winnerRole);
 
   clearBattleTimer();
   battle.phase = PHASE.GAME_OVER;
-  battle.winner = winner.label;
+  battle.winner = winnerName;
+  battle.winnerRole = winnerRole;
   battle.events = [];
 
-  const message = `${loser.label}이 항복했습니다. ${winner.label} 승리!`;
+  const rankResult = recordMatchResult(winnerRole, "surrender");
+  const message = `${loserName}이 항복했습니다. ${winnerName} 승리!`;
 
   log(message);
-  opLog(`[SURRENDER] ${loser.label} 항복`);
-  opLog(`[GAME_OVER] ${winner.label} 승리`);
+  if (rankResult) {
+    log(`랭킹 반영: ${rankResult.winnerName} +30점 / ${rankResult.loserName} -10점`);
+  }
 
-  addEvent({ type: "warning", text: `${loser.label}이 항복했습니다.` });
-  addEvent({ type: "gameOver", winner: winner.label });
+  opLog(`[SURRENDER] ${loserName} 항복`);
+  opLog(`[GAME_OVER] ${winnerName} 승리`);
+
+  addEvent({ type: "warning", text: `${loserName}이 항복했습니다.` });
+  addEvent({ type: "gameOver", winner: winnerName, winnerRole, rankingResult: rankResult });
 
   emitState();
+  emitLobbyState();
   return true;
 }
 
@@ -1159,6 +1309,11 @@ function leaveCurrentRoom(socket, reason = "leave") {
 }
 
 function claimPlayerSlot(socket) {
+  if (!cleanUserId(socket.data.userId)) {
+    socket.emit("roomError", { message: "로그인 후 플레이어로 참가할 수 있습니다." });
+    return;
+  }
+
   const roomId = socket.data.roomId;
   const role = socket.data.role;
 
@@ -1214,6 +1369,12 @@ function claimPlayerSlot(socket) {
 }
 
 function joinRoom(socket, roomId, token) {
+  if (!cleanUserId(socket.data.userId)) {
+    socket.emit("roomError", { message: "로그인 후 방에 입장할 수 있습니다." });
+    socket.emit("loginError", { message: "로그인 후 방에 입장할 수 있습니다." });
+    return;
+  }
+
   if (!rooms.has(roomId)) {
     socket.emit("roomError", { message: "존재하지 않는 방입니다." });
     return;
@@ -1268,7 +1429,11 @@ io.on("connection", (socket) => {
   socket.data.roomId = null;
   socket.data.role = null;
   socket.data.connectedAt = Date.now();
-  socket.data.userId = cleanUserId(socket.handshake?.auth?.userId) || null;
+  socket.data.userId = null;
+  const authUserId = cleanUserId(socket.handshake?.auth?.userId);
+  if (authUserId && !isUserIdActive(authUserId, socket.id)) {
+    reserveUserId(socket, authUserId);
+  }
   updateOnlineUser(socket);
   socket.emit("lobbyState", publicLobbyState());
   emitOnlineState();
@@ -1284,21 +1449,46 @@ io.on("connection", (socket) => {
       socket.emit("loginError", { message: "아이디는 2~12자로 입력해주세요." });
       return;
     }
-    socket.data.userId = clean;
+
+    const reserved = reserveUserId(socket, clean);
+    if (!reserved.ok) {
+      socket.emit("loginError", { message: reserved.message });
+      return;
+    }
+
     updateOnlineUser(socket);
 
     const roomId = socket.data.roomId;
     const role = socket.data.role;
     if (roomId && rooms.has(roomId) && (role === "p1" || role === "p2")) {
       withRoom(roomId, () => {
-        battle.players[role].userId = clean;
-        battle.players[role].label = clean;
+        battle.players[role].userId = reserved.userId;
+        battle.players[role].label = reserved.userId;
         emitState();
       });
     }
 
-    socket.emit("loginOk", { userId: clean });
+    socket.emit("loginOk", { userId: reserved.userId });
     emitOnlineState();
+  });
+
+  socket.on("logoutUser", () => {
+    releaseUserId(socket);
+    socket.data.userId = null;
+
+    const roomId = socket.data.roomId;
+    const role = socket.data.role;
+    if (roomId && rooms.has(roomId) && (role === "p1" || role === "p2")) {
+      withRoom(roomId, () => {
+        // 게임 중 로그아웃은 방 이탈로 처리해서 랭킹/표시 꼬임을 막는다.
+        leaveCurrentRoom(socket, "logout");
+      });
+    } else {
+      updateOnlineUser(socket);
+      emitOnlineState();
+    }
+
+    socket.emit("logoutOk");
   });
 
   socket.on("joinRoom", ({ roomId, playerToken } = {}) => {
@@ -1367,6 +1557,10 @@ io.on("connection", (socket) => {
     });
   });
 
+  socket.on("lobbyChatMessage", ({ text }) => {
+    addLobbyChat(socket, text);
+  });
+
   socket.on("chatMessage", ({ text }) => {
     const roomId = socket.data.roomId;
     const role = socket.data.role;
@@ -1374,6 +1568,10 @@ io.on("connection", (socket) => {
     withRoom(roomId, () => {
       const clean = String(text || "").trim().slice(0, 120);
       if (!clean) return;
+      if (!cleanUserId(socket.data.userId)) {
+        socket.emit("loginError", { message: "로그인 후 채팅할 수 있습니다." });
+        return;
+      }
       const name = role === "p1" || role === "p2" ? (battle.players[role].userId || battle.players[role].label) : displayName(socket);
 
       battle.chatMessages.push({
@@ -1402,6 +1600,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
+    releaseUserId(socket);
     onlineUsers.delete(socket.id);
     emitOnlineState();
     const roomId = socket.data.roomId;
@@ -1423,7 +1622,7 @@ io.on("connection", (socket) => {
 
 async function start() {
   console.log("========================================");
-  console.log(" 정승의 푸끼몬 챔피언스 ONLINE v6.1.3");
+  console.log(" 정승의 푸끼몬 챔피언스 ONLINE v6.2.1");
   console.log("========================================");
   console.log("[BOOT] 서버 시작 중...");
   console.log("[ROOM] 4룸 모드: 태초마을 / 회색시티 / 블루시티 / 무지개시티");
