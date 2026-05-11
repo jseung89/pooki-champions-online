@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.3.7",
+    version: "6.3.9",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -308,9 +308,19 @@ function initRooms() {
 function withRoom(roomId, fn) {
   const room = typeof roomId === "object" ? roomId : rooms.get(roomId);
   if (!room) return null;
+
+  const previousRoom = currentRoom;
+  const previousBattle = battle;
+
   currentRoom = room;
   battle = room.battle;
-  return fn(room);
+
+  try {
+    return fn(room);
+  } finally {
+    currentRoom = previousRoom;
+    battle = previousBattle;
+  }
 }
 
 function scheduleRoom(fn, delay) {
@@ -323,20 +333,21 @@ function clearBattleTimer() {
   if (currentRoom) currentRoom.timer = null;
 }
 
-
 function resetRoomToWaiting(reason = "reset_room") {
   const roomName = currentRoom?.name || "방";
   clearBattleTimer();
-  if (currentRoom) {
-    currentRoom.resolveInProgress = false;
-    currentRoom.battle = newBattleState();
-    battle = currentRoom.battle;
-    battle.phase = dataReady ? PHASE.WAITING : PHASE.LOADING;
-    log("방이 초기화되었습니다.");
-    opLog(`[ROOM_RESET] ${roomName} ${reason}`);
-    emitState();
-    emitLobbyState();
-  }
+  if (!currentRoom) return false;
+
+  currentRoom.resolveInProgress = false;
+  currentRoom.battle = newBattleState();
+  battle = currentRoom.battle;
+  battle.phase = dataReady ? PHASE.WAITING : PHASE.LOADING;
+
+  log("방이 초기화되었습니다.");
+  opLog(`[ROOM_RESET] ${roomName} ${reason}`);
+  emitState();
+  emitLobbyState();
+  return true;
 }
 
 function cleanupOrphanAI(reason = "orphan_ai") {
@@ -347,16 +358,12 @@ function cleanupOrphanAI(reason = "orphan_ai") {
   const p1AI = !!battle.players.p1.isAI;
   const p2AI = !!battle.players.p2.isAI;
 
-  // AI전에서 사람이 사라지고 AI만 남은 경우 방 잠김 방지
   if ((battle.aiMatch || p1AI || p2AI) && !p1HumanConnected && !p2HumanConnected) {
-    resetRoomToWaiting(`${reason}_ai_only`);
-    return true;
+    return resetRoomToWaiting(`${reason}_ai_only`);
   }
 
-  // 현재 설계상 AI는 P2만 허용. P1 빈자리 + P2 AI는 무조건 고장난 잔여 상태.
   if (p2AI && !p1HumanConnected) {
-    resetRoomToWaiting(`${reason}_p2_ai_without_p1`);
-    return true;
+    return resetRoomToWaiting(`${reason}_p2_ai_without_p1`);
   }
 
   return false;
@@ -463,13 +470,8 @@ function ensureAITeamReady(reason = "ensure_ai_team_ready") {
   const ai = battle?.players?.p2;
   if (!ai?.isAI) return false;
 
-  const hasReadyTeam =
-    ai.teamReady &&
-    Array.isArray(ai.team) &&
-    ai.team.length === 2 &&
-    ai.team.every((p) => p && !p.fainted);
-
-  if (hasReadyTeam) return true;
+  const ready = ai.teamReady && Array.isArray(ai.team) && ai.team.length === 2;
+  if (ready) return true;
 
   if (!Array.isArray(ai.candidatePool) || ai.candidatePool.length === 0) {
     ai.candidatePool = createDraft(pokemonPool, 12);
@@ -479,72 +481,6 @@ function ensureAITeamReady(reason = "ensure_ai_team_ready") {
   opLog(`[AI] 팀 준비 보정 완료: ${reason}`);
   return !!ai.teamReady;
 }
-
-function maybeStartAIBattle(reason = "maybe_start_ai_battle") {
-  if (!battle?.players?.p2?.isAI) return false;
-  return forceStartAIBattleIfReady(reason);
-}
-
-
-function forceStartAIBattleIfReady(reason = "force_start_ai_battle") {
-  if (!battle?.players?.p2?.isAI) return false;
-  if (battle.phase !== PHASE.TEAM_SELECT && battle.phase !== PHASE.TURN_RESOLVE) return false;
-
-  ensureAITeamReady(`${reason}_ensure_ai`);
-
-  if (!battle.players.p1.teamReady || !battle.players.p2.teamReady) {
-    emitState();
-    return false;
-  }
-
-  log("배틀 시작!");
-  addEvent({ type: "message", text: "배틀 시작!" });
-  opLog(`[AI] TEAM_SELECT → ACTION_SELECT 직접 시작: ${reason}`);
-
-  return forceAIActionSelectNow(`force_start_${reason}`);
-}
-
-function sweepAIBattleStart(reason = "sweep_ai_battle_start") {
-  if (!battle?.players?.p2?.isAI) return false;
-  if (battle.phase !== PHASE.TEAM_SELECT) return false;
-
-  if (battle.players.p1.teamReady) {
-    return forceStartAIBattleIfReady(reason);
-  }
-
-  ensureAITeamReady(`${reason}_ai_only_ready`);
-  emitState();
-  return false;
-}
-
-
-function forceActionSelectIfTurnResolveStuck(reason = "turn_resolve_watchdog") {
-  if (!battle?.players?.p2?.isAI) return false;
-  if (battle.phase !== PHASE.TURN_RESOLVE) return false;
-  if (!battle.players.p1.teamReady || !battle.players.p2.teamReady) return false;
-  if (battle.winner) return false;
-
-  opLog(`[AI] TURN_RESOLVE stuck 탈출 → ACTION_SELECT 직접 진입: ${reason}`);
-  return forceAIActionSelectNow(`watchdog_${reason}`);
-}
-
-function scheduleAIActionSelectWatchdog(reason = "ai_action_select_watchdog") {
-  const roomId = currentRoom?.id;
-  if (!roomId) return;
-
-  setTimeout(() => {
-    withRoom(roomId, () => forceActionSelectIfTurnResolveStuck(`${reason}_800ms`));
-  }, 800);
-
-  setTimeout(() => {
-    withRoom(roomId, () => forceActionSelectIfTurnResolveStuck(`${reason}_1800ms`));
-  }, 1800);
-
-  setTimeout(() => {
-    withRoom(roomId, () => forceActionSelectIfTurnResolveStuck(`${reason}_3000ms`));
-  }, 3000);
-}
-
 function moveExpectedValue(move, attacker, defender) {
   if (!move) return -9999;
   if (move.heal) {
@@ -887,7 +823,6 @@ function startTeamSelect() {
   log(battle.players.p2.isAI ? "AI 연습전입니다. 출전할 포켓몬 2마리를 선택하세요." : "랜덤 후보 12마리가 지급되었습니다. 각자 출전할 포켓몬 2마리를 선택하세요.");
   opLog("[GAME] 팀 선택 시작");
   emitState();
-  scheduleRoom(() => sweepAIBattleStart("start_team_select_sweep"), 700);
 }
 
 function maybeStartBattle() {
@@ -895,20 +830,8 @@ function maybeStartBattle() {
     return;
   }
 
-  if (battle.players.p2.isAI) {
-    ensureAITeamReady("maybe_start_battle");
-  }
-
   if (!battle.players.p1.teamReady || !battle.players.p2.teamReady) {
     emitState();
-    return;
-  }
-
-  if (battle.players.p2.isAI) {
-    log("배틀 시작!");
-    addEvent({ type: "message", text: "배틀 시작!" });
-    opLog("[AI] maybeStartBattle → ACTION_SELECT 직접 시작");
-    forceAIActionSelectNow("maybe_start_battle_ai_direct");
     return;
   }
 
@@ -936,7 +859,6 @@ function startActionSelect() {
   if (currentRoom) currentRoom.resolveInProgress = false;
   battle.phase = PHASE.ACTION_SELECT;
   battle.events = [];
-  if (battle.players.p2.isAI) opLog("[AI] ACTION_SELECT 진입 완료");
   battle.players.p1.selectedAction = null;
   battle.players.p2.selectedAction = null;
 
@@ -958,41 +880,6 @@ function startActionSelect() {
 
   emitState();
   scheduleRoom(() => maybeQueueAIAction("turn_start"), 450);
-}
-
-
-function forceAIActionSelectNow(reason = "force_ai_action_select_now") {
-  if (!battle?.players?.p2?.isAI) return false;
-  if (battle.phase === PHASE.GAME_OVER) return false;
-  if (!battle.players.p1.teamReady || !battle.players.p2.teamReady) return false;
-
-  clearBattleTimer();
-  if (currentRoom) currentRoom.resolveInProgress = false;
-
-  battle.phase = PHASE.ACTION_SELECT;
-  battle.events = [];
-  battle.players.p1.selectedAction = null;
-  battle.players.p2.selectedAction = null;
-  battle.forceSwitchPlayers = [];
-  battle.timerEndAt = Date.now() + 20000;
-
-  autoRechargeActions();
-
-  opLog(`[AI] ACTION_SELECT 직접 진입: ${reason}`);
-
-  const roomId = currentRoom?.id;
-  if (roomId) {
-    currentRoom.timer = setTimeout(() => withRoom(roomId, () => {
-      if (battle.phase === PHASE.ACTION_SELECT) resolveTurn();
-    }), 20000);
-  }
-
-  emitState();
-  setTimeout(() => {
-    if (roomId) withRoom(roomId, () => maybeQueueAIAction(`direct_${reason}`));
-  }, 450);
-
-  return true;
 }
 
 function startForceSwitch(players) {
@@ -1660,11 +1547,15 @@ function leaveCurrentRoom(socket, reason = "leave") {
       opLog(`[${reason.toUpperCase()}] ${currentRoom.name} ${battle.players[role].label} 이탈`);
       log(`${battle.players[role].label}이 방을 나갔습니다. 관전자가 빈자리에 참가할 수 있습니다.`);
       resetPlayerBattleChoices(role, { keepTeam: [PHASE.ACTION_SELECT, PHASE.TURN_RESOLVE, PHASE.FORCE_SWITCH].includes(battle.phase) });
-      if ((battle.aiMatch || battle.players.p2.isAI) && role === "p1") {
-        resetRoomToWaiting(`${reason}_ai_match_p1_leave`);
+      if (battle.aiMatch && role === "p1") {
+        const preserved = { p1: null, p2: null };
+        currentRoom.battle = newBattleState(preserved);
+        battle = currentRoom.battle;
+        battle.phase = dataReady ? PHASE.WAITING : PHASE.LOADING;
+        log("AI 연습전이 종료되었습니다.");
+        emitState();
       } else {
         pauseRoomForMissingPlayer(`${reason}_${role}`);
-        cleanupOrphanAI(`${reason}_${role}`);
       }
     } else if (role === "spectator") {
       socket.leave(`spectators:${roomId}`);
@@ -2013,7 +1904,6 @@ io.on("connection", (socket) => {
       opLog(`[AI_MATCH] ${currentRoom.name}: ${battle.players.p1.label} vs ${battle.players.p2.label}`);
 
       startTeamSelect();
-      scheduleRoom(() => sweepAIBattleStart("start_ai_match_post_start"), 900);
       emitOnlineState();
     });
   });
@@ -2056,16 +1946,8 @@ io.on("connection", (socket) => {
 
       log(`${player.label} 팀 선택 완료!`);
       opLog(`[SELECT][${currentRoom.name}] ${player.label} 후보 선택: ${player.team.map((p) => p.name).join(", ")}`);
-
-      if (battle.players.p2.isAI) {
-        if (!forceStartAIBattleIfReady(`select_team_${role}_direct`)) {
-          emitState();
-          scheduleRoom(() => sweepAIBattleStart(`select_team_${role}_sweep`), 500);
-        }
-      } else {
-        emitState();
-        maybeStartBattle();
-      }
+      emitState();
+      maybeStartBattle();
     });
   });
 

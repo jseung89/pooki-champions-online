@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.3-7",
-  "description": "Pookimon Champions ONLINE v6.3.7 login modal UI hotfix",
+  "version": "0.6.3-9",
+  "description": "Pookimon Champions ONLINE v6.3.9 context restore AI fix stable rollback",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

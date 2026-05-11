@@ -123,33 +123,6 @@ v6.3
 - README PATCH NOTES 최신순 갱신
 
 
-## v6.3.2 - AI 방 잠김 긴급 핫픽스
+## v6.3.9 - 안정판 롤백 + AI 진행 원인 수정
 
-- AI만 남은 방 자동 초기화
-- P1 이탈 시 AI전 방 전체 초기화
-
-
-## v6.3.3 - AI 팀 선택 진행 핫픽스
-
-- AI 팀 선택 완료 보정
-- P1 선택 후 AI전 배틀 시작 보정
-
-
-## v6.3.4 - AI 팀 선택 탈출 핫픽스
-
-- AI전 TEAM_SELECT stuck 탈출 로직 추가
-
-
-## v6.3.5 - AI 턴 처리 stuck 핫픽스
-
-- AI전 TURN_RESOLVE stuck watchdog 추가
-
-
-## v6.3.6 - AI 기술 선택 직접 진입 핫픽스
-
-- AI전 TEAM_SELECT에서 ACTION_SELECT로 직접 진입
-
-
-## v6.3.7 - 로그인 모달 겹침 UI 핫픽스
-
-- 로그인 버튼/안내문구 겹침 수정
+- withRoom 컨텍스트 복구로 일반 입장/AI 턴 진행 오류 수정
