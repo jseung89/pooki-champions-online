@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>정승의 푸끼몬 챔피언스 ONLINE v6.3</title>
+  <title>푸끼몬 챔피언스 온라인</title>
   
   <style>
     * { box-sizing: border-box; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
@@ -316,7 +316,7 @@
     .room-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;}
     .room-card{position:relative;overflow:hidden;border:3px solid #bcd2ff;border-radius:24px;padding:18px;background:linear-gradient(180deg,#fff,#edf5ff);box-shadow:0 12px 28px rgba(18,45,108,.13);display:grid;gap:12px;min-height:250px;}
     .room-card::before{content:"";position:absolute;inset:auto -20% -34% -20%;height:58%;background:radial-gradient(ellipse at 50% 0%,rgba(37,99,235,.22),transparent 70%);pointer-events:none;}
-    .room-icon{font-size:42px}.room-name{font-size:24px;font-weight:1000;color:#0d2a78}.room-status{display:inline-flex;width:max-content;padding:6px 11px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-weight:950;font-size:13px}.room-status.battle{background:#fee2e2;color:#dc2626}.room-status.select{background:#fef3c7;color:#b45309}.room-meta{display:grid;gap:7px;font-size:14px;font-weight:850;color:#334155}.room-enter{align-self:end;width:100%;position:relative;z-index:2}.lobby-note{font-weight:850;color:#eaf3ff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.25)}
+    .room-icon{font-size:42px}.room-name{font-size:24px;font-weight:1000;color:#0d2a78}.room-status{display:inline-flex;width:max-content;padding:6px 11px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-weight:950;font-size:13px}.room-status.battle{background:#fee2e2;color:#dc2626}.room-status.select{background:#fef3c7;color:#b45309}.room-meta{display:grid;gap:7px;font-size:14px;font-weight:850;color:#334155}.room-enter{align-self:end;width:100%;position:relative;z-index:2;white-space:nowrap;word-break:keep-all;line-height:1;height:52px;padding:0 12px;display:inline-flex;align-items:center;justify-content:center;font-size:18px}.lobby-note{font-weight:850;color:#eaf3ff;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.25)}
     .leave-room-btn{background:#475569;box-shadow:0 7px 0 #334155;}.claim-player-btn{background:#16a34a;box-shadow:0 7px 0 #166534;}.claim-player-btn:disabled{background:#94a3b8;box-shadow:0 7px 0 #64748b;cursor:not-allowed;}.top-exit-btn{background:#475569;box-shadow:0 7px 0 #334155;}.top-exit-btn:hover{filter:brightness(1.08);}
     .sprite.switch-out{animation:switchOut 620ms ease forwards;}
     .sprite.switch-in{animation:switchIn 760ms cubic-bezier(.18,.9,.22,1.25) forwards;}
@@ -427,7 +427,7 @@
     }
 
   
-    .room-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .room-actions{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;margin-top:10px}
     .ai-enter{background:linear-gradient(180deg,#7c3aed,#5b21b6)!important;box-shadow:0 5px 0 #3b0764!important}
     .ai-enter:disabled{opacity:.45;cursor:not-allowed}
 
@@ -442,7 +442,7 @@
       <input id="loginUserId" maxlength="12" placeholder="아이디 2~12자" />
       <input id="loginPassword" type="password" minlength="4" placeholder="비밀번호 4자 이상" />
       <input id="loginPassword2" type="password" minlength="4" placeholder="비밀번호 확인" />
-      <button type="submit" id="loginButton">입장하기</button>
+      <button type="submit" id="loginButton">입장</button>
       <div class="login-help">같은 아이디는 동시에 1명만 접속할 수 있습니다.</div>
       <div class="login-error" id="loginError"></div>
     </form>
@@ -453,8 +453,8 @@
       <section class="lobby-card">
         <div class="lobby-head">
           <div>
-            <div class="lobby-title">정승의 푸끼몬 챔피언스 ONLINE v6.3</div>
-            <div class="lobby-sub">로그인 후 방을 선택하면 빈 플레이어 자리로 자동 입장합니다. 자리가 없으면 관전자입니다.</div>
+            <div class="lobby-title">푸끼몬 챔피언스 온라인</div>
+            <div class="lobby-sub">포켓몬 API를 활용한 푸끼몬 배틀게임</div>
           </div>
           <div class="lobby-userbar">
             <span class="user-chip" id="currentUserChip">비로그인</span>
@@ -493,7 +493,7 @@
       <div class="brand">
         <div class="brand-badge">🛡️</div>
         <div>
-          <div class="title">정승의 푸끼몬 챔피언스 ONLINE v6.3</div>
+          <div class="title">푸끼몬 챔피언스 온라인</div>
           <div class="role" id="roleText">서버 연결 중...</div>
         </div>
       </div>
@@ -796,7 +796,7 @@
             <div>${room.winner?`승자: ${escapeHtml(room.winner)}`:""}</div>
           </div>
           <div class="room-actions">
-            <button class="room-enter" ${logged?"":"disabled"} onclick="joinRoom('${room.id}')">입장하기</button>
+            <button class="room-enter" ${logged?"":"disabled"} onclick="joinRoom('${room.id}')">입장</button>
             <button class="room-enter ai-enter" ${(logged && !room.p1Connected && !room.p2Connected) ? "" : "disabled"} onclick="startAIMatch('${room.id}')">AI 대전</button>
           </div>
         </article>`;
