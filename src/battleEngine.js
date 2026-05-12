@@ -109,7 +109,7 @@ function canApplyStatus(target, status) {
 
 function applyStatus(target, status) {
   target.status = status;
-  if (status === "sleep") target.sleepTurns = Math.random() < 0.5 ? 2 : 3;
+  if (status === "sleep") target.sleepTurns = Math.random() < 0.5 ? 3 : 4;
 }
 
 function endTurnStatusDamage(pokemon) {
