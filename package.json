@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.5-2",
-  "description": "Pookimon Champions ONLINE v6.5.2 critical transition lock",
+  "version": "0.6.4-p639-4x-flinch",
+  "description": "Pookimon Champions ONLINE p639 stable base with 4x effectiveness and flinch only",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -237,7 +237,7 @@
     .move-help b{color:#11244f}.move-help .tag{display:inline-block;padding:4px 10px;border-radius:999px;margin-right:6px;font-size:11px;font-weight:900;background:#eef4ff;color:#164bc5}
     button{border:0; color:white; background:#1d4ed8; padding:13px 12px; border-radius:16px; font-size:15px; font-weight:950; cursor:pointer; box-shadow:0 7px 0 #1e3a8a; transition:transform .08s ease,box-shadow .08s ease,opacity .12s ease;}
     button:hover:not(:disabled){transform:translateY(-1px)}button:active:not(:disabled){transform:translateY(5px);box-shadow:0 2px 0 #1e3a8a}button:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}
-    .move-btn{background:#0f766e;box-shadow:0 7px 0 #115e59;text-align:left}.move-btn.eff-quad{background:linear-gradient(180deg,#f97316,#dc2626);box-shadow:0 7px 0 #7f1d1d;outline:3px solid rgba(250,204,21,.85);animation:quadPulse 1.15s infinite}.move-btn.eff-super{background:#ef4444;box-shadow:0 7px 0 #b91c1c}.move-btn.eff-neutral{background:#0f766e;box-shadow:0 7px 0 #115e59}.move-btn.eff-resist{background:#64748b;box-shadow:0 7px 0 #475569}.move-btn.eff-immune{background:#1f2937;box-shadow:0 7px 0 #111827}.move-btn.eff-status{background:#7c3aed;box-shadow:0 7px 0 #5b21b6}@keyframes quadPulse{0%,100%{filter:brightness(1);transform:translateY(0)}50%{filter:brightness(1.18);transform:translateY(-1px)}}
+    .move-btn{background:#0f766e;box-shadow:0 7px 0 #115e59;text-align:left}.move-btn.eff-super{background:#ef4444;box-shadow:0 7px 0 #b91c1c}.move-btn.eff-neutral{background:#0f766e;box-shadow:0 7px 0 #115e59}.move-btn.eff-resist{background:#64748b;box-shadow:0 7px 0 #475569}.move-btn.eff-immune{background:#1f2937;box-shadow:0 7px 0 #111827}.move-btn.eff-status{background:#7c3aed;box-shadow:0 7px 0 #5b21b6}
     .switch-btn{background:#2563eb;box-shadow:0 7px 0 #1d4ed8;text-align:left}.reset-btn{background:#dc2626;box-shadow:0 7px 0 #991b1b}
     .meta{display:block;font-size:12px;opacity:.92;margin-top:5px;font-weight:750}
     .logs{height:245px; overflow-y:auto; background:#fff; border:2px solid #d8e7ff; border-radius:20px; padding:13px; font-size:14px; line-height:1.55; color:#243454;}
@@ -439,56 +439,6 @@
     .login-help{position:static!important;display:block!important;margin:0!important;padding:2px 0 0!important;min-height:auto!important;line-height:1.35!important;color:#475569!important;font-size:12px!important;font-weight:800!important;flex:0 0 auto!important;}
     .login-error{position:static!important;display:block!important;margin:0!important;min-height:18px!important;line-height:1.35!important;color:#dc2626!important;font-size:13px!important;font-weight:900!important;flex:0 0 auto!important;}
 
-  
-    /* v6.4.5 기절/교체 연출 복구 */
-    .sprite.faint-dead{
-      animation:faintDead 950ms ease-in forwards!important;
-      filter:grayscale(1) brightness(.72)!important;
-      pointer-events:none!important;
-    }
-    .sprite.switch-in{
-      animation:switchInPop 520ms cubic-bezier(.2,1.3,.35,1) both!important;
-    }
-    .ghost-clone{
-      position:fixed;
-      z-index:9999;
-      pointer-events:none;
-      opacity:.72;
-      filter:grayscale(1) drop-shadow(0 8px 16px rgba(59,130,246,.35));
-      animation:ghostAscend 950ms ease-out forwards;
-    }
-    @keyframes faintDead{
-      0%{opacity:1;transform:translateY(0) rotate(0deg) scale(1);}
-      45%{opacity:.82;transform:translateY(10px) rotate(-8deg) scale(.98);}
-      100%{opacity:0;transform:translateY(38px) rotate(-18deg) scale(.86);}
-    }
-    @keyframes ghostAscend{
-      0%{opacity:.66;transform:translateY(0) scale(.92);}
-      100%{opacity:0;transform:translateY(-95px) scale(.68);}
-    }
-    @keyframes switchInPop{
-      0%{opacity:0;transform:translateY(28px) scale(.78);}
-      65%{opacity:1;transform:translateY(-5px) scale(1.05);}
-      100%{opacity:1;transform:translateY(0) scale(1);}
-    }
-
-  
-    /* v6.4.6 기절/교체 안정화 최종 오버라이드 */
-    .ghost-clone{
-      position:fixed!important;
-      z-index:9999!important;
-      pointer-events:none!important;
-      object-fit:contain;
-      image-rendering:pixelated;
-      opacity:.72!important;
-      filter:grayscale(1) brightness(1.25) drop-shadow(0 8px 16px rgba(59,130,246,.35))!important;
-      animation:ghostAscendFixed 950ms ease-out forwards!important;
-    }
-    @keyframes ghostAscendFixed{
-      0%{opacity:.72;transform:translateY(0) scale(.92);}
-      100%{opacity:0;transform:translateY(-95px) scale(.68);}
-    }
-
   </style>
 
 </head>
@@ -649,7 +599,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v652";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v639";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -712,15 +662,9 @@
     const IMMUNE = { normal:["ghost"], fighting:["ghost"], poison:["steel"], ground:["flying"], electric:["ground"], psychic:["dark"], ghost:["normal"], dragon:["fairy"], fire:[], water:[], grass:[], ice:[], flying:[], bug:[], rock:[], dark:[], steel:[], fairy:[] };
     const DELAY = { turnStart:420, switch:780, moveText:440, lunge:320, effect:420, damage:540, miss:620, stat:760, faint:1550, status:620, message:560, end:420 };
 
-    let myRole = null, currentState = null, visualState = null, pendingStateAfterAnimation = null;
+    let myRole = null, currentState = null, visualState = null;
     let lastEventIds = new Set(), eventQueue = Promise.resolve(), localTimer = null;
     let animationBusy = false, selectedTeamIds = [], hoveredMoveIndex = 0;
-    let visibleBattleLogs = [], animationEpoch = 0, lastPhaseSeen = null;
-    let hiddenUntilSwitch = { p1: false, p2: false };
-    let spriteLock = { p1: null, p2: null };
-    let criticalTransitionActive = false;
-    let delayedGameOverEvent = null;
-    let suspendBattleViewRender = false;
     let lastActionByRole = { p1: "아직 없음", p2: "아직 없음" };
 
     socket.on("lobbyState", (lobby) => {
@@ -768,18 +712,9 @@
       myRole = role;
       currentState = null;
       visualState = null;
-      pendingStateAfterAnimation = null;
       selectedTeamIds = [];
       lastEventIds = new Set();
-      visibleBattleLogs = [];
-      hiddenUntilSwitch = { p1: false, p2: false };
-      spriteLock = { p1: null, p2: null };
-      criticalTransitionActive = false;
-      delayedGameOverEvent = null;
-      animationEpoch += 1;
-      animationBusy = false;
       eventQueue = Promise.resolve();
-      hideGameOverOverlay();
       document.getElementById("lobbyScreen").style.display = "none";
       document.getElementById("gameScreen").classList.remove("hidden");
       const roleLabel = role === "p1" ? "P1" : role === "p2" ? "P2" : "관전자";
@@ -794,44 +729,15 @@
 
     socket.on("state", ({ role, state }) => {
       if (!myRole) myRole = role;
-
-      if (shouldResetPresentationForState(state)) {
-        resetBattlePresentation(`phase_${currentState?.phase||"none"}_to_${state?.phase||"none"}`);
-      }
-
       const incomingEvents = state.events || [];
       const freshEvents = incomingEvents.filter(ev => !lastEventIds.has(ev.id));
-      const wasAnimating = animationBusy || !!visualState;
-
-      if (freshEvents.length > 0 && currentState && !visualState) {
+      if (freshEvents.length > 0 && currentState) {
         prepareVisualState(currentState);
-      }
-
-      if (freshEvents.length > 0) {
-        // v6.4.8 핵심:
-        // currentState는 최신 서버 상태로 즉시 갱신해서 팀 선택/기술창/상단 UI는 막히지 않게 한다.
-        // 단, 포켓몬 sprite 영역만 visualState로 보호하여 미래 포켓몬이나 GAME_OVER가 먼저 보이지 않게 한다.
-        currentState = state;
-        lastPhaseSeen = state?.phase || lastPhaseSeen;
-        pendingStateAfterAnimation = state;
         animationBusy = true;
-        suspendBattleViewRender = true;
-        render();
-        enqueueEvents(incomingEvents, state);
-        return;
       }
-
-      if (wasAnimating) {
-        pendingStateAfterAnimation = state;
-        enqueueEvents(incomingEvents, state);
-        lastPhaseSeen = state?.phase || lastPhaseSeen;
-        return;
-      }
-
       currentState = state;
-      lastPhaseSeen = state?.phase || lastPhaseSeen;
       render();
-      enqueueEvents(incomingEvents, state);
+      enqueueEvents(incomingEvents);
     });
 
     function renderLobby(lobby){
@@ -969,10 +875,9 @@
     function clonePokemonForVisual(p){ if(!p) return null; return {...p, types:[...(p.types||[])], moves:[...(p.moves||[])], stats:{...(p.stats||{})}, statStages:{...(p.statStages||{})}, volatile:{...(p.volatile||{})}}; }
     function prepareVisualState(baseState){ if(!baseState||animationBusy)return; const s={p1:null,p2:null}; for(const pk of ["p1","p2"]){ const p=baseState.players[pk]; if(p?.team?.length) s[pk]={activeIndex:p.activeIndex, team:p.team.map(clonePokemonForVisual)}; } visualState=s; }
     function visualActivePokemon(pk){
-      if(spriteLock?.[pk]==="fainted_waiting_switch" || hiddenUntilSwitch?.[pk]) return null;
       if(visualState?.[pk]?.team?.length){
         const vp=visualState[pk];
-        return vp.team[vp.activeIndex] || null;
+        return vp.team[vp.activeIndex] || vp.team.find(mon=>!mon.fainted) || vp.team[0] || null;
       }
       return activePokemon(pk);
     }
@@ -984,86 +889,13 @@
       if(visualState?.[pk]) return visualState[pk].activeIndex;
       return currentState?.players?.[pk]?.activeIndex ?? 0;
     }
-    function applyVisualSwitch(pk,to){
-      if(!visualState?.[pk]) return;
-      const idx=visualState[pk].team.findIndex(p=>p.name===to);
-      if(idx>=0){
-        visualState[pk].activeIndex=idx;
-        hiddenUntilSwitch[pk] = false;
-        spriteLock[pk] = null;
-      }
-    }
-    function syncHpToStates(pk, hp){
-      const safeHp = Math.max(0, Number(hp) || 0);
-
-      const vp = visualState?.[pk];
-      const vm = vp?.team?.[vp.activeIndex];
-      if(vm) {
-        vm.hp = safeHp;
-        if(safeHp <= 0) vm.fainted = true;
-      }
-
-      const player = currentState?.players?.[pk];
-      const cm = player?.team?.[player.activeIndex];
-      if(cm) {
-        cm.hp = safeHp;
-        if(safeHp <= 0) cm.fainted = true;
-      }
-    }
-
-    function applyVisualDamage(pk,hp){
-      syncHpToStates(pk, hp);
-    }
-    function applyVisualHeal(pk,hp){ syncHpToStates(pk, hp); }
-    function applyVisualFaint(pk){
-      const vp=visualState?.[pk];
-      const m=vp?.team?.[vp.activeIndex] || activePokemon(pk);
-      if(m){ m.hp=0; m.fainted=true; }
-
-      const player = currentState?.players?.[pk];
-      const cm = player?.team?.[player.activeIndex];
-      if(cm){ cm.hp=0; cm.fainted=true; }
-
-      hiddenUntilSwitch[pk] = true;
-      spriteLock[pk] = "fainted_waiting_switch";
-      hardHideSpriteForRole(pk);
-    }
-    function applyVisualStatus(pk,status){
-      const vp=visualState?.[pk];
-      const m = vp?.team?.[vp.activeIndex] || activePokemon(pk);
-      if(m)m.status=status;
-    }
-    function applyVisualStat(pk,stat,amount){
-      const vp=visualState?.[pk];
-      const m = vp?.team?.[vp.activeIndex] || activePokemon(pk);
-      if(m)m.statStages[stat]=Math.max(-6,Math.min(6,(m.statStages[stat]||0)+amount));
-    }
-    function syncVisualToFinal(){
-      hiddenUntilSwitch = { p1: false, p2: false };
-      spriteLock = { p1: null, p2: null };
-      visualState=null;
-      suspendBattleViewRender = false;
-      renderBattlePanels();
-      renderBattleSprites();
-      renderButtons();
-    }
-
-
-    function uiStateMachineStatus(){
-      return {
-        phase: currentState?.phase || null,
-        animationBusy,
-        suspendBattleViewRender,
-        hasVisualState: !!visualState,
-        hasPendingState: !!pendingStateAfterAnimation,
-        hiddenUntilSwitch: {...hiddenUntilSwitch},
-        spriteLock: {...spriteLock},
-        panelSpriteSplit: true,
-        battleTimelineFix: true,
-        criticalTransitionLock: true,
-        criticalTransitionActive
-      };
-    }
+    function applyVisualSwitch(pk,to){ if(!visualState?.[pk])return; const idx=visualState[pk].team.findIndex(p=>p.name===to); if(idx>=0) visualState[pk].activeIndex=idx; }
+    function applyVisualDamage(pk,hp){ const m=visualActivePokemon(pk); if(m) m.hp=Math.max(0,hp); }
+    function applyVisualHeal(pk,hp){ applyVisualDamage(pk,hp); }
+    function applyVisualFaint(pk){ const m=visualActivePokemon(pk); if(m){m.hp=0;m.fainted=true;} }
+    function applyVisualStatus(pk,status){ const m=visualActivePokemon(pk); if(m)m.status=status; }
+    function applyVisualStat(pk,stat,amount){ const m=visualActivePokemon(pk); if(m)m.statStages[stat]=Math.max(-6,Math.min(6,(m.statStages[stat]||0)+amount)); }
+    function syncVisualToFinal(){ visualState=null; renderBattleView(); renderButtons(); }
 
     function hpPct(p){ return p?.maxHp ? Math.max(0,Math.round((p.hp/p.maxHp)*100)) : 0; }
     function spriteScale(p){
@@ -1125,9 +957,9 @@
     }
 
     function rawEffectiveness(moveType, defenderTypes=[]){ let mult=1; for(const t of defenderTypes){ if(IMMUNE[moveType]?.includes(t)) mult*=0; else if(SUPER[moveType]?.includes(t)) mult*=2; else if(RESIST[moveType]?.includes(t)) mult*=0.5; } return mult; }
-    function battleEffectiveness(moveType, defenderTypes=[]){ const raw=rawEffectiveness(moveType,defenderTypes); return Number.isFinite(raw)?raw:1; }
-    function effectText(mult){ if(mult===0)return "효과 없음"; if(mult>=4)return "효과 4배"; if(mult>=2)return "효과 2배"; if(mult>0&&mult<=0.25)return "효과 0.25배"; if(mult<1)return "효과 0.5배"; return "효과 1배"; }
-    function moveButtonClass(move,mult){ if(!move||move.power===0)return "eff-status"; if(mult===0)return "eff-immune"; if(mult>=4)return "eff-quad"; if(mult>=2)return "eff-super"; if(mult<1)return "eff-resist"; return "eff-neutral"; }
+    function battleEffectiveness(moveType, defenderTypes=[]){ const raw=rawEffectiveness(moveType,defenderTypes); if(raw===0)return 0; if(raw>=2)return 2; if(raw<=0.5)return 0.5; return 1; }
+    function effectText(mult){ if(mult===0)return "효과 없음"; if(mult>=2)return "효과 2배"; if(mult<1)return "효과 0.5배"; return "효과 1배"; }
+    function moveButtonClass(move,mult){ if(!move||move.power===0)return "eff-status"; if(mult===0)return "eff-immune"; if(mult>=2)return "eff-super"; if(mult<1)return "eff-resist"; return "eff-neutral"; }
     function moveDescription(move){ if(!move)return""; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
     function buildMoveHelp(move,enemy){
       if(!move)return"기술 위에 마우스를 올리면 설명이 나옵니다.";
@@ -1138,7 +970,6 @@
       const stabText = stab ? "자속 적용" : "자속 없음";
       const category = move.power>0 ? "공격기" : "변화기";
       const recommend = move.power===0 ? "추천: 상황을 흔드는 보조 선택" :
-        mult>=4 ? "강력 추천: 4배 약점! 지금 누르면 크게 압박 가능" :
         mult>=2 ? "추천: 지금 강하게 압박 가능" :
         mult===0 ? "비추천: 현재 상대에게 효과 없음" :
         mult<1 ? "비추천: 피해량이 낮음" :
@@ -1161,82 +992,6 @@
 
     function updateMoveHelp(idx){ hoveredMoveIndex=idx; const mine=activePokemon(myRole); const enemy=visualActivePokemon(opponentRole()); const panel=document.getElementById("moveHelp"); if(panel&&mine?.moves?.[idx]) panel.innerHTML=buildMoveHelp(mine.moves[idx],enemy); }
     function showCustomEffect(el,content){ el.textContent=content; el.classList.remove("show"); void el.offsetWidth; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),760); }
-
-
-    function hideGameOverOverlay(){
-      const overlay=document.getElementById("overlay");
-      const btn=document.getElementById("overlayResetButton");
-      if(overlay) overlay.classList.remove("show");
-      if(btn) btn.style.display="none";
-    }
-
-    function resetBattlePresentation(reason="reset"){
-      animationEpoch += 1;
-      animationBusy = false;
-      suspendBattleViewRender = false;
-      pendingStateAfterAnimation = null;
-      visualState = null;
-      lastEventIds = new Set();
-      eventQueue = Promise.resolve();
-      visibleBattleLogs = [];
-      hiddenUntilSwitch = { p1: false, p2: false };
-      spriteLock = { p1: null, p2: null };
-      criticalTransitionActive = false;
-      delayedGameOverEvent = null;
-      clearGhostResidues();
-      hideGameOverOverlay();
-      const logs=document.getElementById("logs");
-      if(logs) logs.innerHTML = `<div style="color:#64748b;font-weight:850;">아직 메시지가 없습니다.</div>`;
-      document.querySelectorAll(".sprite").forEach(sprite=>{
-        clearTransientSpriteState(sprite);
-        sprite.style.opacity="";
-        sprite.style.visibility="";
-        sprite.style.pointerEvents="";
-        sprite.removeAttribute("src");
-        sprite.removeAttribute("data-sprite-key");
-      });
-    }
-
-    function shouldResetPresentationForState(nextState){
-      const nextPhase = nextState?.phase;
-      const prevPhase = currentState?.phase || lastPhaseSeen;
-      if(!nextPhase) return false;
-      if(["LOADING","WAITING","TEAM_SELECT"].includes(nextPhase) && prevPhase !== nextPhase) return true;
-      if(nextPhase==="TEAM_SELECT" && (currentState?.winner || currentState?.rankingResult)) return true;
-      return false;
-    }
-
-    function pushVisibleLog(text){
-      const clean=String(text||"").trim();
-      if(!clean) return;
-      visibleBattleLogs.push(clean);
-      if(visibleBattleLogs.length>80) visibleBattleLogs.splice(0, visibleBattleLogs.length-80);
-      renderLogs();
-    }
-
-    function eventLogText(ev){
-      if(!ev) return "";
-      const mine = myRole && myRole !== "spectator";
-      const roleLabel = (role)=> mine ? (role===myRole ? "내" : "상대") : (role==="p1" ? "P1" : "P2");
-      if(ev.type==="turnStart") return ev.text || `${ev.turn}턴`;
-      if(ev.type==="message") return ev.text || "";
-      if(ev.type==="warning") return ev.text ? `⚠ ${ev.text}` : "";
-      if(ev.type==="switch") return `${roleLabel(ev.player)} ${ev.from||"포켓몬"} → ${ev.to||"포켓몬"}`;
-      if(ev.type==="move") return `${roleLabel(ev.attacker)} ${ev.attackerName||"포켓몬"}, ${ev.moveName||"기술"}!`;
-      if(ev.type==="damage") return `${ev.defenderName||"포켓몬"}에게 ${ev.amount} 피해!`;
-      if(ev.type==="statusDamage") return `${ev.name||"포켓몬"}이 ${ev.amount} 피해를 입었다!`;
-      if(ev.type==="heal") return `${ev.name||"포켓몬"}의 HP가 ${ev.amount} 회복되었다!`;
-      if(ev.type==="miss") return "하지만 공격은 빗나갔다!";
-      if(ev.type==="stat"){
-        const statKo={attack:"공격",defense:"방어",speed:"스피드"}[ev.stat]||ev.stat;
-        return `${ev.name||"포켓몬"}의 ${statKo}이/가 ${ev.amount>0?"올라갔다":"떨어졌다"}!`;
-      }
-      if(ev.type==="status") return `${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`;
-      if(ev.type==="skip") return ev.text || (ev.reason==="flinch"?"풀죽어서 움직일 수 없었다!":ev.reason==="sleep"?"잠들어 움직일 수 없다...":ev.reason==="recharge"?"반동으로 움직일 수 없다!":"몸이 저려 움직일 수 없다!");
-      if(ev.type==="faint") return `${ev.name||"포켓몬"}이 쓰러졌다!`;
-      if(ev.type==="gameOver") return `${ev.winner||"승자"} 승리!`;
-      return ev.text || "";
-    }
 
     function render(){
       if(!currentState||!myRole)return;
@@ -1268,7 +1023,7 @@
       if(currentState.phase==="LOADING"){ overlay.classList.add("show"); title.textContent="포켓몬 데이터 로딩 중"; desc.textContent="처음 실행이면 캐시를 만들고 있습니다. 터미널 상태를 확인하세요."; btn.style.display="none"; updateRoomExitButtons(); setMessage("데이터를 준비하는 중...",true); return; }
       if(currentState.phase==="WAITING"){ overlay.classList.add("show"); title.textContent="상대 접속 대기"; desc.textContent="친구가 IP 주소로 접속하면 팀 선택이 시작됩니다."; btn.style.display="none"; updateRoomExitButtons(); setMessage("상대 접속을 기다리는 중...",true); return; }
       if(currentState.phase==="GAME_OVER"){
-        if(animationBusy || pendingStateAfterAnimation || spriteLock.p1 || spriteLock.p2 || !currentState.winner){ overlay.classList.remove("show"); btn.style.display="none"; return; }
+        if(animationBusy){ overlay.classList.remove("show"); return; }
         overlay.classList.add("show");
         title.textContent=`${currentState.winner} 승리!`;
         const rr=currentState.rankingResult;
@@ -1279,6 +1034,7 @@
             : "다시 하기 버튼으로 새 후보를 받아 재시작할 수 있습니다.");
         btn.style.display="inline-block";
         updateRoomExitButtons();
+        setMessage(`${currentState.winner} 승리!`,false);
         return;
       }
       overlay.classList.remove("show"); btn.style.display="none";
@@ -1372,28 +1128,6 @@
       return visualActivePokemon(playerKey) || activePokemon(playerKey);
     }
 
-    function getPanelPokemon(playerKey){
-      // 패널/HP 표시용.
-      // spriteLock 때문에 visualActivePokemon이 null이어도 패널은 visualState의 active slot을 보여준다.
-      // 그래야 기절 처리 후 패널 HP가 13처럼 남지 않고 0으로 즉시 보인다.
-      if(visualState?.[playerKey]?.team?.length){
-        const vp = visualState[playerKey];
-        return vp.team[vp.activeIndex] || null;
-      }
-      return activePokemon(playerKey);
-    }
-
-    function getSpritePokemon(playerKey){
-      // 이미지 표시용.
-      // 기절 후 switch 이벤트 전까지는 어떤 fallback도 허용하지 않는다.
-      if(spriteLock?.[playerKey]==="fainted_waiting_switch" || hiddenUntilSwitch?.[playerKey]) return null;
-      if(visualState?.[playerKey]?.team?.length){
-        const vp = visualState[playerKey];
-        return vp.team[vp.activeIndex] || null;
-      }
-      return activePokemon(playerKey);
-    }
-
     function clearGhostResidues(){
       document.querySelectorAll(".ghost-clone").forEach(el=>el.remove());
     }
@@ -1402,64 +1136,8 @@
       if(!sprite) return;
       sprite.classList.remove("faint-dead","mine-dead","enemy-dead","switch-out","switch-in","attack-up","attack-down","hit","fainted");
       sprite.style.opacity="";
-      sprite.style.visibility="";
       sprite.style.filter="";
       sprite.style.transform="";
-    }
-
-
-    function spriteForRole(pk){
-      return pk===myRole ? document.getElementById("mySprite") : document.getElementById("opponentSprite");
-    }
-
-    function createGhostClone(sprite){
-      if(!sprite || !sprite.src) return null;
-      const rect=sprite.getBoundingClientRect();
-      if(!rect.width || !rect.height) return null;
-      const clone=sprite.cloneNode(true);
-      clone.className="ghost-clone";
-      clone.style.left=`${rect.left}px`;
-      clone.style.top=`${rect.top}px`;
-      clone.style.width=`${rect.width}px`;
-      clone.style.height=`${rect.height}px`;
-      clone.style.maxWidth="none";
-      document.body.appendChild(clone);
-      setTimeout(()=>clone.remove(),1050);
-      return clone;
-    }
-
-    async function playFaintAnimation(pk){
-      const sprite=spriteForRole(pk);
-      if(!sprite) return;
-      createGhostClone(sprite);
-      sprite.classList.remove("switch-in","switch-out","hit");
-      sprite.style.opacity="";
-      sprite.style.pointerEvents="";
-      sprite.classList.add("faint-dead");
-      await sleep(980);
-      sprite.classList.remove("faint-dead");
-      sprite.classList.add("fainted");
-      sprite.style.opacity="0";
-      sprite.style.visibility="hidden";
-      sprite.style.pointerEvents="none";
-      hiddenUntilSwitch[pk] = true;
-      spriteLock[pk] = "fainted_waiting_switch";
-      hardHideSpriteForRole(pk);
-    }
-
-    async function playSwitchInAnimation(pk){
-      spriteLock[pk] = null;
-      hiddenUntilSwitch[pk] = false;
-      renderBattleSprites();
-      const sprite=spriteForRole(pk);
-      if(!sprite) return;
-      sprite.style.opacity="";
-      sprite.style.visibility="";
-      sprite.style.pointerEvents="";
-      sprite.classList.remove("faint-dead","switch-out","hit","fainted");
-      sprite.classList.add("switch-in");
-      await sleep(540);
-      sprite.classList.remove("switch-in");
     }
 
     function prepareSpriteForPokemon(sprite, pokemon, side){
@@ -1477,97 +1155,50 @@
       sprite.dataset.spriteKey = key;
     }
 
-    function getBattleDisplayKeys(){
+    function renderBattleView(){
+      if(!currentState?.players) return;
+
       const mineKey = (myRole==="p1" || myRole==="p2") ? myRole : "p1";
       const enemyKey = (mineKey==="p1") ? "p2" : "p1";
-      return { mineKey, enemyKey };
-    }
 
-    function renderBattlePanels(){
-      if(!currentState?.players) return;
-      const { mineKey, enemyKey } = getBattleDisplayKeys();
-      const mine = getPanelPokemon(mineKey);
-      const enemy = getPanelPokemon(enemyKey);
+      const mine = getDisplayPokemon(mineKey);
+      const enemy = getDisplayPokemon(enemyKey);
 
-      if(enemy){
-        renderPokemonInfo("opponentInfo", enemy, myRole==="spectator" ? `${playerNameOf(enemyKey)} 몬스터` : `${playerNameOf(enemyKey)} 몬스터`, enemyKey);
-      } else {
-        document.getElementById("opponentInfo").innerHTML=`<div class="name-row"><span>상대 포켓몬 준비 중</span></div>`;
+      if(!mine || !enemy){
+        renderEmptyBattle();
+        const msg=document.getElementById("battleMessage");
+        if(msg) {
+          msg.textContent="배틀 데이터를 준비하는 중입니다...";
+          msg.classList.add("waiting");
+        }
+        return;
       }
 
-      if(mine){
-        renderPokemonInfo("myInfo", mine, myRole==="spectator" ? `${playerNameOf(mineKey)} 몬스터` : `${playerNameOf(mineKey)} 몬스터`, mineKey);
-      } else {
-        document.getElementById("myInfo").innerHTML=`<div class="name-row"><span>내 포켓몬 준비 중</span></div>`;
+      renderPokemonInfo("opponentInfo", enemy, myRole==="spectator" ? `${playerNameOf(enemyKey)} 몬스터` : `${playerNameOf(enemyKey)} 몬스터`, enemyKey);
+      renderPokemonInfo("myInfo", mine, myRole==="spectator" ? `${playerNameOf(mineKey)} 몬스터` : `${playerNameOf(mineKey)} 몬스터`, mineKey);
+
+      const enemySprite=document.getElementById("opponentSprite");
+      const mySprite=document.getElementById("mySprite");
+
+      if(enemySprite){
+        prepareSpriteForPokemon(enemySprite, enemy, "enemy");
+        enemySprite.src=enemy.frontSprite || "";
+        enemySprite.alt=enemy.name || "상대 포켓몬";
+        applySpriteSize(enemySprite, enemy);
+        enemySprite.classList.toggle("fainted",!!enemy.fainted);
+      }
+
+      if(mySprite){
+        prepareSpriteForPokemon(mySprite, mine, "mine");
+        mySprite.src=mine.backSprite || mine.frontSprite || "";
+        mySprite.alt=mine.name || "내 포켓몬";
+        applySpriteSize(mySprite, mine);
+        mySprite.classList.toggle("fainted",!!mine.fainted);
       }
 
       renderBenchFor(mineKey);
       const summary=document.getElementById("battleSummaryPanel");
       if(summary) summary.innerHTML=renderBattleSummary();
-    }
-
-    function shouldSkipSpriteRender(pk){
-      return spriteLock?.[pk]==="fainted_waiting_switch" || hiddenUntilSwitch?.[pk];
-    }
-
-    function hardHideSpriteForRole(pk){
-      const sprite = spriteForRole(pk);
-      if(!sprite) return;
-      sprite.classList.add("fainted");
-      sprite.classList.remove("switch-in","switch-out","hit","attack-up","attack-down");
-      sprite.removeAttribute("src");
-      sprite.removeAttribute("data-sprite-key");
-      sprite.style.opacity="0";
-      sprite.style.visibility="hidden";
-      sprite.style.pointerEvents="none";
-    }
-
-    function hideSpriteForRole(pk){
-      hardHideSpriteForRole(pk);
-    }
-
-    function renderOneSprite(pk, side, pokemon){
-      const sprite = pk===myRole ? document.getElementById("mySprite") : document.getElementById("opponentSprite");
-      if(!sprite) return;
-
-      if(spriteLock?.[pk]==="fainted_waiting_switch"){
-        hardHideSpriteForRole(pk);
-        return;
-      }
-
-      if(shouldSkipSpriteRender(pk) || !pokemon){
-        hideSpriteForRole(pk);
-        return;
-      }
-      prepareSpriteForPokemon(sprite, pokemon, side);
-      sprite.src = side==="mine" ? (pokemon.backSprite || pokemon.frontSprite || "") : (pokemon.frontSprite || "");
-      sprite.alt = pokemon.name || (side==="mine" ? "내 포켓몬" : "상대 포켓몬");
-      applySpriteSize(sprite, pokemon);
-      sprite.classList.toggle("fainted", !!pokemon.fainted);
-      if(pokemon.fainted){
-        sprite.style.opacity="0";
-        sprite.style.visibility="hidden";
-        sprite.style.pointerEvents="none";
-      } else {
-        sprite.style.opacity="";
-        sprite.style.visibility="";
-        sprite.style.pointerEvents="";
-      }
-    }
-
-    function renderBattleSprites(){
-      if(!currentState?.players) return;
-      const { mineKey, enemyKey } = getBattleDisplayKeys();
-      const mine = getSpritePokemon(mineKey);
-      const enemy = getSpritePokemon(enemyKey);
-      renderOneSprite(enemyKey, "enemy", enemy);
-      renderOneSprite(mineKey, "mine", mine);
-    }
-
-    function renderBattleView(){
-      if(!currentState?.players) return;
-      renderBattlePanels();
-      renderBattleSprites();
     }
 
     function renderBench(){
@@ -1756,20 +1387,10 @@
       if (currentState.players[opponentRole()] && !currentState.players[opponentRole()].connected && currentState.phase !== "GAME_OVER") {
         // 게임 상태는 유지하고 상대 재접속을 기다립니다.
       }
-      if(currentState.phase==="FORCE_SWITCH"&&currentState.forceSwitchPlayers.includes(myRole)){
-        buttons.innerHTML=`<div class="control-title">내 포켓몬이 쓰러졌습니다. 교체할 포켓몬을 선택하세요. 15초 제한</div>${player.team.map((p,idx)=>`<button class="switch-btn" ${idx===player.activeIndex||p.fainted?"disabled":""} onclick="selectSwitch(${idx})">${p.name}<span class="meta">HP ${p.hp}/${p.maxHp}</span></button>`).join("")}`;
-        return;
-      }
-      if(isCriticalTransitionLocked()){
-        buttons.innerHTML=`<div class="control-title">포켓몬 등장/교체 연출 중입니다.</div>`;
-        return;
-      }
-      if(currentState.phase==="ACTION_SELECT" && !selected){
-        // ACTION_SELECT는 일반 animationBusy보다 우선한다.
-        // 단, faint/switch critical transition이 끝난 뒤에만 입력을 받는다.
-      } else if(currentState.phase==="GAME_OVER"){ buttons.innerHTML=`<div class="control-title">게임 종료</div>`; return; }
-      else if(animationBusy){ buttons.innerHTML=`<div class="control-title">배틀 연출 중입니다.</div>`; return; }
+      if(animationBusy){ buttons.innerHTML=`<div class="control-title">배틀 연출 중입니다.</div>`; return; }
+      if(currentState.phase==="GAME_OVER"){ buttons.innerHTML=`<div class="control-title">게임 종료</div>`; return; }
       if(selected){ buttons.innerHTML=`<div class="control-title">선택 완료! 상대를 기다리는 중...</div>`; return; }
+      if(currentState.phase==="FORCE_SWITCH"&&currentState.forceSwitchPlayers.includes(myRole)){ buttons.innerHTML=`<div class="control-title">교체할 포켓몬을 선택하세요. 15초 제한</div>${player.team.map((p,idx)=>`<button class="switch-btn" ${idx===player.activeIndex||p.fainted?"disabled":""} onclick="selectSwitch(${idx})">${p.name}<span class="meta">HP ${p.hp}/${p.maxHp}</span></button>`).join("")}`; return; }
       if(currentState.phase!=="ACTION_SELECT"){ buttons.innerHTML=`<div class="control-title">턴 처리 중입니다.</div>`; return; }
       if(mine.volatile?.rechargeTurns>0){ buttons.innerHTML=`<div class="control-title">${mine.name}은/는 파괴광선의 반동으로 움직일 수 없습니다.</div><div class="move-help">이번 턴은 기술과 교체를 모두 사용할 수 없습니다.</div>`; return; }
 
@@ -1781,10 +1402,8 @@
 
     function renderLogs(){
       const logs=document.getElementById("logs");
-      const recent=(visibleBattleLogs||[]).slice(-8);
-      logs.innerHTML=recent.length
-        ? recent.map(line=>`<div style="margin-bottom:6px;">• ${escapeHtml(line)}</div>`).join("")
-        : `<div style="color:#64748b;font-weight:850;">아직 메시지가 없습니다.</div>`;
+      const recent=(currentState.logs||[]).slice(-8);
+      logs.innerHTML=recent.map(line=>`<div style="margin-bottom:6px;">• ${escapeHtml(line)}</div>`).join("");
       logs.scrollTop=logs.scrollHeight;
       renderChat();
     }
@@ -1793,14 +1412,8 @@
     function startLocalTimer(){ if(localTimer)clearInterval(localTimer); function tick(){ if(!currentState||!currentState.timerEndAt||["GAME_OVER","WAITING","TEAM_SELECT","LOADING"].includes(currentState.phase)||animationBusy){ document.getElementById("timer").textContent=animationBusy?"…":"-"; return; } const remain=Math.max(0,Math.ceil((currentState.timerEndAt-Date.now())/1000)); document.getElementById("timer").textContent=remain; } tick(); localTimer=setInterval(tick,250); }
     function toggleTeam(id){ if(currentState.phase!=="TEAM_SELECT")return; const idx=selectedTeamIds.indexOf(id); if(idx>=0) selectedTeamIds.splice(idx,1); else { if(selectedTeamIds.length>=2)return; selectedTeamIds.push(id); } renderTeamSelect(); }
     function submitTeam(){ if(selectedTeamIds.length!==2)return; socket.emit("selectTeam",{ids:selectedTeamIds}); }
-    function selectMove(moveIndex){
-      if(animationBusy || isCriticalTransitionLocked()) return;
-      socket.emit("selectAction",{type:"move",moveIndex});
-    }
-    function selectSwitch(targetIndex){
-      if(animationBusy && currentState?.phase!=="FORCE_SWITCH") return;
-      socket.emit("selectAction",{type:"switch",targetIndex});
-    }
+    function selectMove(moveIndex){ if(animationBusy)return; socket.emit("selectAction",{type:"move",moveIndex}); }
+    function selectSwitch(targetIndex){ if(animationBusy)return; socket.emit("selectAction",{type:"switch",targetIndex}); }
     function updateMainActionButton(){
       const btn=document.getElementById("mainActionButton");
       if(!btn||!currentState)return;
@@ -1841,94 +1454,9 @@
       socket.emit("surrender");
     }
 
-    function hasCriticalTransitionEvents(events){
-      return (events || []).some(ev => ev && (ev.type==="faint" || ev.type==="switch" || ev.type==="gameOver"));
-    }
+    function enqueueEvents(events){ const fresh=[]; for(const ev of events){ if(lastEventIds.has(ev.id))continue; lastEventIds.add(ev.id); fresh.push(ev); } if(fresh.length===0)return; eventQueue=eventQueue.then(async()=>{ animationBusy=true; renderButtons(); await sleep(DELAY.turnStart); for(const ev of fresh) await playEventSlow(ev); await sleep(DELAY.end); animationBusy=false; syncVisualToFinal(); if(currentState?.phase==="ACTION_SELECT")setMessage("행동을 선택하세요.",false); else if(currentState?.phase==="FORCE_SWITCH")setMessage("교체할 포켓몬을 선택하세요.",false); renderButtons(); renderOverlay(); startLocalTimer(); }); if(lastEventIds.size>200) lastEventIds=new Set([...lastEventIds].slice(-100)); }
 
-    function isCriticalTransitionLocked(){
-      return criticalTransitionActive || !!spriteLock.p1 || !!spriteLock.p2 || !!hiddenUntilSwitch.p1 || !!hiddenUntilSwitch.p2;
-    }
-
-    function enqueueEvents(events, finalState=null){
-      const fresh=[];
-      for(const ev of events){
-        if(lastEventIds.has(ev.id))continue;
-        lastEventIds.add(ev.id);
-        fresh.push(ev);
-      }
-      if(fresh.length===0){
-        if(animationBusy && finalState){
-          pendingStateAfterAnimation = finalState;
-        } else if(finalState){
-          currentState = finalState;
-          lastPhaseSeen = finalState?.phase || lastPhaseSeen;
-          render();
-          if(finalState.phase==="ACTION_SELECT") renderButtons();
-        }
-        return;
-      }
-
-      const queueEpoch = animationEpoch;
-      const freshHasCriticalTransition = hasCriticalTransitionEvents(fresh);
-      if(freshHasCriticalTransition){
-        criticalTransitionActive = true;
-        renderButtons();
-      }
-      eventQueue=eventQueue.then(async()=>{
-        if(queueEpoch!==animationEpoch) return;
-        animationBusy=true;
-        if(freshHasCriticalTransition) criticalTransitionActive = true;
-        renderButtons();
-        await sleep(DELAY.turnStart);
-        if(queueEpoch!==animationEpoch) return;
-
-        for(const ev of fresh){
-          if(queueEpoch!==animationEpoch) return;
-          if(ev.type==="gameOver"){
-            await playEventSlow(ev, queueEpoch);
-            const text = eventLogText(ev);
-            if(text) pushVisibleLog(text);
-          } else {
-            const text = eventLogText(ev);
-            if(text) pushVisibleLog(text);
-            await playEventSlow(ev, queueEpoch);
-          }
-        }
-
-        if(queueEpoch!==animationEpoch) return;
-        await sleep(DELAY.end);
-        if(queueEpoch!==animationEpoch) return;
-
-        // 이 이벤트 묶음의 최종 state를 여기서만 반영한다.
-        // 애니메이션 도중 더 최신 state가 들어온 경우에는 최신 pending state를 우선 적용한다.
-        // 예: TURN_RESOLVE(배틀 시작 이벤트) 재생 중 ACTION_SELECT가 도착하면 ACTION_SELECT를 버리면 안 된다.
-        const nextStateAfterAnimation = pendingStateAfterAnimation || finalState;
-        if(nextStateAfterAnimation){
-          currentState = nextStateAfterAnimation;
-          lastPhaseSeen = nextStateAfterAnimation?.phase || lastPhaseSeen;
-        }
-        pendingStateAfterAnimation = null;
-
-        animationBusy=false;
-        criticalTransitionActive = false;
-        syncVisualToFinal();
-
-        if(currentState?.phase==="ACTION_SELECT"){
-          hiddenUntilSwitch = { p1: false, p2: false };
-          setMessage("행동을 선택하세요.",false);
-        }
-        else if(currentState?.phase==="FORCE_SWITCH")setMessage("교체할 포켓몬을 선택하세요.",false);
-
-        renderButtons();
-        renderOverlay();
-        startLocalTimer();
-      });
-
-      if(lastEventIds.size>200) lastEventIds=new Set([...lastEventIds].slice(-100));
-    }
-
-    async function playEventSlow(ev, queueEpoch=animationEpoch){
-      if(queueEpoch!==animationEpoch) return;
+    async function playEventSlow(ev){
       if(!myRole||myRole==="spectator"){ if(ev.text)setMessage(ev.text,true); await sleep(DELAY.message); return; }
       if(ev.type==="turnStart"){ setMessage(ev.text||`${ev.turn}턴`,true); await sleep(DELAY.turnStart); return; }
       if(ev.type==="message"||ev.type==="warning"){ setMessage(ev.type==="warning"?`⚠ ${ev.text}`:ev.text,ev.type!=="warning"); await sleep(ev.type==="warning"?DELAY.message+250:DELAY.message); return; }
@@ -1936,32 +1464,21 @@
         lastActionByRole[ev.player]=`교체: ${ev.to}`;
         const isMineSwitch=ev.player===myRole;
         const who=isMineSwitch?"내":"상대";
-        const sprite=spriteForRole(ev.player);
+        const sprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
         const arena=document.querySelector(".arena-stage");
-        const fromMon=hiddenUntilSwitch?.[ev.player] ? null : visualActivePokemon(ev.player);
-        const fromWasFainted=!!(ev.fromFainted || ev.skipSwitchOut || hiddenUntilSwitch?.[ev.player] || fromMon?.fainted || fromMon?.hp<=0);
-
-        if(!fromWasFainted){
-          setMessage(`${who} ${ev.from} 돌아와!`,true);
-          if(sprite){ clearTransientSpriteState(sprite); sprite.classList.add("switch-out"); }
-          await sleep(520);
-        } else {
-          // 기절 후 강제 교체는 쓰러진 포켓몬을 다시 switch-out 하지 않는다.
-          setMessage(`${who}는 다음 포켓몬을 준비하고 있다...`,true);
-          if(sprite){ sprite.classList.remove("switch-out","switch-in","hit"); sprite.classList.add("fainted"); sprite.style.opacity="0"; sprite.style.visibility="hidden"; }
-          await sleep(360);
-        }
-
+        setMessage(`${who} ${ev.from} 돌아와!`,true);
+        if(sprite){ clearTransientSpriteState(sprite); sprite.classList.add("switch-out"); }
         const ring=document.createElement("div");
         ring.className=`summon-ring ${isMineSwitch?"mine-ring":"enemy-ring"}`;
         arena?.appendChild(ring);
+        await sleep(640);
         applyVisualSwitch(ev.player,ev.to);
-        renderBattlePanels();
-        renderBattleSprites();
-        await playSwitchInAnimation(ev.player);
+        renderBattleView();
+        const newSprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        if(newSprite){ clearTransientSpriteState(newSprite); newSprite.classList.add("switch-in"); setTimeout(()=>newSprite.classList.remove("switch-in"),820); }
         setMessage(`${who} ${ev.to}, 가라!`,true);
         setTimeout(()=>ring.remove(),780);
-        await sleep(520);
+        await sleep(DELAY.switch+420);
         return;
       }
       if(ev.type==="move"){
@@ -1989,8 +1506,8 @@
         await sleep(DELAY.effect);
         return;
       }
-      if(ev.type==="damage"||ev.type==="statusDamage"){ const targetKey=ev.defender||ev.target; const isMineHit=targetKey===myRole; const targetSprite=isMineHit?document.getElementById("mySprite"):document.getElementById("opponentSprite"); const targetWrap=isMineHit?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); setMessage(`${isMineHit?"내":"상대"} ${ev.defenderName||ev.name||"포켓몬"}이 ${ev.amount} 피해를 입었다!`,true); targetSprite.classList.add("hit"); showDamage(targetWrap,ev.amount); await sleep(180); applyVisualDamage(targetKey,ev.hp); renderBattlePanels(); await sleep(220); targetSprite.classList.remove("hit"); await sleep(DELAY.damage-400); return; }
-      if(ev.type==="heal"){ const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const effectEl=isMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); showCustomEffect(effectEl,"💚"); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattlePanels(); await sleep(DELAY.damage); return; }
+      if(ev.type==="damage"||ev.type==="statusDamage"){ const targetKey=ev.defender||ev.target; const isMineHit=targetKey===myRole; const targetSprite=isMineHit?document.getElementById("mySprite"):document.getElementById("opponentSprite"); const targetWrap=isMineHit?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); setMessage(`${isMineHit?"내":"상대"} ${ev.defenderName||ev.name||"포켓몬"}이 ${ev.amount} 피해를 입었다!`,true); targetSprite.classList.add("hit"); showDamage(targetWrap,ev.amount); await sleep(180); applyVisualDamage(targetKey,ev.hp); renderBattleView(); await sleep(220); targetSprite.classList.remove("hit"); await sleep(DELAY.damage-400); return; }
+      if(ev.type==="heal"){ const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const effectEl=isMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); showCustomEffect(effectEl,"💚"); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(DELAY.damage); return; }
       if(ev.type==="miss"){ const attackerMine=ev.attacker===myRole; const attackerEffect=attackerMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage("하지만 공격은 빗나갔다!",true); showCustomEffect(attackerEffect,"💦"); await sleep(DELAY.miss); return; }
       if(ev.type==="stat"){
         const isMineTarget=ev.target===myRole;
@@ -2000,32 +1517,51 @@
         const arrows=(ev.amount>0?"⬆️":"⬇️").repeat(Math.min(3,Math.abs(ev.amount)));
         setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}의 ${statKo}이/가 ${ev.amount>0?"올라갔다!":"떨어졌다!"}`,true);
         applyVisualStat(ev.target,ev.stat,ev.amount);
-        renderBattlePanels();
+        renderBattleView();
         showBuffRise(wrap,ev.amount);
         showCustomEffect(effectEl,arrows);
         await sleep(DELAY.stat+220);
         return;
       }
       if(ev.type==="status"){ const isMineTarget=ev.target===myRole; const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect"); const icon={burn:"🔥",poison:"☠️",paralyze:"⚡",sleep:"💤"}[ev.status]||"❗"; setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`,true); applyVisualStatus(ev.target,ev.status); renderBattleView(); showCustomEffect(effectEl,icon); await sleep(DELAY.status); return; }
-      if(ev.type==="skip"){ const isMineTarget=ev.player===myRole; const text=ev.text||(ev.reason==="sleep"?"잠들어 움직일 수 없다...":ev.reason==="recharge"?"반동으로 움직일 수 없다!":ev.reason==="flinch"?"풀죽어서 움직일 수 없었다!":"몸이 저려 움직일 수 없다!"); setMessage(`${isMineTarget?"내":"상대"} 포켓몬은 ${text}`,true); await sleep(DELAY.status); return; }
+      if(ev.type==="skip"){ const isMineTarget=ev.player===myRole; const text=ev.text||(ev.reason==="sleep"?"잠들어 움직일 수 없다...":ev.reason==="recharge"?"반동으로 움직일 수 없다!":"몸이 저려 움직일 수 없다!"); setMessage(`${isMineTarget?"내":"상대"} 포켓몬은 ${text}`,true); await sleep(DELAY.status); return; }
       if(ev.type==="faint"){
         const isMine=ev.target===myRole;
         setMessage(`${isMine?"내":"상대"} ${ev.name||"포켓몬"}이 쓰러졌다!`,true);
-        await playFaintAnimation(ev.target);
+        const sprite=isMine?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        const rect=sprite?.getBoundingClientRect();
+        const arena=document.querySelector(".arena-stage");
+        const arenaRect=arena?.getBoundingClientRect();
+        if(sprite){
+          sprite.classList.remove("fainted","switch-out","switch-in","attack-up","attack-down","hit");
+          sprite.classList.add("faint-dead", isMine ? "mine-dead" : "enemy-dead");
+        }
+        await sleep(780);
+        if(sprite&&arena&&rect&&arenaRect){
+          const ghost=sprite.cloneNode(true);
+          ghost.className=`ghost-clone ${isMine ? "mine-ghost" : "enemy-ghost"}`;
+          ghost.style.left=`${rect.left-arenaRect.left}px`;
+          ghost.style.top=`${rect.top-arenaRect.top}px`;
+          ghost.style.width=`${rect.width}px`;
+          ghost.style.height=`${rect.height}px`;
+          arena.appendChild(ghost);
+          sprite.style.opacity="0";
+          sprite.style.pointerEvents="none";
+          setTimeout(()=>ghost.remove(),1650);
+        }
+        await sleep(920);
         applyVisualFaint(ev.target);
-        renderBattlePanels();
-        // 여기서 renderBattleSprites/renderBattleView를 호출하지 않는다.
-        // 다음 포켓몬은 switch 이벤트에서만 등장해야 죽은 포켓몬 잔상이 재등장하지 않는다.
+        renderBattleView();
+        const finalSprite=isMine?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        if(finalSprite){
+          finalSprite.classList.remove("faint-dead","mine-dead","enemy-dead");
+          finalSprite.classList.add("fainted");
+          finalSprite.style.opacity="";
+        }
+        await sleep(900);
         return;
       }
-      if(ev.type==="gameOver"){
-        await sleep(2400);
-        if(queueEpoch!==animationEpoch) return;
-        const finalPhase = (pendingStateAfterAnimation || currentState)?.phase;
-        if(finalPhase!=="GAME_OVER") return;
-        setMessage(`${ev.winner} 승리!`,false);
-        await sleep(900);
-      }
+      if(ev.type==="gameOver"){ await sleep(2400); setMessage(`${ev.winner} 승리!`,false); await sleep(1200); }
     }
     function showProjectile(fromMine, moveType){
       const arena=document.querySelector(".arena-stage");

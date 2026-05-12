@@ -98,16 +98,17 @@ function rawTypeEffectiveness(moveType, defenderTypes = []) {
 }
 
 function battleEffectiveness(moveType, defenderTypes = []) {
-  const raw = rawTypeEffectiveness(moveType, defenderTypes);
-  if (!Number.isFinite(raw)) return 1;
-  return raw;
+  // p639 안정판 유지 + 4배/0.25배 상성만 복구
+  // 기존 p639는 4배를 2배로, 0.25배를 0.5배로 압축했음.
+  // 전투 재미를 위해 원래 타입 조합 배율을 그대로 사용한다.
+  return rawTypeEffectiveness(moveType, defenderTypes);
 }
 
 function effectivenessLabel(multiplier) {
   if (multiplier === 0) return "효과 없음";
   if (multiplier >= 4) return "효과 4배";
   if (multiplier >= 2) return "효과 2배";
-  if (multiplier <= 0.25 && multiplier > 0) return "효과 0.25배";
+  if (multiplier <= 0.25) return "효과 0.25배";
   if (multiplier < 1) return "효과 0.5배";
   return "효과 1배";
 }

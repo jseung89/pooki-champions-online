@@ -45,7 +45,7 @@ const MOVES = {
 
   wingAttack: { id: "wingAttack", apiName: "wing-attack", name: "날개치기", type: "flying", power: 60, accuracy: 100 },
   aerialAce: { id: "aerialAce", apiName: "aerial-ace", name: "제비반환", type: "flying", power: 60, accuracy: 100 },
-  airSlash: { id: "airSlash", apiName: "air-slash", name: "에어슬래시", type: "flying", power: 75, accuracy: 95, flinchChance: 20, tags: ["flinch"] },
+  airSlash: { id: "airSlash", apiName: "air-slash", name: "에어슬래시", type: "flying", power: 75, accuracy: 95, flinchChance: 30 },
   steelWing: { id: "steelWing", apiName: "steel-wing", name: "강철날개", type: "steel", power: 70, accuracy: 90 },
 
   confusion: { id: "confusion", apiName: "confusion", name: "염동력", type: "psychic", power: 50, accuracy: 100 },
@@ -54,11 +54,11 @@ const MOVES = {
   agility: { id: "agility", apiName: "agility", name: "고속이동", type: "psychic", power: 0, accuracy: 100, statChange: { target: "self", stat: "speed", amount: 2 }, tags: ["setup"] },
 
   bugBite: { id: "bugBite", apiName: "bug-bite", name: "벌레먹기", type: "bug", power: 60, accuracy: 100 },
-  rockSlide: { id: "rockSlide", apiName: "rock-slide", name: "스톤샤워", type: "rock", power: 75, accuracy: 90, flinchChance: 20, tags: ["premium", "flinch"] },
+  rockSlide: { id: "rockSlide", apiName: "rock-slide", name: "스톤샤워", type: "rock", power: 75, accuracy: 90, flinchChance: 30, tags: ["premium"] },
 
   shadowBall: { id: "shadowBall", apiName: "shadow-ball", name: "섀도볼", type: "ghost", power: 80, accuracy: 100, tags: ["premium"] },
   dragonBreath: { id: "dragonBreath", apiName: "dragon-breath", name: "용의숨결", type: "dragon", power: 60, accuracy: 100, effect: { chance: 20, status: "paralyze" } },
-  bite: { id: "bite", apiName: "bite", name: "물기", type: "dark", power: 60, accuracy: 100, flinchChance: 20, tags: ["flinch"] },
+  bite: { id: "bite", apiName: "bite", name: "물기", type: "dark", power: 60, accuracy: 100, flinchChance: 30 },
   crunch: { id: "crunch", apiName: "crunch", name: "깨물어부수기", type: "dark", power: 80, accuracy: 100, tags: ["premium"] },
   suckerPunch: { id: "suckerPunch", apiName: "sucker-punch", name: "기습", type: "dark", power: 70, accuracy: 100, priority: 1, tags: ["priority"] },
 

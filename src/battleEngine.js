@@ -36,7 +36,7 @@ function calculateDamage(attacker, defender, move) {
 
   if (typeMul === 0) return { damage: 0, typeMul };
 
-  const raw = (((move.power * attack) / Math.max(1, defense)) / 3.0 + 10) * burnPenalty * stab * typeMul * randomMul;
+  const raw = (((move.power * attack) / Math.max(1, defense)) / 3.35 + 10) * burnPenalty * stab * typeMul * randomMul;
   return { damage: Math.max(1, Math.floor(raw)), typeMul };
 }
 
@@ -56,21 +56,23 @@ function createBattlePokemon(template) {
     status: null,
     sleepTurns: 0,
     statStages: { attack: 0, defense: 0, speed: 0 },
-    volatile: { rechargeTurns: 0 },
+    volatile: { rechargeTurns: 0, flinch: false },
   };
 }
 
 function hasActionLock(pokemon) {
-  return pokemon?.volatile?.rechargeTurns > 0;
+  return pokemon?.volatile?.rechargeTurns > 0 || pokemon?.volatile?.flinch;
 }
 
 function getDefaultAction(pokemon) {
-  if (hasActionLock(pokemon)) return { type: "recharge", auto: true };
+  if (pokemon?.volatile?.flinch) return { type: "flinch", auto: true };
+  if (pokemon?.volatile?.rechargeTurns > 0) return { type: "recharge", auto: true };
   const idx = pokemon.moves.findIndex((m) => m.power > 0);
   return { type: "move", moveIndex: idx >= 0 ? idx : 0, auto: true };
 }
 
 function getActionLockReason(pokemon) {
+  if (pokemon?.volatile?.flinch) return "풀죽어서 움직일 수 없었다!";
   if (pokemon?.volatile?.rechargeTurns > 0) return "파괴광선의 반동으로 움직일 수 없다!";
   return null;
 }

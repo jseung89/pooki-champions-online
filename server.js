@@ -29,13 +29,14 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 3000;
+// POOKI_P639_BASE_4X_FLINCH
 
 app.use(express.static("public"));
 
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.5.2",
+    version: "6.4.0-p639-4x-flinch",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -529,58 +530,6 @@ function chooseAIAction(role = "p2") {
   return { type: "move", moveIndex: bestIndex, auto: true };
 }
 
-
-function currentActionSeq() {
-  if (!battle) return 0;
-  if (!Number.isInteger(battle.actionSeq)) battle.actionSeq = 0;
-  return battle.actionSeq;
-}
-
-function newActionWindow(reason = "new_action_window") {
-  if (!battle) return 0;
-  battle.actionSeq = currentActionSeq() + 1;
-  battle.actionPhase = battle.phase;
-  for (const pk of ["p1", "p2"]) {
-    if (battle.players?.[pk]) battle.players[pk].selectedAction = null;
-  }
-  opLog(`[ACTION_WINDOW] ${reason} seq=${battle.actionSeq} turn=${battle.turn} phase=${battle.phase}`);
-  return battle.actionSeq;
-}
-
-function markActionForCurrentWindow(role, action) {
-  if (!battle?.players?.[role] || !action) return null;
-  const marked = {
-    ...action,
-    actionTurn: battle.turn,
-    actionSeq: currentActionSeq(),
-    actionPhase: battle.phase,
-  };
-  battle.players[role].selectedAction = marked;
-  return marked;
-}
-
-function isFreshAction(role, phase = battle?.phase) {
-  const action = battle?.players?.[role]?.selectedAction;
-  if (!action) return false;
-  return (
-    action.actionTurn === battle.turn &&
-    action.actionSeq === currentActionSeq() &&
-    action.actionPhase === phase
-  );
-}
-
-function getFreshAction(role, phase = battle?.phase) {
-  return isFreshAction(role, phase) ? battle.players[role].selectedAction : null;
-}
-
-function clearAllSelectedActions(reason = "clear_actions") {
-  if (!battle?.players) return;
-  for (const pk of ["p1", "p2"]) {
-    if (battle.players[pk]) battle.players[pk].selectedAction = null;
-  }
-  opLog(`[ACTION_CLEAR] ${reason}`);
-}
-
 function maybeQueueAIAction(reason = "auto") {
   if (battle.phase !== PHASE.ACTION_SELECT && battle.phase !== PHASE.FORCE_SWITCH) return;
   const ai = battle.players.p2;
@@ -588,19 +537,19 @@ function maybeQueueAIAction(reason = "auto") {
 
   if (battle.phase === PHASE.FORCE_SWITCH) {
     if (battle.forceSwitchPlayers.includes("p2")) {
-      markActionForCurrentWindow("p2", chooseAIAction("p2"));
+      ai.selectedAction = chooseAIAction("p2");
       opLog(`[AI] 강제 교체 선택: ${actionName("p2", ai.selectedAction)}`);
       resolveForceSwitch();
     }
     return;
   }
 
-  if (!isFreshAction("p2", PHASE.ACTION_SELECT)) {
-    markActionForCurrentWindow("p2", chooseAIAction("p2"));
+  if (!ai.selectedAction) {
+    ai.selectedAction = chooseAIAction("p2");
     opLog(`[AI] 행동 선택(${reason}): ${actionName("p2", ai.selectedAction)}`);
   }
 
-  if (isFreshAction("p1", PHASE.ACTION_SELECT) && isFreshAction("p2", PHASE.ACTION_SELECT)) {
+  if (battle.players.p1.selectedAction && battle.players.p2.selectedAction) {
     scheduleRoom(() => resolveTurn(), 350);
   } else {
     emitState();
@@ -728,7 +677,7 @@ function publicPlayer(player) {
     selectedTeamIds: player.teamReady ? player.selectedTeamIds : [],
     team: player.team.map(publicPokemon),
     teamReady: player.teamReady,
-    selectedAction: isFreshAction(player === battle.players.p1 ? "p1" : "p2", battle.phase) ? { type: player.selectedAction.type, auto: !!player.selectedAction.auto } : null,
+    selectedAction: player.selectedAction ? { type: player.selectedAction.type, auto: !!player.selectedAction.auto } : null,
     timeoutCount: player.timeoutCount,
     connected: !!player.socketId || !!player.isAI,
     isAI: !!player.isAI,
@@ -899,12 +848,9 @@ function maybeStartBattle() {
 function autoRechargeActions() {
   for (const pk of ["p1", "p2"]) {
     const mon = active(pk);
-    if (mon && hasActionLock(mon)) markActionForCurrentWindow(pk, { type: "recharge", auto: true });
+    if (mon && hasActionLock(mon)) battle.players[pk].selectedAction = { type: "recharge", auto: true };
   }
 }
-
-const ACTION_SELECT_BASE_MS = 20000;
-const ACTION_SELECT_TRANSITION_GRACE_MS = 5000;
 
 function startActionSelect() {
   if (battle.phase === PHASE.GAME_OVER) return;
@@ -914,25 +860,24 @@ function startActionSelect() {
   if (currentRoom) currentRoom.resolveInProgress = false;
   battle.phase = PHASE.ACTION_SELECT;
   battle.events = [];
-  newActionWindow("start_action_select");
+  battle.players.p1.selectedAction = null;
+  battle.players.p2.selectedAction = null;
 
   autoRechargeActions();
 
   opLog(`[TURN ${battle.turn}] 행동 선택 시작`);
 
-  if (isFreshAction("p1", PHASE.ACTION_SELECT) && isFreshAction("p2", PHASE.ACTION_SELECT)) {
+  if (battle.players.p1.selectedAction && battle.players.p2.selectedAction) {
     scheduleRoom(() => resolveTurn(), 700);
     emitState();
     return;
   }
 
-  const actionSelectMs = ACTION_SELECT_BASE_MS + (battle.pendingTransitionGraceMs || 0);
-  battle.pendingTransitionGraceMs = 0;
-  battle.timerEndAt = Date.now() + actionSelectMs;
+  battle.timerEndAt = Date.now() + 20000;
   const roomId = currentRoom.id;
   currentRoom.timer = setTimeout(() => withRoom(roomId, () => {
     if (battle.phase === PHASE.ACTION_SELECT) resolveTurn();
-  }), actionSelectMs);
+  }), 20000);
 
   emitState();
   scheduleRoom(() => maybeQueueAIAction("turn_start"), 450);
@@ -941,35 +886,18 @@ function startActionSelect() {
 function startForceSwitch(players) {
   if (battle.phase === PHASE.GAME_OVER) return;
   if (!ensureTwoPlayersOrPause("start_force_switch")) return;
-
-  // v6.5.0 안전장치:
-  // 예약된 강제교체가 실행되는 순간 다시 확인한다.
-  // 화면/연출 지연 또는 이전 예약 때문에 살아있는 포켓몬에게 강제교체가 뜨는 일을 방지한다.
-  players = (players || []).filter((pk) => {
-    const mon = active(pk);
-    return mon && mon.fainted && mon.hp <= 0 && hasAliveBench(pk);
-  });
-
-  if (players.length === 0) {
-    opLog("[FORCE_SWITCH] 재검증 결과 강제 교체 대상 없음");
-    battle.forceSwitchPlayers = [];
-    battle.pendingTransitionGraceMs = ACTION_SELECT_TRANSITION_GRACE_MS;
-    scheduleRoom(() => startActionSelect(), 0);
-    return;
-  }
-
   clearBattleTimer();
 
   battle.phase = PHASE.FORCE_SWITCH;
   battle.events = [];
   battle.forceSwitchPlayers = players;
   battle.timerEndAt = Date.now() + 15000;
-  newActionWindow("start_force_switch");
 
-  const targetText = players.map((p) => battle.players[p].label).join(", ");
-  log(`${targetText}의 포켓몬이 쓰러져 교체가 필요합니다!`);
-  addEvent({ type: "message", text: `${targetText}의 포켓몬이 쓰러져 교체가 필요합니다!` });
-  opLog(`[FORCE_SWITCH] ${targetText} 강제 교체 필요`);
+  for (const pk of players) battle.players[pk].selectedAction = null;
+
+  log("교체가 필요합니다!");
+  addEvent({ type: "message", text: "교체가 필요합니다!" });
+  opLog(`[FORCE_SWITCH] ${players.map((p) => battle.players[p].label).join(", ")} 강제 교체 필요`);
 
   const roomId = currentRoom.id;
   currentRoom.timer = setTimeout(() => withRoom(roomId, () => {
@@ -979,7 +907,7 @@ function startForceSwitch(players) {
       if (!battle.players[pk].selectedAction) {
         const player = battle.players[pk];
         const idx = player.team.findIndex((p, i) => i !== player.activeIndex && !p.fainted);
-        if (idx >= 0) markActionForCurrentWindow(pk, { type: "switch", targetIndex: idx, auto: true });
+        if (idx >= 0) player.selectedAction = { type: "switch", targetIndex: idx, auto: true };
       }
     }
     resolveForceSwitch();
@@ -999,18 +927,8 @@ function doSwitch(pk, targetIndex, auto = false) {
   player.activeIndex = targetIndex;
   const next = active(pk);
 
-  const fromFainted = !!prev.fainted || prev.hp <= 0;
-  log(`${player.label}${auto ? "이 시간 초과로" : "이"} ${fromFainted ? "" : `${prev.name}을/를 불러들이고 `}${next.name}을/를 내보냈다!`);
-  addEvent({
-    type: "switch",
-    player: pk,
-    from: prev.name,
-    to: next.name,
-    auto,
-    fromFainted,
-    skipSwitchOut: fromFainted,
-    forceAfterFaint: fromFainted
-  });
+  log(`${player.label}${auto ? "이 시간 초과로" : "이"} ${prev.name}을/를 불러들이고 ${next.name}을/를 내보냈다!`);
+  addEvent({ type: "switch", player: pk, from: prev.name, to: next.name, auto });
   return true;
 }
 
@@ -1047,42 +965,27 @@ function faintPokemon(pk) {
   addEvent({ type: "faint", target: pk, name: mon.name });
 }
 
-
 function flinchChanceOf(move) {
-  if (!move || !move.power || move.power <= 0) return 0;
-
-  const direct = Number(move.flinchChance || 0);
-  if (Number.isFinite(direct) && direct > 0) return Math.max(0, Math.min(100, direct));
-
-  const apiName = String(move.apiName || move.id || "").toLowerCase();
-  const name = String(move.name || "").toLowerCase();
-
-  const flinchMap = {
-    "bite": 20,
-    "headbutt": 20,
-    "rock-slide": 20,
-    "iron-head": 20,
-    "air-slash": 20,
-    "dark-pulse": 15,
-    "waterfall": 15
-  };
-
-  if (flinchMap[apiName]) return flinchMap[apiName];
-
-  const koName = String(move.name || "");
-  if (["물기", "박치기", "스톤샤워", "아이언헤드", "에어슬래시"].includes(koName)) return 20;
-  if (["악의파동", "폭포오르기"].includes(koName)) return 15;
-
+  if (!move) return 0;
+  if (move.flinchChance) return move.flinchChance;
+  if (move.effect?.flinch) return move.effect.chance || move.effect.flinch;
   return 0;
 }
 
-function typeEffectMessage(typeMul) {
-  if (typeMul === 0) return "효과가 없다!";
-  if (typeMul >= 4) return "효과가 엄청났다!";
-  if (typeMul >= 2) return "효과가 굉장했다!";
-  if (typeMul > 0 && typeMul <= 0.25) return "거의 효과가 없는 듯하다...";
-  if (typeMul < 1) return "효과가 별로인 듯하다...";
-  return null;
+function tryApplyFlinch(attackerKey, defenderKey, move) {
+  const chance = flinchChanceOf(move);
+  if (!chance || chance <= 0) return;
+  const defender = active(defenderKey);
+  if (!defender || defender.fainted || defender.hp <= 0) return;
+
+  const alreadyMoved = battle.turnMoved?.[defenderKey];
+  if (alreadyMoved) return;
+
+  if (Math.random() * 100 < chance) {
+    defender.volatile.flinch = true;
+    log(`${defender.name}은/는 풀죽었다!`);
+    addEvent({ type: "warning", text: `${defender.name}은/는 풀죽었다! 다음 행동을 하지 못합니다.` });
+  }
 }
 
 function applyDamage(attackerKey, defenderKey, move) {
@@ -1091,7 +994,6 @@ function applyDamage(attackerKey, defenderKey, move) {
   const result = calculateDamage(attacker, defender, move);
 
   defender.hp = Math.max(0, defender.hp - result.damage);
-  if (result.damage > 0) battle.lastDamageBy = attackerKey;
 
   if (result.typeMul === 0) log(`${defender.name}에게 효과가 없다!`);
   else log(`${defender.name}에게 ${result.damage} 피해!`);
@@ -1108,8 +1010,11 @@ function applyDamage(attackerKey, defenderKey, move) {
     defenderName: defender.name,
   });
 
-  const typeMessage = typeEffectMessage(result.typeMul);
-  if (typeMessage) addEvent({ type: "message", text: typeMessage });
+  if (result.typeMul === 0) addEvent({ type: "message", text: "효과가 없다!" });
+  else if (result.typeMul >= 4) addEvent({ type: "message", text: "효과가 엄청났다! (4배)" });
+  else if (result.typeMul >= 2) addEvent({ type: "message", text: "효과가 굉장했다!" });
+  else if (result.typeMul <= 0.25) addEvent({ type: "message", text: "효과가 거의 없다... (0.25배)" });
+  else if (result.typeMul < 1) addEvent({ type: "message", text: "효과가 별로인 듯하다..." });
 
   const warn = hpWarning(defender);
   if (warn) addEvent({ type: "warning", text: warn });
@@ -1188,7 +1093,6 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   if (move.fixedDamageRatio) {
     const amount = Math.max(1, Math.floor(defender.maxHp * move.fixedDamageRatio));
     defender.hp = Math.max(0, defender.hp - amount);
-    battle.lastDamageBy = attackerKey;
     log(`${defender.name}에게 ${move.name}의 멸망 피해!`);
     addEvent({
       type: "damage",
@@ -1255,44 +1159,35 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   }
 
   if (move.power > 0) {
-    const beforeHp = defender.hp;
     applyDamage(attackerKey, defenderKey, move);
 
     const defenderAfter = active(defenderKey);
-    if (move.effect && defenderAfter && defenderAfter.hp > 0 && !defenderAfter.fainted) {
-      if (canApplyStatus(defenderAfter, move.effect.status) && Math.random() * 100 < move.effect.chance) {
+    if (defenderAfter && defenderAfter.hp > 0 && !defenderAfter.fainted) {
+      if (move.effect?.status && canApplyStatus(defenderAfter, move.effect.status) && Math.random() * 100 < move.effect.chance) {
         applyStatus(defenderAfter, move.effect.status);
         log(`${defenderAfter.name}은/는 ${STATUS_KO[move.effect.status]} 상태가 되었다!`);
         addEvent({ type: "status", target: defenderKey, status: move.effect.status, name: defenderAfter.name });
       }
-    }
-
-    const chance = flinchChanceOf(move);
-    const dealtDamage = beforeHp > (defenderAfter?.hp ?? beforeHp);
-    if (
-      chance > 0 &&
-      dealtDamage &&
-      defenderAfter &&
-      defenderAfter.hp > 0 &&
-      !defenderAfter.fainted &&
-      Math.random() * 100 < chance
-    ) {
-      log(`${defenderAfter.name}은/는 풀죽었다!`);
-      addEvent({ type: "message", text: `${defenderAfter.name}은/는 풀죽었다!` });
-      return true;
+      tryApplyFlinch(attackerKey, defenderKey, move);
     }
   }
-
-  return false;
 }
 
 function processRechargeActions(actions) {
   for (const pk of ["p1", "p2"]) {
     const action = actions[pk];
-    if (!action || action.type !== "recharge") continue;
+    if (!action || (action.type !== "recharge" && action.type !== "flinch")) continue;
 
     const mon = active(pk);
     if (!mon || mon.fainted) continue;
+
+    if (action.type === "flinch" || mon.volatile?.flinch) {
+      const reason = "풀죽어서 움직일 수 없었다!";
+      mon.volatile.flinch = false;
+      log(`${mon.name}은/는 ${reason}`);
+      addEvent({ type: "skip", player: pk, reason: "flinch", text: `${mon.name}은/는 ${reason}` });
+      continue;
+    }
 
     const reason = getActionLockReason(mon) || "반동으로 움직일 수 없다!";
     mon.volatile.rechargeTurns = Math.max(0, mon.volatile.rechargeTurns - 1);
@@ -1320,9 +1215,8 @@ function checkWinner() {
   let winnerRole = null;
 
   if (!p1Alive && !p2Alive) {
-    winnerRole = battle.lastDamageBy === "p1" || battle.lastDamageBy === "p2" ? battle.lastDamageBy : "p1";
-    battle.winner = playerDisplayName(winnerRole);
-    battle.winnerRole = winnerRole;
+    battle.winner = "무승부";
+    battle.winnerRole = null;
   } else if (!p1Alive) {
     winnerRole = "p2";
     battle.winner = playerDisplayName("p2");
@@ -1383,12 +1277,12 @@ function resolveForceSwitch() {
   battle.events = [];
 
   for (const pk of battle.forceSwitchPlayers) {
-    const action = getFreshAction(pk, PHASE.FORCE_SWITCH);
+    const action = battle.players[pk].selectedAction;
     if (!action || action.type !== "switch") continue;
     doSwitch(pk, action.targetIndex, action.auto);
+    battle.players[pk].selectedAction = null;
   }
 
-  clearAllSelectedActions("resolve_force_switch_done");
   battle.forceSwitchPlayers = [];
 
   if (checkWinner()) {
@@ -1397,7 +1291,6 @@ function resolveForceSwitch() {
   }
 
   battle.turn += 1;
-  battle.pendingTransitionGraceMs = ACTION_SELECT_TRANSITION_GRACE_MS;
   emitState();
   scheduleRoom(() => startActionSelect(), 1500);
 }
@@ -1426,19 +1319,15 @@ function resolveTurn() {
 
   battle.phase = PHASE.TURN_RESOLVE;
   battle.events = [];
-
-  const freshActions = {
-    p1: getFreshAction("p1", PHASE.ACTION_SELECT),
-    p2: getFreshAction("p2", PHASE.ACTION_SELECT),
-  };
+  battle.turnMoved = { p1: false, p2: false };
 
   const actions = {
-    p1: freshActions.p1 || getDefaultAction(active("p1")),
-    p2: freshActions.p2 || getDefaultAction(active("p2")),
+    p1: battle.players.p1.selectedAction || getDefaultAction(active("p1")),
+    p2: battle.players.p2.selectedAction || getDefaultAction(active("p2")),
   };
 
   for (const pk of ["p1", "p2"]) {
-    if (!freshActions[pk]) {
+    if (!battle.players[pk].selectedAction) {
       battle.players[pk].timeoutCount += 1;
       addEvent({ type: "message", text: `${battle.players[pk].label}이 시간 초과로 기본 행동을 선택했다!` });
     } else {
@@ -1457,7 +1346,6 @@ function resolveTurn() {
   processRechargeActions(actions);
 
   const moveUsers = sortMoveUsers(buildMoveUsers(actions), active);
-  const flinchedThisTurn = new Set();
 
   for (const user of moveUsers) {
     const attackerKey = user.playerKey;
@@ -1468,18 +1356,11 @@ function resolveTurn() {
     if (!attacker || attacker.fainted || attacker.hp <= 0) continue;
     if (!defender || defender.fainted || defender.hp <= 0) continue;
 
-    if (flinchedThisTurn.has(attackerKey)) {
-      log(`${attacker.name}은/는 풀죽어서 움직일 수 없었다!`);
-      addEvent({ type: "skip", player: attackerKey, reason: "flinch", text: `${attacker.name}은/는 풀죽어서 움직일 수 없었다!` });
-      continue;
-    }
-
-    const didFlinch = useMove(attackerKey, defenderKey, user.moveIndex);
-    if (didFlinch && moveUsers.some((nextUser) => nextUser.playerKey === defenderKey)) {
-      flinchedThisTurn.add(defenderKey);
-    }
+    useMove(attackerKey, defenderKey, user.moveIndex);
+    battle.turnMoved[attackerKey] = true;
   }
 
+  battle.turnMoved = null;
   processEndTurnStatus();
 
   opLog(`[TURN ${battle.turn}] 처리 완료`);
@@ -1489,7 +1370,6 @@ function resolveTurn() {
     return;
   }
 
-  clearAllSelectedActions("resolve_turn_done");
   const forceTargets = getForceSwitchTargets();
   emitState();
 
@@ -1499,7 +1379,6 @@ function resolveTurn() {
   }
 
   battle.turn += 1;
-  battle.pendingTransitionGraceMs = ACTION_SELECT_TRANSITION_GRACE_MS;
   scheduleRoom(() => startActionSelect(), 1700);
 }
 
@@ -1511,7 +1390,7 @@ function validateAction(role, action) {
     const mon = active(role);
     if (!mon || mon.fainted) return false;
 
-    if (hasActionLock(mon)) return action.type === "recharge";
+    if (hasActionLock(mon)) return action.type === "recharge" || action.type === "flinch";
 
     if (action.type === "move") return Number.isInteger(action.moveIndex) && !!mon.moves[action.moveIndex];
     if (action.type === "switch") {
@@ -2119,7 +1998,7 @@ io.on("connection", (socket) => {
       if (battle.phase !== PHASE.ACTION_SELECT && battle.phase !== PHASE.FORCE_SWITCH) return;
       if (!validateAction(role, action)) return;
 
-      markActionForCurrentWindow(role, action);
+      battle.players[role].selectedAction = action;
 
       if (battle.players.p2.isAI) {
         maybeQueueAIAction("player_action");
@@ -2128,11 +2007,11 @@ io.on("connection", (socket) => {
       emitState();
 
       if (battle.phase === PHASE.ACTION_SELECT) {
-        if (isFreshAction("p1", PHASE.ACTION_SELECT) && isFreshAction("p2", PHASE.ACTION_SELECT)) resolveTurn();
+        if (battle.players.p1.selectedAction && battle.players.p2.selectedAction) resolveTurn();
       }
 
       if (battle.phase === PHASE.FORCE_SWITCH) {
-        const done = battle.forceSwitchPlayers.every((pk) => isFreshAction(pk, PHASE.FORCE_SWITCH));
+        const done = battle.forceSwitchPlayers.every((pk) => battle.players[pk].selectedAction);
         if (done) resolveForceSwitch();
       }
     });
@@ -2210,7 +2089,6 @@ io.on("connection", (socket) => {
 async function start() {
   assertUniqueLoginHelpers();
   console.log("========================================");
-// POOKI_SERVER_VERSION_6_5_2
   console.log(" 푸끼몬 챔피언스 온라인");
   console.log("========================================");
   console.log("[BOOT] 서버 시작 중...");
