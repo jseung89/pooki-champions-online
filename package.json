@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.5-1",
-  "description": "Pookimon Champions ONLINE v6.5.1 battle timeline fix",
+  "version": "0.6.5-2",
+  "description": "Pookimon Champions ONLINE v6.5.2 critical transition lock",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

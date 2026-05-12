@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.5.1",
+    version: "6.5.2",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -903,6 +903,9 @@ function autoRechargeActions() {
   }
 }
 
+const ACTION_SELECT_BASE_MS = 20000;
+const ACTION_SELECT_TRANSITION_GRACE_MS = 5000;
+
 function startActionSelect() {
   if (battle.phase === PHASE.GAME_OVER) return;
   if (!ensureTwoPlayersOrPause("start_action_select")) return;
@@ -923,11 +926,13 @@ function startActionSelect() {
     return;
   }
 
-  battle.timerEndAt = Date.now() + 20000;
+  const actionSelectMs = ACTION_SELECT_BASE_MS + (battle.pendingTransitionGraceMs || 0);
+  battle.pendingTransitionGraceMs = 0;
+  battle.timerEndAt = Date.now() + actionSelectMs;
   const roomId = currentRoom.id;
   currentRoom.timer = setTimeout(() => withRoom(roomId, () => {
     if (battle.phase === PHASE.ACTION_SELECT) resolveTurn();
-  }), 20000);
+  }), actionSelectMs);
 
   emitState();
   scheduleRoom(() => maybeQueueAIAction("turn_start"), 450);
@@ -948,6 +953,7 @@ function startForceSwitch(players) {
   if (players.length === 0) {
     opLog("[FORCE_SWITCH] 재검증 결과 강제 교체 대상 없음");
     battle.forceSwitchPlayers = [];
+    battle.pendingTransitionGraceMs = ACTION_SELECT_TRANSITION_GRACE_MS;
     scheduleRoom(() => startActionSelect(), 0);
     return;
   }
@@ -1391,6 +1397,7 @@ function resolveForceSwitch() {
   }
 
   battle.turn += 1;
+  battle.pendingTransitionGraceMs = ACTION_SELECT_TRANSITION_GRACE_MS;
   emitState();
   scheduleRoom(() => startActionSelect(), 1500);
 }
@@ -1492,6 +1499,7 @@ function resolveTurn() {
   }
 
   battle.turn += 1;
+  battle.pendingTransitionGraceMs = ACTION_SELECT_TRANSITION_GRACE_MS;
   scheduleRoom(() => startActionSelect(), 1700);
 }
 
@@ -2202,7 +2210,7 @@ io.on("connection", (socket) => {
 async function start() {
   assertUniqueLoginHelpers();
   console.log("========================================");
-// POOKI_SERVER_VERSION_6_5_1
+// POOKI_SERVER_VERSION_6_5_2
   console.log(" 푸끼몬 챔피언스 온라인");
   console.log("========================================");
   console.log("[BOOT] 서버 시작 중...");

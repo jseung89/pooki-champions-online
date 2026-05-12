@@ -649,7 +649,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v651";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v652";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -718,6 +718,7 @@
     let visibleBattleLogs = [], animationEpoch = 0, lastPhaseSeen = null;
     let hiddenUntilSwitch = { p1: false, p2: false };
     let spriteLock = { p1: null, p2: null };
+    let criticalTransitionActive = false;
     let delayedGameOverEvent = null;
     let suspendBattleViewRender = false;
     let lastActionByRole = { p1: "아직 없음", p2: "아직 없음" };
@@ -773,6 +774,7 @@
       visibleBattleLogs = [];
       hiddenUntilSwitch = { p1: false, p2: false };
       spriteLock = { p1: null, p2: null };
+      criticalTransitionActive = false;
       delayedGameOverEvent = null;
       animationEpoch += 1;
       animationBusy = false;
@@ -1057,7 +1059,9 @@
         hiddenUntilSwitch: {...hiddenUntilSwitch},
         spriteLock: {...spriteLock},
         panelSpriteSplit: true,
-        battleTimelineFix: true
+        battleTimelineFix: true,
+        criticalTransitionLock: true,
+        criticalTransitionActive
       };
     }
 
@@ -1177,6 +1181,7 @@
       visibleBattleLogs = [];
       hiddenUntilSwitch = { p1: false, p2: false };
       spriteLock = { p1: null, p2: null };
+      criticalTransitionActive = false;
       delayedGameOverEvent = null;
       clearGhostResidues();
       hideGameOverOverlay();
@@ -1755,9 +1760,13 @@
         buttons.innerHTML=`<div class="control-title">내 포켓몬이 쓰러졌습니다. 교체할 포켓몬을 선택하세요. 15초 제한</div>${player.team.map((p,idx)=>`<button class="switch-btn" ${idx===player.activeIndex||p.fainted?"disabled":""} onclick="selectSwitch(${idx})">${p.name}<span class="meta">HP ${p.hp}/${p.maxHp}</span></button>`).join("")}`;
         return;
       }
+      if(isCriticalTransitionLocked()){
+        buttons.innerHTML=`<div class="control-title">포켓몬 등장/교체 연출 중입니다.</div>`;
+        return;
+      }
       if(currentState.phase==="ACTION_SELECT" && !selected){
-        // ACTION_SELECT는 animationBusy/pendingState보다 우선한다.
-        // 유저가 못 눌러서 시간초과 자동공격되는 상황을 막는다.
+        // ACTION_SELECT는 일반 animationBusy보다 우선한다.
+        // 단, faint/switch critical transition이 끝난 뒤에만 입력을 받는다.
       } else if(currentState.phase==="GAME_OVER"){ buttons.innerHTML=`<div class="control-title">게임 종료</div>`; return; }
       else if(animationBusy){ buttons.innerHTML=`<div class="control-title">배틀 연출 중입니다.</div>`; return; }
       if(selected){ buttons.innerHTML=`<div class="control-title">선택 완료! 상대를 기다리는 중...</div>`; return; }
@@ -1784,8 +1793,14 @@
     function startLocalTimer(){ if(localTimer)clearInterval(localTimer); function tick(){ if(!currentState||!currentState.timerEndAt||["GAME_OVER","WAITING","TEAM_SELECT","LOADING"].includes(currentState.phase)||animationBusy){ document.getElementById("timer").textContent=animationBusy?"…":"-"; return; } const remain=Math.max(0,Math.ceil((currentState.timerEndAt-Date.now())/1000)); document.getElementById("timer").textContent=remain; } tick(); localTimer=setInterval(tick,250); }
     function toggleTeam(id){ if(currentState.phase!=="TEAM_SELECT")return; const idx=selectedTeamIds.indexOf(id); if(idx>=0) selectedTeamIds.splice(idx,1); else { if(selectedTeamIds.length>=2)return; selectedTeamIds.push(id); } renderTeamSelect(); }
     function submitTeam(){ if(selectedTeamIds.length!==2)return; socket.emit("selectTeam",{ids:selectedTeamIds}); }
-    function selectMove(moveIndex){ if(animationBusy)return; socket.emit("selectAction",{type:"move",moveIndex}); }
-    function selectSwitch(targetIndex){ if(animationBusy)return; socket.emit("selectAction",{type:"switch",targetIndex}); }
+    function selectMove(moveIndex){
+      if(animationBusy || isCriticalTransitionLocked()) return;
+      socket.emit("selectAction",{type:"move",moveIndex});
+    }
+    function selectSwitch(targetIndex){
+      if(animationBusy && currentState?.phase!=="FORCE_SWITCH") return;
+      socket.emit("selectAction",{type:"switch",targetIndex});
+    }
     function updateMainActionButton(){
       const btn=document.getElementById("mainActionButton");
       if(!btn||!currentState)return;
@@ -1826,6 +1841,14 @@
       socket.emit("surrender");
     }
 
+    function hasCriticalTransitionEvents(events){
+      return (events || []).some(ev => ev && (ev.type==="faint" || ev.type==="switch" || ev.type==="gameOver"));
+    }
+
+    function isCriticalTransitionLocked(){
+      return criticalTransitionActive || !!spriteLock.p1 || !!spriteLock.p2 || !!hiddenUntilSwitch.p1 || !!hiddenUntilSwitch.p2;
+    }
+
     function enqueueEvents(events, finalState=null){
       const fresh=[];
       for(const ev of events){
@@ -1846,9 +1869,15 @@
       }
 
       const queueEpoch = animationEpoch;
+      const freshHasCriticalTransition = hasCriticalTransitionEvents(fresh);
+      if(freshHasCriticalTransition){
+        criticalTransitionActive = true;
+        renderButtons();
+      }
       eventQueue=eventQueue.then(async()=>{
         if(queueEpoch!==animationEpoch) return;
         animationBusy=true;
+        if(freshHasCriticalTransition) criticalTransitionActive = true;
         renderButtons();
         await sleep(DELAY.turnStart);
         if(queueEpoch!==animationEpoch) return;
@@ -1881,6 +1910,7 @@
         pendingStateAfterAnimation = null;
 
         animationBusy=false;
+        criticalTransitionActive = false;
         syncVisualToFinal();
 
         if(currentState?.phase==="ACTION_SELECT"){

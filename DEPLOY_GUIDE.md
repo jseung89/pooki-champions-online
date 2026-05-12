@@ -200,3 +200,10 @@ v6.3
 - HP currentState/visualState 동시 보정
 - sprite src hard lock
 - ACTION_SELECT 우선 렌더링
+
+
+## v6.5.2 - Critical Transition Lock 패치
+
+- criticalTransitionActive 추가
+- faint/switch 중 기술 입력 잠금
+- ACTION_SELECT 타이머 grace 5초 추가

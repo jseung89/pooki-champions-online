@@ -1,3 +1,23 @@
+## v6.5.2 - Critical Transition Lock 패치
+
+- 팀 선택/AI 시작 흐름은 건드리지 않음
+- 서버와 프론트의 전투 전환 시간축을 보정
+- 프론트 criticalTransitionActive 추가
+  - faint / switch / gameOver 이벤트 묶음 처리 중에는 기술 입력을 잠금
+  - switch 이벤트가 큐에 남아 있는데 다음 ACTION_SELECT 기술창이 먼저 열리는 문제 방지
+  - 죽은 포켓몬에게 뒤늦게 “가라!” 메시지가 뜨는 꼬임 방지
+- renderButtons 우선순위 수정
+  - FORCE_SWITCH 대상이면 교체창 우선 표시
+  - critical transition 중이면 “포켓몬 등장/교체 연출 중” 표시
+  - critical transition이 끝난 뒤 ACTION_SELECT 기술창 표시
+- selectMove 클라이언트 가드 추가
+  - critical transition 중 기술 선택 전송 차단
+- 서버 ACTION_SELECT grace time 추가
+  - 기절/교체 직후 다음 행동 선택 타이머에 5초 여유 부여
+  - 연출 중 버튼 잠금 때문에 유저가 못 눌렀는데 시간초과 자동공격되는 문제 완화
+- v6.5.1의 HP sync / sprite hard lock / FORCE_SWITCH 재검증 유지
+
+
 ## v6.5.1 - Sprite Hard Lock + HP Sync + Action Priority 패치
 
 - 팀 선택/시작 흐름은 건드리지 않음
