@@ -439,6 +439,39 @@
     .login-help{position:static!important;display:block!important;margin:0!important;padding:2px 0 0!important;min-height:auto!important;line-height:1.35!important;color:#475569!important;font-size:12px!important;font-weight:800!important;flex:0 0 auto!important;}
     .login-error{position:static!important;display:block!important;margin:0!important;min-height:18px!important;line-height:1.35!important;color:#dc2626!important;font-size:13px!important;font-weight:900!important;flex:0 0 auto!important;}
 
+  
+    /* v6.4.5 기절/교체 연출 복구 */
+    .sprite.faint-dead{
+      animation:faintDead 950ms ease-in forwards!important;
+      filter:grayscale(1) brightness(.72)!important;
+      pointer-events:none!important;
+    }
+    .sprite.switch-in{
+      animation:switchInPop 520ms cubic-bezier(.2,1.3,.35,1) both!important;
+    }
+    .ghost-clone{
+      position:fixed;
+      z-index:9999;
+      pointer-events:none;
+      opacity:.72;
+      filter:grayscale(1) drop-shadow(0 8px 16px rgba(59,130,246,.35));
+      animation:ghostAscend 950ms ease-out forwards;
+    }
+    @keyframes faintDead{
+      0%{opacity:1;transform:translateY(0) rotate(0deg) scale(1);}
+      45%{opacity:.82;transform:translateY(10px) rotate(-8deg) scale(.98);}
+      100%{opacity:0;transform:translateY(38px) rotate(-18deg) scale(.86);}
+    }
+    @keyframes ghostAscend{
+      0%{opacity:.66;transform:translateY(0) scale(.92);}
+      100%{opacity:0;transform:translateY(-95px) scale(.68);}
+    }
+    @keyframes switchInPop{
+      0%{opacity:0;transform:translateY(28px) scale(.78);}
+      65%{opacity:1;transform:translateY(-5px) scale(1.05);}
+      100%{opacity:1;transform:translateY(0) scale(1);}
+    }
+
   </style>
 
 </head>
@@ -599,7 +632,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v644";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v645";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -1232,6 +1265,53 @@
       sprite.style.transform="";
     }
 
+
+    function spriteForRole(pk){
+      return pk===myRole ? document.getElementById("mySprite") : document.getElementById("opponentSprite");
+    }
+
+    function createGhostClone(sprite){
+      if(!sprite || !sprite.src) return null;
+      const rect=sprite.getBoundingClientRect();
+      if(!rect.width || !rect.height) return null;
+      const clone=sprite.cloneNode(true);
+      clone.className="ghost-clone";
+      clone.style.left=`${rect.left}px`;
+      clone.style.top=`${rect.top}px`;
+      clone.style.width=`${rect.width}px`;
+      clone.style.height=`${rect.height}px`;
+      clone.style.maxWidth="none";
+      document.body.appendChild(clone);
+      setTimeout(()=>clone.remove(),1050);
+      return clone;
+    }
+
+    async function playFaintAnimation(pk){
+      const sprite=spriteForRole(pk);
+      if(!sprite) return;
+      createGhostClone(sprite);
+      sprite.classList.remove("switch-in","switch-out","hit");
+      sprite.style.opacity="";
+      sprite.style.pointerEvents="";
+      sprite.classList.add("faint-dead");
+      await sleep(980);
+      sprite.classList.remove("faint-dead");
+      sprite.classList.add("fainted");
+      sprite.style.opacity="0";
+      sprite.style.pointerEvents="none";
+    }
+
+    async function playSwitchInAnimation(pk){
+      const sprite=spriteForRole(pk);
+      if(!sprite) return;
+      sprite.style.opacity="";
+      sprite.style.pointerEvents="";
+      sprite.classList.remove("faint-dead","switch-out","hit","fainted");
+      sprite.classList.add("switch-in");
+      await sleep(540);
+      sprite.classList.remove("switch-in");
+    }
+
     function prepareSpriteForPokemon(sprite, pokemon, side){
       if(!sprite || !pokemon) return;
       const key = `${side}:${pokemon.id}:${pokemon.name}:${pokemon.fainted ? "dead" : "alive"}`;
@@ -1574,9 +1654,15 @@
 
         for(const ev of fresh){
           if(queueEpoch!==animationEpoch) return;
-          const text = eventLogText(ev);
-          if(text) pushVisibleLog(text);
-          await playEventSlow(ev, queueEpoch);
+          if(ev.type==="gameOver"){
+            await playEventSlow(ev, queueEpoch);
+            const text = eventLogText(ev);
+            if(text) pushVisibleLog(text);
+          } else {
+            const text = eventLogText(ev);
+            if(text) pushVisibleLog(text);
+            await playEventSlow(ev, queueEpoch);
+          }
         }
 
         if(queueEpoch!==animationEpoch) return;
@@ -1616,19 +1702,19 @@
         lastActionByRole[ev.player]=`교체: ${ev.to}`;
         const isMineSwitch=ev.player===myRole;
         const who=isMineSwitch?"내":"상대";
-        const sprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        const sprite=spriteForRole(ev.player);
         const arena=document.querySelector(".arena-stage");
         const fromMon=visualActivePokemon(ev.player);
-        const fromWasFainted=!!(fromMon?.fainted || fromMon?.hp<=0);
+        const fromWasFainted=!!(ev.fromFainted || ev.skipSwitchOut || fromMon?.fainted || fromMon?.hp<=0);
 
         if(!fromWasFainted){
           setMessage(`${who} ${ev.from} 돌아와!`,true);
           if(sprite){ clearTransientSpriteState(sprite); sprite.classList.add("switch-out"); }
           await sleep(520);
         } else {
-          // 기절 후 강제 교체는 쓰러진 포켓몬을 다시 불러오지 않는다.
+          // 기절 후 강제 교체는 쓰러진 포켓몬을 다시 switch-out 하지 않는다.
           setMessage(`${who}는 다음 포켓몬을 준비하고 있다...`,true);
-          if(sprite){ clearTransientSpriteState(sprite); sprite.classList.add("fainted"); sprite.style.opacity="0"; }
+          if(sprite){ sprite.classList.remove("switch-out","switch-in","hit"); sprite.classList.add("fainted"); sprite.style.opacity="0"; }
           await sleep(360);
         }
 
@@ -1637,11 +1723,10 @@
         arena?.appendChild(ring);
         applyVisualSwitch(ev.player,ev.to);
         renderBattleView();
-        const newSprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
-        if(newSprite){ clearTransientSpriteState(newSprite); newSprite.style.opacity=""; newSprite.style.pointerEvents=""; newSprite.classList.add("switch-in"); setTimeout(()=>newSprite.classList.remove("switch-in"),820); }
+        await playSwitchInAnimation(ev.player);
         setMessage(`${who} ${ev.to}, 가라!`,true);
         setTimeout(()=>ring.remove(),780);
-        await sleep(DELAY.switch+420);
+        await sleep(520);
         return;
       }
       if(ev.type==="move"){
@@ -1691,27 +1776,20 @@
       if(ev.type==="faint"){
         const isMine=ev.target===myRole;
         setMessage(`${isMine?"내":"상대"} ${ev.name||"포켓몬"}이 쓰러졌다!`,true);
-        const sprite=isMine?document.getElementById("mySprite"):document.getElementById("opponentSprite");
-        if(sprite){
-          sprite.classList.remove("fainted","switch-out","switch-in","attack-up","attack-down","hit");
-          sprite.style.opacity="";
-          sprite.style.pointerEvents="";
-          sprite.classList.add("faint-dead", isMine ? "mine-dead" : "enemy-dead");
-        }
-        await sleep(820);
+        await playFaintAnimation(ev.target);
         applyVisualFaint(ev.target);
-        if(sprite){
-          sprite.classList.remove("faint-dead","mine-dead","enemy-dead");
-          sprite.classList.add("fainted");
-          sprite.style.opacity="0";
-          sprite.style.pointerEvents="none";
-        }
-        await sleep(520);
         // 여기서 renderBattleView를 다시 호출하지 않는다.
         // 다음 포켓몬은 switch 이벤트에서만 등장해야 죽은 포켓몬 잔상이 재등장하지 않는다.
         return;
       }
-      if(ev.type==="gameOver"){ await sleep(2400); if(queueEpoch!==animationEpoch || currentState?.phase!=="GAME_OVER") return; setMessage(`${ev.winner} 승리!`,false); await sleep(1200); }
+      if(ev.type==="gameOver"){
+        await sleep(2400);
+        if(queueEpoch!==animationEpoch) return;
+        const finalPhase = (pendingStateAfterAnimation || currentState)?.phase;
+        if(finalPhase!=="GAME_OVER") return;
+        setMessage(`${ev.winner} 승리!`,false);
+        await sleep(900);
+      }
     }
     function showProjectile(fromMine, moveType){
       const arena=document.querySelector(".arena-stage");

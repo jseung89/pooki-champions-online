@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.4.4",
+    version: "6.4.5",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -976,8 +976,9 @@ function doSwitch(pk, targetIndex, auto = false) {
   player.activeIndex = targetIndex;
   const next = active(pk);
 
-  log(`${player.label}${auto ? "이 시간 초과로" : "이"} ${prev.name}을/를 불러들이고 ${next.name}을/를 내보냈다!`);
-  addEvent({ type: "switch", player: pk, from: prev.name, to: next.name, auto });
+  const fromFainted = !!prev.fainted || prev.hp <= 0;
+  log(`${player.label}${auto ? "이 시간 초과로" : "이"} ${fromFainted ? "" : `${prev.name}을/를 불러들이고 `}${next.name}을/를 내보냈다!`);
+  addEvent({ type: "switch", player: pk, from: prev.name, to: next.name, auto, fromFainted, skipSwitchOut: fromFainted });
   return true;
 }
 
@@ -1058,6 +1059,7 @@ function applyDamage(attackerKey, defenderKey, move) {
   const result = calculateDamage(attacker, defender, move);
 
   defender.hp = Math.max(0, defender.hp - result.damage);
+  if (result.damage > 0) battle.lastDamageBy = attackerKey;
 
   if (result.typeMul === 0) log(`${defender.name}에게 효과가 없다!`);
   else log(`${defender.name}에게 ${result.damage} 피해!`);
@@ -1154,6 +1156,7 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   if (move.fixedDamageRatio) {
     const amount = Math.max(1, Math.floor(defender.maxHp * move.fixedDamageRatio));
     defender.hp = Math.max(0, defender.hp - amount);
+    battle.lastDamageBy = attackerKey;
     log(`${defender.name}에게 ${move.name}의 멸망 피해!`);
     addEvent({
       type: "damage",
@@ -1285,8 +1288,9 @@ function checkWinner() {
   let winnerRole = null;
 
   if (!p1Alive && !p2Alive) {
-    battle.winner = "무승부";
-    battle.winnerRole = null;
+    winnerRole = battle.lastDamageBy === "p1" || battle.lastDamageBy === "p2" ? battle.lastDamageBy : "p1";
+    battle.winner = playerDisplayName(winnerRole);
+    battle.winnerRole = winnerRole;
   } else if (!p1Alive) {
     winnerRole = "p2";
     battle.winner = playerDisplayName("p2");
