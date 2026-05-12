@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.4-6",
-  "description": "Pookimon Champions ONLINE v6.4.6 faint action select and gameover guard patch",
+  "version": "0.6.4-7",
+  "description": "Pookimon Champions ONLINE v6.4.7 Battle UI state machine refactor",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

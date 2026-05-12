@@ -172,3 +172,10 @@ v6.3
 - hiddenUntilSwitch 추가
 - ACTION_SELECT pending 보존
 - GAME_OVER overlay 표시 가드 강화
+
+
+## v6.4.7 - Battle UI State Machine 리팩토링 패치
+
+- fresh events가 있는 state를 즉시 렌더링하지 않고 pending으로 보관
+- 큐 종료 후 최신 state 반영
+- 기절 중 한쪽 슬롯만 숨김 처리

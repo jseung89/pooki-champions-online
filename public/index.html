@@ -649,7 +649,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v646";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v647";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -798,12 +798,23 @@
       const freshEvents = incomingEvents.filter(ev => !lastEventIds.has(ev.id));
       const wasAnimating = animationBusy || !!visualState;
 
-      if (freshEvents.length > 0 && currentState && !visualState) {
-        prepareVisualState(currentState);
+      // v6.4.7 핵심:
+      // 이벤트가 있는 서버 state는 대부분 "미래 최종 상태"다.
+      // 이 state를 먼저 render하면 기절한 포켓몬이 다시 보이거나,
+      // switch 전에 다음 포켓몬이 먼저 보이거나, GAME_OVER 오버레이가 먼저 뜬다.
+      // 따라서 fresh 이벤트가 있으면 currentState를 즉시 바꾸지 않고 pending으로 보관한다.
+      if (freshEvents.length > 0) {
+        if (currentState && !visualState) {
+          prepareVisualState(currentState);
+        }
+        pendingStateAfterAnimation = state;
+        enqueueEvents(incomingEvents, state);
+        lastPhaseSeen = state?.phase || lastPhaseSeen;
+        return;
       }
 
-      // 애니메이션 재생 중 도착한 미래 state를 즉시 렌더링하면
-      // 다음 포켓몬이 먼저 등장한 뒤 switch 이벤트에서 또 등장하는 중복 연출이 생긴다.
+      // 애니메이션 중 이벤트 없는 최신 state가 오면 큐 종료 후 반영한다.
+      // 예: FORCE_SWITCH 이후 ACTION_SELECT가 이벤트 없이 도착하는 경우.
       if (wasAnimating) {
         pendingStateAfterAnimation = state;
         enqueueEvents(incomingEvents, state);
@@ -990,6 +1001,17 @@
       visualState=null;
       renderBattleView();
       renderButtons();
+    }
+
+
+    function uiStateMachineStatus(){
+      return {
+        phase: currentState?.phase || null,
+        animationBusy,
+        hasVisualState: !!visualState,
+        hasPendingState: !!pendingStateAfterAnimation,
+        hiddenUntilSwitch: {...hiddenUntilSwitch}
+      };
     }
 
     function hpPct(p){ return p?.maxHp ? Math.max(0,Math.round((p.hp/p.maxHp)*100)) : 0; }
@@ -1200,7 +1222,7 @@
             : "다시 하기 버튼으로 새 후보를 받아 재시작할 수 있습니다.");
         btn.style.display="inline-block";
         updateRoomExitButtons();
-        setMessage(`${currentState.winner} 승리!`,false);
+        // 승리 문구는 eventQueue가 끝난 뒤 overlay에서만 보여준다.
         return;
       }
       overlay.classList.remove("show"); btn.style.display="none";
@@ -1382,11 +1404,23 @@
       const enemy = getDisplayPokemon(enemyKey);
 
       if(!mine || !enemy){
-        renderEmptyBattle();
+        // 기절 연출 후 switch 이벤트 전까지 한쪽 슬롯이 비어 있을 수 있다.
+        // 이때 전체 배틀 화면을 renderEmptyBattle로 지우면 죽은 포켓몬/새 포켓몬 표시가 꼬인다.
         const msg=document.getElementById("battleMessage");
         if(msg) {
-          msg.textContent="배틀 데이터를 준비하는 중입니다...";
+          msg.textContent="다음 포켓몬을 준비하는 중...";
           msg.classList.add("waiting");
+        }
+
+        if(!enemy){
+          document.getElementById("opponentInfo").innerHTML=`<div class="name-row"><span>상대 포켓몬 준비 중</span></div>`;
+          const enemySprite=document.getElementById("opponentSprite");
+          if(enemySprite){ enemySprite.removeAttribute("src"); enemySprite.style.opacity="0"; enemySprite.style.visibility="hidden"; }
+        }
+        if(!mine){
+          document.getElementById("myInfo").innerHTML=`<div class="name-row"><span>내 포켓몬 준비 중</span></div>`;
+          const mySprite=document.getElementById("mySprite");
+          if(mySprite){ mySprite.removeAttribute("src"); mySprite.style.opacity="0"; mySprite.style.visibility="hidden"; }
         }
         return;
       }
