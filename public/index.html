@@ -599,7 +599,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v640";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v642";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -1490,11 +1490,11 @@
         await sleep(DELAY.end);
 
         // 이 이벤트 묶음의 최종 state를 여기서만 반영한다.
-        // 앞선 faint 애니메이션 중 도착한 switch state가 먼저 화면에 나타나는 문제를 막는다.
-        if(finalState){
-          currentState = finalState;
-        } else if(pendingStateAfterAnimation){
-          currentState = pendingStateAfterAnimation;
+        // 애니메이션 도중 더 최신 state가 들어온 경우에는 최신 pending state를 우선 적용한다.
+        // 예: TURN_RESOLVE(배틀 시작 이벤트) 재생 중 ACTION_SELECT가 도착하면 ACTION_SELECT를 버리면 안 된다.
+        const nextStateAfterAnimation = pendingStateAfterAnimation || finalState;
+        if(nextStateAfterAnimation){
+          currentState = nextStateAfterAnimation;
         }
         pendingStateAfterAnimation = null;
 
