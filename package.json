@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.4-lan-test-3pokemon-slot-ui",
-  "description": "Pookimon Champions ONLINE LAN test 3 Pokemon battle with slot-only UI update",
+  "version": "0.6.4-lan-test-3pokemon-field-bg",
+  "description": "Pookimon Champions ONLINE LAN test 3 Pokemon battle with image battle field",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -1,3 +1,20 @@
+## LAN 테스트판 - 배틀 필드 이미지 배경 패치
+
+- 기준 코드: p646_lan_test_3pokemon_slot_ui_only
+- 전투/서버 로직 변경 없음
+- 추가:
+  - public/assets/battle-field.png
+- 수정:
+  - .arena-stage 배경을 CSS 배경 이미지로 교체
+  - 기존 CSS 들판 배경 pseudo element는 숨김 처리
+- 유지:
+  - 3마리 선택 구조
+  - 상단 슬롯 UI
+  - 4배 데미지/4배 표시
+  - 풀죽음
+  - faintPending
+
+
 ## LAN 테스트판 - 상단 선택 슬롯 UI만 적용
 
 - 기준 코드: p644_lan_test_3pokemon_full.zip

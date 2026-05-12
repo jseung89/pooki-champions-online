@@ -29,14 +29,14 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 3000;
-// POOKI_LAN_TEST_3POKEMON_SLOT_UI
+// POOKI_LAN_TEST_3POKEMON_FIELD_BG
 
 app.use(express.static("public"));
 
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.4.6-lan-test-3pokemon-slot-ui",
+    version: "6.4.7-lan-test-3pokemon-field-bg",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,

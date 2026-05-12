@@ -164,3 +164,9 @@ v6.3
 
 - p644 UI로 롤백
 - 상단 3개 선택 슬롯만 목업 스타일 적용
+
+
+## LAN 테스트판 - 배틀 필드 이미지 배경 패치
+
+- public/assets/battle-field.png 추가
+- .arena-stage 배경 이미지 교체
