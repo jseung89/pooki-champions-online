@@ -1,3 +1,19 @@
+## v6.4.9 - Battle View Split & Sprite Lock 패치
+
+- renderBattleView를 패널/스프라이트 렌더링으로 분리
+  - renderBattlePanels: HP, 이름, 타입, 상태, 벤치, 전투 요약
+  - renderBattleSprites: 포켓몬 이미지와 기절/교체 연출
+- HP 감소/회복은 damage/heal 이벤트마다 즉시 패널에 반영
+- spriteLock 도입
+  - 기절한 포켓몬은 switch 이벤트 전까지 절대 다시 렌더링하지 않음
+  - 내 포켓몬/상대 포켓몬 모두 동일 적용
+- ACTION_SELECT는 animationBusy보다 우선 표시
+  - 새 포켓몬 등장 후 기술창이 안 떠서 시간초과 자동공격되는 문제 방지
+- 다시하기/새 경기 시 sprite src, dataset, ghost, lock 상태 초기화 강화
+- GAME_OVER overlay는 animationBusy/pendingState/spriteLock 해제 후 표시
+- 4배 상성 / 풀죽음 / 무승부 제거 / 자동 공격 방지 유지
+
+
 ## v6.4.8 - Battle UI Recovery 패치
 
 - v6.4.7의 currentState 전체 지연 전략을 되돌림

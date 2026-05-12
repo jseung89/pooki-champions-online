@@ -179,3 +179,10 @@ v6.3
 - currentState 즉시 갱신
 - sprite만 visualState로 보호
 - switch 이벤트에서만 새 포켓몬 렌더링
+
+
+## v6.4.9 - Battle View Split & Sprite Lock 패치
+
+- renderBattleView 분리
+- spriteLock 추가
+- ACTION_SELECT 우선 렌더링

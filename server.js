@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.4.8",
+    version: "6.4.9",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -2185,7 +2185,7 @@ io.on("connection", (socket) => {
 async function start() {
   assertUniqueLoginHelpers();
   console.log("========================================");
-// POOKI_SERVER_VERSION_6_4_8
+// POOKI_SERVER_VERSION_6_4_9
   console.log(" 푸끼몬 챔피언스 온라인");
   console.log("========================================");
   console.log("[BOOT] 서버 시작 중...");
