@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.4-p639-flinch-4x-switch-fix",
-  "description": "Pookimon p639 stable base: flinch timing, 4x button emphasis, forced switch animation fix",
+  "version": "0.6.4-p639-faint-pending-switch",
+  "description": "Pookimon Champions ONLINE p639 stable base with faint pending switch control",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

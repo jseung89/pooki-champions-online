@@ -1,3 +1,22 @@
+## p639 안정판 - 기절 후 교체 선등장 방지 패치
+
+- 기준 코드: p642 p639 안정판 + 4배/풀죽음 + 버튼 강조
+- 전투/교체 서버 흐름은 그대로 유지
+- 추가한 것:
+  - faintPending = {p1:false, p2:false}
+  - faint 이벤트 이후 해당 player의 sprite를 switch 이벤트 전까지 숨김
+  - activePokemon / visualActivePokemon에서 다음 생존 포켓몬 fallback 제거
+  - 서버 최신 state가 다음 포켓몬으로 갱신되어도 switch 이벤트 전까지 프론트에서 선렌더링하지 않음
+  - switch 이벤트 처리 순간에만 faintPending 해제 후 새 포켓몬 등장
+- 목적:
+  - 상대 포켓몬 기절 후 다음 포켓몬이 먼저 보였다가 다시 등장하는 버그 방지
+- 유지:
+  - p639 전투 안정 흐름
+  - 4배 데미지 및 4배 버튼 표시
+  - 풀죽음
+  - 복잡한 spriteLock / criticalTransitionActive 미사용
+
+
 ## p639 안정판 기반 - 풀죽음 타이밍 / 4배 버튼 강조 / 강제교체 연출 보정
 
 - 기준: p641_p639_4x_label_switch_fx_full

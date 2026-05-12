@@ -29,14 +29,14 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 3000;
-// POOKI_P639_FLINCH_4X_SWITCH_FIX
+// POOKI_P639_FAINT_PENDING_SWITCH
 
 app.use(express.static("public"));
 
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.4.2-p639-flinch-4x-switch-fix",
+    version: "6.4.3-p639-faint-pending-switch",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,

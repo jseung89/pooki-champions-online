@@ -599,8 +599,8 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    // pooki_online_player_token_p639_flinch_4x_switch_fix
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v639";
+    // pooki_online_player_token_p639_faint_pending_switch
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_p639_faint_pending_switch";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -664,6 +664,7 @@
     const DELAY = { turnStart:420, switch:780, moveText:440, lunge:320, effect:420, damage:540, miss:620, stat:760, faint:1550, status:620, message:560, end:420 };
 
     let myRole = null, currentState = null, visualState = null;
+    let faintPending = { p1: false, p2: false };
     let lastEventIds = new Set(), eventQueue = Promise.resolve(), localTimer = null;
     let animationBusy = false, selectedTeamIds = [], hoveredMoveIndex = 0;
     let lastActionByRole = { p1: "아직 없음", p2: "아직 없음" };
@@ -851,7 +852,7 @@
       socket.emit("leaveRoom");
       document.getElementById("gameScreen").classList.add("hidden");
       document.getElementById("lobbyScreen").style.display = "grid";
-      myRole=null; currentRoomId=null; currentState=null; visualState=null;
+      myRole=null; currentRoomId=null; currentState=null; visualState=null; faintPending={p1:false,p2:false};
       requestLobby();
     }
 
@@ -871,14 +872,23 @@
     function activePokemon(playerKey){
       const p=currentState?.players?.[playerKey];
       if(!p || !Array.isArray(p.team) || p.team.length===0) return null;
-      return p.team[p.activeIndex] || p.team.find(mon=>!mon.fainted) || p.team[0] || null;
+      // 기절 후 강제 교체 전에는 서버 activeIndex의 포켓몬이 그대로 기절 상태여야 한다.
+      // 여기서 다음 생존 포켓몬으로 fallback하면 다음 포켓몬이 switch 이벤트 전에 선등장한다.
+      return p.team[p.activeIndex] || null;
     }
     function clonePokemonForVisual(p){ if(!p) return null; return {...p, types:[...(p.types||[])], moves:[...(p.moves||[])], stats:{...(p.stats||{})}, statStages:{...(p.statStages||{})}, volatile:{...(p.volatile||{})}}; }
     function prepareVisualState(baseState){ if(!baseState)return; if(animationBusy && visualState)return; const s={p1:null,p2:null}; for(const pk of ["p1","p2"]){ const p=baseState.players[pk]; if(p?.team?.length) s[pk]={activeIndex:p.activeIndex, team:p.team.map(clonePokemonForVisual)}; } visualState=s; }
     function visualActivePokemon(pk){
+      if(faintPending?.[pk]){
+        if(visualState?.[pk]?.team?.length){
+          const vp=visualState[pk];
+          return vp.team[vp.activeIndex] || null;
+        }
+        return activePokemon(pk);
+      }
       if(visualState?.[pk]?.team?.length){
         const vp=visualState[pk];
-        return vp.team[vp.activeIndex] || vp.team.find(mon=>!mon.fainted) || vp.team[0] || null;
+        return vp.team[vp.activeIndex] || null;
       }
       return activePokemon(pk);
     }
@@ -890,13 +900,32 @@
       if(visualState?.[pk]) return visualState[pk].activeIndex;
       return currentState?.players?.[pk]?.activeIndex ?? 0;
     }
-    function applyVisualSwitch(pk,to){ if(!visualState?.[pk])return; const idx=visualState[pk].team.findIndex(p=>p.name===to); if(idx>=0) visualState[pk].activeIndex=idx; }
+    function applyVisualSwitch(pk,to){
+      faintPending[pk] = false;
+      if(!visualState?.[pk])return;
+      const idx=visualState[pk].team.findIndex(p=>p.name===to);
+      if(idx>=0) visualState[pk].activeIndex=idx;
+    }
     function applyVisualDamage(pk,hp){ const m=visualActivePokemon(pk); if(m) m.hp=Math.max(0,hp); }
     function applyVisualHeal(pk,hp){ applyVisualDamage(pk,hp); }
-    function applyVisualFaint(pk){ const m=visualActivePokemon(pk); if(m){m.hp=0;m.fainted=true;} }
+    function applyVisualFaint(pk){
+      const m=visualActivePokemon(pk);
+      if(m){m.hp=0;m.fainted=true;}
+      faintPending[pk] = true;
+      hideBattleSpriteForPendingFaint(pk);
+    }
     function applyVisualStatus(pk,status){ const m=visualActivePokemon(pk); if(m)m.status=status; }
     function applyVisualStat(pk,stat,amount){ const m=visualActivePokemon(pk); if(m)m.statStages[stat]=Math.max(-6,Math.min(6,(m.statStages[stat]||0)+amount)); }
-    function syncVisualToFinal(){ visualState=null; renderBattleView(); renderButtons(); }
+    function syncVisualToFinal(){
+      visualState=null;
+      for(const pk of ["p1","p2"]){
+        const p=currentState?.players?.[pk];
+        const active=p?.team?.[p.activeIndex];
+        if(!active?.fainted && currentState?.phase!=="FORCE_SWITCH") faintPending[pk]=false;
+      }
+      renderBattleView();
+      renderButtons();
+    }
 
     function hpPct(p){ return p?.maxHp ? Math.max(0,Math.round((p.hp/p.maxHp)*100)) : 0; }
     function spriteScale(p){
@@ -1166,6 +1195,16 @@
       sprite.dataset.spriteKey = key;
     }
 
+    function hideBattleSpriteForPendingFaint(playerKey){
+      const sprite = playerKey===myRole ? document.getElementById("mySprite") : document.getElementById("opponentSprite");
+      if(!sprite) return;
+      sprite.classList.add("fainted");
+      sprite.style.opacity="0";
+      sprite.style.visibility="hidden";
+      sprite.style.pointerEvents="none";
+      sprite.removeAttribute("src");
+    }
+
     function renderBattleView(){
       if(!currentState?.players) return;
 
@@ -1192,19 +1231,33 @@
       const mySprite=document.getElementById("mySprite");
 
       if(enemySprite){
-        prepareSpriteForPokemon(enemySprite, enemy, "enemy");
-        enemySprite.src=enemy.frontSprite || "";
-        enemySprite.alt=enemy.name || "상대 포켓몬";
-        applySpriteSize(enemySprite, enemy);
-        enemySprite.classList.toggle("fainted",!!enemy.fainted);
+        if(faintPending?.[enemyKey]){
+          hideBattleSpriteForPendingFaint(enemyKey);
+        } else {
+          prepareSpriteForPokemon(enemySprite, enemy, "enemy");
+          enemySprite.src=enemy.frontSprite || "";
+          enemySprite.alt=enemy.name || "상대 포켓몬";
+          enemySprite.style.visibility="";
+          enemySprite.style.opacity="";
+          enemySprite.style.pointerEvents="";
+          applySpriteSize(enemySprite, enemy);
+          enemySprite.classList.toggle("fainted",!!enemy.fainted);
+        }
       }
 
       if(mySprite){
-        prepareSpriteForPokemon(mySprite, mine, "mine");
-        mySprite.src=mine.backSprite || mine.frontSprite || "";
-        mySprite.alt=mine.name || "내 포켓몬";
-        applySpriteSize(mySprite, mine);
-        mySprite.classList.toggle("fainted",!!mine.fainted);
+        if(faintPending?.[mineKey]){
+          hideBattleSpriteForPendingFaint(mineKey);
+        } else {
+          prepareSpriteForPokemon(mySprite, mine, "mine");
+          mySprite.src=mine.backSprite || mine.frontSprite || "";
+          mySprite.alt=mine.name || "내 포켓몬";
+          mySprite.style.visibility="";
+          mySprite.style.opacity="";
+          mySprite.style.pointerEvents="";
+          applySpriteSize(mySprite, mine);
+          mySprite.classList.toggle("fainted",!!mine.fainted);
+        }
       }
 
       renderBenchFor(mineKey);
@@ -1498,6 +1551,7 @@
         const ring=document.createElement("div");
         ring.className=`summon-ring ${isMineSwitch?"mine-ring":"enemy-ring"}`;
         arena?.appendChild(ring);
+        // switch 이벤트가 오는 이 순간에만 다음 포켓몬 표시를 허용한다.
         applyVisualSwitch(ev.player,ev.to);
         renderBattleView();
         const newSprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
@@ -1559,6 +1613,7 @@
       if(ev.type==="skip"){ const isMineTarget=ev.player===myRole; const text=ev.text||(ev.reason==="sleep"?"잠들어 움직일 수 없다...":ev.reason==="recharge"?"반동으로 움직일 수 없다!":"몸이 저려 움직일 수 없다!"); setMessage(`${isMineTarget?"내":"상대"} 포켓몬은 ${text}`,true); await sleep(DELAY.status); return; }
       if(ev.type==="faint"){
         const isMine=ev.target===myRole;
+        faintPending[ev.target] = true;
         setMessage(`${isMine?"내":"상대"} ${ev.name||"포켓몬"}이 쓰러졌다!`,true);
         const sprite=isMine?document.getElementById("mySprite"):document.getElementById("opponentSprite");
         const rect=sprite?.getBoundingClientRect();
@@ -1588,7 +1643,13 @@
         if(finalSprite){
           finalSprite.classList.remove("faint-dead","mine-dead","enemy-dead");
           finalSprite.classList.add("fainted");
-          finalSprite.style.opacity="";
+          if(faintPending?.[ev.target]){
+            finalSprite.style.opacity="0";
+            finalSprite.style.visibility="hidden";
+            finalSprite.removeAttribute("src");
+          } else {
+            finalSprite.style.opacity="";
+          }
         }
         await sleep(900);
         return;
