@@ -61,18 +61,16 @@ function createBattlePokemon(template) {
 }
 
 function hasActionLock(pokemon) {
-  return pokemon?.volatile?.rechargeTurns > 0 || pokemon?.volatile?.flinch;
+  return pokemon?.volatile?.rechargeTurns > 0;
 }
 
 function getDefaultAction(pokemon) {
-  if (pokemon?.volatile?.flinch) return { type: "flinch", auto: true };
   if (pokemon?.volatile?.rechargeTurns > 0) return { type: "recharge", auto: true };
   const idx = pokemon.moves.findIndex((m) => m.power > 0);
   return { type: "move", moveIndex: idx >= 0 ? idx : 0, auto: true };
 }
 
 function getActionLockReason(pokemon) {
-  if (pokemon?.volatile?.flinch) return "풀죽어서 움직일 수 없었다!";
   if (pokemon?.volatile?.rechargeTurns > 0) return "파괴광선의 반동으로 움직일 수 없다!";
   return null;
 }

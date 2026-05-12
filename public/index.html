@@ -237,7 +237,7 @@
     .move-help b{color:#11244f}.move-help .tag{display:inline-block;padding:4px 10px;border-radius:999px;margin-right:6px;font-size:11px;font-weight:900;background:#eef4ff;color:#164bc5}
     button{border:0; color:white; background:#1d4ed8; padding:13px 12px; border-radius:16px; font-size:15px; font-weight:950; cursor:pointer; box-shadow:0 7px 0 #1e3a8a; transition:transform .08s ease,box-shadow .08s ease,opacity .12s ease;}
     button:hover:not(:disabled){transform:translateY(-1px)}button:active:not(:disabled){transform:translateY(5px);box-shadow:0 2px 0 #1e3a8a}button:disabled{opacity:.42;cursor:not-allowed;box-shadow:none}
-    .move-btn{background:#0f766e;box-shadow:0 7px 0 #115e59;text-align:left}.move-btn.eff-super{background:#ef4444;box-shadow:0 7px 0 #b91c1c}.move-btn.eff-neutral{background:#0f766e;box-shadow:0 7px 0 #115e59}.move-btn.eff-resist{background:#64748b;box-shadow:0 7px 0 #475569}.move-btn.eff-immune{background:#1f2937;box-shadow:0 7px 0 #111827}.move-btn.eff-status{background:#7c3aed;box-shadow:0 7px 0 #5b21b6}
+    .move-btn{background:#0f766e;box-shadow:0 7px 0 #115e59;text-align:left}.move-btn.eff-ultra{background:linear-gradient(135deg,#f97316,#ef4444 55%,#a855f7);box-shadow:0 7px 0 #9a3412,0 0 18px rgba(249,115,22,.65);outline:3px solid rgba(253,224,71,.9);animation:ultraPulse 950ms ease-in-out infinite alternate}.move-btn.eff-super{background:#ef4444;box-shadow:0 7px 0 #b91c1c}.move-btn.eff-neutral{background:#0f766e;box-shadow:0 7px 0 #115e59}.move-btn.eff-resist{background:#64748b;box-shadow:0 7px 0 #475569}.move-btn.eff-immune{background:#1f2937;box-shadow:0 7px 0 #111827}.move-btn.eff-status{background:#7c3aed;box-shadow:0 7px 0 #5b21b6}@keyframes ultraPulse{from{filter:brightness(1);transform:translateY(0)}to{filter:brightness(1.16);transform:translateY(-1px)}}
     .switch-btn{background:#2563eb;box-shadow:0 7px 0 #1d4ed8;text-align:left}.reset-btn{background:#dc2626;box-shadow:0 7px 0 #991b1b}
     .meta{display:block;font-size:12px;opacity:.92;margin-top:5px;font-weight:750}
     .logs{height:245px; overflow-y:auto; background:#fff; border:2px solid #d8e7ff; border-radius:20px; padding:13px; font-size:14px; line-height:1.55; color:#243454;}
@@ -599,7 +599,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    // pooki_online_player_token_p639_4x_label_switch
+    // pooki_online_player_token_p639_flinch_4x_switch_fix
     const PLAYER_TOKEN_KEY = "pooki_online_player_token_v639";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
@@ -874,7 +874,7 @@
       return p.team[p.activeIndex] || p.team.find(mon=>!mon.fainted) || p.team[0] || null;
     }
     function clonePokemonForVisual(p){ if(!p) return null; return {...p, types:[...(p.types||[])], moves:[...(p.moves||[])], stats:{...(p.stats||{})}, statStages:{...(p.statStages||{})}, volatile:{...(p.volatile||{})}}; }
-    function prepareVisualState(baseState){ if(!baseState||animationBusy)return; const s={p1:null,p2:null}; for(const pk of ["p1","p2"]){ const p=baseState.players[pk]; if(p?.team?.length) s[pk]={activeIndex:p.activeIndex, team:p.team.map(clonePokemonForVisual)}; } visualState=s; }
+    function prepareVisualState(baseState){ if(!baseState)return; if(animationBusy && visualState)return; const s={p1:null,p2:null}; for(const pk of ["p1","p2"]){ const p=baseState.players[pk]; if(p?.team?.length) s[pk]={activeIndex:p.activeIndex, team:p.team.map(clonePokemonForVisual)}; } visualState=s; }
     function visualActivePokemon(pk){
       if(visualState?.[pk]?.team?.length){
         const vp=visualState[pk];
@@ -970,7 +970,7 @@
       if(mult<1)return "효과 0.5배";
       return "효과 1배";
     }
-    function moveButtonClass(move,mult){ if(!move||move.power===0)return "eff-status"; if(mult===0)return "eff-immune"; if(mult>=2)return "eff-super"; if(mult<1)return "eff-resist"; return "eff-neutral"; }
+    function moveButtonClass(move,mult){ if(!move||move.power===0)return "eff-status"; if(mult===0)return "eff-immune"; if(mult>=4)return "eff-ultra"; if(mult>=2)return "eff-super"; if(mult<1)return "eff-resist"; return "eff-neutral"; }
     function moveDescription(move){ if(!move)return""; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
     function buildMoveHelp(move,enemy){
       if(!move)return"기술 위에 마우스를 올리면 설명이 나옵니다.";

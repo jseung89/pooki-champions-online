@@ -29,14 +29,14 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 3000;
-// POOKI_P639_BASE_4X_LABEL_SWITCH
+// POOKI_P639_FLINCH_4X_SWITCH_FIX
 
 app.use(express.static("public"));
 
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.4.1-p639-4x-label-switch",
+    version: "6.4.2-p639-flinch-4x-switch-fix",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -924,11 +924,22 @@ function doSwitch(pk, targetIndex, auto = false) {
 
   if (!target || target.fainted || targetIndex === player.activeIndex) return false;
 
+  const fromFainted = !!prev.fainted || prev.hp <= 0;
+
   player.activeIndex = targetIndex;
   const next = active(pk);
 
-  log(`${player.label}${auto ? "이 시간 초과로" : "이"} ${prev.name}을/를 불러들이고 ${next.name}을/를 내보냈다!`);
-  addEvent({ type: "switch", player: pk, from: prev.name, to: next.name, auto });
+  log(`${player.label}${auto ? "이 시간 초과로" : "이"} ${fromFainted ? "" : `${prev.name}을/를 불러들이고 `}${next.name}을/를 내보냈다!`);
+  addEvent({
+    type: "switch",
+    player: pk,
+    from: prev.name,
+    to: next.name,
+    auto,
+    fromFainted,
+    skipSwitchOut: fromFainted,
+    forceAfterFaint: fromFainted
+  });
   return true;
 }
 
@@ -978,13 +989,17 @@ function tryApplyFlinch(attackerKey, defenderKey, move) {
   const defender = active(defenderKey);
   if (!defender || defender.fainted || defender.hp <= 0) return;
 
+  // 풀죽음은 "이번 턴에 아직 움직이지 않은 공격 행동"만 막는다.
+  // 이미 움직였거나 교체/반동/미선택이면 다음 턴까지 끌고 가지 않는다.
+  const defenderAction = battle.currentTurnActions?.[defenderKey];
+  if (!defenderAction || defenderAction.type !== "move") return;
   const alreadyMoved = battle.turnMoved?.[defenderKey];
   if (alreadyMoved) return;
 
   if (Math.random() * 100 < chance) {
     defender.volatile.flinch = true;
     log(`${defender.name}은/는 풀죽었다!`);
-    addEvent({ type: "warning", text: `${defender.name}은/는 풀죽었다! 다음 행동을 하지 못합니다.` });
+    addEvent({ type: "warning", text: `${defender.name}은/는 풀죽었다!` });
   }
 }
 
@@ -1176,18 +1191,10 @@ function useMove(attackerKey, defenderKey, moveIndex) {
 function processRechargeActions(actions) {
   for (const pk of ["p1", "p2"]) {
     const action = actions[pk];
-    if (!action || (action.type !== "recharge" && action.type !== "flinch")) continue;
+    if (!action || action.type !== "recharge") continue;
 
     const mon = active(pk);
     if (!mon || mon.fainted) continue;
-
-    if (action.type === "flinch" || mon.volatile?.flinch) {
-      const reason = "풀죽어서 움직일 수 없었다!";
-      mon.volatile.flinch = false;
-      log(`${mon.name}은/는 ${reason}`);
-      addEvent({ type: "skip", player: pk, reason: "flinch", text: `${mon.name}은/는 ${reason}` });
-      continue;
-    }
 
     const reason = getActionLockReason(mon) || "반동으로 움직일 수 없다!";
     mon.volatile.rechargeTurns = Math.max(0, mon.volatile.rechargeTurns - 1);
@@ -1325,6 +1332,7 @@ function resolveTurn() {
     p1: battle.players.p1.selectedAction || getDefaultAction(active("p1")),
     p2: battle.players.p2.selectedAction || getDefaultAction(active("p2")),
   };
+  battle.currentTurnActions = actions;
 
   for (const pk of ["p1", "p2"]) {
     if (!battle.players[pk].selectedAction) {
@@ -1356,11 +1364,24 @@ function resolveTurn() {
     if (!attacker || attacker.fainted || attacker.hp <= 0) continue;
     if (!defender || defender.fainted || defender.hp <= 0) continue;
 
+    if (attacker.volatile?.flinch) {
+      attacker.volatile.flinch = false;
+      log(`${attacker.name}은/는 풀죽어서 움직일 수 없었다!`);
+      addEvent({ type: "skip", player: attackerKey, reason: "flinch", text: `${attacker.name}은/는 풀죽어서 움직일 수 없었다!` });
+      battle.turnMoved[attackerKey] = true;
+      continue;
+    }
+
     useMove(attackerKey, defenderKey, user.moveIndex);
     battle.turnMoved[attackerKey] = true;
   }
 
   battle.turnMoved = null;
+  battle.currentTurnActions = null;
+  for (const pk of ["p1", "p2"]) {
+    const mon = active(pk);
+    if (mon?.volatile) mon.volatile.flinch = false;
+  }
   processEndTurnStatus();
 
   opLog(`[TURN ${battle.turn}] 처리 완료`);
@@ -1390,7 +1411,7 @@ function validateAction(role, action) {
     const mon = active(role);
     if (!mon || mon.fainted) return false;
 
-    if (hasActionLock(mon)) return action.type === "recharge" || action.type === "flinch";
+    if (hasActionLock(mon)) return action.type === "recharge";
 
     if (action.type === "move") return Number.isInteger(action.moveIndex) && !!mon.moves[action.moveIndex];
     if (action.type === "switch") {
