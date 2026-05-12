@@ -1,3 +1,18 @@
+## v6.4.6 - 기절 후 기술창 복구 + 승리 연출 가드 패치
+
+- 기절한 포켓몬이 다시 나왔다가 들어가는 문제 추가 수정
+  - 기절 후 해당 슬롯을 `hiddenUntilSwitch`로 잠그고, switch 이벤트 전까지 다른 포켓몬으로 fallback하지 않음
+  - ghost-clone CSS를 fixed 기준으로 최종 오버라이드
+- 상대 포켓몬 기절 후 기술창이 복구되지 않는 문제 수정
+  - 애니메이션 중 도착한 ACTION_SELECT state를 pending으로 보존
+  - 이벤트가 없는 ACTION_SELECT state도 animation 종료 후 반영
+  - ACTION_SELECT 진입 시 hidden 상태를 해제하고 버튼을 강제 렌더링
+- 게임이 끝나지 않았는데 승리 연출이 먼저 뜨는 문제 수정
+  - GAME_OVER overlay는 animationBusy/pendingState가 없고 최종 phase가 GAME_OVER일 때만 표시
+  - gameOver 로그/메시지는 연출 큐 뒤에서만 표시
+- v6.4.5의 무승부 제거, 4배 상성, 풀죽음, 자동 공격 방지 유지
+
+
 ## v6.4.5 - 기절/교체/승패 판정 복구 패치
 
 - 예전 기절 모션 복구

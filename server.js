@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.4.5",
+    version: "6.4.6",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -978,7 +978,16 @@ function doSwitch(pk, targetIndex, auto = false) {
 
   const fromFainted = !!prev.fainted || prev.hp <= 0;
   log(`${player.label}${auto ? "이 시간 초과로" : "이"} ${fromFainted ? "" : `${prev.name}을/를 불러들이고 `}${next.name}을/를 내보냈다!`);
-  addEvent({ type: "switch", player: pk, from: prev.name, to: next.name, auto, fromFainted, skipSwitchOut: fromFainted });
+  addEvent({
+    type: "switch",
+    player: pk,
+    from: prev.name,
+    to: next.name,
+    auto,
+    fromFainted,
+    skipSwitchOut: fromFainted,
+    forceAfterFaint: fromFainted
+  });
   return true;
 }
 

@@ -165,3 +165,10 @@ v6.3
 - 죽은 포켓몬 재등장 방지
 - gameOver 지연 표시
 - 무승부 제거
+
+
+## v6.4.6 - 기절 후 기술창 복구 + 승리 연출 가드 패치
+
+- hiddenUntilSwitch 추가
+- ACTION_SELECT pending 보존
+- GAME_OVER overlay 표시 가드 강화
