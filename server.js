@@ -23,6 +23,8 @@ const {
   hpWarning,
   statDangerWarning,
   STATUS_KO,
+  CRITICAL_HIT_CHANCE,
+  CRITICAL_HIT_MULTIPLIER,
 } = require("./src/battleEngine");
 
 const app = express();
@@ -1014,7 +1016,7 @@ function applyDamage(attackerKey, defenderKey, move) {
   defender.hp = Math.max(0, defender.hp - result.damage);
 
   if (result.typeMul === 0) log(`${defender.name}에게 효과가 없다!`);
-  else log(`${defender.name}에게 ${result.damage} 피해!`);
+  else log(`${defender.name}에게 ${result.damage} 피해!${result.critical ? " 급소!" : ""}`);
 
   addEvent({
     type: "damage",
@@ -1023,6 +1025,8 @@ function applyDamage(attackerKey, defenderKey, move) {
     amount: result.damage,
     moveType: move.type,
     effectiveness: result.typeMul,
+    critical: !!result.critical,
+    criticalMul: result.criticalMul || 1,
     hp: defender.hp,
     maxHp: defender.maxHp,
     defenderName: defender.name,
@@ -1033,6 +1037,7 @@ function applyDamage(attackerKey, defenderKey, move) {
   else if (result.typeMul >= 2) addEvent({ type: "message", text: "효과가 굉장했다!" });
   else if (result.typeMul <= 0.25) addEvent({ type: "message", text: "효과가 거의 없다... (0.25배)" });
   else if (result.typeMul < 1) addEvent({ type: "message", text: "효과가 별로인 듯하다..." });
+  if (result.critical) addEvent({ type: "message", text: "급소에 맞았다!" });
 
   const warn = hpWarning(defender);
   if (warn) addEvent({ type: "warning", text: warn });
@@ -1052,16 +1057,16 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   if (!move) return;
 
   if (attacker.status === "sleep") {
-    attacker.sleepTurns -= 1;
+    attacker.sleepTurns = Math.max(0, (attacker.sleepTurns || 0) - 1);
+    log(`${attacker.name}은/는 잠들어 있다...`);
+    addEvent({ type: "skip", player: attackerKey, reason: "sleep", text: `${attacker.name}은/는 잠들어 있다...` });
+
     if (attacker.sleepTurns <= 0) {
       attacker.status = null;
       log(`${attacker.name}이/가 잠에서 깨어났다!`);
       addEvent({ type: "message", text: `${attacker.name}이/가 잠에서 깨어났다!` });
-    } else {
-      log(`${attacker.name}은/는 잠들어 있다...`);
-      addEvent({ type: "skip", player: attackerKey, reason: "sleep" });
-      return;
     }
+    return;
   }
 
   if (attacker.status === "paralyze" && Math.random() < 0.25) {
@@ -1101,7 +1106,7 @@ function useMove(attackerKey, defenderKey, moveIndex) {
     const before = attacker.hp;
     attacker.hp = attacker.maxHp;
     attacker.status = "sleep";
-    attacker.sleepTurns = move.rest.turns || 2;
+    attacker.sleepTurns = Math.max(2, move.rest.turns || 2);
     log(`${attacker.name}은/는 잠자기로 HP를 모두 회복하고 잠들었다!`);
     addEvent({ type: "heal", target: attackerKey, amount: attacker.hp - before, hp: attacker.hp, maxHp: attacker.maxHp, name: attacker.name });
     addEvent({ type: "status", target: attackerKey, status: "sleep", name: attacker.name });

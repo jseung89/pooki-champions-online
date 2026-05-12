@@ -26,6 +26,9 @@ function isMoveHit(move) {
   return Math.random() * 100 < (move.accuracy ?? 100);
 }
 
+const CRITICAL_HIT_CHANCE = 1 / 16; // 6.25%
+const CRITICAL_HIT_MULTIPLIER = 1.5;
+
 function calculateDamage(attacker, defender, move) {
   const attack = attacker.stats.attack * stageMultiplier(attacker.statStages.attack);
   const defense = defender.stats.defense * stageMultiplier(defender.statStages.defense);
@@ -33,11 +36,14 @@ function calculateDamage(attacker, defender, move) {
   const stab = attacker.types.includes(move.type) ? 1.5 : 1;
   const typeMul = battleEffectiveness(move.type, defender.types);
   const randomMul = 0.9 + Math.random() * 0.15;
+  const canCrit = (move.power || 0) > 0 && typeMul > 0;
+  const critical = canCrit && Math.random() < CRITICAL_HIT_CHANCE;
+  const criticalMul = critical ? CRITICAL_HIT_MULTIPLIER : 1;
 
-  if (typeMul === 0) return { damage: 0, typeMul };
+  if (typeMul === 0) return { damage: 0, typeMul, critical: false, criticalMul: 1 };
 
-  const raw = (((move.power * attack) / Math.max(1, defense)) / 3.35 + 10) * burnPenalty * stab * typeMul * randomMul;
-  return { damage: Math.max(1, Math.floor(raw)), typeMul };
+  const raw = (((move.power * attack) / Math.max(1, defense)) / 3.35 + 10) * burnPenalty * stab * typeMul * randomMul * criticalMul;
+  return { damage: Math.max(1, Math.floor(raw)), typeMul, critical, criticalMul };
 }
 
 function createBattlePokemon(template) {
@@ -103,7 +109,7 @@ function canApplyStatus(target, status) {
 
 function applyStatus(target, status) {
   target.status = status;
-  if (status === "sleep") target.sleepTurns = Math.random() < 0.5 ? 1 : 2;
+  if (status === "sleep") target.sleepTurns = Math.random() < 0.5 ? 2 : 3;
 }
 
 function endTurnStatusDamage(pokemon) {
@@ -135,6 +141,8 @@ function statDangerWarning(pokemon) {
 
 module.exports = {
   STATUS_KO,
+  CRITICAL_HIT_CHANCE,
+  CRITICAL_HIT_MULTIPLIER,
   stageMultiplier,
   getEffectiveSpeed,
   isMoveHit,
