@@ -1,3 +1,27 @@
+## v6.5.1 - Sprite Hard Lock + HP Sync + Action Priority 패치
+
+- 팀 선택/시작 흐름은 건드리지 않음
+- 배틀 중 렌더링 타이밍만 수정
+- HP 동기화 강화
+  - damage/heal 이벤트에서 visualState와 currentState HP를 동시에 보정
+  - HP/정보 패널만 즉시 렌더링하고 sprite는 건드리지 않음
+- sprite hard lock 강화
+  - 기절 후 switch 이벤트 전까지 sprite src와 dataset 자체를 제거
+  - lock 중 prepareSpriteForPokemon / src 복구 / visibility 복구 차단
+  - 내 포켓몬/상대 포켓몬 모두 적용
+- faint 이벤트 후 renderBattleSprites를 호출하지 않음
+  - 새 포켓몬은 switch 이벤트에서만 등장
+- ACTION_SELECT 우선순위 강화
+  - 기술창은 animationBusy/pendingState보다 우선 표시
+  - 유저가 못 누른 상황에서 시간초과 자동공격되는 문제 방지
+- FORCE_SWITCH 메시지/버튼 문구 명확화
+  - 실제 교체 대상일 때만 교체창 표시
+  - 교체 대상 플레이어/포켓몬 이름이 서버 메시지에 포함됨
+- 다시하기 잔상 방지 유지
+  - sprite src/dataset/ghost/lock 초기화 유지
+- 4배 상성 / 풀죽음 / 무승부 제거 / 자동 공격 방지 유지
+
+
 ## v6.5.0 - Force Switch 재검증 + Panel/Sprite 분리 보정 패치
 
 - 영상 분석 반영

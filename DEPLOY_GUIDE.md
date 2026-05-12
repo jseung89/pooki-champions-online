@@ -193,3 +193,10 @@ v6.3
 - startForceSwitch 재검증
 - getPanelPokemon/getSpritePokemon 분리
 - 패널 HP stale 표시 보정
+
+
+## v6.5.1 - Sprite Hard Lock + HP Sync + Action Priority 패치
+
+- HP currentState/visualState 동시 보정
+- sprite src hard lock
+- ACTION_SELECT 우선 렌더링
