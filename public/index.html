@@ -649,7 +649,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v647";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v648";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -718,6 +718,7 @@
     let visibleBattleLogs = [], animationEpoch = 0, lastPhaseSeen = null;
     let hiddenUntilSwitch = { p1: false, p2: false };
     let delayedGameOverEvent = null;
+    let suspendBattleViewRender = false;
     let lastActionByRole = { p1: "아직 없음", p2: "아직 없음" };
 
     socket.on("lobbyState", (lobby) => {
@@ -798,23 +799,24 @@
       const freshEvents = incomingEvents.filter(ev => !lastEventIds.has(ev.id));
       const wasAnimating = animationBusy || !!visualState;
 
-      // v6.4.7 핵심:
-      // 이벤트가 있는 서버 state는 대부분 "미래 최종 상태"다.
-      // 이 state를 먼저 render하면 기절한 포켓몬이 다시 보이거나,
-      // switch 전에 다음 포켓몬이 먼저 보이거나, GAME_OVER 오버레이가 먼저 뜬다.
-      // 따라서 fresh 이벤트가 있으면 currentState를 즉시 바꾸지 않고 pending으로 보관한다.
+      if (freshEvents.length > 0 && currentState && !visualState) {
+        prepareVisualState(currentState);
+      }
+
       if (freshEvents.length > 0) {
-        if (currentState && !visualState) {
-          prepareVisualState(currentState);
-        }
-        pendingStateAfterAnimation = state;
-        enqueueEvents(incomingEvents, state);
+        // v6.4.8 핵심:
+        // currentState는 최신 서버 상태로 즉시 갱신해서 팀 선택/기술창/상단 UI는 막히지 않게 한다.
+        // 단, 포켓몬 sprite 영역만 visualState로 보호하여 미래 포켓몬이나 GAME_OVER가 먼저 보이지 않게 한다.
+        currentState = state;
         lastPhaseSeen = state?.phase || lastPhaseSeen;
+        pendingStateAfterAnimation = state;
+        animationBusy = true;
+        suspendBattleViewRender = true;
+        render();
+        enqueueEvents(incomingEvents, state);
         return;
       }
 
-      // 애니메이션 중 이벤트 없는 최신 state가 오면 큐 종료 후 반영한다.
-      // 예: FORCE_SWITCH 이후 ACTION_SELECT가 이벤트 없이 도착하는 경우.
       if (wasAnimating) {
         pendingStateAfterAnimation = state;
         enqueueEvents(incomingEvents, state);
@@ -999,6 +1001,7 @@
     function syncVisualToFinal(){
       hiddenUntilSwitch = { p1: false, p2: false };
       visualState=null;
+      suspendBattleViewRender = false;
       renderBattleView();
       renderButtons();
     }
@@ -1008,6 +1011,7 @@
       return {
         phase: currentState?.phase || null,
         animationBusy,
+        suspendBattleViewRender,
         hasVisualState: !!visualState,
         hasPendingState: !!pendingStateAfterAnimation,
         hiddenUntilSwitch: {...hiddenUntilSwitch}
@@ -1122,6 +1126,7 @@
     function resetBattlePresentation(reason="reset"){
       animationEpoch += 1;
       animationBusy = false;
+      suspendBattleViewRender = false;
       pendingStateAfterAnimation = null;
       visualState = null;
       lastEventIds = new Set();
@@ -1222,7 +1227,6 @@
             : "다시 하기 버튼으로 새 후보를 받아 재시작할 수 있습니다.");
         btn.style.display="inline-block";
         updateRoomExitButtons();
-        // 승리 문구는 eventQueue가 끝난 뒤 overlay에서만 보여준다.
         return;
       }
       overlay.classList.remove("show"); btn.style.display="none";
@@ -1394,7 +1398,8 @@
       sprite.dataset.spriteKey = key;
     }
 
-    function renderBattleView(){
+    function renderBattleView(forceVisual=false){
+      if(suspendBattleViewRender && !forceVisual && visualState) return;
       if(!currentState?.players) return;
 
       const mineKey = (myRole==="p1" || myRole==="p2") ? myRole : "p1";
@@ -1404,8 +1409,6 @@
       const enemy = getDisplayPokemon(enemyKey);
 
       if(!mine || !enemy){
-        // 기절 연출 후 switch 이벤트 전까지 한쪽 슬롯이 비어 있을 수 있다.
-        // 이때 전체 배틀 화면을 renderEmptyBattle로 지우면 죽은 포켓몬/새 포켓몬 표시가 꼬인다.
         const msg=document.getElementById("battleMessage");
         if(msg) {
           msg.textContent="다음 포켓몬을 준비하는 중...";
@@ -1437,6 +1440,8 @@
         enemySprite.alt=enemy.name || "상대 포켓몬";
         applySpriteSize(enemySprite, enemy);
         enemySprite.classList.toggle("fainted",!!enemy.fainted);
+        if(enemy.fainted){ enemySprite.style.opacity="0"; enemySprite.style.visibility="hidden"; }
+        else { enemySprite.style.visibility=""; }
       }
 
       if(mySprite){
@@ -1445,6 +1450,8 @@
         mySprite.alt=mine.name || "내 포켓몬";
         applySpriteSize(mySprite, mine);
         mySprite.classList.toggle("fainted",!!mine.fainted);
+        if(mine.fainted){ mySprite.style.opacity="0"; mySprite.style.visibility="hidden"; }
+        else { mySprite.style.visibility=""; }
       }
 
       renderBenchFor(mineKey);
@@ -1807,7 +1814,7 @@
         ring.className=`summon-ring ${isMineSwitch?"mine-ring":"enemy-ring"}`;
         arena?.appendChild(ring);
         applyVisualSwitch(ev.player,ev.to);
-        renderBattleView();
+        renderBattleView(true);
         await playSwitchInAnimation(ev.player);
         setMessage(`${who} ${ev.to}, 가라!`,true);
         setTimeout(()=>ring.remove(),780);

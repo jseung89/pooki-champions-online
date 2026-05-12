@@ -1,14 +1,14 @@
-## v6.4.7 - Battle UI State Machine 리팩토링 패치
+## v6.4.8 - Battle UI Recovery 패치
 
-- 서버의 최신 상태와 화면 연출 상태를 분리하는 방향으로 전투 UI 상태 흐름 수정
-- 이벤트가 포함된 서버 state는 즉시 `currentState`로 렌더링하지 않고 `pendingStateAfterAnimation`에 보관
-- 이벤트 큐가 모두 끝난 뒤에만 최신 state를 화면에 반영
-- 기절/교체/게임오버가 섞이던 핵심 원인 수정
-  - 기절 전 최종 state를 먼저 그리지 않음
-  - switch 이벤트 전 새 포켓몬이 먼저 보이지 않게 함
-  - GAME_OVER overlay가 faint/switch 연출보다 먼저 뜨지 않게 함
-- 기절 후 한쪽 슬롯이 비어 있을 때 전체 배틀 화면을 비우지 않고 해당 슬롯만 숨김
-- ACTION_SELECT가 이벤트 없이 도착해도 pending으로 보존 후 큐 종료 시 기술창 복구
+- v6.4.7의 currentState 전체 지연 전략을 되돌림
+- currentState는 서버 최신 상태로 즉시 갱신
+- 팀 선택 / 상단 UI / 기술창은 서버 최신 phase를 바로 따라가도록 수정
+- 포켓몬 sprite 영역만 visualState와 suspendBattleViewRender로 보호
+- 이벤트 연출 중 미래 포켓몬 또는 GAME_OVER 화면이 먼저 보이는 문제 방지
+- 기절한 포켓몬은 switch 이벤트 전까지 숨김 유지
+- switch 이벤트에서만 새 포켓몬을 강제 렌더링
+- ACTION_SELECT 도착 시 기술창 복구 유지
+- GAME_OVER overlay는 animationBusy / pendingState 중에는 표시하지 않음
 - 4배 상성 / 풀죽음 / 무승부 제거 / 자동 공격 방지 유지
 
 

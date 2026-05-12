@@ -174,8 +174,8 @@ v6.3
 - GAME_OVER overlay 표시 가드 강화
 
 
-## v6.4.7 - Battle UI State Machine 리팩토링 패치
+## v6.4.8 - Battle UI Recovery 패치
 
-- fresh events가 있는 state를 즉시 렌더링하지 않고 pending으로 보관
-- 큐 종료 후 최신 state 반영
-- 기절 중 한쪽 슬롯만 숨김 처리
+- currentState 즉시 갱신
+- sprite만 visualState로 보호
+- switch 이벤트에서만 새 포켓몬 렌더링
