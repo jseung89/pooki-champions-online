@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.3-9",
-  "description": "Pookimon Champions ONLINE v6.3.9 context restore AI fix stable rollback",
+  "version": "0.6.4-1",
+  "description": "Pookimon Champions ONLINE v6.4.1 4x type effectiveness and flinch patch",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

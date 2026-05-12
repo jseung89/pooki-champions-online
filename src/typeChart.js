@@ -99,16 +99,15 @@ function rawTypeEffectiveness(moveType, defenderTypes = []) {
 
 function battleEffectiveness(moveType, defenderTypes = []) {
   const raw = rawTypeEffectiveness(moveType, defenderTypes);
-
-  if (raw === 0) return 0;
-  if (raw >= 2) return 2;
-  if (raw <= 0.5) return 0.5;
-  return 1;
+  if (!Number.isFinite(raw)) return 1;
+  return raw;
 }
 
 function effectivenessLabel(multiplier) {
   if (multiplier === 0) return "효과 없음";
+  if (multiplier >= 4) return "효과 4배";
   if (multiplier >= 2) return "효과 2배";
+  if (multiplier <= 0.25 && multiplier > 0) return "효과 0.25배";
   if (multiplier < 1) return "효과 0.5배";
   return "효과 1배";
 }

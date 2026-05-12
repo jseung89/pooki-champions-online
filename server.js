@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.3.9",
+    version: "6.4.1",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -964,6 +964,44 @@ function faintPokemon(pk) {
   addEvent({ type: "faint", target: pk, name: mon.name });
 }
 
+
+function flinchChanceOf(move) {
+  if (!move || !move.power || move.power <= 0) return 0;
+
+  const direct = Number(move.flinchChance || 0);
+  if (Number.isFinite(direct) && direct > 0) return Math.max(0, Math.min(100, direct));
+
+  const apiName = String(move.apiName || move.id || "").toLowerCase();
+  const name = String(move.name || "").toLowerCase();
+
+  const flinchMap = {
+    "bite": 20,
+    "headbutt": 20,
+    "rock-slide": 20,
+    "iron-head": 20,
+    "air-slash": 20,
+    "dark-pulse": 15,
+    "waterfall": 15
+  };
+
+  if (flinchMap[apiName]) return flinchMap[apiName];
+
+  const koName = String(move.name || "");
+  if (["물기", "박치기", "스톤샤워", "아이언헤드", "에어슬래시"].includes(koName)) return 20;
+  if (["악의파동", "폭포오르기"].includes(koName)) return 15;
+
+  return 0;
+}
+
+function typeEffectMessage(typeMul) {
+  if (typeMul === 0) return "효과가 없다!";
+  if (typeMul >= 4) return "효과가 엄청났다!";
+  if (typeMul >= 2) return "효과가 굉장했다!";
+  if (typeMul > 0 && typeMul <= 0.25) return "거의 효과가 없는 듯하다...";
+  if (typeMul < 1) return "효과가 별로인 듯하다...";
+  return null;
+}
+
 function applyDamage(attackerKey, defenderKey, move) {
   const attacker = active(attackerKey);
   const defender = active(defenderKey);
@@ -986,9 +1024,8 @@ function applyDamage(attackerKey, defenderKey, move) {
     defenderName: defender.name,
   });
 
-  if (result.typeMul === 0) addEvent({ type: "message", text: "효과가 없다!" });
-  else if (result.typeMul >= 2) addEvent({ type: "message", text: "효과가 굉장했다!" });
-  else if (result.typeMul < 1) addEvent({ type: "message", text: "효과가 별로인 듯하다..." });
+  const typeMessage = typeEffectMessage(result.typeMul);
+  if (typeMessage) addEvent({ type: "message", text: typeMessage });
 
   const warn = hpWarning(defender);
   if (warn) addEvent({ type: "warning", text: warn });
@@ -1133,6 +1170,7 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   }
 
   if (move.power > 0) {
+    const beforeHp = defender.hp;
     applyDamage(attackerKey, defenderKey, move);
 
     const defenderAfter = active(defenderKey);
@@ -1143,7 +1181,24 @@ function useMove(attackerKey, defenderKey, moveIndex) {
         addEvent({ type: "status", target: defenderKey, status: move.effect.status, name: defenderAfter.name });
       }
     }
+
+    const chance = flinchChanceOf(move);
+    const dealtDamage = beforeHp > (defenderAfter?.hp ?? beforeHp);
+    if (
+      chance > 0 &&
+      dealtDamage &&
+      defenderAfter &&
+      defenderAfter.hp > 0 &&
+      !defenderAfter.fainted &&
+      Math.random() * 100 < chance
+    ) {
+      log(`${defenderAfter.name}은/는 풀죽었다!`);
+      addEvent({ type: "message", text: `${defenderAfter.name}은/는 풀죽었다!` });
+      return true;
+    }
   }
+
+  return false;
 }
 
 function processRechargeActions(actions) {
@@ -1310,6 +1365,7 @@ function resolveTurn() {
   processRechargeActions(actions);
 
   const moveUsers = sortMoveUsers(buildMoveUsers(actions), active);
+  const flinchedThisTurn = new Set();
 
   for (const user of moveUsers) {
     const attackerKey = user.playerKey;
@@ -1320,7 +1376,16 @@ function resolveTurn() {
     if (!attacker || attacker.fainted || attacker.hp <= 0) continue;
     if (!defender || defender.fainted || defender.hp <= 0) continue;
 
-    useMove(attackerKey, defenderKey, user.moveIndex);
+    if (flinchedThisTurn.has(attackerKey)) {
+      log(`${attacker.name}은/는 풀죽어서 움직일 수 없었다!`);
+      addEvent({ type: "skip", player: attackerKey, reason: "flinch", text: `${attacker.name}은/는 풀죽어서 움직일 수 없었다!` });
+      continue;
+    }
+
+    const didFlinch = useMove(attackerKey, defenderKey, user.moveIndex);
+    if (didFlinch && moveUsers.some((nextUser) => nextUser.playerKey === defenderKey)) {
+      flinchedThisTurn.add(defenderKey);
+    }
   }
 
   processEndTurnStatus();

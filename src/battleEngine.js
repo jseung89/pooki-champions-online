@@ -36,7 +36,7 @@ function calculateDamage(attacker, defender, move) {
 
   if (typeMul === 0) return { damage: 0, typeMul };
 
-  const raw = (((move.power * attack) / Math.max(1, defense)) / 3.35 + 10) * burnPenalty * stab * typeMul * randomMul;
+  const raw = (((move.power * attack) / Math.max(1, defense)) / 3.0 + 10) * burnPenalty * stab * typeMul * randomMul;
   return { damage: Math.max(1, Math.floor(raw)), typeMul };
 }
 

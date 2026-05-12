@@ -599,7 +599,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v639";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v640";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -662,7 +662,7 @@
     const IMMUNE = { normal:["ghost"], fighting:["ghost"], poison:["steel"], ground:["flying"], electric:["ground"], psychic:["dark"], ghost:["normal"], dragon:["fairy"], fire:[], water:[], grass:[], ice:[], flying:[], bug:[], rock:[], dark:[], steel:[], fairy:[] };
     const DELAY = { turnStart:420, switch:780, moveText:440, lunge:320, effect:420, damage:540, miss:620, stat:760, faint:1550, status:620, message:560, end:420 };
 
-    let myRole = null, currentState = null, visualState = null;
+    let myRole = null, currentState = null, visualState = null, pendingStateAfterAnimation = null;
     let lastEventIds = new Set(), eventQueue = Promise.resolve(), localTimer = null;
     let animationBusy = false, selectedTeamIds = [], hoveredMoveIndex = 0;
     let lastActionByRole = { p1: "아직 없음", p2: "아직 없음" };
@@ -729,15 +729,26 @@
 
     socket.on("state", ({ role, state }) => {
       if (!myRole) myRole = role;
+
       const incomingEvents = state.events || [];
       const freshEvents = incomingEvents.filter(ev => !lastEventIds.has(ev.id));
-      if (freshEvents.length > 0 && currentState) {
+      const wasAnimating = animationBusy || !!visualState;
+
+      if (freshEvents.length > 0 && currentState && !visualState) {
         prepareVisualState(currentState);
-        animationBusy = true;
       }
+
+      // 애니메이션 재생 중 도착한 미래 state를 즉시 렌더링하면
+      // 다음 포켓몬이 먼저 등장한 뒤 switch 이벤트에서 또 등장하는 중복 연출이 생긴다.
+      if (wasAnimating) {
+        pendingStateAfterAnimation = state;
+        enqueueEvents(incomingEvents, state);
+        return;
+      }
+
       currentState = state;
       render();
-      enqueueEvents(incomingEvents);
+      enqueueEvents(incomingEvents, state);
     });
 
     function renderLobby(lobby){
@@ -1454,7 +1465,52 @@
       socket.emit("surrender");
     }
 
-    function enqueueEvents(events){ const fresh=[]; for(const ev of events){ if(lastEventIds.has(ev.id))continue; lastEventIds.add(ev.id); fresh.push(ev); } if(fresh.length===0)return; eventQueue=eventQueue.then(async()=>{ animationBusy=true; renderButtons(); await sleep(DELAY.turnStart); for(const ev of fresh) await playEventSlow(ev); await sleep(DELAY.end); animationBusy=false; syncVisualToFinal(); if(currentState?.phase==="ACTION_SELECT")setMessage("행동을 선택하세요.",false); else if(currentState?.phase==="FORCE_SWITCH")setMessage("교체할 포켓몬을 선택하세요.",false); renderButtons(); renderOverlay(); startLocalTimer(); }); if(lastEventIds.size>200) lastEventIds=new Set([...lastEventIds].slice(-100)); }
+    function enqueueEvents(events, finalState=null){
+      const fresh=[];
+      for(const ev of events){
+        if(lastEventIds.has(ev.id))continue;
+        lastEventIds.add(ev.id);
+        fresh.push(ev);
+      }
+      if(fresh.length===0){
+        if(!animationBusy && finalState){
+          currentState = finalState;
+          render();
+        }
+        return;
+      }
+
+      eventQueue=eventQueue.then(async()=>{
+        animationBusy=true;
+        renderButtons();
+        await sleep(DELAY.turnStart);
+
+        for(const ev of fresh) await playEventSlow(ev);
+
+        await sleep(DELAY.end);
+
+        // 이 이벤트 묶음의 최종 state를 여기서만 반영한다.
+        // 앞선 faint 애니메이션 중 도착한 switch state가 먼저 화면에 나타나는 문제를 막는다.
+        if(finalState){
+          currentState = finalState;
+        } else if(pendingStateAfterAnimation){
+          currentState = pendingStateAfterAnimation;
+        }
+        pendingStateAfterAnimation = null;
+
+        animationBusy=false;
+        syncVisualToFinal();
+
+        if(currentState?.phase==="ACTION_SELECT")setMessage("행동을 선택하세요.",false);
+        else if(currentState?.phase==="FORCE_SWITCH")setMessage("교체할 포켓몬을 선택하세요.",false);
+
+        renderButtons();
+        renderOverlay();
+        startLocalTimer();
+      });
+
+      if(lastEventIds.size>200) lastEventIds=new Set([...lastEventIds].slice(-100));
+    }
 
     async function playEventSlow(ev){
       if(!myRole||myRole==="spectator"){ if(ev.text)setMessage(ev.text,true); await sleep(DELAY.message); return; }
@@ -1524,7 +1580,7 @@
         return;
       }
       if(ev.type==="status"){ const isMineTarget=ev.target===myRole; const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect"); const icon={burn:"🔥",poison:"☠️",paralyze:"⚡",sleep:"💤"}[ev.status]||"❗"; setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`,true); applyVisualStatus(ev.target,ev.status); renderBattleView(); showCustomEffect(effectEl,icon); await sleep(DELAY.status); return; }
-      if(ev.type==="skip"){ const isMineTarget=ev.player===myRole; const text=ev.text||(ev.reason==="sleep"?"잠들어 움직일 수 없다...":ev.reason==="recharge"?"반동으로 움직일 수 없다!":"몸이 저려 움직일 수 없다!"); setMessage(`${isMineTarget?"내":"상대"} 포켓몬은 ${text}`,true); await sleep(DELAY.status); return; }
+      if(ev.type==="skip"){ const isMineTarget=ev.player===myRole; const text=ev.text||(ev.reason==="sleep"?"잠들어 움직일 수 없다...":ev.reason==="recharge"?"반동으로 움직일 수 없다!":ev.reason==="flinch"?"풀죽어서 움직일 수 없었다!":"몸이 저려 움직일 수 없다!"); setMessage(`${isMineTarget?"내":"상대"} 포켓몬은 ${text}`,true); await sleep(DELAY.status); return; }
       if(ev.type==="faint"){
         const isMine=ev.target===myRole;
         setMessage(`${isMine?"내":"상대"} ${ev.name||"포켓몬"}이 쓰러졌다!`,true);
