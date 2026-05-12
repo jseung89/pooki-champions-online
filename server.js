@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.4.2",
+    version: "6.4.4",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -529,6 +529,58 @@ function chooseAIAction(role = "p2") {
   return { type: "move", moveIndex: bestIndex, auto: true };
 }
 
+
+function currentActionSeq() {
+  if (!battle) return 0;
+  if (!Number.isInteger(battle.actionSeq)) battle.actionSeq = 0;
+  return battle.actionSeq;
+}
+
+function newActionWindow(reason = "new_action_window") {
+  if (!battle) return 0;
+  battle.actionSeq = currentActionSeq() + 1;
+  battle.actionPhase = battle.phase;
+  for (const pk of ["p1", "p2"]) {
+    if (battle.players?.[pk]) battle.players[pk].selectedAction = null;
+  }
+  opLog(`[ACTION_WINDOW] ${reason} seq=${battle.actionSeq} turn=${battle.turn} phase=${battle.phase}`);
+  return battle.actionSeq;
+}
+
+function markActionForCurrentWindow(role, action) {
+  if (!battle?.players?.[role] || !action) return null;
+  const marked = {
+    ...action,
+    actionTurn: battle.turn,
+    actionSeq: currentActionSeq(),
+    actionPhase: battle.phase,
+  };
+  battle.players[role].selectedAction = marked;
+  return marked;
+}
+
+function isFreshAction(role, phase = battle?.phase) {
+  const action = battle?.players?.[role]?.selectedAction;
+  if (!action) return false;
+  return (
+    action.actionTurn === battle.turn &&
+    action.actionSeq === currentActionSeq() &&
+    action.actionPhase === phase
+  );
+}
+
+function getFreshAction(role, phase = battle?.phase) {
+  return isFreshAction(role, phase) ? battle.players[role].selectedAction : null;
+}
+
+function clearAllSelectedActions(reason = "clear_actions") {
+  if (!battle?.players) return;
+  for (const pk of ["p1", "p2"]) {
+    if (battle.players[pk]) battle.players[pk].selectedAction = null;
+  }
+  opLog(`[ACTION_CLEAR] ${reason}`);
+}
+
 function maybeQueueAIAction(reason = "auto") {
   if (battle.phase !== PHASE.ACTION_SELECT && battle.phase !== PHASE.FORCE_SWITCH) return;
   const ai = battle.players.p2;
@@ -536,19 +588,19 @@ function maybeQueueAIAction(reason = "auto") {
 
   if (battle.phase === PHASE.FORCE_SWITCH) {
     if (battle.forceSwitchPlayers.includes("p2")) {
-      ai.selectedAction = chooseAIAction("p2");
+      markActionForCurrentWindow("p2", chooseAIAction("p2"));
       opLog(`[AI] 강제 교체 선택: ${actionName("p2", ai.selectedAction)}`);
       resolveForceSwitch();
     }
     return;
   }
 
-  if (!ai.selectedAction) {
-    ai.selectedAction = chooseAIAction("p2");
+  if (!isFreshAction("p2", PHASE.ACTION_SELECT)) {
+    markActionForCurrentWindow("p2", chooseAIAction("p2"));
     opLog(`[AI] 행동 선택(${reason}): ${actionName("p2", ai.selectedAction)}`);
   }
 
-  if (battle.players.p1.selectedAction && battle.players.p2.selectedAction) {
+  if (isFreshAction("p1", PHASE.ACTION_SELECT) && isFreshAction("p2", PHASE.ACTION_SELECT)) {
     scheduleRoom(() => resolveTurn(), 350);
   } else {
     emitState();
@@ -676,7 +728,7 @@ function publicPlayer(player) {
     selectedTeamIds: player.teamReady ? player.selectedTeamIds : [],
     team: player.team.map(publicPokemon),
     teamReady: player.teamReady,
-    selectedAction: player.selectedAction ? { type: player.selectedAction.type, auto: !!player.selectedAction.auto } : null,
+    selectedAction: isFreshAction(player === battle.players.p1 ? "p1" : "p2", battle.phase) ? { type: player.selectedAction.type, auto: !!player.selectedAction.auto } : null,
     timeoutCount: player.timeoutCount,
     connected: !!player.socketId || !!player.isAI,
     isAI: !!player.isAI,
@@ -847,7 +899,7 @@ function maybeStartBattle() {
 function autoRechargeActions() {
   for (const pk of ["p1", "p2"]) {
     const mon = active(pk);
-    if (mon && hasActionLock(mon)) battle.players[pk].selectedAction = { type: "recharge", auto: true };
+    if (mon && hasActionLock(mon)) markActionForCurrentWindow(pk, { type: "recharge", auto: true });
   }
 }
 
@@ -859,14 +911,13 @@ function startActionSelect() {
   if (currentRoom) currentRoom.resolveInProgress = false;
   battle.phase = PHASE.ACTION_SELECT;
   battle.events = [];
-  battle.players.p1.selectedAction = null;
-  battle.players.p2.selectedAction = null;
+  newActionWindow("start_action_select");
 
   autoRechargeActions();
 
   opLog(`[TURN ${battle.turn}] 행동 선택 시작`);
 
-  if (battle.players.p1.selectedAction && battle.players.p2.selectedAction) {
+  if (isFreshAction("p1", PHASE.ACTION_SELECT) && isFreshAction("p2", PHASE.ACTION_SELECT)) {
     scheduleRoom(() => resolveTurn(), 700);
     emitState();
     return;
@@ -891,8 +942,7 @@ function startForceSwitch(players) {
   battle.events = [];
   battle.forceSwitchPlayers = players;
   battle.timerEndAt = Date.now() + 15000;
-
-  for (const pk of players) battle.players[pk].selectedAction = null;
+  newActionWindow("start_force_switch");
 
   log("교체가 필요합니다!");
   addEvent({ type: "message", text: "교체가 필요합니다!" });
@@ -906,7 +956,7 @@ function startForceSwitch(players) {
       if (!battle.players[pk].selectedAction) {
         const player = battle.players[pk];
         const idx = player.team.findIndex((p, i) => i !== player.activeIndex && !p.fainted);
-        if (idx >= 0) player.selectedAction = { type: "switch", targetIndex: idx, auto: true };
+        if (idx >= 0) markActionForCurrentWindow(pk, { type: "switch", targetIndex: idx, auto: true });
       }
     }
     resolveForceSwitch();
@@ -1297,12 +1347,12 @@ function resolveForceSwitch() {
   battle.events = [];
 
   for (const pk of battle.forceSwitchPlayers) {
-    const action = battle.players[pk].selectedAction;
+    const action = getFreshAction(pk, PHASE.FORCE_SWITCH);
     if (!action || action.type !== "switch") continue;
     doSwitch(pk, action.targetIndex, action.auto);
-    battle.players[pk].selectedAction = null;
   }
 
+  clearAllSelectedActions("resolve_force_switch_done");
   battle.forceSwitchPlayers = [];
 
   if (checkWinner()) {
@@ -1340,13 +1390,18 @@ function resolveTurn() {
   battle.phase = PHASE.TURN_RESOLVE;
   battle.events = [];
 
+  const freshActions = {
+    p1: getFreshAction("p1", PHASE.ACTION_SELECT),
+    p2: getFreshAction("p2", PHASE.ACTION_SELECT),
+  };
+
   const actions = {
-    p1: battle.players.p1.selectedAction || getDefaultAction(active("p1")),
-    p2: battle.players.p2.selectedAction || getDefaultAction(active("p2")),
+    p1: freshActions.p1 || getDefaultAction(active("p1")),
+    p2: freshActions.p2 || getDefaultAction(active("p2")),
   };
 
   for (const pk of ["p1", "p2"]) {
-    if (!battle.players[pk].selectedAction) {
+    if (!freshActions[pk]) {
       battle.players[pk].timeoutCount += 1;
       addEvent({ type: "message", text: `${battle.players[pk].label}이 시간 초과로 기본 행동을 선택했다!` });
     } else {
@@ -1397,6 +1452,7 @@ function resolveTurn() {
     return;
   }
 
+  clearAllSelectedActions("resolve_turn_done");
   const forceTargets = getForceSwitchTargets();
   emitState();
 
@@ -2025,7 +2081,7 @@ io.on("connection", (socket) => {
       if (battle.phase !== PHASE.ACTION_SELECT && battle.phase !== PHASE.FORCE_SWITCH) return;
       if (!validateAction(role, action)) return;
 
-      battle.players[role].selectedAction = action;
+      markActionForCurrentWindow(role, action);
 
       if (battle.players.p2.isAI) {
         maybeQueueAIAction("player_action");
@@ -2034,11 +2090,11 @@ io.on("connection", (socket) => {
       emitState();
 
       if (battle.phase === PHASE.ACTION_SELECT) {
-        if (battle.players.p1.selectedAction && battle.players.p2.selectedAction) resolveTurn();
+        if (isFreshAction("p1", PHASE.ACTION_SELECT) && isFreshAction("p2", PHASE.ACTION_SELECT)) resolveTurn();
       }
 
       if (battle.phase === PHASE.FORCE_SWITCH) {
-        const done = battle.forceSwitchPlayers.every((pk) => battle.players[pk].selectedAction);
+        const done = battle.forceSwitchPlayers.every((pk) => isFreshAction(pk, PHASE.FORCE_SWITCH));
         if (done) resolveForceSwitch();
       }
     });

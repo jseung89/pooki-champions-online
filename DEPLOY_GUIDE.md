@@ -144,3 +144,16 @@ v6.3
 ## v6.4.2 - AI 대전 턴 처리 중 멈춤 핫픽스
 
 - 애니메이션 도중 도착한 최신 ACTION_SELECT state를 우선 적용
+
+
+## v6.4.3 - 전투 연출 큐 안정화 패치
+
+- stale GAME_OVER 오버레이 차단
+- visibleLogs 순차 표시
+- faint/switch 연출 분리
+
+
+## v6.4.4 - 자동 공격 방지 + 4배 버튼 연출 패치
+
+- 턴별 actionSeq/actionTurn/actionPhase 가드 추가
+- 4배 버튼 별도 연출 추가
