@@ -1,3 +1,20 @@
+## v6.5.0 - Force Switch 재검증 + Panel/Sprite 분리 보정 패치
+
+- 영상 분석 반영
+  - 내부 상태는 뮤츠 기절/강제교체였지만 왼쪽 메인 패널은 HP 13으로 남아 생존처럼 보이던 문제 확인
+- 서버 강제교체 재검증 추가
+  - startForceSwitch 실행 시점에 active 포켓몬이 실제로 fainted + HP 0 + 살아있는 벤치가 있는지 재확인
+  - 대상이 없으면 강제교체를 취소하고 ACTION_SELECT로 복귀
+- 강제교체 메시지 개선
+  - 단순 “교체가 필요합니다!” 대신 “해당 플레이어의 포켓몬이 쓰러져 교체가 필요합니다!”로 표시
+- 패널 표시용 포켓몬과 스프라이트 표시용 포켓몬 분리
+  - getPanelPokemon: HP/이름/상태 패널용. spriteLock과 무관하게 visualState active slot 표시
+  - getSpritePokemon: 이미지용. spriteLock 중에는 fallback 금지
+- applyVisualDamage/Heal/Status/Stat은 spriteLock에 막히지 않고 패널 값을 갱신
+- 기절 후 HP 패널이 남은 HP처럼 보이는 문제 보정
+- v6.4.9의 spriteLock, renderBattlePanels/renderBattleSprites, ACTION_SELECT 우선 렌더링 유지
+
+
 ## v6.4.9 - Battle View Split & Sprite Lock 패치
 
 - renderBattleView를 패널/스프라이트 렌더링으로 분리

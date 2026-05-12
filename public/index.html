@@ -649,7 +649,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v649";
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_v650";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -991,7 +991,11 @@
         spriteLock[pk] = null;
       }
     }
-    function applyVisualDamage(pk,hp){ const m=visualActivePokemon(pk); if(m) m.hp=Math.max(0,hp); }
+    function applyVisualDamage(pk,hp){
+      const vp=visualState?.[pk];
+      const m = vp?.team?.[vp.activeIndex] || activePokemon(pk);
+      if(m) m.hp=Math.max(0,hp);
+    }
     function applyVisualHeal(pk,hp){ applyVisualDamage(pk,hp); }
     function applyVisualFaint(pk){
       const vp=visualState?.[pk];
@@ -1000,8 +1004,16 @@
       hiddenUntilSwitch[pk] = true;
       spriteLock[pk] = "fainted_waiting_switch";
     }
-    function applyVisualStatus(pk,status){ const m=visualActivePokemon(pk); if(m)m.status=status; }
-    function applyVisualStat(pk,stat,amount){ const m=visualActivePokemon(pk); if(m)m.statStages[stat]=Math.max(-6,Math.min(6,(m.statStages[stat]||0)+amount)); }
+    function applyVisualStatus(pk,status){
+      const vp=visualState?.[pk];
+      const m = vp?.team?.[vp.activeIndex] || activePokemon(pk);
+      if(m)m.status=status;
+    }
+    function applyVisualStat(pk,stat,amount){
+      const vp=visualState?.[pk];
+      const m = vp?.team?.[vp.activeIndex] || activePokemon(pk);
+      if(m)m.statStages[stat]=Math.max(-6,Math.min(6,(m.statStages[stat]||0)+amount));
+    }
     function syncVisualToFinal(){
       hiddenUntilSwitch = { p1: false, p2: false };
       spriteLock = { p1: null, p2: null };
@@ -1021,7 +1033,8 @@
         hasVisualState: !!visualState,
         hasPendingState: !!pendingStateAfterAnimation,
         hiddenUntilSwitch: {...hiddenUntilSwitch},
-        spriteLock: {...spriteLock}
+        spriteLock: {...spriteLock},
+        panelSpriteSplit: true
       };
     }
 
@@ -1331,6 +1344,28 @@
       return visualActivePokemon(playerKey) || activePokemon(playerKey);
     }
 
+    function getPanelPokemon(playerKey){
+      // 패널/HP 표시용.
+      // spriteLock 때문에 visualActivePokemon이 null이어도 패널은 visualState의 active slot을 보여준다.
+      // 그래야 기절 처리 후 패널 HP가 13처럼 남지 않고 0으로 즉시 보인다.
+      if(visualState?.[playerKey]?.team?.length){
+        const vp = visualState[playerKey];
+        return vp.team[vp.activeIndex] || null;
+      }
+      return activePokemon(playerKey);
+    }
+
+    function getSpritePokemon(playerKey){
+      // 이미지 표시용.
+      // 기절 후 switch 이벤트 전까지는 어떤 fallback도 허용하지 않는다.
+      if(spriteLock?.[playerKey]==="fainted_waiting_switch" || hiddenUntilSwitch?.[playerKey]) return null;
+      if(visualState?.[playerKey]?.team?.length){
+        const vp = visualState[playerKey];
+        return vp.team[vp.activeIndex] || null;
+      }
+      return activePokemon(playerKey);
+    }
+
     function clearGhostResidues(){
       document.querySelectorAll(".ghost-clone").forEach(el=>el.remove());
     }
@@ -1421,8 +1456,8 @@
     function renderBattlePanels(){
       if(!currentState?.players) return;
       const { mineKey, enemyKey } = getBattleDisplayKeys();
-      const mine = getDisplayPokemon(mineKey);
-      const enemy = getDisplayPokemon(enemyKey);
+      const mine = getPanelPokemon(mineKey);
+      const enemy = getPanelPokemon(enemyKey);
 
       if(enemy){
         renderPokemonInfo("opponentInfo", enemy, myRole==="spectator" ? `${playerNameOf(enemyKey)} 몬스터` : `${playerNameOf(enemyKey)} 몬스터`, enemyKey);
@@ -1480,8 +1515,8 @@
     function renderBattleSprites(){
       if(!currentState?.players) return;
       const { mineKey, enemyKey } = getBattleDisplayKeys();
-      const mine = getDisplayPokemon(mineKey);
-      const enemy = getDisplayPokemon(enemyKey);
+      const mine = getSpritePokemon(mineKey);
+      const enemy = getSpritePokemon(enemyKey);
       renderOneSprite(enemyKey, "enemy", enemy);
       renderOneSprite(mineKey, "mine", mine);
     }

@@ -186,3 +186,10 @@ v6.3
 - renderBattleView 분리
 - spriteLock 추가
 - ACTION_SELECT 우선 렌더링
+
+
+## v6.5.0 - Force Switch 재검증 + Panel/Sprite 분리 보정 패치
+
+- startForceSwitch 재검증
+- getPanelPokemon/getSpritePokemon 분리
+- 패널 HP stale 표시 보정

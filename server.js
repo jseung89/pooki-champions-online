@@ -35,7 +35,7 @@ app.use(express.static("public"));
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.4.9",
+    version: "6.5.0",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -936,6 +936,22 @@ function startActionSelect() {
 function startForceSwitch(players) {
   if (battle.phase === PHASE.GAME_OVER) return;
   if (!ensureTwoPlayersOrPause("start_force_switch")) return;
+
+  // v6.5.0 안전장치:
+  // 예약된 강제교체가 실행되는 순간 다시 확인한다.
+  // 화면/연출 지연 또는 이전 예약 때문에 살아있는 포켓몬에게 강제교체가 뜨는 일을 방지한다.
+  players = (players || []).filter((pk) => {
+    const mon = active(pk);
+    return mon && mon.fainted && mon.hp <= 0 && hasAliveBench(pk);
+  });
+
+  if (players.length === 0) {
+    opLog("[FORCE_SWITCH] 재검증 결과 강제 교체 대상 없음");
+    battle.forceSwitchPlayers = [];
+    scheduleRoom(() => startActionSelect(), 0);
+    return;
+  }
+
   clearBattleTimer();
 
   battle.phase = PHASE.FORCE_SWITCH;
@@ -944,9 +960,10 @@ function startForceSwitch(players) {
   battle.timerEndAt = Date.now() + 15000;
   newActionWindow("start_force_switch");
 
-  log("교체가 필요합니다!");
-  addEvent({ type: "message", text: "교체가 필요합니다!" });
-  opLog(`[FORCE_SWITCH] ${players.map((p) => battle.players[p].label).join(", ")} 강제 교체 필요`);
+  const targetText = players.map((p) => battle.players[p].label).join(", ");
+  log(`${targetText}의 포켓몬이 쓰러져 교체가 필요합니다!`);
+  addEvent({ type: "message", text: `${targetText}의 포켓몬이 쓰러져 교체가 필요합니다!` });
+  opLog(`[FORCE_SWITCH] ${targetText} 강제 교체 필요`);
 
   const roomId = currentRoom.id;
   currentRoom.timer = setTimeout(() => withRoom(roomId, () => {
@@ -2185,7 +2202,7 @@ io.on("connection", (socket) => {
 async function start() {
   assertUniqueLoginHelpers();
   console.log("========================================");
-// POOKI_SERVER_VERSION_6_4_9
+// POOKI_SERVER_VERSION_6_5_0
   console.log(" 푸끼몬 챔피언스 온라인");
   console.log("========================================");
   console.log("[BOOT] 서버 시작 중...");
