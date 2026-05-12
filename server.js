@@ -29,14 +29,14 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 3000;
-// POOKI_P639_FAINT_PENDING_SWITCH
+// POOKI_LAN_TEST_3POKEMON_SLOT_UI
 
 app.use(express.static("public"));
 
 app.get("/health", (req, res) => {
   res.json({
     ok: true,
-    version: "6.4.3-p639-faint-pending-switch",
+    version: "6.4.6-lan-test-3pokemon-slot-ui",
     name: "푸끼몬 챔피언스 온라인",
     rooms: Array.from(rooms.values()).map((room) => ({
       id: room.id,
@@ -60,6 +60,9 @@ const PHASE = {
   TURN_RESOLVE: "TURN_RESOLVE",
   GAME_OVER: "GAME_OVER",
 };
+
+const TEAM_SIZE = 3;
+const TEAM_SELECT_SECONDS = 60;
 
 let pokemonPool = [];
 let dataReady = false;
@@ -454,15 +457,15 @@ function selectAITeam() {
 
   const picks = [...ai.candidatePool]
     .sort((a, b) => aiScorePokemon(b) - aiScorePokemon(a))
-    .slice(0, 2);
+    .slice(0, TEAM_SIZE);
 
   ai.selectedTeamIds = picks.map((p) => p.id);
   ai.team = picks.map((p) => createBattlePokemon(p));
-  ai.teamReady = ai.team.length === 2;
+  ai.teamReady = ai.team.length === TEAM_SIZE;
   ai.activeIndex = 0;
   ai.selectedAction = null;
 
-  log(`${ai.label}이 출전 포켓몬 2마리를 선택했습니다.`);
+  log(`${ai.label}이 출전 포켓몬 3마리를 선택했습니다.`);
   opLog(`[AI] ${ai.label} 팀 자동 선택 완료`);
 }
 
@@ -471,7 +474,7 @@ function ensureAITeamReady(reason = "ensure_ai_team_ready") {
   const ai = battle?.players?.p2;
   if (!ai?.isAI) return false;
 
-  const ready = ai.teamReady && Array.isArray(ai.team) && ai.team.length === 2;
+  const ready = ai.teamReady && Array.isArray(ai.team) && ai.team.length === TEAM_SIZE;
   if (ready) return true;
 
   if (!Array.isArray(ai.candidatePool) || ai.candidatePool.length === 0) {
@@ -821,7 +824,7 @@ function startTeamSelect() {
     ensureAITeamReady("start_team_select");
   }
 
-  log(battle.players.p2.isAI ? "AI 연습전입니다. 출전할 포켓몬 2마리를 선택하세요." : "랜덤 후보 12마리가 지급되었습니다. 각자 출전할 포켓몬 2마리를 선택하세요.");
+  log(battle.players.p2.isAI ? "AI 연습전입니다. 출전할 포켓몬 3마리를 선택하세요." : "랜덤 후보 12마리가 지급되었습니다. 각자 출전할 포켓몬 3마리를 선택하세요.");
   opLog("[GAME] 팀 선택 시작");
   emitState();
 }
@@ -1989,10 +1992,10 @@ io.on("connection", (socket) => {
     withRoom(roomId, () => {
       if (role !== "p1" && role !== "p2") return;
       if (battle.phase !== PHASE.TEAM_SELECT) return;
-      if (!Array.isArray(ids) || ids.length !== 2) return;
+      if (!Array.isArray(ids) || ids.length !== TEAM_SIZE) return;
 
       const unique = [...new Set(ids.map(Number))];
-      if (unique.length !== 2) return;
+      if (unique.length !== TEAM_SIZE) return;
 
       const player = battle.players[role];
       const templates = unique.map((id) => player.candidatePool.find((p) => p.id === id));

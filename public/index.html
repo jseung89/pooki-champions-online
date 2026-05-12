@@ -263,7 +263,7 @@
     .team-sub{margin-top:4px; color:#53627e; font-weight:800; font-size:14px;}
     .team-timer{display:flex; align-items:center; gap:8px; font-weight:950; color:#0d2a78;}
     .team-timer b{font-size:34px; color:#f2b300;}
-    .selected-row{display:grid; grid-template-columns:1fr 54px 1fr; gap:14px; align-items:center; margin-bottom:18px;}
+    .selected-row{display:grid; grid-template-columns:1fr 34px 1fr 34px 1fr; gap:14px; align-items:center; margin-bottom:18px;}
     .selected-slot{border:3px solid #2563eb; border-radius:18px; padding:12px 18px; display:grid; grid-template-columns:104px 1fr; gap:16px; align-items:center; min-height:150px; background:linear-gradient(180deg,#fff,#f7fbff); position:relative; overflow:hidden;}
     .selected-slot.empty{border-style:dashed; display:grid; grid-template-columns:1fr; place-items:center; color:#61708f;}
     .selected-slot img{width:96px; height:96px; object-fit:contain; image-rendering:pixelated;}
@@ -290,6 +290,19 @@
     .participant-badge{font-size:11px; font-weight:950; border-radius:999px; padding:4px 8px; background:#2563eb;}
     .team-submit{width:100%; font-size:22px; padding:18px 14px; border-radius:18px; background:linear-gradient(180deg,#3b82f6,#1d4ed8); box-shadow:0 8px 0 #173a97;}
     .team-caption{font-size:12px; color:#dbe8ff; text-align:center; font-weight:750;}
+    
+    /* v6.4.6 slot-only UI: 상단 3개 선택 슬롯만 목업 방향으로 보정 */
+    .selected-row{display:grid!important; grid-template-columns:1fr 34px 1fr 34px 1fr!important; gap:14px!important; align-items:center!important; margin-bottom:18px!important;}
+    .selected-slot{border:1px solid #cfe0ff!important; border-radius:18px!important; padding:18px 16px 14px!important; display:grid!important; place-items:center!important; text-align:center!important; min-height:210px!important; background:radial-gradient(circle at 50% 42%,#edf4ff 0,#fff 56%,#f8fbff 100%)!important; position:relative!important; overflow:hidden!important; box-shadow:0 10px 24px rgba(22,64,139,.08)!important; grid-template-columns:1fr!important; gap:0!important;}
+    .selected-slot.empty{border:2px solid #d4e2ff!important; border-style:solid!important; color:#64748b!important;}
+    .selected-slot.empty::before{content:""; width:92px; height:92px; border-radius:50%; opacity:.58; margin-top:32px; background:linear-gradient(180deg,#9ebcfb,#d7e5ff); box-shadow:inset 0 -8px 0 rgba(255,255,255,.55);}
+    .selected-slot.empty::after{content:""; position:absolute; width:92px; height:9px; border-radius:99px; background:rgba(255,255,255,.85); top:117px; left:50%; transform:translateX(-50%);}
+    .selected-slot img{width:104px!important; height:104px!important; object-fit:contain!important; image-rendering:pixelated!important; margin-top:28px!important;}
+    .slot-role{position:absolute!important; top:20px!important; left:50%!important; transform:translateX(-50%)!important; color:#1d4ed8!important; font-weight:1000!important; font-size:17px!important; background:transparent!important; white-space:nowrap!important; padding:0!important; border-radius:0!important;}
+    .slot-role.sub{color:#2f54d8!important; background:transparent!important;}
+    .slot-desc{position:absolute; top:48px; left:0; right:0; color:#64748b; font-size:12px; font-weight:800;}
+    .selected-arrow{text-align:center!important; font-size:28px!important; font-weight:1000!important; color:#0a2b78!important;}
+
     .overlay{position:absolute; inset:0; background:rgba(7,25,70,.86); color:white; display:none; z-index:20; place-items:center; text-align:center; padding:24px;}
     .overlay.show{display:grid}.overlay h2{font-size:38px;margin:0 0 12px}.overlay p{margin:6px 0}.overlay button{margin-top:14px}
 
@@ -599,8 +612,8 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    // pooki_online_player_token_p639_faint_pending_switch
-    const PLAYER_TOKEN_KEY = "pooki_online_player_token_p639_faint_pending_switch";
+    // pooki_online_player_token_lan_test_3pokemon_slot_ui
+    const PLAYER_TOKEN_KEY = "pooki_online_player_token_lan_test_3pokemon_slot_ui";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
     let existingClientId = localStorage.getItem(CLIENT_ID_KEY) || "";
@@ -662,6 +675,8 @@
     const RESIST = { normal:["rock","steel"], fire:["fire","water","rock","dragon"], water:["water","grass","dragon"], electric:["electric","grass","dragon"], grass:["fire","grass","poison","flying","bug","dragon","steel"], ice:["fire","water","ice","steel"], fighting:["poison","flying","psychic","bug","fairy"], poison:["poison","ground","rock","ghost"], ground:["grass","bug"], flying:["electric","rock","steel"], psychic:["psychic","steel"], bug:["fire","fighting","poison","flying","ghost","steel","fairy"], rock:["fighting","ground","steel"], ghost:["dark"], dragon:["steel"], dark:["fighting","dark","fairy"], steel:["fire","water","electric","steel"], fairy:["fire","poison","steel"] };
     const IMMUNE = { normal:["ghost"], fighting:["ghost"], poison:["steel"], ground:["flying"], electric:["ground"], psychic:["dark"], ghost:["normal"], dragon:["fairy"], fire:[], water:[], grass:[], ice:[], flying:[], bug:[], rock:[], dark:[], steel:[], fairy:[] };
     const DELAY = { turnStart:420, switch:780, moveText:440, lunge:320, effect:420, damage:540, miss:620, stat:760, faint:1550, status:620, message:560, end:420 };
+    const TEAM_SIZE = 3;
+    const LAN_TEST_3POKEMON = true;
 
     let myRole = null, currentState = null, visualState = null;
     let faintPending = { p1: false, p2: false };
@@ -1353,22 +1368,26 @@
 
       const selectedMon=selectedTeamIds.map(id => player.candidatePool.find(p => p.id === id)).filter(Boolean);
 
-      const selectedSlot=(p,slot)=>p?`
+      const selectedSlot=(p,slot)=>{
+        const roleTitle = slot===1 ? "선발 (1번째)" : `교체 (${slot}번째)`;
+        const roleDesc = slot===1 ? "메인 포켓몬" : `벤치 ${slot-1}`;
+        return p?`
         <div class="selected-slot">
-          <div class="slot-role ${slot===2?"sub":""}">${slot===1?"선두":"교체"}</div>
+          <div class="slot-role ${slot===1?"":"sub"}">${roleTitle}</div>
+          <div class="slot-desc">${roleDesc}</div>
           <img src="${p.frontSprite}" alt="${p.name}" />
-          <div>
-            <div style="font-size:26px;font-weight:1000;line-height:1.05;">${p.name}</div>
-            <div style="margin-top:6px;">${p.types.map(t=>`<span class="type-pill">${typeKo(t)}</span>`).join("")}</div>
-            <div style="margin-top:8px;font-weight:900;">Lv.50 · HP ${p.stats.hp}</div>
-          </div>
+          <div style="font-size:23px;font-weight:1000;line-height:1.05;">${p.name}</div>
+          <div style="margin-top:4px;">${p.types.map(t=>`<span class="type-pill">${typeKo(t)}</span>`).join("")}</div>
+          <div style="margin-top:6px;font-weight:900;color:#385277;">Lv.50 · HP ${p.stats.hp}</div>
         </div>`:`
         <div class="selected-slot empty">
-          <div>
-            <div style="font-size:18px;font-weight:950;">${slot===1?"선두":"교체"} 슬롯</div>
-            <div style="margin-top:6px;font-size:13px;">후보 카드를 클릭하세요.</div>
+          <div class="slot-role ${slot===1?"":"sub"}">${roleTitle}</div>
+          <div class="slot-desc">${roleDesc}</div>
+          <div style="position:absolute;bottom:26px;left:0;right:0;">
+            <div style="font-size:13px;font-weight:950;color:#64748b;">선택된 포켓몬이 없습니다.</div>
           </div>
         </div>`;
+      };
 
       const renderCard=(p,disabled=false,idx=0)=>`
         <button class="team-btn ${selectedTeamIds.includes(p.id)?"selected":""}" ${disabled?"disabled":""} onclick="${disabled?"":"toggleTeam("+p.id+")"}">
@@ -1390,7 +1409,7 @@
             <div class="team-head">
               <div>
                 <div class="team-title">팀을 선택해주세요</div>
-                <div class="team-sub">선두 1마리와 교체 1마리를 선택하세요. 첫 번째 선택이 선두입니다.</div>
+                <div class="team-sub">출전 포켓몬 3마리를 선택하세요. 첫 번째 선택이 선두입니다.</div>
               </div>
               <div class="team-timer">남은 시간 <b>50</b>초</div>
             </div>
@@ -1399,6 +1418,8 @@
               ${selectedSlot(selectedMon[0],1)}
               <div class="selected-arrow">↔</div>
               ${selectedSlot(selectedMon[1],2)}
+              <div class="selected-arrow">↔</div>
+              ${selectedSlot(selectedMon[2],3)}
             </div>
 
             <div class="candidate-title">후보 포켓몬 (12)</div>
@@ -1417,7 +1438,7 @@
               <div class="side-title">룸 정보</div>
               <div class="side-info">
                 룸 이름: 정승의 푸끼몬 LAN<br/>
-                대전 규칙: 2마리 싱글 배틀<br/>
+                대전 규칙: 3마리 싱글 배틀<br/>
                 레벨 제한: Lv.50 고정<br/>
                 승리 조건: 상대 팀 포켓몬을 모두 쓰러뜨린다
               </div>
@@ -1432,8 +1453,8 @@
               </div>
             </div>
 
-            <button class="team-submit" ${selectedTeamIds.length!==2?"disabled":""} onclick="submitTeam()">이 팀으로 출전 →</button>
-            <div class="team-caption">선두와 교체 포켓몬을 선택하면 출전할 수 있습니다.</div>
+            <button class="team-submit" ${selectedTeamIds.length!==TEAM_SIZE?"disabled":""} onclick="submitTeam()">이 팀으로 출전 →</button>
+            <div class="team-caption">선두 1마리와 교체 2마리를 선택하면 출전할 수 있습니다.</div>
           </aside>
         </div>`;
     }
@@ -1474,8 +1495,8 @@
     function renderChat(){ const box=document.getElementById("chatMessages"); if(!box||!currentState)return; const messages=currentState.chatMessages||[]; box.innerHTML=messages.map(msg=>`<div class="chat-line ${msg.role===myRole?"mine-chat":""}"><span class="chat-name">${escapeHtml(msg.name||msg.role)}:</span><span>${escapeHtml(msg.text||"")}</span></div>`).join(""); box.scrollTop=box.scrollHeight; }
     function sendChat(event){ event.preventDefault(); const input=document.getElementById("chatInput"); const text=input.value.trim(); if(!text)return; socket.emit("chatMessage",{text}); input.value=""; }
     function startLocalTimer(){ if(localTimer)clearInterval(localTimer); function tick(){ if(!currentState||!currentState.timerEndAt||["GAME_OVER","WAITING","TEAM_SELECT","LOADING"].includes(currentState.phase)||animationBusy){ document.getElementById("timer").textContent=animationBusy?"…":"-"; return; } const remain=Math.max(0,Math.ceil((currentState.timerEndAt-Date.now())/1000)); document.getElementById("timer").textContent=remain; } tick(); localTimer=setInterval(tick,250); }
-    function toggleTeam(id){ if(currentState.phase!=="TEAM_SELECT")return; const idx=selectedTeamIds.indexOf(id); if(idx>=0) selectedTeamIds.splice(idx,1); else { if(selectedTeamIds.length>=2)return; selectedTeamIds.push(id); } renderTeamSelect(); }
-    function submitTeam(){ if(selectedTeamIds.length!==2)return; socket.emit("selectTeam",{ids:selectedTeamIds}); }
+    function toggleTeam(id){ if(currentState.phase!=="TEAM_SELECT")return; const idx=selectedTeamIds.indexOf(id); if(idx>=0) selectedTeamIds.splice(idx,1); else { if(selectedTeamIds.length>=TEAM_SIZE)return; selectedTeamIds.push(id); } renderTeamSelect(); }
+    function submitTeam(){ if(selectedTeamIds.length!==TEAM_SIZE)return; socket.emit("selectTeam",{ids:selectedTeamIds}); }
     function selectMove(moveIndex){ if(animationBusy)return; socket.emit("selectAction",{type:"move",moveIndex}); }
     function selectSwitch(targetIndex){ if(animationBusy)return; socket.emit("selectAction",{type:"switch",targetIndex}); }
     function updateMainActionButton(){

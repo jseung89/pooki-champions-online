@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.4-p639-faint-pending-switch",
-  "description": "Pookimon Champions ONLINE p639 stable base with faint pending switch control",
+  "version": "0.6.4-lan-test-3pokemon-slot-ui",
+  "description": "Pookimon Champions ONLINE LAN test 3 Pokemon battle with slot-only UI update",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
