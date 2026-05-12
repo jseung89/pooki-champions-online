@@ -1,7 +1,7 @@
 {
   "name": "pooki-lan-champions-v613-login-full",
-  "version": "0.6.4-p639-4x-flinch",
-  "description": "Pookimon Champions ONLINE p639 stable base with 4x effectiveness and flinch only",
+  "version": "0.6.4-p639-4x-label-switch",
+  "description": "Pookimon Champions ONLINE p639 stable base with 4x label and switch animation fix",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

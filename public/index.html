@@ -599,6 +599,7 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    // pooki_online_player_token_p639_4x_label_switch
     const PLAYER_TOKEN_KEY = "pooki_online_player_token_v639";
     const USER_ID_KEY = "pooki_user_id";
     const CLIENT_ID_KEY = "pooki_client_id";
@@ -957,8 +958,18 @@
     }
 
     function rawEffectiveness(moveType, defenderTypes=[]){ let mult=1; for(const t of defenderTypes){ if(IMMUNE[moveType]?.includes(t)) mult*=0; else if(SUPER[moveType]?.includes(t)) mult*=2; else if(RESIST[moveType]?.includes(t)) mult*=0.5; } return mult; }
-    function battleEffectiveness(moveType, defenderTypes=[]){ const raw=rawEffectiveness(moveType,defenderTypes); if(raw===0)return 0; if(raw>=2)return 2; if(raw<=0.5)return 0.5; return 1; }
-    function effectText(mult){ if(mult===0)return "효과 없음"; if(mult>=2)return "효과 2배"; if(mult<1)return "효과 0.5배"; return "효과 1배"; }
+    function battleEffectiveness(moveType, defenderTypes=[]){
+      // p639 안정판 유지: 화면 표시도 서버와 동일하게 4배/0.25배 원배율 사용
+      return rawEffectiveness(moveType, defenderTypes);
+    }
+    function effectText(mult){
+      if(mult===0)return "효과 없음";
+      if(mult>=4)return "효과 4배";
+      if(mult>=2)return "효과 2배";
+      if(mult<=0.25)return "효과 0.25배";
+      if(mult<1)return "효과 0.5배";
+      return "효과 1배";
+    }
     function moveButtonClass(move,mult){ if(!move||move.power===0)return "eff-status"; if(mult===0)return "eff-immune"; if(mult>=2)return "eff-super"; if(mult<1)return "eff-resist"; return "eff-neutral"; }
     function moveDescription(move){ if(!move)return""; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
     function buildMoveHelp(move,enemy){
@@ -1466,19 +1477,40 @@
         const who=isMineSwitch?"내":"상대";
         const sprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
         const arena=document.querySelector(".arena-stage");
-        setMessage(`${who} ${ev.from} 돌아와!`,true);
-        if(sprite){ clearTransientSpriteState(sprite); sprite.classList.add("switch-out"); }
+        const fromWasFainted = !!(ev.fromFainted || ev.skipSwitchOut || ev.forceAfterFaint);
+
+        if(fromWasFainted){
+          // 기절 후 강제 교체는 죽은 포켓몬을 다시 불러들이는 연출을 하지 않는다.
+          setMessage(`${who}는 다음 포켓몬을 준비하고 있다...`,true);
+          if(sprite){
+            clearTransientSpriteState(sprite);
+            sprite.classList.add("fainted");
+            sprite.style.opacity="0";
+            sprite.style.visibility="hidden";
+          }
+          await sleep(300);
+        } else {
+          setMessage(`${who} ${ev.from} 돌아와!`,true);
+          if(sprite){ clearTransientSpriteState(sprite); sprite.classList.add("switch-out"); }
+          await sleep(640);
+        }
+
         const ring=document.createElement("div");
         ring.className=`summon-ring ${isMineSwitch?"mine-ring":"enemy-ring"}`;
         arena?.appendChild(ring);
-        await sleep(640);
         applyVisualSwitch(ev.player,ev.to);
         renderBattleView();
         const newSprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
-        if(newSprite){ clearTransientSpriteState(newSprite); newSprite.classList.add("switch-in"); setTimeout(()=>newSprite.classList.remove("switch-in"),820); }
+        if(newSprite){
+          clearTransientSpriteState(newSprite);
+          newSprite.style.visibility="";
+          newSprite.style.opacity="";
+          newSprite.classList.add("switch-in");
+          setTimeout(()=>newSprite.classList.remove("switch-in"),820);
+        }
         setMessage(`${who} ${ev.to}, 가라!`,true);
         setTimeout(()=>ring.remove(),780);
-        await sleep(DELAY.switch+420);
+        await sleep(DELAY.switch+220);
         return;
       }
       if(ev.type==="move"){
