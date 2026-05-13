@@ -468,7 +468,83 @@
     .login-help{position:static!important;display:block!important;margin:0!important;padding:2px 0 0!important;min-height:auto!important;line-height:1.35!important;color:#475569!important;font-size:12px!important;font-weight:800!important;flex:0 0 auto!important;}
     .login-error{position:static!important;display:block!important;margin:0!important;min-height:18px!important;line-height:1.35!important;color:#dc2626!important;font-size:13px!important;font-weight:900!important;flex:0 0 auto!important;}
 
-  </style>
+  
+    /* v6.4.x safe timed projectile effect patch */
+    #battleEffectLayer{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      overflow:hidden;
+      z-index:30;
+    }
+    .effect-projectile{
+      position:absolute;
+      width:192px;
+      height:192px;
+      left:0;
+      top:0;
+      background-repeat:no-repeat;
+      background-size:1152px 192px;
+      pointer-events:none;
+      image-rendering:auto;
+      opacity:0;
+      --fx-start-x:0px;
+      --fx-start-y:0px;
+      --fx-end-x:0px;
+      --fx-end-y:0px;
+      --fx-rot:0deg;
+      --fx-scale:1.16;
+      transform:translate(-50%,-50%) translate(var(--fx-start-x), var(--fx-start-y)) rotate(var(--fx-rot)) scale(var(--fx-scale));
+      transform-origin:center center;
+      animation:
+        effectTravel 660ms cubic-bezier(.16,.8,.28,1) forwards,
+        effectSprite6 660ms steps(6) forwards;
+      filter:saturate(2.1) contrast(1.45) brightness(1.18) drop-shadow(0 0 15px rgba(255,255,255,.68));
+      mix-blend-mode:normal;
+      will-change:transform, background-position, opacity;
+    }
+    .effect-projectile.effect-electric{
+      background-image:url("/assets/effects/electric-diagonal.png");
+      filter:saturate(2.35) contrast(1.5) brightness(1.22) drop-shadow(0 0 18px rgba(255,230,40,.95));
+    }
+    .effect-projectile.effect-fire{
+      background-image:url("/assets/effects/fire-diagonal.png");
+      filter:saturate(2.25) contrast(1.48) brightness(1.2) drop-shadow(0 0 18px rgba(255,95,20,.92));
+    }
+    .effect-projectile.effect-water{
+      background-image:url("/assets/effects/water-diagonal.png");
+      filter:saturate(2.1) contrast(1.45) brightness(1.18) drop-shadow(0 0 16px rgba(40,170,255,.88));
+    }
+    .effect-projectile.effect-grass{
+      background-image:url("/assets/effects/grass-diagonal.png");
+      filter:saturate(2.2) contrast(1.45) brightness(1.18) drop-shadow(0 0 15px rgba(60,230,70,.86));
+    }
+    .effect-projectile.effect-ice{
+      background-image:url("/assets/effects/ice-diagonal.png");
+      filter:saturate(2.1) contrast(1.48) brightness(1.2) drop-shadow(0 0 16px rgba(80,210,255,.9));
+    }
+    .effect-projectile.effect-hit{
+      background-image:url("/assets/effects/hit-diagonal.png");
+      filter:saturate(1.35) contrast(1.58) brightness(1.2) drop-shadow(0 0 14px rgba(255,255,255,.86));
+    }
+    @keyframes effectSprite6{
+      from{background-position:0 0;}
+      to{background-position:-1152px 0;}
+    }
+    @keyframes effectTravel{
+      0%{
+        opacity:0;
+        transform:translate(-50%,-50%) translate(var(--fx-start-x), var(--fx-start-y)) rotate(var(--fx-rot)) scale(calc(var(--fx-scale) * .68));
+      }
+      10%{opacity:1;}
+      80%{opacity:1;}
+      100%{
+        opacity:0;
+        transform:translate(-50%,-50%) translate(var(--fx-end-x), var(--fx-end-y)) rotate(var(--fx-rot)) scale(var(--fx-scale));
+      }
+    }
+
+</style>
 
 </head>
 <body>
@@ -576,6 +652,7 @@
 
       <div class="arena-panel">
         <div class="arena-stage">
+              <div id="battleEffectLayer"></div>
           <div class="field-deco"></div>
           <div class="vs-mark">VS</div>
           <div class="sprite-wrap mine-sprite">
@@ -1557,6 +1634,85 @@
 
     function enqueueEvents(events){ const fresh=[]; for(const ev of events){ if(lastEventIds.has(ev.id))continue; lastEventIds.add(ev.id); fresh.push(ev); } if(fresh.length===0)return; eventQueue=eventQueue.then(async()=>{ animationBusy=true; renderButtons(); await sleep(DELAY.turnStart); for(const ev of fresh) await playEventSlow(ev); await sleep(DELAY.end); animationBusy=false; syncVisualToFinal(); if(currentState?.phase==="ACTION_SELECT")setMessage("행동을 선택하세요.",false); else if(currentState?.phase==="FORCE_SWITCH")setMessage("교체할 포켓몬을 선택하세요.",false); renderButtons(); renderOverlay(); startLocalTimer(); }); if(lastEventIds.size>200) lastEventIds=new Set([...lastEventIds].slice(-100)); }
 
+    
+    function effectClassByType(type){
+      const t=String(type||"").toLowerCase();
+      if(t==="electric") return "effect-electric";
+      if(t==="fire") return "effect-fire";
+      if(t==="water") return "effect-water";
+      if(t==="grass") return "effect-grass";
+      if(t==="ice") return "effect-ice";
+      if(t==="normal" || t==="fighting" || t==="rock" || t==="ground" || t==="steel") return "effect-hit";
+      return "effect-hit";
+    }
+
+    function resolveEffectSprite(playerKey){
+      const directId = playerKey===myRole ? "mySprite" : "opponentSprite";
+      return document.getElementById(directId)
+        || document.querySelector(playerKey===myRole ? ".mine-sprite .sprite" : ".opponent-sprite .sprite")
+        || document.querySelector(playerKey===myRole ? ".mine-sprite img" : ".opponent-sprite img");
+    }
+
+    function pointInEffectLayer(layer, el, yBias){
+      const layerRect=layer.getBoundingClientRect();
+      const rect=el.getBoundingClientRect();
+      return {
+        x: rect.left + rect.width/2 - layerRect.left,
+        y: rect.top + rect.height*(yBias ?? .46) - layerRect.top
+      };
+    }
+
+    function playSpriteMoveEffect(moveType, attackerKey, defenderKey){
+      return new Promise((resolve)=>{
+        try{
+          const layer=document.getElementById("battleEffectLayer");
+          if(!layer) return resolve();
+
+          const attackerSprite=resolveEffectSprite(attackerKey);
+          const defenderSprite=resolveEffectSprite(defenderKey);
+          if(!attackerSprite || !defenderSprite) return resolve();
+
+          const start=pointInEffectLayer(layer, attackerSprite, .46);
+          const end=pointInEffectLayer(layer, defenderSprite, .46);
+          const dx=end.x-start.x;
+          const dy=end.y-start.y;
+
+          const actualAngle=Math.atan2(dy, dx) * 180 / Math.PI;
+          const baseSheetAngle=-35;
+          const rotate=actualAngle - baseSheetAngle;
+
+          const fx=document.createElement("div");
+          fx.className=`effect-projectile ${effectClassByType(moveType)}`;
+          fx.style.setProperty("--fx-start-x", `${start.x}px`);
+          fx.style.setProperty("--fx-start-y", `${start.y}px`);
+          fx.style.setProperty("--fx-end-x", `${end.x}px`);
+          fx.style.setProperty("--fx-end-y", `${end.y}px`);
+          fx.style.setProperty("--fx-rot", `${rotate}deg`);
+
+          const t=String(moveType||"").toLowerCase();
+          const scale=(t==="electric" || t==="fire") ? 1.24 : (t==="normal" || t==="fighting" || t==="hit" ? 1.08 : 1.16);
+          fx.style.setProperty("--fx-scale", scale);
+
+          layer.appendChild(fx);
+
+          let done=false;
+          const cleanup=()=>{
+            if(done) return;
+            done=true;
+            fx.remove();
+            resolve();
+          };
+
+          fx.addEventListener("animationend", cleanup, {once:true});
+          setTimeout(cleanup, 880);
+        }catch(err){
+          console.warn("battle effect failed", err);
+          resolve();
+        }
+      });
+    }
+
+
     async function playEventSlow(ev){
       if(!myRole||myRole==="spectator"){ if(ev.text)setMessage(ev.text,true); await sleep(DELAY.message); return; }
       if(ev.type==="turnStart"){ setMessage(ev.text||`${ev.turn}턴`,true); await sleep(DELAY.turnStart); return; }
@@ -1624,9 +1780,8 @@
         attackerEl.classList.add(isMine?"attack-up":"attack-down");
         await sleep(DELAY.lunge);
         attackerEl.classList.remove("attack-up","attack-down");
-        await showProjectile(isMine, ev.moveType);
-        showEffect(defenderEffect,ev.moveType);
-        await sleep(DELAY.effect);
+        await playSpriteMoveEffect(ev.moveType, ev.attacker, ev.defender);
+        await sleep(120);
         return;
       }
       if(ev.type==="damage"||ev.type==="statusDamage"){ const targetKey=ev.defender||ev.target; const isMineHit=targetKey===myRole; const targetSprite=isMineHit?document.getElementById("mySprite"):document.getElementById("opponentSprite"); const targetWrap=isMineHit?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); setMessage(`${isMineHit?"내":"상대"} ${ev.defenderName||ev.name||"포켓몬"}이 ${ev.amount} 피해를 입었다!`,true); targetSprite.classList.add("hit"); showDamage(targetWrap,ev.amount); await sleep(180); applyVisualDamage(targetKey,ev.hp); renderBattleView(); await sleep(220); targetSprite.classList.remove("hit"); await sleep(DELAY.damage-400); return; }
