@@ -908,22 +908,29 @@
     let lastActionByRole = { p1: "아직 없음", p2: "아직 없음" };
 
     // 포켓몬 울음소리: PokeAPI cries(latest/legacy)를 사용한다.
+    // 핵심 변경: HTMLAudioElement.volume 대신 Web Audio GainNode로 울음소리 출력 볼륨을 강제 제어한다.
     // 소리 재생 실패, 브라우저 자동재생 차단, API 파일 누락이 있어도 게임 진행은 멈추지 않는다.
     let battleSoundUnlocked = false;
     const recentCryKeys = new Map();
-    const activeCryAudios = new Set();
-    const POKEMON_CRY_DEFAULT_VOLUME = 0.006;
+    const cryBufferCache = new Map();
+    const activeCryNodes = new Set();
+    const POKEMON_CRY_DEFAULT_VOLUME = 0.003;
     let pokemonCryVolume = POKEMON_CRY_DEFAULT_VOLUME;
 
     function clampPokemonCryVolume(value){
       const n = Number(value);
       if(!Number.isFinite(n)) return POKEMON_CRY_DEFAULT_VOLUME;
-      return Math.max(0, Math.min(1, n));
+      // 포켓몬 울음소리는 원본 음량 편차가 커서 최대값 자체를 낮게 제한한다.
+      return Math.max(0, Math.min(0.03, n));
     }
 
     function setPokemonCryVolume(value){
       pokemonCryVolume = clampPokemonCryVolume(value);
-      try{ localStorage.setItem("pokemonCryVolume", String(pokemonCryVolume)); }catch(err){}
+      activeCryNodes.forEach(entry => {
+        try{
+          if(entry?.gainNode) entry.gainNode.gain.setTargetAtTime(pokemonCryVolume, entry.ctx.currentTime, 0.01);
+        }catch(err){}
+      });
       return pokemonCryVolume;
     }
 
@@ -932,6 +939,7 @@
     }
 
     window.setPokemonCryVolume = setPokemonCryVolume;
+    window.getPokemonCryVolume = getPokemonCryVolume;
 
     function unlockBattleSound(){
       battleSoundUnlocked = true;
@@ -955,35 +963,65 @@
       return [...new Set(urls.filter(Boolean))];
     }
 
-    function playCryUrlCandidates(urls, index=0){
-      if(!battleSoundUnlocked || !Array.isArray(urls) || index >= urls.length) return;
+    function getCryAudioContext(){
       try{
-        const audio = new Audio(urls[index]);
-        audio.volume = getPokemonCryVolume();
-        audio.preload = "auto";
-        activeCryAudios.add(audio);
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if(!AudioCtx) return null;
+        if(!gameSfxContext) gameSfxContext = new AudioCtx();
+        if(gameSfxContext.state === "suspended") gameSfxContext.resume().catch(()=>{});
+        return gameSfxContext;
+      }catch(err){
+        return null;
+      }
+    }
 
-        const cleanup = () => {
-          try{ audio.pause(); }catch(err){}
-          activeCryAudios.delete(audio);
-        };
-
-        audio.addEventListener("ended", cleanup, {once:true});
-        audio.addEventListener("error",()=>{
-          cleanup();
-          playCryUrlCandidates(urls,index+1);
-        },{once:true});
-
-        const stopTimer = setTimeout(cleanup, 1800);
-        audio.addEventListener("ended",()=>clearTimeout(stopTimer),{once:true});
-
-        const played = audio.play();
-        if(played?.catch){
-          played.catch(()=>{
-            cleanup();
-            playCryUrlCandidates(urls,index+1);
-          });
+    async function loadCryBuffer(ctx, url){
+      if(!ctx || !url) return null;
+      if(cryBufferCache.has(url)) return cryBufferCache.get(url);
+      try{
+        const res = await fetch(url, { mode:"cors", cache:"force-cache" });
+        if(!res.ok) return null;
+        const buffer = await res.arrayBuffer();
+        const decoded = await ctx.decodeAudioData(buffer.slice(0));
+        cryBufferCache.set(url, decoded);
+        if(cryBufferCache.size > 80){
+          const firstKey = cryBufferCache.keys().next().value;
+          if(firstKey) cryBufferCache.delete(firstKey);
         }
+        return decoded;
+      }catch(err){
+        return null;
+      }
+    }
+
+    async function playCryUrlCandidates(urls, index=0){
+      if(!battleSoundUnlocked || !Array.isArray(urls) || index >= urls.length) return;
+      const volume = getPokemonCryVolume();
+      if(volume <= 0) return;
+      const ctx = getCryAudioContext();
+      if(!ctx) return;
+      try{
+        const audioBuffer = await loadCryBuffer(ctx, urls[index]);
+        if(!audioBuffer){
+          playCryUrlCandidates(urls,index+1);
+          return;
+        }
+        const source = ctx.createBufferSource();
+        const gainNode = ctx.createGain();
+        source.buffer = audioBuffer;
+        gainNode.gain.setValueAtTime(volume, ctx.currentTime);
+        source.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        const entry = { source, gainNode, ctx };
+        activeCryNodes.add(entry);
+        const cleanup = () => {
+          activeCryNodes.delete(entry);
+          try{ source.disconnect(); }catch(err){}
+          try{ gainNode.disconnect(); }catch(err){}
+        };
+        source.onended = cleanup;
+        source.start(0);
+        setTimeout(cleanup, 1800);
       }catch(err){
         playCryUrlCandidates(urls,index+1);
       }
@@ -991,6 +1029,7 @@
 
     function schedulePokemonCry(pokemon, side="field"){
       if(!pokemon || pokemon.fainted) return;
+      if(getPokemonCryVolume() <= 0) return;
       const urls = pokemonCryUrls(pokemon);
       if(urls.length===0) return;
       const now = Date.now();
