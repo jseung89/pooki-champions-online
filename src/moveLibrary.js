@@ -6,6 +6,7 @@ const MOVES = {
   extremeSpeed: { id: "extremeSpeed", apiName: "extreme-speed", name: "신속", type: "normal", power: 80, accuracy: 100, priority: 2, tags: ["priority", "premium"] },
   slash: { id: "slash", apiName: "slash", name: "베어가르기", type: "normal", power: 70, accuracy: 100 },
   hyperBeam: { id: "hyperBeam", apiName: "hyper-beam", name: "파괴광선", type: "normal", power: 150, accuracy: 90, recharge: 1, danger: "사용 후 다음 턴 반동으로 행동할 수 없습니다.", tags: ["premium"] },
+  explosion: { id: "explosion", apiName: "explosion", name: "대폭발", type: "normal", power: 200, accuracy: 100, selfDestruct: true, danger: "사용 후 자신도 쓰러지는 초고위력 기술입니다.", tags: ["signature", "premium"] },
 
   sing: { id: "sing", apiName: "sing", name: "노래하기", type: "normal", power: 0, accuracy: 60, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
   perishSong: { id: "perishSong", apiName: "perish-song", name: "멸망의노래", type: "normal", power: 0, accuracy: 100, fixedDamageRatio: 0.5, statChangeAfterDamage: { target: "enemy", stat: "speed", amount: -1 }, tags: ["signature"] },
@@ -65,8 +66,32 @@ const MOVES = {
   ironTail: { id: "ironTail", apiName: "iron-tail", name: "아이언테일", type: "steel", power: 100, accuracy: 75, tags: ["premium"] },
   bulletPunch: { id: "bulletPunch", apiName: "bullet-punch", name: "불릿펀치", type: "steel", power: 40, accuracy: 100, priority: 1, tags: ["priority"] },
 
-  swordDance: { id: "swordDance", apiName: "swords-dance", name: "칼춤", type: "normal", power: 0, accuracy: 100, statChange: { target: "self", stat: "attack", amount: 1 }, tags: ["setup"] },
-  scaryFace: { id: "scaryFace", apiName: "scary-face", name: "겁나는얼굴", type: "normal", power: 0, accuracy: 100, statChange: { target: "enemy", stat: "speed", amount: -1 }, tags: ["utility"] },
+  swordDance: { id: "swordDance", apiName: "swords-dance", name: "칼춤", type: "normal", power: 0, accuracy: 100, statChange: { target: "self", stat: "attack", amount: 2 }, tags: ["setup"] },
+  nastyPlot: { id: "nastyPlot", apiName: "nasty-plot", name: "나쁜음모", type: "dark", power: 0, accuracy: 100, statChange: { target: "self", stat: "attack", amount: 2 }, tags: ["setup"] },
+  dragonDance: { id: "dragonDance", apiName: "dragon-dance", name: "용의춤", type: "dragon", power: 0, accuracy: 100, statChanges: [
+    { target: "self", stat: "attack", amount: 1 },
+    { target: "self", stat: "speed", amount: 1 },
+  ], tags: ["setup"] },
+  bulkUp: { id: "bulkUp", apiName: "bulk-up", name: "벌크업", type: "fighting", power: 0, accuracy: 100, statChanges: [
+    { target: "self", stat: "attack", amount: 1 },
+    { target: "self", stat: "defense", amount: 1 },
+  ], tags: ["setup"] },
+  ironDefense: { id: "ironDefense", apiName: "iron-defense", name: "철벽", type: "steel", power: 0, accuracy: 100, statChange: { target: "self", stat: "defense", amount: 2 }, tags: ["setup"] },
+  quiverDance: { id: "quiverDance", apiName: "quiver-dance", name: "나비춤", type: "bug", power: 0, accuracy: 100, statChanges: [
+    { target: "self", stat: "attack", amount: 1 },
+    { target: "self", stat: "defense", amount: 1 },
+    { target: "self", stat: "speed", amount: 1 },
+  ], tags: ["setup", "bug-support"] },
+  scaryFace: { id: "scaryFace", apiName: "scary-face", name: "겁나는얼굴", type: "normal", power: 0, accuracy: 100, statChange: { target: "enemy", stat: "speed", amount: -2 }, tags: ["utility"] },
+  charm: { id: "charm", apiName: "charm", name: "애교부리기", type: "fairy", power: 0, accuracy: 100, statChange: { target: "enemy", stat: "attack", amount: -2 }, tags: ["utility"] },
+  featherDance: { id: "featherDance", apiName: "feather-dance", name: "깃털댄스", type: "flying", power: 0, accuracy: 100, statChange: { target: "enemy", stat: "attack", amount: -2 }, tags: ["utility"] },
+  screech: { id: "screech", apiName: "screech", name: "싫은소리", type: "normal", power: 0, accuracy: 85, statChange: { target: "enemy", stat: "defense", amount: -2 }, tags: ["utility"] },
+  metalSound: { id: "metalSound", apiName: "metal-sound", name: "금속음", type: "steel", power: 0, accuracy: 85, statChange: { target: "enemy", stat: "defense", amount: -2 }, tags: ["utility"] },
+  stringShot: { id: "stringShot", apiName: "string-shot", name: "실뿜기", type: "bug", power: 0, accuracy: 95, statChange: { target: "enemy", stat: "speed", amount: -2 }, tags: ["utility", "bug-support"] },
+  tickle: { id: "tickle", apiName: "tickle", name: "간지르기", type: "normal", power: 0, accuracy: 100, statChanges: [
+    { target: "enemy", stat: "attack", amount: -1 },
+    { target: "enemy", stat: "defense", amount: -1 },
+  ], tags: ["utility"] },
   harden: { id: "harden", apiName: "harden", name: "방어태세", type: "normal", power: 0, accuracy: 100, statChange: { target: "self", stat: "defense", amount: 1 }, tags: ["utility"] },
 };
 
@@ -74,11 +99,11 @@ const MOVE_LIST = Object.values(MOVES);
 const PREMIUM_MOVE_IDS = new Set(MOVE_LIST.filter((m) => m.tags?.includes("premium")).map((m) => m.id));
 
 function isAttackMove(move) {
-  return move && move.power > 0 && !move.statChange && !move.statusMove && !move.heal && !move.rest && !move.fixedDamageRatio;
+  return move && move.power > 0 && !move.statChange && !move.statChanges && !move.statusMove && !move.heal && !move.rest && !move.fixedDamageRatio;
 }
 
 function isStatusMove(move) {
-  return move && (move.statChange || move.statusMove || move.heal || move.rest || move.fixedDamageRatio);
+  return move && (move.statChange || move.statChanges || move.statusMove || move.heal || move.rest || move.fixedDamageRatio);
 }
 
 function isPremiumMove(move) {
@@ -87,10 +112,19 @@ function isPremiumMove(move) {
 
 function moveDescription(move) {
   if (!move) return "";
+  if (move.selfDestruct) return "초고위력 기술입니다. 사용 후 자신도 쓰러집니다.";
   if (move.recharge) return "초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다.";
   if (move.rest) return `HP를 모두 회복하고 ${move.rest.turns}턴 동안 수면 상태가 됩니다.`;
   if (move.heal) return `자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio * 100)}%만큼 회복합니다.`;
   if (move.fixedDamageRatio) return `상대에게 큰 고정 피해를 주고 추가 효과를 남기는 특수 전술기입니다.`;
+  if (move.statChanges) {
+    return move.statChanges.map((change) => {
+      const statKo = { attack: "공격", defense: "방어", speed: "스피드" }[change.stat] || change.stat;
+      const targetKo = change.target === "self" ? "내 포켓몬" : "상대 포켓몬";
+      const direction = change.amount > 0 ? "올립니다" : "내립니다";
+      return `${targetKo}의 ${statKo}을/를 ${Math.abs(change.amount)}랭크 ${direction}`;
+    }).join(" / ") + ".";
+  }
   if (move.statChange) {
     const statKo = { attack: "공격", defense: "방어", speed: "스피드" }[move.statChange.stat] || move.statChange.stat;
     const targetKo = move.statChange.target === "self" ? "내 포켓몬" : "상대 포켓몬";

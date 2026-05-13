@@ -13,7 +13,7 @@ function stageMultiplier(stage) {
 }
 
 function clampStage(value) {
-  return Math.max(-6, Math.min(6, value));
+  return Math.max(-3, Math.min(3, value));
 }
 
 function getEffectiveSpeed(pokemon) {

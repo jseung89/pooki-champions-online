@@ -1467,7 +1467,7 @@
       return "효과 1배";
     }
     function moveButtonClass(move,mult){ if(!move||move.power===0)return "eff-status"; if(mult===0)return "eff-immune"; if(mult>=4)return "eff-ultra"; if(mult>=2)return "eff-super"; if(mult<1)return "eff-resist"; return "eff-neutral"; }
-    function moveDescription(move){ if(!move)return""; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
+    function moveDescription(move){ if(!move)return""; if(move.selfDestruct)return"초고위력 기술입니다. 사용 후 자신도 쓰러집니다."; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChanges){ return move.statChanges.map((c)=>{ const s={attack:"공격",defense:"방어",speed:"스피드"}[c.stat]||c.stat; const t=c.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=c.amount>0?"올립니다":"내립니다"; return `${t}의 ${s}을/를 ${Math.abs(c.amount)}랭크 ${d}`; }).join(" / ")+"."; } if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
     function buildMoveHelp(move,enemy){
       if(!move)return"기술 위에 마우스를 올리면 설명이 나옵니다.";
       const mine = (myRole==="p1"||myRole==="p2") ? activePokemon(myRole) : null;
@@ -2152,18 +2152,18 @@
       const lower=raw.toLowerCase();
       if(raw.includes("잠자기") || lower.includes("rest")) return "rest-sleep";
       if(raw.includes("HP회복") || raw.includes("우유마시기") || raw.includes("광합성") || lower.includes("recover") || lower.includes("milk") || lower.includes("synthesis")) return "heal";
-      if(raw.includes("칼춤") || lower.includes("swords")) return "attack-up";
+      if(raw.includes("칼춤") || raw.includes("나쁜음모") || lower.includes("swords") || lower.includes("nasty")) return "attack-up";
       if(raw.includes("고속이동") || lower.includes("agility")) return "speed-up";
-      if(raw.includes("방어태세") || lower.includes("harden")) return "defense-up";
-      if(raw.includes("겁나는얼굴") || raw.includes("멸망의노래") || lower.includes("scary") || lower.includes("perish")) return "intimidate-down";
+      if(raw.includes("방어태세") || raw.includes("철벽") || lower.includes("harden") || lower.includes("iron")) return "defense-up";
+      if(raw.includes("겁나는얼굴") || raw.includes("멸망의노래") || raw.includes("애교부리기") || raw.includes("깃털댄스") || raw.includes("싫은소리") || raw.includes("금속음") || raw.includes("실뿜기") || raw.includes("간지르기") || lower.includes("scary") || lower.includes("perish") || lower.includes("charm") || lower.includes("feather") || lower.includes("screech") || lower.includes("metal") || lower.includes("string") || lower.includes("tickle")) return "intimidate-down";
       return "";
     }
 
     function variationEffectKeyFromStat(stat, amount, moveName){
       const byMove=variationEffectKeyFromMoveName(moveName);
-      if(byMove) return byMove;
       const s=String(stat||"").toLowerCase();
       const n=Number(amount||0);
+      if(byMove && byMove!=="attack-up" && byMove!=="speed-up" && byMove!=="defense-up") return byMove;
       if(n<0) return "intimidate-down";
       if(s==="attack") return "attack-up";
       if(s==="speed") return "speed-up";
@@ -2324,6 +2324,7 @@
             attackerEl.classList.remove("attack-up","attack-down");
             if(isSingMoveName(ev.moveName)){
               await playSpriteMoveEffect(ev.moveType, ev.attacker, ev.defender, ev.moveName);
+              await playStatusSpriteEffect(statusKind,"apply",ev.defender);
             } else {
               await playStatusSpriteEffect(statusKind,"apply",ev.defender);
             }

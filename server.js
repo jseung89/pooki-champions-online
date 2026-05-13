@@ -493,8 +493,20 @@ function moveExpectedValue(move, attacker, defender) {
     const hpRatio = attacker?.maxHp ? attacker.hp / attacker.maxHp : 1;
     return hpRatio < 0.35 ? 130 : hpRatio < 0.55 ? 70 : 5;
   }
-  if (move.statChange && !move.power) {
-    return Math.random() < 0.25 ? 35 : 8;
+  if ((move.statChange || move.statChanges) && !move.power) {
+    const changes = move.statChanges || [move.statChange];
+    const selfBoost = changes.filter((c) => c.target === "self" && c.amount > 0).reduce((sum, c) => sum + Math.abs(c.amount), 0);
+    const enemyDrop = changes.filter((c) => c.target !== "self" && c.amount < 0).reduce((sum, c) => sum + Math.abs(c.amount), 0);
+    const alreadyBoosted = (attacker?.statStages?.attack || 0) + (attacker?.statStages?.defense || 0) + (attacker?.statStages?.speed || 0);
+    const hpRatio = attacker?.maxHp ? attacker.hp / attacker.maxHp : 1;
+    let score = 12 + selfBoost * 24 + enemyDrop * 20;
+    if (alreadyBoosted >= 4) score -= 32;
+    if (hpRatio < 0.35) score -= 18;
+    return score + Math.random() * 18;
+  }
+  if (move.statusMove && !move.power) {
+    if (defender?.status) return 3;
+    return 52 + Math.random() * 16;
   }
   const power = move.power || 0;
   const accuracy = (move.accuracy ?? 100) / 100;
@@ -1152,18 +1164,22 @@ function useMove(attackerKey, defenderKey, moveIndex) {
     return;
   }
 
-  if (move.statChange) {
-    const targetKey = move.statChange.target === "self" ? attackerKey : defenderKey;
-    const target = active(targetKey);
+  if (move.statChange || move.statChanges) {
+    const changes = move.statChanges || [move.statChange];
+    for (const change of changes) {
+      if (!change) continue;
+      const targetKey = change.target === "self" ? attackerKey : defenderKey;
+      const target = active(targetKey);
 
-    if (target && !target.fainted) {
-      applyStatChange(target, move.statChange.stat, move.statChange.amount);
-      const statKo = { attack: "공격", defense: "방어", speed: "스피드" }[move.statChange.stat] || move.statChange.stat;
-      log(`${target.name}의 ${statKo}이/가 ${move.statChange.amount > 0 ? "올라갔다" : "떨어졌다"}!`);
-      addEvent({ type: "stat", target: targetKey, stat: move.statChange.stat, amount: move.statChange.amount, name: target.name });
+      if (target && !target.fainted) {
+        applyStatChange(target, change.stat, change.amount);
+        const statKo = { attack: "공격", defense: "방어", speed: "스피드" }[change.stat] || change.stat;
+        log(`${target.name}의 ${statKo}이/가 ${change.amount > 0 ? "올라갔다" : "떨어졌다"}!`);
+        addEvent({ type: "stat", target: targetKey, stat: change.stat, amount: change.amount, name: target.name });
 
-      const warn = statDangerWarning(target);
-      if (warn) addEvent({ type: "warning", text: warn });
+        const warn = statDangerWarning(target);
+        if (warn) addEvent({ type: "warning", text: warn });
+      }
     }
     return;
   }
@@ -1192,6 +1208,12 @@ function useMove(attackerKey, defenderKey, moveIndex) {
         addEvent({ type: "status", target: defenderKey, status: move.effect.status, name: defenderAfter.name });
       }
       tryApplyFlinch(attackerKey, defenderKey, move);
+    }
+
+    if (move.selfDestruct && attacker && !attacker.fainted) {
+      log(`${attacker.name}은/는 대폭발의 반동으로 쓰러졌다!`);
+      addEvent({ type: "message", text: `${attacker.name}은/는 대폭발의 반동으로 쓰러졌다!` });
+      faintPokemon(attackerKey);
     }
   }
 }
