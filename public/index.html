@@ -901,6 +901,7 @@
     const LAN_TEST_3POKEMON = true;
 
     let myRole = null, currentState = null, visualState = null;
+    let gameOverSfxPlayedForState = false;
     let faintPending = { p1: false, p2: false };
     let lastEventIds = new Set(), eventQueue = Promise.resolve(), localTimer = null;
     let animationBusy = false, selectedTeamIds = [], hoveredMoveIndex = 0;
@@ -910,6 +911,32 @@
     // 소리 재생 실패, 브라우저 자동재생 차단, API 파일 누락이 있어도 게임 진행은 멈추지 않는다.
     let battleSoundUnlocked = false;
     const recentCryKeys = new Map();
+    const activeCryAudios = new Set();
+    const POKEMON_CRY_DEFAULT_VOLUME = 0.0000009;
+    let pokemonCryVolume = POKEMON_CRY_DEFAULT_VOLUME;
+
+    function clampPokemonCryVolume(value){
+      const n = Number(value);
+      if(!Number.isFinite(n)) return POKEMON_CRY_DEFAULT_VOLUME;
+      return Math.max(0, Math.min(1, n));
+    }
+
+    function setPokemonCryVolume(value){
+      pokemonCryVolume = clampPokemonCryVolume(value);
+      try{ localStorage.setItem("pokemonCryVolume", String(pokemonCryVolume)); }catch(err){}
+      return pokemonCryVolume;
+    }
+
+    function getPokemonCryVolume(){
+      return clampPokemonCryVolume(pokemonCryVolume);
+    }
+
+    try{
+      const savedCryVolume = localStorage.getItem("pokemonCryVolume");
+      if(savedCryVolume !== null) pokemonCryVolume = clampPokemonCryVolume(savedCryVolume);
+    }catch(err){}
+
+    window.setPokemonCryVolume = setPokemonCryVolume;
 
     function unlockBattleSound(){
       battleSoundUnlocked = true;
@@ -937,11 +964,31 @@
       if(!battleSoundUnlocked || !Array.isArray(urls) || index >= urls.length) return;
       try{
         const audio = new Audio(urls[index]);
-        audio.volume = 0.42;
+        audio.volume = getPokemonCryVolume();
         audio.preload = "auto";
-        audio.addEventListener("error",()=>playCryUrlCandidates(urls,index+1),{once:true});
+        activeCryAudios.add(audio);
+
+        const cleanup = () => {
+          try{ audio.pause(); }catch(err){}
+          activeCryAudios.delete(audio);
+        };
+
+        audio.addEventListener("ended", cleanup, {once:true});
+        audio.addEventListener("error",()=>{
+          cleanup();
+          playCryUrlCandidates(urls,index+1);
+        },{once:true});
+
+        const stopTimer = setTimeout(cleanup, 1800);
+        audio.addEventListener("ended",()=>clearTimeout(stopTimer),{once:true});
+
         const played = audio.play();
-        if(played?.catch) played.catch(()=>playCryUrlCandidates(urls,index+1));
+        if(played?.catch){
+          played.catch(()=>{
+            cleanup();
+            playCryUrlCandidates(urls,index+1);
+          });
+        }
       }catch(err){
         playCryUrlCandidates(urls,index+1);
       }
@@ -961,6 +1008,98 @@
         const cutoff = Date.now() - 10000;
         for(const [k,t] of recentCryKeys.entries()) if(t < cutoff) recentCryKeys.delete(k);
       }
+    }
+
+
+    // 1차 게임 효과음: 별도 음원 파일 없이 Web Audio API로 짧은 효과음을 생성한다.
+    // 실패하거나 브라우저에서 오디오가 막혀도 배틀 진행에는 영향을 주지 않는다.
+    let gameSfxContext = null;
+    const recentSfxKeys = new Map();
+    const GAME_SFX_VOLUME = 1.2;
+
+    function getGameSfxContext(){
+      try{
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if(!AudioCtx) return null;
+        if(!gameSfxContext) gameSfxContext = new AudioCtx();
+        if(gameSfxContext.state === "suspended") gameSfxContext.resume().catch(()=>{});
+        return gameSfxContext;
+      }catch(err){
+        return null;
+      }
+    }
+
+    function playTone(ctx, {type="sine", freq=440, toFreq=null, start=0, duration=0.12, gain=0.08, endGain=0.0001}){
+      try{
+        const now = ctx.currentTime + start;
+        const osc = ctx.createOscillator();
+        const amp = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, now);
+        if(toFreq) osc.frequency.exponentialRampToValueAtTime(Math.max(1, toFreq), now + duration);
+        amp.gain.setValueAtTime(Math.max(0.0001, Math.min(0.18, gain * GAME_SFX_VOLUME)), now);
+        amp.gain.exponentialRampToValueAtTime(Math.max(0.0001, endGain), now + duration);
+        osc.connect(amp);
+        amp.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.03);
+      }catch(err){}
+    }
+
+    function playGameSfx(key){
+      if(!battleSoundUnlocked || !key) return;
+      try{
+        const nowMs = Date.now();
+        const last = recentSfxKeys.get(key) || 0;
+        if(nowMs - last < 80) return;
+        recentSfxKeys.set(key, nowMs);
+        if(recentSfxKeys.size > 40){
+          const cutoff = nowMs - 5000;
+          for(const [k,t] of recentSfxKeys.entries()) if(t < cutoff) recentSfxKeys.delete(k);
+        }
+        const ctx = getGameSfxContext();
+        if(!ctx) return;
+        const k = String(key).toLowerCase();
+        if(k === "select"){
+          playTone(ctx,{type:"square",freq:660,toFreq:880,duration:0.055,gain:0.035});
+          playTone(ctx,{type:"sine",freq:980,duration:0.045,gain:0.018,start:0.035});
+        } else if(k === "hit"){
+          playTone(ctx,{type:"sawtooth",freq:180,toFreq:70,duration:0.09,gain:0.075});
+          playTone(ctx,{type:"square",freq:95,duration:0.06,gain:0.05,start:0.02});
+        } else if(k === "miss"){
+          playTone(ctx,{type:"sine",freq:520,toFreq:230,duration:0.16,gain:0.04});
+          playTone(ctx,{type:"triangle",freq:760,toFreq:420,duration:0.12,gain:0.022,start:0.025});
+        } else if(k === "critical"){
+          playTone(ctx,{type:"square",freq:220,toFreq:110,duration:0.07,gain:0.08});
+          playTone(ctx,{type:"sawtooth",freq:880,toFreq:1760,duration:0.09,gain:0.052,start:0.045});
+          playTone(ctx,{type:"square",freq:1320,duration:0.08,gain:0.04,start:0.11});
+        } else if(k === "heal"){
+          playTone(ctx,{type:"sine",freq:523.25,duration:0.12,gain:0.036});
+          playTone(ctx,{type:"sine",freq:659.25,duration:0.13,gain:0.034,start:0.09});
+          playTone(ctx,{type:"sine",freq:783.99,duration:0.16,gain:0.032,start:0.18});
+        } else if(k === "buff"){
+          playTone(ctx,{type:"triangle",freq:440,duration:0.08,gain:0.04});
+          playTone(ctx,{type:"triangle",freq:660,duration:0.09,gain:0.04,start:0.075});
+          playTone(ctx,{type:"triangle",freq:990,duration:0.12,gain:0.038,start:0.15});
+        } else if(k === "debuff"){
+          playTone(ctx,{type:"triangle",freq:660,toFreq:330,duration:0.16,gain:0.045});
+          playTone(ctx,{type:"sawtooth",freq:220,toFreq:120,duration:0.18,gain:0.03,start:0.05});
+        } else if(k === "sleep"){
+          playTone(ctx,{type:"sine",freq:392,toFreq:330,duration:0.2,gain:0.03});
+          playTone(ctx,{type:"sine",freq:294,toFreq:247,duration:0.24,gain:0.024,start:0.16});
+        } else if(k === "reward"){
+          playTone(ctx,{type:"square",freq:659.25,duration:0.07,gain:0.04});
+          playTone(ctx,{type:"square",freq:783.99,duration:0.08,gain:0.04,start:0.07});
+          playTone(ctx,{type:"square",freq:1046.5,duration:0.14,gain:0.035,start:0.15});
+        } else if(k === "effect"){
+          playTone(ctx,{type:"triangle",freq:420,toFreq:760,duration:0.11,gain:0.045});
+          playTone(ctx,{type:"sine",freq:900,toFreq:1200,duration:0.09,gain:0.025,start:0.035});
+        } else if(k === "game-over"){
+          playTone(ctx,{type:"triangle",freq:392,toFreq:300,duration:0.22,gain:0.045});
+          playTone(ctx,{type:"triangle",freq:330,toFreq:250,duration:0.24,gain:0.04,start:0.18});
+          playTone(ctx,{type:"triangle",freq:262,toFreq:180,duration:0.32,gain:0.038,start:0.38});
+        }
+      }catch(err){}
     }
 
     socket.on("lobbyState", (lobby) => {
@@ -1358,6 +1497,7 @@
       if(currentState.phase==="WAITING"){ overlay.classList.add("show"); title.textContent="상대 접속 대기"; desc.textContent="친구가 IP 주소로 접속하면 팀 선택이 시작됩니다."; btn.style.display="none"; updateRoomExitButtons(); setMessage("상대 접속을 기다리는 중...",true); return; }
       if(currentState.phase==="GAME_OVER"){
         if(animationBusy){ overlay.classList.remove("show"); return; }
+        if(!gameOverSfxPlayedForState){ gameOverSfxPlayedForState=true; playGameSfx("game-over"); }
         overlay.classList.add("show");
         title.textContent=`${currentState.winner} 승리!`;
         const rr=currentState.rankingResult;
@@ -1371,6 +1511,7 @@
         setMessage(`${currentState.winner} 승리!`,false);
         return;
       }
+      if(currentState.phase!=="GAME_OVER") gameOverSfxPlayedForState=false;
       overlay.classList.remove("show"); btn.style.display="none";
     }
 
@@ -1782,10 +1923,10 @@
     function renderChat(){ const box=document.getElementById("chatMessages"); if(!box||!currentState)return; const messages=currentState.chatMessages||[]; box.innerHTML=messages.map(msg=>`<div class="chat-line ${msg.role===myRole?"mine-chat":""}"><span class="chat-name">${escapeHtml(msg.name||msg.role)}:</span><span>${escapeHtml(msg.text||"")}</span></div>`).join(""); box.scrollTop=box.scrollHeight; }
     function sendChat(event){ event.preventDefault(); const input=document.getElementById("chatInput"); const text=input.value.trim(); if(!text)return; socket.emit("chatMessage",{text}); input.value=""; }
     function startLocalTimer(){ if(localTimer)clearInterval(localTimer); function tick(){ if(!currentState||!currentState.timerEndAt||["GAME_OVER","WAITING","TEAM_SELECT","LOADING"].includes(currentState.phase)||animationBusy){ document.getElementById("timer").textContent=animationBusy?"…":"-"; return; } const remain=Math.max(0,Math.ceil((currentState.timerEndAt-Date.now())/1000)); document.getElementById("timer").textContent=remain; } tick(); localTimer=setInterval(tick,250); }
-    function toggleTeam(id){ if(currentState.phase!=="TEAM_SELECT")return; const idx=selectedTeamIds.indexOf(id); if(idx>=0) selectedTeamIds.splice(idx,1); else { if(selectedTeamIds.length>=TEAM_SIZE)return; selectedTeamIds.push(id); } renderTeamSelect(); }
-    function submitTeam(){ if(selectedTeamIds.length!==TEAM_SIZE)return; socket.emit("selectTeam",{ids:selectedTeamIds}); }
-    function selectMove(moveIndex){ if(animationBusy)return; socket.emit("selectAction",{type:"move",moveIndex}); }
-    function selectSwitch(targetIndex){ if(animationBusy)return; socket.emit("selectAction",{type:"switch",targetIndex}); }
+    function toggleTeam(id){ if(currentState.phase!=="TEAM_SELECT")return; playGameSfx("select"); const idx=selectedTeamIds.indexOf(id); if(idx>=0) selectedTeamIds.splice(idx,1); else { if(selectedTeamIds.length>=TEAM_SIZE)return; selectedTeamIds.push(id); } renderTeamSelect(); }
+    function submitTeam(){ if(selectedTeamIds.length!==TEAM_SIZE)return; playGameSfx("select"); socket.emit("selectTeam",{ids:selectedTeamIds}); }
+    function selectMove(moveIndex){ if(animationBusy)return; playGameSfx("select"); socket.emit("selectAction",{type:"move",moveIndex}); }
+    function selectSwitch(targetIndex){ if(animationBusy)return; playGameSfx("select"); socket.emit("selectAction",{type:"switch",targetIndex}); }
     function updateMainActionButton(){
       const btn=document.getElementById("mainActionButton");
       if(!btn||!currentState)return;
@@ -1812,7 +1953,9 @@
 
     function requestRematch(){
       if(!currentState || currentState.phase!=="GAME_OVER")return;
+      playGameSfx("select");
       selectedTeamIds=[];
+      gameOverSfxPlayedForState=false;
       lastEventIds.clear();
       animationBusy=false;
       eventQueue=Promise.resolve();
@@ -1909,6 +2052,7 @@
           fx.style.setProperty("--fx-scale", scale);
 
           layer.appendChild(fx);
+          playGameSfx("effect");
 
           let done=false;
           const cleanup=()=>{
@@ -2165,6 +2309,7 @@
         return;
       }
       if(ev.type==="damage"||ev.type==="statusDamage"){
+        playGameSfx(ev.critical ? "critical" : "hit");
         const targetKey=ev.defender||ev.target;
         const isMineHit=targetKey===myRole;
         const targetSprite=isMineHit?document.getElementById("mySprite"):document.getElementById("opponentSprite");
@@ -2184,9 +2329,10 @@
         await sleep(DELAY.damage-400);
         return;
       }
-      if(ev.type==="heal"){ const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const lastMove=lastActionByRole[ev.target]||""; const variationKey=variationEffectKeyFromMoveName(lastMove)||"heal"; setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); await playVariationMoveEffect(variationKey,ev.target); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(Math.max(120,DELAY.damage-540)); return; }
-      if(ev.type==="miss"){ const attackerMine=ev.attacker===myRole; const attackerEffect=attackerMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage("하지만 공격은 빗나갔다!",true); showCustomEffect(attackerEffect,"💦"); await sleep(DELAY.miss); return; }
+      if(ev.type==="heal"){ playGameSfx("heal"); const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const lastMove=lastActionByRole[ev.target]||""; const variationKey=variationEffectKeyFromMoveName(lastMove)||"heal"; setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); await playVariationMoveEffect(variationKey,ev.target); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(Math.max(120,DELAY.damage-540)); return; }
+      if(ev.type==="miss"){ playGameSfx("miss"); const attackerMine=ev.attacker===myRole; const attackerEffect=attackerMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage("하지만 공격은 빗나갔다!",true); showCustomEffect(attackerEffect,"💦"); await sleep(DELAY.miss); return; }
       if(ev.type==="stat"){
+        playGameSfx(ev.amount > 0 ? "buff" : "debuff");
         const isMineTarget=ev.target===myRole;
         const statKo={attack:"공격",defense:"방어",speed:"스피드"}[ev.stat]||ev.stat;
         const wrap=isMineTarget?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite");
@@ -2199,11 +2345,11 @@
         await sleep(Math.max(120,DELAY.stat-520));
         return;
       }
-      if(ev.type==="status"){ const isMineTarget=ev.target===myRole; const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect"); const icon={burn:"🔥",poison:"☠️",paralyze:"⚡",sleep:"💤"}[ev.status]||"❗"; const lastMove=lastActionByRole[ev.target]||""; const skipIcon=ev.status==="sleep" && variationEffectKeyFromMoveName(lastMove)==="rest-sleep"; setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`,true); applyVisualStatus(ev.target,ev.status); renderBattleView(); if(!skipIcon) showCustomEffect(effectEl,icon); await sleep(DELAY.status); return; }
+      if(ev.type==="status"){ playGameSfx(ev.status === "sleep" ? "sleep" : "debuff"); const isMineTarget=ev.target===myRole; const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect"); const icon={burn:"🔥",poison:"☠️",paralyze:"⚡",sleep:"💤"}[ev.status]||"❗"; const lastMove=lastActionByRole[ev.target]||""; const skipIcon=ev.status==="sleep" && variationEffectKeyFromMoveName(lastMove)==="rest-sleep"; setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`,true); applyVisualStatus(ev.target,ev.status); renderBattleView(); if(!skipIcon) showCustomEffect(effectEl,icon); await sleep(DELAY.status); return; }
             if(ev.type==="skip"){
         const skippedMine=ev.player===myRole;
         setMessage(ev.text||"행동할 수 없다!",true);
-        if(ev.reason==="sleep") await playStatusSpriteEffect("sleep","skip",ev.player);
+        if(ev.reason==="sleep"){ playGameSfx("sleep"); await playStatusSpriteEffect("sleep","skip",ev.player); }
         else if(ev.reason==="paralysis" || ev.reason==="paralyze") await playStatusSpriteEffect("paralysis","skip",ev.player);
         else {
           const effectEl=skippedMine?document.getElementById("myEffect"):document.getElementById("opponentEffect");
@@ -2211,6 +2357,12 @@
           showCustomEffect(effectEl,reason);
         }
         await sleep(Math.max(120,DELAY.skip-650));
+        return;
+      }
+      if(ev.type==="reward" || ev.type==="rewardOpen" || ev.type==="rewardSelect"){
+        playGameSfx("reward");
+        if(ev.text) setMessage(ev.text,true);
+        await sleep(DELAY.message);
         return;
       }
       if(ev.type==="faint"){
@@ -2256,7 +2408,7 @@
         await sleep(900);
         return;
       }
-      if(ev.type==="gameOver"){ await sleep(2400); setMessage(`${ev.winner} 승리!`,false); await sleep(1200); }
+      if(ev.type==="gameOver"){ await sleep(2400); if(!gameOverSfxPlayedForState){ gameOverSfxPlayedForState=true; playGameSfx("game-over"); } setMessage(`${ev.winner} 승리!`,false); await sleep(1200); }
     }
     function showProjectile(fromMine, moveType){
       const arena=document.querySelector(".arena-stage");
