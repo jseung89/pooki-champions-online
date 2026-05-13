@@ -912,7 +912,7 @@
     let battleSoundUnlocked = false;
     const recentCryKeys = new Map();
     const activeCryAudios = new Set();
-    const POKEMON_CRY_DEFAULT_VOLUME = 0.0000009;
+    const POKEMON_CRY_DEFAULT_VOLUME = 0.006;
     let pokemonCryVolume = POKEMON_CRY_DEFAULT_VOLUME;
 
     function clampPokemonCryVolume(value){
@@ -930,11 +930,6 @@
     function getPokemonCryVolume(){
       return clampPokemonCryVolume(pokemonCryVolume);
     }
-
-    try{
-      const savedCryVolume = localStorage.getItem("pokemonCryVolume");
-      if(savedCryVolume !== null) pokemonCryVolume = clampPokemonCryVolume(savedCryVolume);
-    }catch(err){}
 
     window.setPokemonCryVolume = setPokemonCryVolume;
 
