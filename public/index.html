@@ -544,6 +544,45 @@
       }
     }
 
+
+    /* v6.4.x status effect layer patch */
+    .status-effect-sprite{
+      position:absolute;
+      width:192px;
+      height:192px;
+      left:0;
+      top:0;
+      background-repeat:no-repeat;
+      background-size:1152px 192px;
+      pointer-events:none;
+      image-rendering:auto;
+      opacity:0;
+      --status-x:0px;
+      --status-y:0px;
+      --status-scale:1.06;
+      transform:translate(-50%,-50%) translate(var(--status-x), var(--status-y)) scale(var(--status-scale));
+      transform-origin:center center;
+      animation:statusSprite6 720ms steps(6) forwards, statusPop 720ms ease-out forwards;
+      filter:saturate(1.9) contrast(1.35) brightness(1.12) drop-shadow(0 0 13px rgba(255,255,255,.55));
+      z-index:32;
+      will-change:transform, background-position, opacity;
+    }
+    .status-sleep-apply{background-image:url("/assets/effects/status/sleep-apply.png"); filter:saturate(1.8) contrast(1.3) brightness(1.12) drop-shadow(0 0 14px rgba(120,170,255,.72));}
+    .status-sleep-skip{background-image:url("/assets/effects/status/sleep-skip.png"); filter:saturate(1.8) contrast(1.3) brightness(1.12) drop-shadow(0 0 14px rgba(120,170,255,.72));}
+    .status-paralysis-apply{background-image:url("/assets/effects/status/paralysis-apply.png"); filter:saturate(2.15) contrast(1.45) brightness(1.18) drop-shadow(0 0 15px rgba(255,230,60,.88));}
+    .status-paralysis-skip{background-image:url("/assets/effects/status/paralysis-skip.png"); filter:saturate(2.15) contrast(1.45) brightness(1.18) drop-shadow(0 0 15px rgba(255,230,60,.88));}
+    .status-burn-apply{background-image:url("/assets/effects/status/burn-apply.png"); filter:saturate(2.05) contrast(1.42) brightness(1.15) drop-shadow(0 0 15px rgba(255,100,35,.82));}
+    .status-burn-damage{background-image:url("/assets/effects/status/burn-damage.png"); filter:saturate(2.15) contrast(1.48) brightness(1.18) drop-shadow(0 0 16px rgba(255,80,25,.9));}
+    .status-poison-apply{background-image:url("/assets/effects/status/poison-apply.png"); filter:saturate(2) contrast(1.42) brightness(1.13) drop-shadow(0 0 15px rgba(170,70,255,.82));}
+    .status-poison-damage{background-image:url("/assets/effects/status/poison-damage.png"); filter:saturate(2.1) contrast(1.48) brightness(1.16) drop-shadow(0 0 16px rgba(170,70,255,.9));}
+    @keyframes statusSprite6{from{background-position:0 0;}to{background-position:-1152px 0;}}
+    @keyframes statusPop{
+      0%{opacity:0; transform:translate(-50%,-50%) translate(var(--status-x), var(--status-y)) scale(calc(var(--status-scale) * .72));}
+      12%{opacity:1;}
+      78%{opacity:1;}
+      100%{opacity:0; transform:translate(-50%,-50%) translate(var(--status-x), var(--status-y)) scale(calc(var(--status-scale) * 1.08));}
+    }
+
 </style>
 
 </head>
@@ -1713,6 +1752,78 @@
     }
 
 
+    
+    function normalizeStatusName(value){
+      const raw=String(value||"").toLowerCase();
+      if(raw==="asleep") return "sleep";
+      if(raw==="paralyzed" || raw==="paralyse" || raw==="paralysis" || raw==="paralyze") return "paralysis";
+      if(raw==="brn") return "burn";
+      if(raw==="psn" || raw==="toxic") return "poison";
+      return raw;
+    }
+
+    function statusEffectClass(status, kind){
+      const s=normalizeStatusName(status);
+      if(s==="sleep") return kind==="skip" ? "status-sleep-skip" : "status-sleep-apply";
+      if(s==="paralysis") return kind==="skip" ? "status-paralysis-skip" : "status-paralysis-apply";
+      if(s==="burn") return kind==="damage" ? "status-burn-damage" : "status-burn-apply";
+      if(s==="poison") return kind==="damage" ? "status-poison-damage" : "status-poison-apply";
+      return "";
+    }
+
+    function statusFromMoveName(moveName, moveType){
+      const lower=String(moveName||"").toLowerCase();
+      const raw=String(moveName||"");
+      if(lower.includes("sleep") || raw.includes("수면") || raw.includes("최면") || raw.includes("잠")) return "sleep";
+      if(lower.includes("spore") || raw.includes("버섯포자")) return "sleep";
+      if(lower.includes("stun") || lower.includes("thunder wave") || raw.includes("전기자석파") || raw.includes("마비")) return "paralysis";
+      if(lower.includes("will-o-wisp") || raw.includes("도깨비불") || raw.includes("화상")) return "burn";
+      if(lower.includes("poison") || lower.includes("toxic") || raw.includes("독")) return "poison";
+      const t=String(moveType||"").toLowerCase();
+      if(t==="poison") return "poison";
+      return "";
+    }
+
+    function resolveStatusSprite(playerKey){
+      const directId=playerKey===myRole ? "mySprite" : "opponentSprite";
+      return document.getElementById(directId)
+        || document.querySelector(playerKey===myRole ? ".mine-sprite .sprite" : ".opponent-sprite .sprite")
+        || document.querySelector(playerKey===myRole ? ".mine-sprite img" : ".opponent-sprite img");
+    }
+
+    function playStatusSpriteEffect(status, kind, targetKey){
+      return new Promise((resolve)=>{
+        try{
+          const cls=statusEffectClass(status, kind);
+          if(!cls) return resolve();
+          const layer=document.getElementById("battleEffectLayer");
+          const target=resolveStatusSprite(targetKey);
+          if(!layer || !target) return resolve();
+
+          const layerRect=layer.getBoundingClientRect();
+          const rect=target.getBoundingClientRect();
+          const x=rect.left + rect.width/2 - layerRect.left;
+          const y=rect.top + rect.height*.46 - layerRect.top;
+
+          const fx=document.createElement("div");
+          fx.className=`status-effect-sprite ${cls}`;
+          fx.style.setProperty("--status-x", `${x}px`);
+          fx.style.setProperty("--status-y", `${y}px`);
+          fx.style.setProperty("--status-scale", kind==="skip" ? 1.0 : (kind==="damage" ? 1.08 : 1.04));
+          layer.appendChild(fx);
+
+          let done=false;
+          const cleanup=()=>{ if(done) return; done=true; fx.remove(); resolve(); };
+          fx.addEventListener("animationend", cleanup, {once:true});
+          setTimeout(cleanup, 900);
+        }catch(err){
+          console.warn("status effect failed", err);
+          resolve();
+        }
+      });
+    }
+
+
     async function playEventSlow(ev){
       if(!myRole||myRole==="spectator"){ if(ev.text)setMessage(ev.text,true); await sleep(DELAY.message); return; }
       if(ev.type==="turnStart"){ setMessage(ev.text||`${ev.turn}턴`,true); await sleep(DELAY.turnStart); return; }
@@ -1772,6 +1883,15 @@
         await sleep(DELAY.moveText);
         if(ev.outcome==="miss"){ await sleep(120); return; }
         if(ev.isStatusMove){
+          const statusKind=statusFromMoveName(ev.moveName, ev.moveType);
+          if(statusKind){
+            attackerEl.classList.add(isMine?"attack-up":"attack-down");
+            await sleep(DELAY.lunge);
+            attackerEl.classList.remove("attack-up","attack-down");
+            await playStatusSpriteEffect(statusKind,"apply",ev.defender);
+            await sleep(120);
+            return;
+          }
           showBuffRise(attackerWrap,1);
           showCustomEffect(attackerEffect,"⬆️");
           await sleep(DELAY.effect+240);
@@ -1784,7 +1904,26 @@
         await sleep(120);
         return;
       }
-      if(ev.type==="damage"||ev.type==="statusDamage"){ const targetKey=ev.defender||ev.target; const isMineHit=targetKey===myRole; const targetSprite=isMineHit?document.getElementById("mySprite"):document.getElementById("opponentSprite"); const targetWrap=isMineHit?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); setMessage(`${isMineHit?"내":"상대"} ${ev.defenderName||ev.name||"포켓몬"}이 ${ev.amount} 피해를 입었다!`,true); targetSprite.classList.add("hit"); showDamage(targetWrap,ev.amount); await sleep(180); applyVisualDamage(targetKey,ev.hp); renderBattleView(); await sleep(220); targetSprite.classList.remove("hit"); await sleep(DELAY.damage-400); return; }
+      if(ev.type==="damage"||ev.type==="statusDamage"){
+        const targetKey=ev.defender||ev.target;
+        const isMineHit=targetKey===myRole;
+        const targetSprite=isMineHit?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        const targetWrap=isMineHit?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite");
+        setMessage(`${isMineHit?"내":"상대"} ${ev.defenderName||ev.name||"포켓몬"}이 ${ev.amount} 피해를 입었다!`,true);
+        if(ev.type==="statusDamage"){
+          const statusKind=normalizeStatusName(ev.status||ev.reason||ev.source||ev.statusName||"");
+          if(statusKind==="burn" || statusKind==="poison") await playStatusSpriteEffect(statusKind,"damage",targetKey);
+        }
+        targetSprite.classList.add("hit");
+        showDamage(targetWrap,ev.amount);
+        await sleep(180);
+        applyVisualDamage(targetKey,ev.hp);
+        renderBattleView();
+        await sleep(220);
+        targetSprite.classList.remove("hit");
+        await sleep(DELAY.damage-400);
+        return;
+      }
       if(ev.type==="heal"){ const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const effectEl=isMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); showCustomEffect(effectEl,"💚"); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(DELAY.damage); return; }
       if(ev.type==="miss"){ const attackerMine=ev.attacker===myRole; const attackerEffect=attackerMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage("하지만 공격은 빗나갔다!",true); showCustomEffect(attackerEffect,"💦"); await sleep(DELAY.miss); return; }
       if(ev.type==="stat"){
@@ -1802,7 +1941,19 @@
         return;
       }
       if(ev.type==="status"){ const isMineTarget=ev.target===myRole; const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect"); const icon={burn:"🔥",poison:"☠️",paralyze:"⚡",sleep:"💤"}[ev.status]||"❗"; setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`,true); applyVisualStatus(ev.target,ev.status); renderBattleView(); showCustomEffect(effectEl,icon); await sleep(DELAY.status); return; }
-      if(ev.type==="skip"){ const isMineTarget=ev.player===myRole; const text=ev.text||(ev.reason==="sleep"?"잠들어 움직일 수 없다...":ev.reason==="recharge"?"반동으로 움직일 수 없다!":"몸이 저려 움직일 수 없다!"); setMessage(`${isMineTarget?"내":"상대"} 포켓몬은 ${text}`,true); await sleep(DELAY.status); return; }
+            if(ev.type==="skip"){
+        const skippedMine=ev.player===myRole;
+        setMessage(ev.text||"행동할 수 없다!",true);
+        if(ev.reason==="sleep") await playStatusSpriteEffect("sleep","skip",ev.player);
+        else if(ev.reason==="paralysis" || ev.reason==="paralyze") await playStatusSpriteEffect("paralysis","skip",ev.player);
+        else {
+          const effectEl=skippedMine?document.getElementById("myEffect"):document.getElementById("opponentEffect");
+          const reason=ev.reason==="sleep"?"💤":"⚡";
+          showCustomEffect(effectEl,reason);
+        }
+        await sleep(Math.max(120,DELAY.skip-650));
+        return;
+      }
       if(ev.type==="faint"){
         const isMine=ev.target===myRole;
         faintPending[ev.target] = true;
