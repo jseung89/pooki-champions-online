@@ -527,6 +527,58 @@
       background-image:url("/assets/effects/hit-diagonal.png");
       filter:saturate(1.35) contrast(1.58) brightness(1.2) drop-shadow(0 0 14px rgba(255,255,255,.86));
     }
+    .effect-projectile.effect-normal{
+      background-image:url("/assets/effects/normal-effect.png");
+      filter:saturate(1.28) contrast(1.5) brightness(1.18) drop-shadow(0 0 14px rgba(255,245,220,.82));
+    }
+    .effect-projectile.effect-fighting{
+      background-image:url("/assets/effects/fighting-effect.png");
+      filter:saturate(2.0) contrast(1.45) brightness(1.17) drop-shadow(0 0 17px rgba(255,120,40,.86));
+    }
+    .effect-projectile.effect-poison{
+      background-image:url("/assets/effects/poison-effect.png");
+      filter:saturate(2.05) contrast(1.42) brightness(1.13) drop-shadow(0 0 17px rgba(160,70,255,.84));
+    }
+    .effect-projectile.effect-ground{
+      background-image:url("/assets/effects/ground-effect.png");
+      filter:saturate(1.65) contrast(1.42) brightness(1.14) drop-shadow(0 0 15px rgba(190,130,60,.76));
+    }
+    .effect-projectile.effect-flying{
+      background-image:url("/assets/effects/flying-effect.png");
+      filter:saturate(1.8) contrast(1.38) brightness(1.18) drop-shadow(0 0 16px rgba(140,220,255,.78));
+    }
+    .effect-projectile.effect-psychic{
+      background-image:url("/assets/effects/psychic-effect.png");
+      filter:saturate(2.05) contrast(1.42) brightness(1.18) drop-shadow(0 0 17px rgba(255,100,230,.86));
+    }
+    .effect-projectile.effect-bug{
+      background-image:url("/assets/effects/bug-effect.png");
+      filter:saturate(2.0) contrast(1.42) brightness(1.16) drop-shadow(0 0 16px rgba(150,255,40,.82));
+    }
+    .effect-projectile.effect-rock{
+      background-image:url("/assets/effects/rock-effect.png");
+      filter:saturate(1.45) contrast(1.5) brightness(1.12) drop-shadow(0 0 15px rgba(190,170,130,.74));
+    }
+    .effect-projectile.effect-ghost{
+      background-image:url("/assets/effects/ghost-effect.png");
+      filter:saturate(2.1) contrast(1.45) brightness(1.12) drop-shadow(0 0 18px rgba(130,70,255,.84));
+    }
+    .effect-projectile.effect-dragon{
+      background-image:url("/assets/effects/dragon-effect.png");
+      filter:saturate(2.15) contrast(1.48) brightness(1.16) drop-shadow(0 0 18px rgba(70,110,255,.86));
+    }
+    .effect-projectile.effect-dark{
+      background-image:url("/assets/effects/dark-effect.png");
+      filter:saturate(1.9) contrast(1.55) brightness(1.08) drop-shadow(0 0 18px rgba(180,35,115,.8));
+    }
+    .effect-projectile.effect-steel{
+      background-image:url("/assets/effects/steel-effect.png");
+      filter:saturate(1.35) contrast(1.58) brightness(1.18) drop-shadow(0 0 16px rgba(190,220,245,.78));
+    }
+    .effect-projectile.effect-sing-note{
+      background-image:url("/assets/effects/sing-note-effect.png");
+      filter:saturate(1.95) contrast(1.36) brightness(1.2) drop-shadow(0 0 17px rgba(235,160,255,.84));
+    }
     @keyframes effectSprite6{
       from{background-position:0 0;}
       to{background-position:-1152px 0;}
@@ -1712,6 +1764,11 @@
     function enqueueEvents(events){ const fresh=[]; for(const ev of events){ if(lastEventIds.has(ev.id))continue; lastEventIds.add(ev.id); fresh.push(ev); } if(fresh.length===0)return; eventQueue=eventQueue.then(async()=>{ animationBusy=true; renderButtons(); await sleep(DELAY.turnStart); for(const ev of fresh) await playEventSlow(ev); await sleep(DELAY.end); animationBusy=false; syncVisualToFinal(); if(currentState?.phase==="ACTION_SELECT")setMessage("행동을 선택하세요.",false); else if(currentState?.phase==="FORCE_SWITCH")setMessage("교체할 포켓몬을 선택하세요.",false); renderButtons(); renderOverlay(); startLocalTimer(); }); if(lastEventIds.size>200) lastEventIds=new Set([...lastEventIds].slice(-100)); }
 
     
+    function isSingMoveName(moveName){
+      const raw=String(moveName||"").toLowerCase();
+      return raw.includes("노래하기") || raw.includes("sing");
+    }
+
     function effectClassByType(type){
       const t=String(type||"").toLowerCase();
       if(t==="electric") return "effect-electric";
@@ -1719,8 +1776,24 @@
       if(t==="water") return "effect-water";
       if(t==="grass") return "effect-grass";
       if(t==="ice") return "effect-ice";
-      if(t==="normal" || t==="fighting" || t==="rock" || t==="ground" || t==="steel") return "effect-hit";
+      if(t==="normal") return "effect-normal";
+      if(t==="fighting") return "effect-fighting";
+      if(t==="poison") return "effect-poison";
+      if(t==="ground") return "effect-ground";
+      if(t==="flying") return "effect-flying";
+      if(t==="psychic") return "effect-psychic";
+      if(t==="bug") return "effect-bug";
+      if(t==="rock") return "effect-rock";
+      if(t==="ghost") return "effect-ghost";
+      if(t==="dragon") return "effect-dragon";
+      if(t==="dark") return "effect-dark";
+      if(t==="steel") return "effect-steel";
       return "effect-hit";
+    }
+
+    function effectClassByMove(type, moveName){
+      if(isSingMoveName(moveName)) return "effect-sing-note";
+      return effectClassByType(type);
     }
 
     function resolveEffectSprite(playerKey){
@@ -1739,7 +1812,7 @@
       };
     }
 
-    function playSpriteMoveEffect(moveType, attackerKey, defenderKey){
+    function playSpriteMoveEffect(moveType, attackerKey, defenderKey, moveName){
       return new Promise((resolve)=>{
         try{
           const layer=document.getElementById("battleEffectLayer");
@@ -1759,7 +1832,7 @@
           const rotate=actualAngle - baseSheetAngle;
 
           const fx=document.createElement("div");
-          fx.className=`effect-projectile ${effectClassByType(moveType)}`;
+          fx.className=`effect-projectile ${effectClassByMove(moveType, moveName)}`;
           fx.style.setProperty("--fx-start-x", `${start.x}px`);
           fx.style.setProperty("--fx-start-y", `${start.y}px`);
           fx.style.setProperty("--fx-end-x", `${end.x}px`);
@@ -2006,7 +2079,11 @@
             attackerEl.classList.add(isMine?"attack-up":"attack-down");
             await sleep(DELAY.lunge);
             attackerEl.classList.remove("attack-up","attack-down");
-            await playStatusSpriteEffect(statusKind,"apply",ev.defender);
+            if(isSingMoveName(ev.moveName)){
+              await playSpriteMoveEffect(ev.moveType, ev.attacker, ev.defender, ev.moveName);
+            } else {
+              await playStatusSpriteEffect(statusKind,"apply",ev.defender);
+            }
             await sleep(120);
             return;
           }
@@ -2018,7 +2095,7 @@
         attackerEl.classList.add(isMine?"attack-up":"attack-down");
         await sleep(DELAY.lunge);
         attackerEl.classList.remove("attack-up","attack-down");
-        await playSpriteMoveEffect(ev.moveType, ev.attacker, ev.defender);
+        await playSpriteMoveEffect(ev.moveType, ev.attacker, ev.defender, ev.moveName);
         await sleep(120);
         return;
       }
