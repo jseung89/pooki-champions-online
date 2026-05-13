@@ -906,6 +906,63 @@
     let animationBusy = false, selectedTeamIds = [], hoveredMoveIndex = 0;
     let lastActionByRole = { p1: "아직 없음", p2: "아직 없음" };
 
+    // 포켓몬 울음소리: PokeAPI cries(latest/legacy)를 사용한다.
+    // 소리 재생 실패, 브라우저 자동재생 차단, API 파일 누락이 있어도 게임 진행은 멈추지 않는다.
+    let battleSoundUnlocked = false;
+    const recentCryKeys = new Map();
+
+    function unlockBattleSound(){
+      battleSoundUnlocked = true;
+    }
+
+    document.addEventListener("pointerdown", unlockBattleSound, { passive:true });
+    document.addEventListener("keydown", unlockBattleSound, { passive:true });
+
+    function pokemonCryUrls(pokemon){
+      if(!pokemon) return [];
+      const urls = [];
+      const latest = pokemon?.cries?.latest || pokemon?.cryLatest || pokemon?.cryUrl || pokemon?.cry;
+      const legacy = pokemon?.cries?.legacy || pokemon?.cryLegacy;
+      if(latest) urls.push(latest);
+      if(legacy && legacy !== latest) urls.push(legacy);
+      const id = Number(pokemon.id);
+      if(Number.isFinite(id) && id > 0){
+        urls.push(`https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/latest/${id}.ogg`);
+        urls.push(`https://raw.githubusercontent.com/PokeAPI/cries/main/cries/pokemon/legacy/${id}.ogg`);
+      }
+      return [...new Set(urls.filter(Boolean))];
+    }
+
+    function playCryUrlCandidates(urls, index=0){
+      if(!battleSoundUnlocked || !Array.isArray(urls) || index >= urls.length) return;
+      try{
+        const audio = new Audio(urls[index]);
+        audio.volume = 0.42;
+        audio.preload = "auto";
+        audio.addEventListener("error",()=>playCryUrlCandidates(urls,index+1),{once:true});
+        const played = audio.play();
+        if(played?.catch) played.catch(()=>playCryUrlCandidates(urls,index+1));
+      }catch(err){
+        playCryUrlCandidates(urls,index+1);
+      }
+    }
+
+    function schedulePokemonCry(pokemon, side="field"){
+      if(!pokemon || pokemon.fainted) return;
+      const urls = pokemonCryUrls(pokemon);
+      if(urls.length===0) return;
+      const now = Date.now();
+      const key = `${side}:${pokemon.id || pokemon.apiName || pokemon.name}`;
+      if(now - (recentCryKeys.get(key) || 0) < 1300) return;
+      recentCryKeys.set(key, now);
+      const delay = side === "mine" ? 260 : 90;
+      setTimeout(()=>playCryUrlCandidates(urls), delay);
+      if(recentCryKeys.size > 80){
+        const cutoff = Date.now() - 10000;
+        for(const [k,t] of recentCryKeys.entries()) if(t < cutoff) recentCryKeys.delete(k);
+      }
+    }
+
     socket.on("lobbyState", (lobby) => {
       renderLobby(lobby);
     });
@@ -1417,9 +1474,14 @@
       sprite.style.transform="";
     }
 
+    function pokemonSpriteKey(side, pokemon){
+      if(!pokemon) return `${side}:empty`;
+      return `${side}:${pokemon.id}:${pokemon.name}:${pokemon.fainted ? "dead" : "alive"}`;
+    }
+
     function prepareSpriteForPokemon(sprite, pokemon, side){
-      if(!sprite || !pokemon) return;
-      const key = `${side}:${pokemon.id}:${pokemon.name}:${pokemon.fainted ? "dead" : "alive"}`;
+      if(!sprite || !pokemon) return false;
+      const key = pokemonSpriteKey(side, pokemon);
       const changed = sprite.dataset.spriteKey !== key;
       if(changed || !pokemon.fainted){
         clearTransientSpriteState(sprite);
@@ -1430,6 +1492,7 @@
         sprite.style.transform="";
       }
       sprite.dataset.spriteKey = key;
+      return changed;
     }
 
     function hideBattleSpriteForPendingFaint(playerKey){
@@ -1471,7 +1534,7 @@
         if(faintPending?.[enemyKey]){
           hideBattleSpriteForPendingFaint(enemyKey);
         } else {
-          prepareSpriteForPokemon(enemySprite, enemy, "enemy");
+          const enemySpriteChanged = prepareSpriteForPokemon(enemySprite, enemy, "enemy");
           enemySprite.src=enemy.frontSprite || "";
           enemySprite.alt=enemy.name || "상대 포켓몬";
           enemySprite.style.visibility="";
@@ -1479,6 +1542,7 @@
           enemySprite.style.pointerEvents="";
           applySpriteSize(enemySprite, enemy);
           enemySprite.classList.toggle("fainted",!!enemy.fainted);
+          if(enemySpriteChanged && !enemy.fainted) schedulePokemonCry(enemy, "enemy");
         }
       }
 
@@ -1486,7 +1550,7 @@
         if(faintPending?.[mineKey]){
           hideBattleSpriteForPendingFaint(mineKey);
         } else {
-          prepareSpriteForPokemon(mySprite, mine, "mine");
+          const mySpriteChanged = prepareSpriteForPokemon(mySprite, mine, "mine");
           mySprite.src=mine.backSprite || mine.frontSprite || "";
           mySprite.alt=mine.name || "내 포켓몬";
           mySprite.style.visibility="";
@@ -1494,6 +1558,7 @@
           mySprite.style.pointerEvents="";
           applySpriteSize(mySprite, mine);
           mySprite.classList.toggle("fainted",!!mine.fainted);
+          if(mySpriteChanged && !mine.fainted) schedulePokemonCry(mine, "mine");
         }
       }
 
