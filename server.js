@@ -619,7 +619,7 @@ function pauseRoomForMissingPlayer(reason = "player_missing") {
   const msg = "플레이어가 나가서 방이 대기 상태로 돌아갔습니다. 두 명이 다시 모이면 새 팀 선택이 시작됩니다.";
   log(msg);
   addEvent({ type: "warning", text: msg });
-  opLog(`[ROOM_PAUSE] ${currentRoom.name} ${reason} → WAITING`);
+  opLog(`[ROOM_PAUSE] ${currentRoom.name} ${reason} / WAITING`);
 
   emitState();
   emitLobbyState();
@@ -1315,7 +1315,7 @@ function actionName(pk, action) {
   if (action.type === "recharge") return "반동 대기";
   if (action.type === "switch") {
     const target = battle.players[pk].team[action.targetIndex];
-    return `교체 → ${target?.name || "알 수 없음"}`;
+    return `교체: ${target?.name || "알 수 없음"}`;
   }
   if (action.type === "move") {
     const mon = active(pk);
@@ -1672,7 +1672,7 @@ function claimPlayerSlot(socket) {
     resetPlayerBattleChoices(targetRole);
     const player = battle.players[targetRole];
     log(`${player.label} 자리에 관전자가 참가했습니다!`);
-    opLog(`[CLAIM] ${currentRoom.name} 관전자 → ${player.label}`);
+    opLog(`[CLAIM] ${currentRoom.name} 관전자: ${player.label}`);
 
     socket.emit("joinedRoom", {
       role: targetRole,

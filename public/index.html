@@ -285,7 +285,7 @@
     .selected-slot img{width:96px; height:96px; object-fit:contain; image-rendering:pixelated;}
     .slot-role{position:absolute; left:0; top:0; padding:8px 26px; border-radius:0 0 16px 0; background:#3b82f6; color:#fff; font-weight:950;}
     .slot-role.sub{background:#5b7cff;}
-    .selected-arrow{text-align:center; font-size:38px; font-weight:1000; color:#183372;}
+    .selected-arrow{display:grid!important;place-items:center!important;color:#2563eb!important;font-size:30px!important;font-weight:1000!important;}
     .candidate-title{display:flex; align-items:center; gap:12px; margin:8px 0 12px; color:#0d2a78; font-weight:950;}
     .candidate-title::before,.candidate-title::after{content:""; flex:1; height:1px; background:#cbdaf5;}
     .candidate-grid{display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px;}
@@ -317,7 +317,7 @@
     .slot-role{position:absolute!important; top:20px!important; left:50%!important; transform:translateX(-50%)!important; color:#1d4ed8!important; font-weight:1000!important; font-size:17px!important; background:transparent!important; white-space:nowrap!important; padding:0!important; border-radius:0!important;}
     .slot-role.sub{color:#2f54d8!important; background:transparent!important;}
     .slot-desc{position:absolute; top:48px; left:0; right:0; color:#64748b; font-size:12px; font-weight:800;}
-    .selected-arrow{text-align:center!important; font-size:28px!important; font-weight:1000!important; color:#0a2b78!important;}
+    .selected-arrow{display:grid!important;place-items:center!important;color:#2563eb!important;font-size:30px!important;font-weight:1000!important;}
 
     .overlay{position:absolute; inset:0; background:rgba(7,25,70,.86); color:white; display:none; z-index:20; place-items:center; text-align:center; padding:24px;}
     .overlay.show{display:grid}.overlay h2{font-size:38px;margin:0 0 12px}.overlay p{margin:6px 0}.overlay button{margin-top:14px}
@@ -333,7 +333,7 @@
       .controls{grid-template-columns:1fr}
       .candidate-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
       .selected-row{grid-template-columns:1fr}
-      .selected-arrow{display:none}
+      .selected-arrow{display:none!important}
     }
 
     .game.hidden{display:none;}
@@ -581,6 +581,44 @@
       12%{opacity:1;}
       78%{opacity:1;}
       100%{opacity:0; transform:translate(-50%,-50%) translate(var(--status-x), var(--status-y)) scale(calc(var(--status-scale) * 1.08));}
+    }
+
+
+
+    /* v6.4.x status/variation move sprite effect patch */
+    .variation-effect-sprite{
+      position:absolute;
+      width:192px;
+      height:192px;
+      left:0;
+      top:0;
+      background-repeat:no-repeat;
+      background-size:1152px 192px;
+      pointer-events:none;
+      image-rendering:auto;
+      opacity:0;
+      --variation-x:0px;
+      --variation-y:0px;
+      --variation-scale:1.12;
+      transform:translate(-50%,-50%) translate(var(--variation-x), var(--variation-y)) scale(var(--variation-scale));
+      transform-origin:center center;
+      animation:variationSprite6 840ms steps(6) forwards, variationPop 840ms ease-out forwards;
+      filter:saturate(1.9) contrast(1.34) brightness(1.16) drop-shadow(0 0 16px rgba(255,255,255,.66));
+      z-index:34;
+      will-change:transform, background-position, opacity;
+    }
+    .variation-heal{background-image:url("/assets/effects/heal-effect.png"); filter:saturate(1.9) contrast(1.32) brightness(1.18) drop-shadow(0 0 18px rgba(120,255,120,.74));}
+    .variation-rest-sleep{background-image:url("/assets/effects/rest-sleep-effect.png"); filter:saturate(1.75) contrast(1.28) brightness(1.14) drop-shadow(0 0 18px rgba(130,190,255,.74));}
+    .variation-attack-up{background-image:url("/assets/effects/attack-up-effect.png"); filter:saturate(2.05) contrast(1.42) brightness(1.18) drop-shadow(0 0 18px rgba(255,100,40,.82));}
+    .variation-speed-up{background-image:url("/assets/effects/speed-up-effect.png"); filter:saturate(1.95) contrast(1.36) brightness(1.17) drop-shadow(0 0 18px rgba(90,190,255,.82));}
+    .variation-defense-up{background-image:url("/assets/effects/defense-up-effect.png"); filter:saturate(1.85) contrast(1.32) brightness(1.16) drop-shadow(0 0 18px rgba(130,210,255,.78));}
+    .variation-intimidate-down{background-image:url("/assets/effects/intimidate-down-effect.png"); filter:saturate(1.95) contrast(1.42) brightness(1.12) drop-shadow(0 0 18px rgba(150,80,255,.82));}
+    @keyframes variationSprite6{from{background-position:0 0;}to{background-position:-1152px 0;}}
+    @keyframes variationPop{
+      0%{opacity:0; transform:translate(-50%,-50%) translate(var(--variation-x), var(--variation-y)) scale(calc(var(--variation-scale) * .7));}
+      12%{opacity:1;}
+      78%{opacity:1;}
+      100%{opacity:0; transform:translate(-50%,-50%) translate(var(--variation-x), var(--variation-y)) scale(calc(var(--variation-scale) * 1.08));}
     }
 
 </style>
@@ -1548,9 +1586,9 @@
 
             <div class="selected-row">
               ${selectedSlot(selectedMon[0],1)}
-              <div class="selected-arrow">↔</div>
+              <div class="selected-arrow">→</div>
               ${selectedSlot(selectedMon[1],2)}
-              <div class="selected-arrow">↔</div>
+              <div class="selected-arrow">→</div>
               ${selectedSlot(selectedMon[2],3)}
             </div>
 
@@ -1585,7 +1623,7 @@
               </div>
             </div>
 
-            <button class="team-submit" ${selectedTeamIds.length!==TEAM_SIZE?"disabled":""} onclick="submitTeam()">이 팀으로 출전 →</button>
+            <button class="team-submit" ${selectedTeamIds.length!==TEAM_SIZE?"disabled":""} onclick="submitTeam()">이 팀으로 출전</button>
             <div class="team-caption">선두 1마리와 교체 2마리를 선택하면 출전할 수 있습니다.</div>
           </aside>
         </div>`;
@@ -1774,7 +1812,7 @@
     function statusFromMoveName(moveName, moveType){
       const lower=String(moveName||"").toLowerCase();
       const raw=String(moveName||"");
-      if(lower.includes("sleep") || raw.includes("수면") || raw.includes("최면") || raw.includes("잠")) return "sleep";
+      if(lower.includes("sleep") || lower.includes("sing") || raw.includes("수면") || raw.includes("최면") || raw.includes("잠") || raw.includes("노래")) return "sleep";
       if(lower.includes("spore") || raw.includes("버섯포자")) return "sleep";
       if(lower.includes("stun") || lower.includes("thunder wave") || raw.includes("전기자석파") || raw.includes("마비")) return "paralysis";
       if(lower.includes("will-o-wisp") || raw.includes("도깨비불") || raw.includes("화상")) return "burn";
@@ -1790,6 +1828,81 @@
         || document.querySelector(playerKey===myRole ? ".mine-sprite .sprite" : ".opponent-sprite .sprite")
         || document.querySelector(playerKey===myRole ? ".mine-sprite img" : ".opponent-sprite img");
     }
+
+
+
+    function variationEffectKeyFromMoveName(moveName){
+      const raw=String(moveName||"");
+      const lower=raw.toLowerCase();
+      if(raw.includes("잠자기") || lower.includes("rest")) return "rest-sleep";
+      if(raw.includes("HP회복") || raw.includes("우유마시기") || raw.includes("광합성") || lower.includes("recover") || lower.includes("milk") || lower.includes("synthesis")) return "heal";
+      if(raw.includes("칼춤") || lower.includes("swords")) return "attack-up";
+      if(raw.includes("고속이동") || lower.includes("agility")) return "speed-up";
+      if(raw.includes("방어태세") || lower.includes("harden")) return "defense-up";
+      if(raw.includes("겁나는얼굴") || raw.includes("멸망의노래") || lower.includes("scary") || lower.includes("perish")) return "intimidate-down";
+      return "";
+    }
+
+    function variationEffectKeyFromStat(stat, amount, moveName){
+      const byMove=variationEffectKeyFromMoveName(moveName);
+      if(byMove) return byMove;
+      const s=String(stat||"").toLowerCase();
+      const n=Number(amount||0);
+      if(n<0) return "intimidate-down";
+      if(s==="attack") return "attack-up";
+      if(s==="speed") return "speed-up";
+      if(s==="defense") return "defense-up";
+      return n>0 ? "defense-up" : "intimidate-down";
+    }
+
+    function variationTargetFromMoveName(moveName, attackerKey, defenderKey){
+      const key=variationEffectKeyFromMoveName(moveName);
+      if(key==="intimidate-down") return defenderKey;
+      return attackerKey;
+    }
+
+    function variationEffectClass(effectKey){
+      if(effectKey==="heal") return "variation-heal";
+      if(effectKey==="rest-sleep") return "variation-rest-sleep";
+      if(effectKey==="attack-up") return "variation-attack-up";
+      if(effectKey==="speed-up") return "variation-speed-up";
+      if(effectKey==="defense-up") return "variation-defense-up";
+      if(effectKey==="intimidate-down") return "variation-intimidate-down";
+      return "";
+    }
+
+    function playVariationMoveEffect(effectKey, targetKey){
+      return new Promise((resolve)=>{
+        try{
+          const cls=variationEffectClass(effectKey);
+          if(!cls) return resolve();
+          const layer=document.getElementById("battleEffectLayer");
+          const target=resolveStatusSprite(targetKey);
+          if(!layer || !target) return resolve();
+
+          const layerRect=layer.getBoundingClientRect();
+          const rect=target.getBoundingClientRect();
+          const x=rect.left + rect.width/2 - layerRect.left;
+          const y=rect.top + rect.height*.48 - layerRect.top;
+
+          const fx=document.createElement("div");
+          fx.className=`variation-effect-sprite ${cls}`;
+          fx.style.setProperty("--variation-x", `${x}px`);
+          fx.style.setProperty("--variation-y", `${y}px`);
+          fx.style.setProperty("--variation-scale", effectKey==="intimidate-down" ? 1.14 : 1.08);
+          layer.appendChild(fx);
+
+          let done=false;
+          const cleanup=()=>{ if(done) return; done=true; fx.remove(); resolve(); };
+          fx.addEventListener("animationend", cleanup, {once:true});
+          setTimeout(cleanup, 980);
+        }catch(err){
+          console.warn("variation effect failed", err);
+          resolve();
+        }
+      });
+    }
+
 
     function playStatusSpriteEffect(status, kind, targetKey){
       return new Promise((resolve)=>{
@@ -1883,6 +1996,11 @@
         await sleep(DELAY.moveText);
         if(ev.outcome==="miss"){ await sleep(120); return; }
         if(ev.isStatusMove){
+          const variationKey=variationEffectKeyFromMoveName(ev.moveName);
+          if(variationKey){
+            await sleep(180);
+            return;
+          }
           const statusKind=statusFromMoveName(ev.moveName, ev.moveType);
           if(statusKind){
             attackerEl.classList.add(isMine?"attack-up":"attack-down");
@@ -1892,9 +2010,9 @@
             await sleep(120);
             return;
           }
-          showBuffRise(attackerWrap,1);
-          showCustomEffect(attackerEffect,"⬆️");
-          await sleep(DELAY.effect+240);
+          // 변화기 전용 스프라이트가 없고 상태이상도 아닌 기술은
+          // 기존 화살표 이모지 연출을 표시하지 않는다.
+          await sleep(180);
           return;
         }
         attackerEl.classList.add(isMine?"attack-up":"attack-down");
@@ -1924,23 +2042,22 @@
         await sleep(DELAY.damage-400);
         return;
       }
-      if(ev.type==="heal"){ const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const effectEl=isMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); showCustomEffect(effectEl,"💚"); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(DELAY.damage); return; }
+      if(ev.type==="heal"){ const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const lastMove=lastActionByRole[ev.target]||""; const variationKey=variationEffectKeyFromMoveName(lastMove)||"heal"; setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); await playVariationMoveEffect(variationKey,ev.target); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(Math.max(120,DELAY.damage-540)); return; }
       if(ev.type==="miss"){ const attackerMine=ev.attacker===myRole; const attackerEffect=attackerMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage("하지만 공격은 빗나갔다!",true); showCustomEffect(attackerEffect,"💦"); await sleep(DELAY.miss); return; }
       if(ev.type==="stat"){
         const isMineTarget=ev.target===myRole;
         const statKo={attack:"공격",defense:"방어",speed:"스피드"}[ev.stat]||ev.stat;
-        const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect");
         const wrap=isMineTarget?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite");
-        const arrows=(ev.amount>0?"⬆️":"⬇️").repeat(Math.min(3,Math.abs(ev.amount)));
+        const lastMove=lastActionByRole[isMineTarget?myRole:opponentRole()]||"";
+        const variationKey=variationEffectKeyFromStat(ev.stat,ev.amount,lastMove);
         setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}의 ${statKo}이/가 ${ev.amount>0?"올라갔다!":"떨어졌다!"}`,true);
         applyVisualStat(ev.target,ev.stat,ev.amount);
         renderBattleView();
-        showBuffRise(wrap,ev.amount);
-        showCustomEffect(effectEl,arrows);
-        await sleep(DELAY.stat+220);
+        await playVariationMoveEffect(variationKey,ev.target);
+        await sleep(Math.max(120,DELAY.stat-520));
         return;
       }
-      if(ev.type==="status"){ const isMineTarget=ev.target===myRole; const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect"); const icon={burn:"🔥",poison:"☠️",paralyze:"⚡",sleep:"💤"}[ev.status]||"❗"; setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`,true); applyVisualStatus(ev.target,ev.status); renderBattleView(); showCustomEffect(effectEl,icon); await sleep(DELAY.status); return; }
+      if(ev.type==="status"){ const isMineTarget=ev.target===myRole; const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect"); const icon={burn:"🔥",poison:"☠️",paralyze:"⚡",sleep:"💤"}[ev.status]||"❗"; const lastMove=lastActionByRole[ev.target]||""; const skipIcon=ev.status==="sleep" && variationEffectKeyFromMoveName(lastMove)==="rest-sleep"; setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`,true); applyVisualStatus(ev.target,ev.status); renderBattleView(); if(!skipIcon) showCustomEffect(effectEl,icon); await sleep(DELAY.status); return; }
             if(ev.type==="skip"){
         const skippedMine=ev.player===myRole;
         setMessage(ev.text||"행동할 수 없다!",true);
@@ -2013,14 +2130,8 @@
     }
 
     function showBuffRise(el,amount=1){
-      if(!el) return;
-      const holder=document.createElement("div");
-      holder.className="buff-rise";
-      holder.innerHTML=`<span>${amount>=0?"⬆️⬆️":"⬇️⬇️"}</span>`;
-      el.appendChild(holder);
-      void holder.offsetWidth;
-      holder.classList.add("show");
-      setTimeout(()=>holder.remove(),920);
+      // 변화기 패치: 스탯 상승/하락 화살표 이모지 연출은 사용하지 않는다.
+      return;
     }
 
     function showEffect(el,moveType){ el.textContent=EFFECT_ICON[moveType]||"💥"; el.classList.remove("show"); void el.offsetWidth; el.classList.add("show"); setTimeout(()=>el.classList.remove("show"),760); }
