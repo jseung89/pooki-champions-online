@@ -17,6 +17,7 @@ const {
   isMoveHit,
   calculateDamage,
   applyStatChange,
+  resetStatStages,
   canApplyStatus,
   applyStatus,
   endTurnStatusDamage,
@@ -492,6 +493,14 @@ function moveExpectedValue(move, attacker, defender) {
   if (move.heal) {
     const hpRatio = attacker?.maxHp ? attacker.hp / attacker.maxHp : 1;
     return hpRatio < 0.35 ? 130 : hpRatio < 0.55 ? 70 : 5;
+  }
+  if (move.resetStatStages && !move.power) {
+    const attackerStages = attacker?.statStages || {};
+    const defenderStages = defender?.statStages || {};
+    const enemyBoost = Math.max(0, defenderStages.attack || 0) + Math.max(0, defenderStages.defense || 0) + Math.max(0, defenderStages.speed || 0);
+    const ownPenalty = Math.max(0, -(attackerStages.attack || 0)) + Math.max(0, -(attackerStages.defense || 0)) + Math.max(0, -(attackerStages.speed || 0));
+    const ownBoost = Math.max(0, attackerStages.attack || 0) + Math.max(0, attackerStages.defense || 0) + Math.max(0, attackerStages.speed || 0);
+    return enemyBoost >= 3 || ownPenalty >= 2 ? 115 + Math.random() * 25 - ownBoost * 18 : 8 + Math.random() * 10;
   }
   if ((move.statChange || move.statChanges) && !move.power) {
     const changes = move.statChanges || [move.statChange];
@@ -1111,6 +1120,15 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   if (!didHit) {
     log("하지만 빗나갔다!");
     addEvent({ type: "miss", attacker: attackerKey, defender: defenderKey });
+    return;
+  }
+
+  if (move.resetStatStages) {
+    resetStatStages(attacker);
+    resetStatStages(defender);
+    log("흑안개가 모든 능력 변화를 지워버렸다!");
+    addEvent({ type: "statReset", targets: [attackerKey, defenderKey], moveName: move.name, attacker: attackerKey, defender: defenderKey });
+    addEvent({ type: "message", text: "흑안개가 모든 능력 변화를 지워버렸다!" });
     return;
   }
 

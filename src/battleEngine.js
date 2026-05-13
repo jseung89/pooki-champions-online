@@ -13,7 +13,14 @@ function stageMultiplier(stage) {
 }
 
 function clampStage(value) {
-  return Math.max(-3, Math.min(3, value));
+  return Math.max(-6, Math.min(6, value));
+}
+
+function resetStatStages(target) {
+  if (!target?.statStages) return;
+  target.statStages.attack = 0;
+  target.statStages.defense = 0;
+  target.statStages.speed = 0;
 }
 
 function getEffectiveSpeed(pokemon) {
@@ -153,6 +160,7 @@ module.exports = {
   getActionLockReason,
   sortMoveUsers,
   applyStatChange,
+  resetStatStages,
   canApplyStatus,
   applyStatus,
   endTurnStatusDamage,

@@ -531,6 +531,12 @@
       background-image:url("/assets/effects/normal-effect.png");
       filter:saturate(1.28) contrast(1.5) brightness(1.18) drop-shadow(0 0 14px rgba(255,245,220,.82));
     }
+    .effect-projectile.effect-explosion-nuke{
+      background-image:url("/assets/effects/explosion-nuke-effect.png");
+      filter:saturate(2.05) contrast(1.6) brightness(1.22) drop-shadow(0 0 24px rgba(255,120,20,.98));
+      z-index:40;
+      mix-blend-mode:normal;
+    }
     .effect-projectile.effect-fighting{
       background-image:url("/assets/effects/fighting-effect.png");
       filter:saturate(2.0) contrast(1.45) brightness(1.17) drop-shadow(0 0 17px rgba(255,120,40,.86));
@@ -665,6 +671,7 @@
     .variation-speed-up{background-image:url("/assets/effects/speed-up-effect.png"); filter:saturate(1.95) contrast(1.36) brightness(1.17) drop-shadow(0 0 18px rgba(90,190,255,.82));}
     .variation-defense-up{background-image:url("/assets/effects/defense-up-effect.png"); filter:saturate(1.85) contrast(1.32) brightness(1.16) drop-shadow(0 0 18px rgba(130,210,255,.78));}
     .variation-intimidate-down{background-image:url("/assets/effects/intimidate-down-effect.png"); filter:saturate(1.95) contrast(1.42) brightness(1.12) drop-shadow(0 0 18px rgba(150,80,255,.82));}
+    .variation-haze{background-image:url("/assets/effects/ghost-effect.png"); filter:saturate(1.85) contrast(1.45) brightness(1.08) drop-shadow(0 0 20px rgba(110,70,220,.86));}
     @keyframes variationSprite6{from{background-position:0 0;}to{background-position:-1152px 0;}}
     @keyframes variationPop{
       0%{opacity:0; transform:translate(-50%,-50%) translate(var(--variation-x), var(--variation-y)) scale(calc(var(--variation-scale) * .7));}
@@ -1383,6 +1390,10 @@
     }
     function applyVisualStatus(pk,status){ const m=visualActivePokemon(pk); if(m)m.status=status; }
     function applyVisualStat(pk,stat,amount){ const m=visualActivePokemon(pk); if(m)m.statStages[stat]=Math.max(-6,Math.min(6,(m.statStages[stat]||0)+amount)); }
+    function applyVisualStatReset(pk){
+      const m=visualActivePokemon(pk);
+      if(m)m.statStages={attack:0,defense:0,speed:0};
+    }
     function syncVisualToFinal(){
       visualState=null;
       for(const pk of ["p1","p2"]){
@@ -1467,7 +1478,7 @@
       return "효과 1배";
     }
     function moveButtonClass(move,mult){ if(!move||move.power===0)return "eff-status"; if(mult===0)return "eff-immune"; if(mult>=4)return "eff-ultra"; if(mult>=2)return "eff-super"; if(mult<1)return "eff-resist"; return "eff-neutral"; }
-    function moveDescription(move){ if(!move)return""; if(move.selfDestruct)return"초고위력 기술입니다. 사용 후 자신도 쓰러집니다."; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChanges){ return move.statChanges.map((c)=>{ const s={attack:"공격",defense:"방어",speed:"스피드"}[c.stat]||c.stat; const t=c.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=c.amount>0?"올립니다":"내립니다"; return `${t}의 ${s}을/를 ${Math.abs(c.amount)}랭크 ${d}`; }).join(" / ")+"."; } if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
+    function moveDescription(move){ if(!move)return""; if(move.selfDestruct)return"초고위력 기술입니다. 사용 후 자신도 쓰러집니다."; if(move.resetStatStages)return"양쪽 포켓몬의 모든 공격/방어/스피드 랭크 변화를 초기화합니다."; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChanges){ return move.statChanges.map((c)=>{ const s={attack:"공격",defense:"방어",speed:"스피드"}[c.stat]||c.stat; const t=c.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=c.amount>0?"올립니다":"내립니다"; return `${t}의 ${s}을/를 ${Math.abs(c.amount)}랭크 ${d}`; }).join(" / ")+"."; } if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
     function buildMoveHelp(move,enemy){
       if(!move)return"기술 위에 마우스를 올리면 설명이 나옵니다.";
       const mine = (myRole==="p1"||myRole==="p2") ? activePokemon(myRole) : null;
@@ -2034,6 +2045,9 @@
     }
 
     function effectClassByMove(type, moveName){
+      const raw=String(moveName||"");
+      const lower=raw.toLowerCase();
+      if(raw.includes("대폭발") || lower.includes("explosion")) return "effect-explosion-nuke";
       if(isSingMoveName(moveName)) return "effect-sing-note";
       return effectClassByType(type);
     }
@@ -2071,10 +2085,12 @@
 
           const actualAngle=Math.atan2(dy, dx) * 180 / Math.PI;
           const baseSheetAngle=-35;
-          const rotate=actualAngle - baseSheetAngle;
+          const effectClass=effectClassByMove(moveType, moveName);
+          const isExplosionNuke=effectClass==="effect-explosion-nuke";
+          const rotate=isExplosionNuke ? 0 : actualAngle - baseSheetAngle;
 
           const fx=document.createElement("div");
-          fx.className=`effect-projectile ${effectClassByMove(moveType, moveName)}`;
+          fx.className=`effect-projectile ${effectClass}`;
           fx.style.setProperty("--fx-start-x", `${start.x}px`);
           fx.style.setProperty("--fx-start-y", `${start.y}px`);
           fx.style.setProperty("--fx-end-x", `${end.x}px`);
@@ -2082,7 +2098,7 @@
           fx.style.setProperty("--fx-rot", `${rotate}deg`);
 
           const t=String(moveType||"").toLowerCase();
-          const scale=(t==="electric" || t==="fire") ? 1.24 : (t==="normal" || t==="fighting" || t==="hit" ? 1.08 : 1.16);
+          const scale=isExplosionNuke ? 1.45 : ((t==="electric" || t==="fire") ? 1.24 : (t==="normal" || t==="fighting" || t==="hit" ? 1.08 : 1.16));
           fx.style.setProperty("--fx-scale", scale);
 
           layer.appendChild(fx);
@@ -2155,6 +2171,7 @@
       if(raw.includes("칼춤") || raw.includes("나쁜음모") || lower.includes("swords") || lower.includes("nasty")) return "attack-up";
       if(raw.includes("고속이동") || lower.includes("agility")) return "speed-up";
       if(raw.includes("방어태세") || raw.includes("철벽") || lower.includes("harden") || lower.includes("iron")) return "defense-up";
+      if(raw.includes("흑안개") || lower.includes("haze")) return "haze";
       if(raw.includes("겁나는얼굴") || raw.includes("멸망의노래") || raw.includes("애교부리기") || raw.includes("깃털댄스") || raw.includes("싫은소리") || raw.includes("금속음") || raw.includes("실뿜기") || raw.includes("간지르기") || lower.includes("scary") || lower.includes("perish") || lower.includes("charm") || lower.includes("feather") || lower.includes("screech") || lower.includes("metal") || lower.includes("string") || lower.includes("tickle")) return "intimidate-down";
       return "";
     }
@@ -2184,6 +2201,7 @@
       if(effectKey==="speed-up") return "variation-speed-up";
       if(effectKey==="defense-up") return "variation-defense-up";
       if(effectKey==="intimidate-down") return "variation-intimidate-down";
+      if(effectKey==="haze") return "variation-haze";
       return "";
     }
 
@@ -2366,6 +2384,16 @@
       }
       if(ev.type==="heal"){ playGameSfx("heal"); const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const lastMove=lastActionByRole[ev.target]||""; const variationKey=variationEffectKeyFromMoveName(lastMove)||"heal"; setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); await playVariationMoveEffect(variationKey,ev.target); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(Math.max(120,DELAY.damage-540)); return; }
       if(ev.type==="miss"){ playGameSfx("miss"); const attackerMine=ev.attacker===myRole; const attackerEffect=attackerMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage("하지만 공격은 빗나갔다!",true); showCustomEffect(attackerEffect,"💦"); await sleep(DELAY.miss); return; }
+      if(ev.type==="statReset"){
+        playGameSfx("debuff");
+        const targets=Array.isArray(ev.targets)?ev.targets:[ev.attacker,ev.defender].filter(Boolean);
+        targets.forEach(applyVisualStatReset);
+        renderBattleView();
+        setMessage("흑안개가 모든 능력 변화를 지워버렸다!",true);
+        await playVariationMoveEffect("haze",ev.attacker||myRole);
+        await sleep(360);
+        return;
+      }
       if(ev.type==="stat"){
         playGameSfx(ev.amount > 0 ? "buff" : "debuff");
         const isMineTarget=ev.target===myRole;

@@ -6,7 +6,7 @@ const MOVES = {
   extremeSpeed: { id: "extremeSpeed", apiName: "extreme-speed", name: "신속", type: "normal", power: 80, accuracy: 100, priority: 2, tags: ["priority", "premium"] },
   slash: { id: "slash", apiName: "slash", name: "베어가르기", type: "normal", power: 70, accuracy: 100 },
   hyperBeam: { id: "hyperBeam", apiName: "hyper-beam", name: "파괴광선", type: "normal", power: 150, accuracy: 90, recharge: 1, danger: "사용 후 다음 턴 반동으로 행동할 수 없습니다.", tags: ["premium"] },
-  explosion: { id: "explosion", apiName: "explosion", name: "대폭발", type: "normal", power: 200, accuracy: 100, selfDestruct: true, danger: "사용 후 자신도 쓰러지는 초고위력 기술입니다.", tags: ["signature", "premium"] },
+  explosion: { id: "explosion", apiName: "explosion", name: "대폭발", type: "normal", power: 400, accuracy: 100, selfDestruct: true, danger: "사용 후 자신도 쓰러지는 초고위력 조커 기술입니다.", tags: ["signature", "premium"] },
 
   sing: { id: "sing", apiName: "sing", name: "노래하기", type: "normal", power: 0, accuracy: 60, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
   perishSong: { id: "perishSong", apiName: "perish-song", name: "멸망의노래", type: "normal", power: 0, accuracy: 100, fixedDamageRatio: 0.5, statChangeAfterDamage: { target: "enemy", stat: "speed", amount: -1 }, tags: ["signature"] },
@@ -92,6 +92,7 @@ const MOVES = {
     { target: "enemy", stat: "attack", amount: -1 },
     { target: "enemy", stat: "defense", amount: -1 },
   ], tags: ["utility"] },
+  haze: { id: "haze", apiName: "haze", name: "흑안개", type: "ice", power: 0, accuracy: 100, resetStatStages: true, tags: ["utility", "anti-setup"] },
   harden: { id: "harden", apiName: "harden", name: "방어태세", type: "normal", power: 0, accuracy: 100, statChange: { target: "self", stat: "defense", amount: 1 }, tags: ["utility"] },
 };
 
@@ -99,11 +100,11 @@ const MOVE_LIST = Object.values(MOVES);
 const PREMIUM_MOVE_IDS = new Set(MOVE_LIST.filter((m) => m.tags?.includes("premium")).map((m) => m.id));
 
 function isAttackMove(move) {
-  return move && move.power > 0 && !move.statChange && !move.statChanges && !move.statusMove && !move.heal && !move.rest && !move.fixedDamageRatio;
+  return move && move.power > 0 && !move.statChange && !move.statChanges && !move.statusMove && !move.heal && !move.rest && !move.fixedDamageRatio && !move.resetStatStages;
 }
 
 function isStatusMove(move) {
-  return move && (move.statChange || move.statChanges || move.statusMove || move.heal || move.rest || move.fixedDamageRatio);
+  return move && (move.statChange || move.statChanges || move.statusMove || move.heal || move.rest || move.fixedDamageRatio || move.resetStatStages);
 }
 
 function isPremiumMove(move) {
@@ -117,6 +118,9 @@ function moveDescription(move) {
   if (move.rest) return `HP를 모두 회복하고 ${move.rest.turns}턴 동안 수면 상태가 됩니다.`;
   if (move.heal) return `자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio * 100)}%만큼 회복합니다.`;
   if (move.fixedDamageRatio) return `상대에게 큰 고정 피해를 주고 추가 효과를 남기는 특수 전술기입니다.`;
+  if (move.resetStatStages) {
+    return "양쪽 포켓몬의 공격/방어/스피드 랭크 변화를 모두 초기화합니다.";
+  }
   if (move.statChanges) {
     return move.statChanges.map((change) => {
       const statKo = { attack: "공격", defense: "방어", speed: "스피드" }[change.stat] || change.stat;
