@@ -952,6 +952,11 @@ function doSwitch(pk, targetIndex, auto = false) {
 
   const fromFainted = !!prev.fainted || prev.hp <= 0;
 
+  // 원작식 교체 처리: 교체 시 랭크업/랭크다운만 초기화한다.
+  // HP와 상태이상(독/화상/마비/수면)은 유지한다.
+  resetStatStages(prev);
+  resetStatStages(target);
+
   player.activeIndex = targetIndex;
   const next = active(pk);
 
