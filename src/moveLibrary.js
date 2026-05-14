@@ -4,7 +4,7 @@ const MOVES = {
   bodySlam: { id: "bodySlam", apiName: "body-slam", name: "누르기", type: "normal", power: 85, accuracy: 100, effect: { chance: 20, status: "paralyze" }, tags: ["reliable"] },
   quickAttack: { id: "quickAttack", apiName: "quick-attack", name: "전광석화", type: "normal", power: 40, accuracy: 100, priority: 1, tags: ["priority"] },
   extremeSpeed: { id: "extremeSpeed", apiName: "extreme-speed", name: "신속", type: "normal", power: 80, accuracy: 100, priority: 2, tags: ["priority", "premium"] },
-  slash: { id: "slash", apiName: "slash", name: "베어가르기", type: "normal", power: 70, accuracy: 100 },
+  slash: { id: "slash", apiName: "slash", name: "베어가르기", type: "normal", power: 70, accuracy: 100, highCrit: true },
   hyperBeam: { id: "hyperBeam", apiName: "hyper-beam", name: "파괴광선", type: "normal", power: 150, accuracy: 90, recharge: 1, danger: "사용 후 다음 턴 반동으로 행동할 수 없습니다.", tags: ["premium"] },
   explosion: { id: "explosion", apiName: "explosion", name: "대폭발", type: "normal", power: 400, accuracy: 100, selfDestruct: true, danger: "사용 후 자신도 쓰러지는 초고위력 조커 기술입니다.", tags: ["signature", "premium"] },
 
@@ -25,21 +25,21 @@ const MOVES = {
 
   iceBeam: { id: "iceBeam", apiName: "ice-beam", name: "냉동빔", type: "ice", power: 90, accuracy: 100, tags: ["premium"] },
 
-  razorLeaf: { id: "razorLeaf", apiName: "razor-leaf", name: "잎날가르기", type: "grass", power: 65, accuracy: 95 },
-  energyBall: { id: "energyBall", apiName: "energy-ball", name: "에너지볼", type: "grass", power: 90, accuracy: 100, tags: ["premium"] },
+  razorLeaf: { id: "razorLeaf", apiName: "razor-leaf", name: "잎날가르기", type: "grass", power: 65, accuracy: 95, highCrit: true },
+  energyBall: { id: "energyBall", apiName: "energy-ball", name: "에너지볼", type: "grass", power: 90, accuracy: 100, statChance: { chance: 10, target: "enemy", stat: "defense", amount: -1 }, tags: ["premium"] },
   sleepPowder: { id: "sleepPowder", apiName: "sleep-powder", name: "수면가루", type: "grass", power: 0, accuracy: 65, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
   poisonPowder: { id: "poisonPowder", apiName: "poison-powder", name: "독가루", type: "poison", power: 0, accuracy: 75, statusMove: { target: "enemy", status: "poison" }, tags: ["status"] },
 
   thunderbolt: { id: "thunderbolt", apiName: "thunderbolt", name: "10만볼트", type: "electric", power: 90, accuracy: 100, effect: { chance: 10, status: "paralyze" }, tags: ["premium"] },
-  thunder: { id: "thunder", apiName: "thunder", name: "번개", type: "electric", power: 120, accuracy: 75, effect: { chance: 20, status: "paralyze" }, tags: ["premium"] },
+  thunder: { id: "thunder", apiName: "thunder", name: "번개", type: "electric", power: 120, accuracy: 75, effect: { chance: 30, status: "paralyze" }, tags: ["premium"] },
   thunderWave: { id: "thunderWave", apiName: "thunder-wave", name: "전기자석파", type: "electric", power: 0, accuracy: 90, statusMove: { target: "enemy", status: "paralyze" }, tags: ["status"] },
 
-  karateChop: { id: "karateChop", apiName: "karate-chop", name: "태권당수", type: "fighting", power: 70, accuracy: 100 },
+  karateChop: { id: "karateChop", apiName: "karate-chop", name: "태권당수", type: "fighting", power: 70, accuracy: 100, highCrit: true },
   brickBreak: { id: "brickBreak", apiName: "brick-break", name: "깨트리기", type: "fighting", power: 75, accuracy: 100 },
   machPunch: { id: "machPunch", apiName: "mach-punch", name: "마하펀치", type: "fighting", power: 40, accuracy: 100, priority: 1, tags: ["priority"] },
 
-  sludgeBomb: { id: "sludgeBomb", apiName: "sludge-bomb", name: "오물폭탄", type: "poison", power: 90, accuracy: 100, effect: { chance: 20, status: "poison" }, tags: ["premium"] },
-  poisonJab: { id: "poisonJab", apiName: "poison-jab", name: "독찌르기", type: "poison", power: 80, accuracy: 100 },
+  sludgeBomb: { id: "sludgeBomb", apiName: "sludge-bomb", name: "오물폭탄", type: "poison", power: 90, accuracy: 100, effect: { chance: 30, status: "poison" }, tags: ["premium"] },
+  poisonJab: { id: "poisonJab", apiName: "poison-jab", name: "독찌르기", type: "poison", power: 80, accuracy: 100, effect: { chance: 30, status: "poison" } },
 
   earthquake: { id: "earthquake", apiName: "earthquake", name: "지진", type: "ground", power: 100, accuracy: 100, tags: ["premium"] },
   dig: { id: "dig", apiName: "dig", name: "구멍파기", type: "ground", power: 80, accuracy: 100 },
@@ -57,15 +57,38 @@ const MOVES = {
   bugBite: { id: "bugBite", apiName: "bug-bite", name: "벌레먹기", type: "bug", power: 60, accuracy: 100 },
   rockSlide: { id: "rockSlide", apiName: "rock-slide", name: "스톤샤워", type: "rock", power: 75, accuracy: 90, flinchChance: 30, tags: ["premium"] },
 
-  shadowBall: { id: "shadowBall", apiName: "shadow-ball", name: "섀도볼", type: "ghost", power: 80, accuracy: 100, tags: ["premium"] },
-  dragonBreath: { id: "dragonBreath", apiName: "dragon-breath", name: "용의숨결", type: "dragon", power: 60, accuracy: 100, effect: { chance: 20, status: "paralyze" } },
+  shadowBall: { id: "shadowBall", apiName: "shadow-ball", name: "섀도볼", type: "ghost", power: 80, accuracy: 100, statChance: { chance: 20, target: "enemy", stat: "defense", amount: -1 }, tags: ["premium"] },
+  dragonBreath: { id: "dragonBreath", apiName: "dragon-breath", name: "용의숨결", type: "dragon", power: 60, accuracy: 100, effect: { chance: 30, status: "paralyze" } },
   bite: { id: "bite", apiName: "bite", name: "물기", type: "dark", power: 60, accuracy: 100, flinchChance: 30 },
-  crunch: { id: "crunch", apiName: "crunch", name: "깨물어부수기", type: "dark", power: 80, accuracy: 100, tags: ["premium"] },
+  crunch: { id: "crunch", apiName: "crunch", name: "깨물어부수기", type: "dark", power: 80, accuracy: 100, statChance: { chance: 20, target: "enemy", stat: "defense", amount: -1 }, tags: ["premium"] },
   suckerPunch: { id: "suckerPunch", apiName: "sucker-punch", name: "기습", type: "dark", power: 70, accuracy: 100, priority: 1, tags: ["priority"] },
 
   ironTail: { id: "ironTail", apiName: "iron-tail", name: "아이언테일", type: "steel", power: 100, accuracy: 75, tags: ["premium"] },
   bulletPunch: { id: "bulletPunch", apiName: "bullet-punch", name: "불릿펀치", type: "steel", power: 40, accuracy: 100, priority: 1, tags: ["priority"] },
 
+
+  dragonClaw: { id: "dragonClaw", apiName: "dragon-claw", name: "드래곤클로", type: "dragon", power: 80, accuracy: 100 },
+  dragonPulse: { id: "dragonPulse", apiName: "dragon-pulse", name: "용의파동", type: "dragon", power: 85, accuracy: 100, tags: ["premium"] },
+  outrage: { id: "outrage", apiName: "outrage", name: "역린", type: "dragon", power: 120, accuracy: 100, lockedMove: { turns: 3 }, selfDamageRatio: 0.08, danger: "3턴 동안 역린만 사용하며 교체할 수 없습니다. 매 사용 후 최대 HP의 8%를 잃습니다.", tags: ["premium", "risk"] },
+  dracoMeteor: { id: "dracoMeteor", apiName: "draco-meteor", name: "용성군", type: "dragon", power: 130, accuracy: 90, selfStatAfterUse: { stat: "attack", amount: -2 }, danger: "사용 후 내 공격이 크게 떨어집니다.", tags: ["premium", "risk"] },
+
+  ironHead: { id: "ironHead", apiName: "iron-head", name: "아이언헤드", type: "steel", power: 80, accuracy: 100, flinchChance: 30 },
+  flashCannon: { id: "flashCannon", apiName: "flash-cannon", name: "플래시캐논", type: "steel", power: 80, accuracy: 100, statChance: { chance: 10, target: "enemy", stat: "defense", amount: -1 } },
+  waterfall: { id: "waterfall", apiName: "waterfall", name: "폭포오르기", type: "water", power: 80, accuracy: 100, flinchChance: 20 },
+  aquaTail: { id: "aquaTail", apiName: "aqua-tail", name: "아쿠아테일", type: "water", power: 90, accuracy: 90 },
+
+  darkPulse: { id: "darkPulse", apiName: "dark-pulse", name: "악의파동", type: "dark", power: 80, accuracy: 100, flinchChance: 20 },
+  nightSlash: { id: "nightSlash", apiName: "night-slash", name: "깜짝베기", type: "dark", power: 70, accuracy: 100, highCrit: true },
+  shadowClaw: { id: "shadowClaw", apiName: "shadow-claw", name: "섀도크루", type: "ghost", power: 70, accuracy: 100, highCrit: true },
+  xScissor: { id: "xScissor", apiName: "x-scissor", name: "시저크로스", type: "bug", power: 80, accuracy: 100 },
+  furyCutter: { id: "furyCutter", apiName: "fury-cutter", name: "연속자르기", type: "bug", power: 40, accuracy: 95, furyCutter: { powers: [40, 80, 120, 160] }, tags: ["combo", "bug-support"] },
+  leechLife: { id: "leechLife", apiName: "leech-life", name: "흡혈", type: "bug", power: 80, accuracy: 100, drain: { ratio: 0.5 }, tags: ["recovery"] },
+  stoneEdge: { id: "stoneEdge", apiName: "stone-edge", name: "스톤에지", type: "rock", power: 100, accuracy: 80, highCrit: true, tags: ["premium"] },
+  powerUpPunch: { id: "powerUpPunch", apiName: "power-up-punch", name: "그로우펀치", type: "fighting", power: 40, accuracy: 100, selfStatAfterHit: { stat: "attack", amount: 1 }, tags: ["setup"] },
+  drainPunch: { id: "drainPunch", apiName: "drain-punch", name: "드레인펀치", type: "fighting", power: 75, accuracy: 100, drain: { ratio: 0.5 }, tags: ["recovery"] },
+  closeCombat: { id: "closeCombat", apiName: "close-combat", name: "인파이트", type: "fighting", power: 120, accuracy: 100, selfStatAfterUse: { stat: "defense", amount: -1 }, danger: "사용 후 내 방어가 떨어집니다.", tags: ["premium", "risk"] },
+  gigaDrain: { id: "gigaDrain", apiName: "giga-drain", name: "기가드레인", type: "grass", power: 75, accuracy: 100, drain: { ratio: 0.5 }, tags: ["recovery"] },
+  overheat: { id: "overheat", apiName: "overheat", name: "오버히트", type: "fire", power: 130, accuracy: 90, selfStatAfterUse: { stat: "attack", amount: -2 }, danger: "사용 후 내 공격이 크게 떨어집니다.", tags: ["premium", "risk"] },
   swordDance: { id: "swordDance", apiName: "swords-dance", name: "칼춤", type: "normal", power: 0, accuracy: 100, statChange: { target: "self", stat: "attack", amount: 2 }, tags: ["setup"] },
   nastyPlot: { id: "nastyPlot", apiName: "nasty-plot", name: "나쁜음모", type: "dark", power: 0, accuracy: 100, statChange: { target: "self", stat: "attack", amount: 2 }, tags: ["setup"] },
   dragonDance: { id: "dragonDance", apiName: "dragon-dance", name: "용의춤", type: "dragon", power: 0, accuracy: 100, statChanges: [
@@ -139,6 +162,25 @@ function moveDescription(move) {
     const statusKo = { burn: "화상", poison: "독", paralyze: "마비", sleep: "수면" }[move.effect.status] || move.effect.status;
     return `공격 후 ${move.effect.chance}% 확률로 ${statusKo} 상태를 부여합니다.`;
   }
+
+  if (move.lockedMove) return `${move.lockedMove.turns || 3}턴 동안 같은 기술만 사용하며 교체할 수 없습니다. 매 사용 후 HP를 잃습니다.`;
+  if (move.furyCutter) return `연속으로 사용할수록 위력이 증가합니다. (${move.furyCutter.powers.join(" → ")})`;
+  if (move.drain) return `준 피해의 ${Math.round(move.drain.ratio * 100)}%만큼 HP를 회복합니다.`;
+  if (move.selfStatAfterHit) {
+    const statKo = { attack: "공격", defense: "방어", speed: "스피드" }[move.selfStatAfterHit.stat] || move.selfStatAfterHit.stat;
+    return `명중 후 내 포켓몬의 ${statKo}이/가 ${Math.abs(move.selfStatAfterHit.amount)}랭크 ${move.selfStatAfterHit.amount > 0 ? "올라갑니다" : "떨어집니다"}.`;
+  }
+  if (move.selfStatAfterUse) {
+    const statKo = { attack: "공격", defense: "방어", speed: "스피드" }[move.selfStatAfterUse.stat] || move.selfStatAfterUse.stat;
+    return `사용 후 내 포켓몬의 ${statKo}이/가 ${Math.abs(move.selfStatAfterUse.amount)}랭크 ${move.selfStatAfterUse.amount > 0 ? "올라갑니다" : "떨어집니다"}.`;
+  }
+  if (move.statChance) {
+    const statKo = { attack: "공격", defense: "방어", speed: "스피드" }[move.statChance.stat] || move.statChance.stat;
+    const targetKo = move.statChance.target === "self" ? "내 포켓몬" : "상대 포켓몬";
+    return `공격 후 ${move.statChance.chance}% 확률로 ${targetKo}의 ${statKo}을/를 ${Math.abs(move.statChance.amount)}랭크 ${move.statChance.amount > 0 ? "올립니다" : "내립니다"}.`;
+  }
+  if (move.flinchChance) return `공격 후 ${move.flinchChance}% 확률로 상대를 풀죽게 합니다.`;
+  if (move.highCrit) return "급소에 맞을 확률이 높은 공격 기술입니다.";
   if (move.priority > 0) return `우선도 +${move.priority}로 먼저 공격하기 쉬운 기술입니다.`;
   return "직접 피해를 주는 공격 기술입니다.";
 }

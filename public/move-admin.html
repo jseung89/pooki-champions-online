@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>푸끼몬 기술 관리자</title>
+  <style>
+    :root{--bg:#071024;--panel:#0f1d35;--panel2:#122744;--line:#29415f;--text:#eaf3ff;--muted:#9db4d4;--accent:#60a5fa;--good:#34d399;--bad:#fb7185;--warn:#facc15;--chip:#243956;--disabled:#1a2638}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#071024,#0b1528);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    header{position:sticky;top:0;z-index:10;background:rgba(7,16,36,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:16px 20px}
+    h1{margin:0 0 8px;font-size:26px}.sub{color:var(--muted);font-size:14px;line-height:1.45}
+    main{display:grid;grid-template-columns:320px 1fr 420px;gap:16px;padding:16px;min-height:calc(100vh - 96px)}
+    .panel{background:rgba(15,29,53,.9);border:1px solid var(--line);border-radius:18px;padding:14px;box-shadow:0 14px 40px rgba(0,0,0,.25);min-width:0}
+    .section-title{font-weight:800;margin-bottom:10px;font-size:18px} input,select,button,textarea{font:inherit} input,select{width:100%;background:#08172b;color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px;outline:none} input:focus,select:focus{border-color:var(--accent)}
+    button{border:0;border-radius:12px;padding:9px 12px;background:var(--accent);color:#04111f;font-weight:800;cursor:pointer}button:hover{filter:brightness(1.08)}button.ghost{background:#213755;color:var(--text);border:1px solid var(--line)}button.good{background:var(--good)}button.bad{background:var(--bad)}button.warn{background:var(--warn);color:#201600}button:disabled{opacity:.45;cursor:not-allowed}
+    .toolbar{display:grid;gap:8px;margin-bottom:10px}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.small{font-size:12px;color:var(--muted);line-height:1.35}.notice{background:#091a30;border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--muted);white-space:pre-wrap}.notice.ok{border-color:rgba(52,211,153,.6);color:#baf7de}.notice.errors{border-color:rgba(251,113,133,.7);color:#ffd4dc}.notice.warn{border-color:rgba(250,204,21,.6);color:#fff2a8}
+    .list{display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 260px);overflow:auto;padding-right:4px}.pokemon-item{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;background:#0b1f39;border:1px solid var(--line);border-radius:14px;padding:8px;cursor:pointer}.pokemon-item:hover,.pokemon-item.active{border-color:var(--accent);background:#102a4c}.pokemon-item.modified{box-shadow:inset 4px 0 0 var(--good)}.pokemon-item img{width:50px;height:50px;object-fit:contain}.pokemon-name{font-weight:800}.chips{display:flex;gap:4px;flex-wrap:wrap;margin:4px 0}.chip,.badge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;background:var(--chip);font-size:11px;color:#dcecff;border:1px solid rgba(255,255,255,.08)}.badge.good{background:rgba(52,211,153,.15);color:#baf7de}.badge.bad{background:rgba(251,113,133,.15);color:#ffd4dc}.badge.warn{background:rgba(250,204,21,.15);color:#fff2a8}.badge.disabled{background:#1d293a;color:#7f92ab}
+    .type-normal{background:#9ca3af}.type-fire{background:#ef4444}.type-water{background:#3b82f6}.type-grass{background:#22c55e}.type-electric{background:#facc15;color:#1f1600}.type-ice{background:#67e8f9;color:#06202a}.type-fighting{background:#dc2626}.type-poison{background:#a855f7}.type-ground{background:#ca8a04}.type-flying{background:#7dd3fc;color:#082f49}.type-psychic{background:#ec4899}.type-bug{background:#84cc16;color:#142000}.type-rock{background:#a16207}.type-ghost{background:#6366f1}.type-dragon{background:#4f46e5}.type-dark{background:#374151}.type-steel{background:#94a3b8;color:#0f172a}.type-fairy{background:#f9a8d4;color:#4a102a}
+    .arena{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}.mon-card{background:#08172b;border:1px solid var(--line);border-radius:16px;padding:10px;min-height:100px}.mon-head{display:flex;align-items:center;gap:10px}.mon-head img{width:76px;height:76px;object-fit:contain}.mon-title{font-weight:900;font-size:20px}.moveset{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:12px 0}.slot{background:#0b1f39;border:1px solid var(--line);border-radius:16px;padding:12px;cursor:pointer;min-height:92px}.slot.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(96,165,250,.2)}.slot.empty{border-color:var(--bad)}.slot .idx{font-size:12px;color:var(--muted)}.slot .name{font-size:20px;font-weight:900;margin:4px 0}.slot .meta{font-size:12px;color:var(--muted)}.savebar{display:flex;gap:8px;flex-wrap:wrap}.jsonbox{width:100%;height:150px;background:#061224;color:#cfe7ff;border:1px solid var(--line);border-radius:14px;padding:10px;margin-top:10px}
+    .move-list{display:flex;flex-direction:column;gap:8px;max-height:calc(100vh - 275px);overflow:auto;padding-right:4px}.move-card{background:#0b1f39;border:1px solid var(--line);border-radius:14px;padding:10px;cursor:pointer}.move-card:hover,.move-card.selected{border-color:var(--accent);background:#102a4c}.move-card.disabled{background:var(--disabled);opacity:.65;cursor:not-allowed}.move-card.disabled:hover{border-color:var(--line);background:var(--disabled)}.move-card .title{display:flex;align-items:center;justify-content:space-between;gap:8px}.move-card .name{font-weight:900}.move-card .meta,.desc{font-size:12px;color:var(--muted);line-height:1.4;margin-top:4px}.toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}.toggle input{width:auto}.learn-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}.statbox{background:#08172b;border:1px solid var(--line);border-radius:12px;padding:8px}.statbox b{display:block;font-size:18px;color:#fff}
+    @media(max-width:1100px){main{grid-template-columns:1fr}.list,.move-list{max-height:420px}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>푸끼몬 기술 관리자</h1>
+  <div class="sub">선택한 포켓몬이 <b>배울 수 있고</b> 우리 게임에 <b>구현된 기술만</b> 기본 표시됩니다. 저장하면 일반 게임 기술 세팅에 반영됩니다.</div>
+</header>
+<main>
+  <section class="panel">
+    <div class="section-title">포켓몬 선택</div>
+    <div class="toolbar">
+      <input id="pokemonSearch" placeholder="포켓몬 이름 / ID 검색" />
+      <div class="row">
+        <select id="genFilter"><option value="all">전체 세대</option><option value="1">1세대</option><option value="2">2세대</option></select>
+        <select id="modFilter"><option value="all">전체</option><option value="modified">수정됨</option><option value="default">기본값</option></select>
+      </div>
+    </div>
+    <div class="small" id="pokemonCount"></div>
+    <div class="list" id="pokemonList"></div>
+  </section>
+
+  <section class="panel">
+    <div class="section-title">기술 세팅</div>
+    <div id="selectedInfo" class="notice">포켓몬을 선택하세요.</div>
+    <div class="learn-summary" id="learnSummary" style="display:none">
+      <div class="statbox"><span class="small">구현 기술</span><b id="moveCountAll">0</b></div>
+      <div class="statbox"><span class="small">이 포켓몬 가능</span><b id="moveCountLearnable">0</b></div>
+      <div class="statbox"><span class="small">저장 상태</span><b id="moveSaveState">기본</b></div>
+    </div>
+    <div class="arena">
+      <div class="mon-card"><div class="mon-head"><img id="frontSprite" alt="front"><div><div class="small">상대 기준</div><div class="mon-title" id="monNameA">-</div></div></div></div>
+      <div class="mon-card"><div class="mon-head"><img id="backSprite" alt="back"><div><div class="small">내 포켓몬 기준</div><div class="mon-title" id="monNameB">-</div></div></div></div>
+    </div>
+    <div class="moveset" id="slotGrid"></div>
+    <div class="savebar">
+      <button class="good" id="saveBtn">저장</button>
+      <button class="ghost" id="resetOneBtn">선택 포켓몬 기본값</button>
+      <button class="ghost" id="copyChangedBtn">변경값 복사</button>
+      <button class="ghost" id="copyAllBtn">전체 JSON 복사</button>
+      <button class="bad" id="resetAllBtn">전체 기술 저장값 초기화</button>
+    </div>
+    <div id="statusBox" class="notice" style="margin-top:12px">대기 중</div>
+    <textarea id="jsonBox" class="jsonbox" placeholder="복사 결과가 여기에 표시됩니다." readonly></textarea>
+  </section>
+
+  <section class="panel">
+    <div class="section-title">선택 가능 기술</div>
+    <input id="moveSearch" placeholder="기술명 / ID 검색" />
+    <div class="toolbar row">
+      <select id="typeFilter"><option value="all">전체 타입</option></select>
+      <select id="catFilter"><option value="all">전체 분류</option></select>
+    </div>
+    <label class="toggle"><input type="checkbox" id="showAllMoves"> 전체 구현 기술도 보기 <span class="small">배울 수 없는 기술은 회색 표시/선택 불가</span></label>
+    <div class="small" id="moveCountText" style="margin:8px 0">포켓몬을 선택하면 배울 수 있는 구현 기술만 표시됩니다.</div>
+    <div class="move-list" id="moveList"></div>
+  </section>
+</main>
+<script>
+const TYPE_KO={normal:'노말',fire:'불꽃',water:'물',grass:'풀',electric:'전기',ice:'얼음',fighting:'격투',poison:'독',ground:'땅',flying:'비행',psychic:'에스퍼',bug:'벌레',rock:'바위',ghost:'고스트',dragon:'드래곤',dark:'악',steel:'강철',fairy:'페어리'};
+let DATA={pokemon:[],moves:[],customMoves:{}};
+let selectedPokemon=null;
+let activeSlot=0;
+let working={};
+const $=id=>document.getElementById(id);
+function normalizeKey(v){return String(v||'').trim().toLowerCase().replace(/_/g,'-').replace(/\s+/g,'-')}
+function moveById(id){return DATA.moves.find(m=>m.id===id)}
+function genOf(p){return Number(p.id)<=151?'1':'2'}
+function pokemonKey(p){return normalizeKey(p.apiName||p.name||p.id)}
+function defaultMoves(p){return (p.baseMoves||p.currentMoves||[]).map(m=>m.id).slice(0,4)}
+function movesFor(p){const key=pokemonKey(p);return (working[key]&&working[key].length?working[key]:defaultMoves(p)).slice(0,4)}
+function learnableSet(p){return new Set(p?.learnableMoveIds||[])}
+function canLearn(p,moveId){return !!p && learnableSet(p).has(moveId)}
+function setStatus(msg,kind=''){ $('statusBox').className='notice '+kind; $('statusBox').textContent=msg; }
+function validateMovesets(source){const errors=[],warnings=[];for(const [key,ids] of Object.entries(source)){const p=DATA.pokemon.find(mon=>pokemonKey(mon)===normalizeKey(key)||String(mon.id)===String(key));if(!p){errors.push(`${key}: 포켓몬을 찾을 수 없습니다.`);continue;}if(!Array.isArray(ids)||ids.length!==4){errors.push(`${p.name}: 기술은 4개여야 합니다.`);continue;}const invalid=ids.filter(id=>!moveById(id));if(invalid.length)errors.push(`${p.name}: 미구현 기술 ${invalid.join(', ')}`);const notLearnable=ids.filter(id=>!canLearn(p,id));if(notLearnable.length)errors.push(`${p.name}: 배울 수 없는 기술 ${notLearnable.map(id=>moveById(id)?.name||id).join(', ')}`);if(new Set(ids).size!==ids.length)warnings.push(`${p.name}: 중복 기술이 있습니다.`);if(ids.includes('explosion')&&!['76','101','205','golem','electrode','forretress'].includes(pokemonKey(p))&&!['76','101','205'].includes(String(p.id)))errors.push(`${p.name}: 대폭발은 붐볼/딱구리/쏘콘만 저장 가능합니다.`)}return{errors,warnings}}
+function compactWorking(){const out={};for(const p of DATA.pokemon){const key=pokemonKey(p);const current=working[key];if(!current)continue;const base=defaultMoves(p);if(JSON.stringify(current)!==JSON.stringify(base))out[key]=current;}return out;}
+async function load(){const res=await fetch('/api/admin/move-data');DATA=await res.json();working={...(DATA.customMoves||{})};initFilters();renderAll();}
+function initFilters(){const typeSel=$('typeFilter');Object.entries(TYPE_KO).forEach(([id,ko])=>{const o=document.createElement('option');o.value=id;o.textContent=ko;typeSel.appendChild(o)});const cats=[...new Set(DATA.moves.map(m=>m.category||'기타'))].sort();for(const c of cats){const o=document.createElement('option');o.value=c;o.textContent=c;$('catFilter').appendChild(o)}}
+function filteredPokemon(){const q=$('pokemonSearch').value.trim().toLowerCase();const gen=$('genFilter').value;const mod=$('modFilter').value;return DATA.pokemon.filter(p=>{const key=pokemonKey(p);const hit=!q||String(p.name).toLowerCase().includes(q)||String(p.apiName).toLowerCase().includes(q)||String(p.id).includes(q);const genOk=gen==='all'||genOf(p)===gen;const changed=!!working[key];const modOk=mod==='all'||(mod==='modified'?changed:!changed);return hit&&genOk&&modOk})}
+function renderPokemonList(){const list=$('pokemonList');list.innerHTML='';const arr=filteredPokemon();$('pokemonCount').textContent=`${arr.length}마리 표시 / 전체 ${DATA.pokemon.length}마리`;for(const p of arr){const key=pokemonKey(p);const div=document.createElement('div');div.className='pokemon-item '+(selectedPokemon&&selectedPokemon.id===p.id?'active ':'')+(working[key]?'modified':'');const types=(p.types||[]).map(t=>`<span class="chip type-${t}">${TYPE_KO[t]||t}</span>`).join('');div.innerHTML=`<img src="${p.frontSprite||''}"><div><div class="pokemon-name">${p.name} <span class="small">#${p.id}</span></div><div class="chips">${types}</div><div class="small">${movesFor(p).map(id=>moveById(id)?.name||id).join(' / ')}</div></div>`;div.onclick=()=>{selectedPokemon=p;activeSlot=0;renderAll()};list.appendChild(div)}}
+function renderSlots(){const grid=$('slotGrid');grid.innerHTML='';if(!selectedPokemon){grid.innerHTML='<div class="notice">포켓몬을 먼저 선택하세요.</div>';return;}const ids=movesFor(selectedPokemon);for(let i=0;i<4;i++){const m=moveById(ids[i]);const invalid=m&&!canLearn(selectedPokemon,m.id);const div=document.createElement('div');div.className='slot '+(activeSlot===i?'active ':'')+(!m||invalid?'empty':'');div.innerHTML=`<div class="idx">슬롯 ${i+1}</div><div class="name">${m?m.name:'비어 있음'}</div><div class="meta">${m?`${TYPE_KO[m.type]||m.type} / 위력 ${m.power||'-'} / 명중 ${m.accuracy??100} / ${m.category||'공격기'}`:'기술을 선택하세요'}</div>${invalid?'<div class="badge bad">배울 수 없는 기술</div>':''}`;div.onclick=()=>{activeSlot=i;renderSlots();renderMoveList()};grid.appendChild(div)}}
+function renderSelected(){if(!selectedPokemon){$('selectedInfo').textContent='포켓몬을 선택하세요.';$('frontSprite').src='';$('backSprite').src='';$('monNameA').textContent='-';$('monNameB').textContent='-';$('learnSummary').style.display='none';return;}const p=selectedPokemon;const key=pokemonKey(p);$('frontSprite').src=p.frontSprite||'';$('backSprite').src=p.backSprite||p.frontSprite||'';$('monNameA').textContent=p.name;$('monNameB').textContent=p.name;$('selectedInfo').innerHTML=`<b>${p.name}</b> / ${p.apiName} / #${p.id}<br>현재 세팅: ${movesFor(p).map(id=>moveById(id)?.name||id).join(' / ')}`;$('learnSummary').style.display='grid';$('moveCountAll').textContent=DATA.moves.length;$('moveCountLearnable').textContent=(p.learnableMoveIds||[]).length;$('moveSaveState').textContent=working[key]?'수정':'기본'}
+function filteredMoves(){const q=$('moveSearch').value.trim().toLowerCase();const type=$('typeFilter').value;const cat=$('catFilter').value;const showAll=$('showAllMoves').checked;const learnable=learnableSet(selectedPokemon);return DATA.moves.filter(m=>{const hit=!q||String(m.name).toLowerCase().includes(q)||String(m.id).toLowerCase().includes(q)||String(m.apiName).toLowerCase().includes(q);const filterOk=hit&&(type==='all'||m.type===type)&&(cat==='all'||m.category===cat);if(!filterOk)return false;if(!selectedPokemon)return showAll;return showAll||learnable.has(m.id)}).sort((a,b)=>{const al=selectedPokemon&&learnable.has(a.id)?0:1;const bl=selectedPokemon&&learnable.has(b.id)?0:1;if(al!==bl)return al-bl;return (a.type+b.name).localeCompare(b.type+a.name,'ko')})}
+function renderMoveList(){const list=$('moveList');list.innerHTML='';const moves=filteredMoves();const learnable=learnableSet(selectedPokemon);$('moveCountText').textContent=selectedPokemon?`${selectedPokemon.name} 선택 가능 기술 ${selectedPokemon.learnableMoveIds?.length||0}개 / 현재 표시 ${moves.length}개`:'포켓몬을 선택하세요.';for(const m of moves){const selected=selectedPokemon&&movesFor(selectedPokemon)[activeSlot]===m.id;const can=selectedPokemon&&learnable.has(m.id);const div=document.createElement('div');div.className='move-card '+(selected?'selected ':'')+(!can?'disabled':'');div.innerHTML=`<div class="title"><span class="name">${m.name}</span><span class="badge type-${m.type}">${TYPE_KO[m.type]||m.type}</span></div><div class="meta">ID ${m.id} / API ${m.apiName} / 위력 ${m.power||'-'} / 명중 ${m.accuracy??100} / ${m.category||'공격기'}</div><div class="desc">${m.description||''}</div>${m.highCrit?'<span class="badge warn">고급소</span> ':''}${m.flinchChance?`<span class="badge warn">풀죽음 ${m.flinchChance}%</span> `:''}${m.drain?'<span class="badge good">흡수</span> ':''}${m.danger?'<span class="badge bad">리스크</span> ':''}${!can?'<span class="badge disabled">이 포켓몬은 배울 수 없음</span>':''}`;div.onclick=()=>{if(!can)return setStatus(`${selectedPokemon?selectedPokemon.name:'선택 포켓몬'}은/는 ${m.name}을/를 배울 수 없습니다.`,'warn');applyMoveToSlot(m.id)};list.appendChild(div)}}
+function applyMoveToSlot(moveId){if(!selectedPokemon)return setStatus('포켓몬을 먼저 선택하세요.','errors');if(!canLearn(selectedPokemon,moveId))return setStatus(`${selectedPokemon.name}은/는 ${moveById(moveId)?.name||moveId}을/를 배울 수 없습니다.`,'errors');const key=pokemonKey(selectedPokemon);const ids=movesFor(selectedPokemon);ids[activeSlot]=moveId;working[key]=ids;setStatus(`${selectedPokemon.name} 슬롯 ${activeSlot+1} → ${moveById(moveId).name}`,'ok');renderAll()}
+function resetSelected(){if(!selectedPokemon)return;delete working[pokemonKey(selectedPokemon)];setStatus(`${selectedPokemon.name} 기술 세팅을 기본값으로 되돌렸습니다.`,'ok');renderAll()}
+async function saveAll(){const changed=compactWorking();const check=validateMovesets(changed);if(check.errors.length){setStatus('저장 불가:\n'+check.errors.join('\n'),'errors');return;}if(!confirm(`변경된 포켓몬 ${Object.keys(changed).length}마리를 저장할까요?${check.warnings.length?'\n\n경고:\n'+check.warnings.join('\n'):''}`))return;const res=await fetch('/api/admin/pokemon-moves',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({movesets:changed})});const data=await res.json();if(!res.ok){setStatus('저장 실패:\n'+(data.errors||[data.message||'unknown']).join('\n'),'errors');return;}DATA.customMoves=data.movesets||{};working={...DATA.customMoves};setStatus(`저장 완료: ${data.count}마리\n${(data.warnings||[]).join('\n')}`,'ok');renderAll()}
+async function resetAll(){if(!confirm('모든 기술 관리자 저장값을 초기화할까요?'))return;const res=await fetch('/api/admin/pokemon-moves',{method:'DELETE'});await res.json();working={};DATA.customMoves={};setStatus('전체 기술 저장값을 초기화했습니다.','ok');renderAll()}
+function copyText(obj){const txt=JSON.stringify(obj,null,2);$('jsonBox').value=txt;navigator.clipboard?.writeText(txt).catch(()=>{});setStatus('복사 영역에 JSON을 출력했습니다.','ok')}
+function renderAll(){renderPokemonList();renderSelected();renderSlots();renderMoveList()}
+['pokemonSearch','genFilter','modFilter','moveSearch','typeFilter','catFilter','showAllMoves'].forEach(id=>$(id).addEventListener('input',renderAll));
+$('saveBtn').onclick=saveAll;$('resetOneBtn').onclick=resetSelected;$('resetAllBtn').onclick=resetAll;$('copyChangedBtn').onclick=()=>copyText(compactWorking());$('copyAllBtn').onclick=()=>copyText(working);
+load().catch(err=>setStatus('로드 실패: '+err.message,'errors'));
+</script>
+</body>
+</html>

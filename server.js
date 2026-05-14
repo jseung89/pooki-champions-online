@@ -8,7 +8,8 @@ const { Server } = require("socket.io");
 
 const { loadPokemonData } = require("./src/dataLoader");
 const { createDraft } = require("./src/randomDraft");
-const { moveDescription } = require("./src/moveLibrary");
+const { buildMovesForPokemon, buildBaseMovesForPokemon } = require("./src/moveBuilder");
+const { MOVES, MOVE_LIST, moveDescription } = require("./src/moveLibrary");
 const { battleEffectiveness, effectivenessLabel, TYPE_KO } = require("./src/typeChart");
 const {
   createBattlePokemon,
@@ -39,6 +40,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json({ limit: "1mb" }));
 
 const CUSTOM_RENDER_PROFILE_PATH = path.join(__dirname, "data", "render_profiles_custom.json");
+const CUSTOM_POKEMON_MOVES_PATH = path.join(__dirname, "data", "pokemon_moves_custom.json");
 
 function ensureDataDir() {
   fs.mkdirSync(path.dirname(CUSTOM_RENDER_PROFILE_PATH), { recursive: true });
@@ -60,6 +62,126 @@ function writeCustomRenderProfiles(data) {
   ensureDataDir();
   fs.writeFileSync(CUSTOM_RENDER_PROFILE_PATH, `${JSON.stringify(data || {}, null, 2)}\n`, "utf8");
 }
+
+function readCustomPokemonMoves() {
+  try {
+    ensureDataDir();
+    if (!fs.existsSync(CUSTOM_POKEMON_MOVES_PATH)) return {};
+    const parsed = JSON.parse(fs.readFileSync(CUSTOM_POKEMON_MOVES_PATH, "utf8") || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch (err) {
+    console.warn("[ADMIN] pokemon moves read failed", err.message);
+    return {};
+  }
+}
+
+function writeCustomPokemonMoves(data) {
+  ensureDataDir();
+  fs.writeFileSync(CUSTOM_POKEMON_MOVES_PATH, `${JSON.stringify(data || {}, null, 2)}\n`, "utf8");
+}
+
+function normalizeAdminKey(value) {
+  return String(value || "").trim().toLowerCase().replace(/_/g, "-").replace(/\s+/g, "-");
+}
+
+function isExplosionAllowedForPokemonKey(key) {
+  const allowed = new Set(["76", "101", "205", "golem", "electrode", "forretress", "딱구리", "붐볼", "쏘콘"]);
+  return allowed.has(String(key));
+}
+
+function sanitizePokemonMovesPayload(payload) {
+  const source = payload?.movesets && typeof payload.movesets === "object" ? payload.movesets : payload;
+  const out = {};
+  const errors = [];
+  const warnings = [];
+  if (!source || typeof source !== "object" || Array.isArray(source)) return { movesets: out, errors: ["저장할 기술 세팅이 없습니다."], warnings };
+
+  for (const [rawKey, rawMoves] of Object.entries(source)) {
+    const key = normalizeAdminKey(rawKey);
+    if (!key) continue;
+    const pokemon = findAdminPokemonByKey(key);
+    if (!pokemon) {
+      errors.push(`${rawKey}: 포켓몬을 찾을 수 없습니다.`);
+      continue;
+    }
+    if (!Array.isArray(rawMoves)) {
+      errors.push(`${rawKey}: 기술 목록이 배열이 아닙니다.`);
+      continue;
+    }
+    const ids = rawMoves.map((id) => String(id || "").trim()).filter(Boolean);
+    if (ids.length !== 4) {
+      errors.push(`${rawKey}: 기술은 정확히 4개여야 합니다. 현재 ${ids.length}개`);
+      continue;
+    }
+    const invalid = ids.filter((id) => !MOVES[id]);
+    if (invalid.length) {
+      errors.push(`${rawKey}: 구현되지 않은 기술 ID ${invalid.join(", ")}`);
+      continue;
+    }
+    const notLearnable = ids.filter((id) => !pokemonCanUseImplementedMove(pokemon, id));
+    if (notLearnable.length) {
+      const names = notLearnable.map((id) => MOVES[id]?.name || id).join(", ");
+      errors.push(`${pokemon.name || rawKey}: 배울 수 없는 기술 ${names}`);
+      continue;
+    }
+    if (new Set(ids).size !== ids.length) warnings.push(`${pokemon.name || rawKey}: 중복 기술이 있습니다.`);
+    if (ids.includes("explosion") && !pokemonAdminKeys(pokemon).some(isExplosionAllowedForPokemonKey)) {
+      errors.push(`${pokemon.name || rawKey}: 대폭발은 붐볼/딱구리/쏘콘만 저장 가능합니다.`);
+      continue;
+    }
+    out[normalizeAdminKey(pokemon.apiName || pokemon.id || key)] = ids;
+  }
+  return { movesets: out, errors, warnings };
+}
+
+function currentMovesForAdminPokemon(pokemon) {
+  try {
+    return buildMovesForPokemon(pokemon).map(publicMoveLite);
+  } catch (err) {
+    return (pokemon.moves || []).map(publicMoveLite);
+  }
+}
+
+function pokemonAdminKeys(pokemon) {
+  return [pokemon?.id, pokemon?.apiName, pokemon?.name]
+    .map(normalizeAdminKey)
+    .filter(Boolean);
+}
+
+function findAdminPokemonByKey(rawKey) {
+  const key = normalizeAdminKey(rawKey);
+  if (!key) return null;
+  return pokemonPool.find((pokemon) => pokemonAdminKeys(pokemon).includes(key)) || null;
+}
+
+function learnableImplementedMoveIdsForPokemon(pokemon) {
+  const learnedApiNames = new Set((pokemon?.availableMoveNames || []).map(normalizeAdminKey));
+  const ids = [];
+  for (const move of MOVE_LIST) {
+    const apiName = normalizeAdminKey(move.apiName || move.id);
+    if (learnedApiNames.has(apiName)) ids.push(move.id);
+  }
+
+  // 기존 기본 배치 기술은 수동 보정/대표 배치로 인정한다.
+  // PokeAPI 세대별 습득 데이터가 일부 누락되거나, 우리 게임식 밸런스 배치가 별도로 들어간 경우를 보호한다.
+  try {
+    for (const move of buildBaseMovesForPokemon(pokemon) || []) {
+      if (move?.id && MOVES[move.id]) ids.push(move.id);
+    }
+  } catch (err) {
+    // ignore fallback errors
+  }
+
+  // 대폭발은 전용 포켓몬 외에는 학습 가능 목록에 있더라도 관리자 선택에서 제외한다.
+  const pokemonKeys = new Set(pokemonAdminKeys(pokemon));
+  return [...new Set(ids)].filter((id) => id !== "explosion" || [...pokemonKeys].some(isExplosionAllowedForPokemonKey));
+}
+
+function pokemonCanUseImplementedMove(pokemon, moveId) {
+  if (!pokemon || !MOVES[moveId]) return false;
+  return learnableImplementedMoveIdsForPokemon(pokemon).includes(moveId);
+}
+
 
 function sanitizeProfileValue(profile) {
   const out = {};
@@ -106,6 +228,354 @@ app.post("/api/admin/render-profiles", requireAdminForWrite, (req, res) => {
 app.delete("/api/admin/render-profiles", requireAdminForWrite, (req, res) => {
   writeCustomRenderProfiles({});
   res.json({ ok: true, count: 0, profiles: {} });
+});
+
+
+function publicPokemonLite(p) {
+  return {
+    id: p.id,
+    apiName: p.apiName,
+    name: p.name,
+    types: p.types,
+    stats: p.stats,
+    frontSprite: p.frontSprite,
+    backSprite: p.backSprite,
+    availableMoveNames: p.availableMoveNames || [],
+    learnableMoveIds: learnableImplementedMoveIdsForPokemon(p),
+    learnableMoves: learnableImplementedMoveIdsForPokemon(p).map((id) => publicMoveLite(MOVES[id])).filter(Boolean),
+    baseMoves: buildBaseMovesForPokemon(p).map(publicMoveLite),
+    currentMoves: currentMovesForAdminPokemon(p)
+  };
+}
+
+function publicMoveLite(move) {
+  return {
+    id: move.id,
+    apiName: move.apiName,
+    name: move.name,
+    type: move.type,
+    power: move.power || 0,
+    accuracy: move.accuracy ?? 100,
+    priority: move.priority || 0,
+    tags: move.tags || [],
+    highCrit: !!move.highCrit,
+    flinchChance: move.flinchChance || 0,
+    effect: move.effect || null,
+    statChance: move.statChance || null,
+    statChange: move.statChange || null,
+    statChanges: move.statChanges || null,
+    statusMove: move.statusMove || null,
+    heal: move.heal || null,
+    drain: move.drain || null,
+    lockedMove: move.lockedMove || null,
+    selfDamageRatio: move.selfDamageRatio || null,
+    selfStatAfterHit: move.selfStatAfterHit || null,
+    selfStatAfterUse: move.selfStatAfterUse || null,
+    furyCutter: move.furyCutter || null,
+    selfDestruct: !!move.selfDestruct,
+    recharge: move.recharge || 0,
+    danger: move.danger || "",
+    description: moveDescription(move)
+  };
+}
+
+function moveCategory(move) {
+  if (move.statusMove) return "상태이상";
+  if (move.heal || move.rest || move.drain) return "회복/흡수";
+  if (move.statChange || move.statChanges || move.selfStatAfterHit || move.selfStatAfterUse || move.statChance) return "능력변화";
+  if (move.lockedMove || move.furyCutter || move.selfDamageRatio || move.recharge || move.selfDestruct) return "특수공격";
+  if ((move.power || 0) > 0) return "공격";
+  return "기타";
+}
+
+function testStatKo(stat) {
+  return { attack: "공격", defense: "방어", speed: "스피드" }[stat] || stat;
+}
+
+function arenaStatKo(stat) {
+  return { attack: "공격", defense: "방어", speed: "스피드" }[stat] || stat;
+}
+
+function arenaClonePokemon(mon) {
+  return JSON.parse(JSON.stringify(mon));
+}
+
+function arenaCreatePokemonFromId(id, forcedMoveId) {
+  const base = pokemonPool.find((p) => Number(p.id) === Number(id));
+  if (!base) return null;
+  const move = MOVES[forcedMoveId] || (base.moves && base.moves[0]) || MOVE_LIST[0];
+  return createBattlePokemon({ ...base, moves: [move] });
+}
+
+function arenaPublicState(mon) {
+  return {
+    id: mon.id,
+    apiName: mon.apiName,
+    name: mon.name,
+    types: mon.types,
+    stats: mon.stats,
+    hp: mon.hp,
+    maxHp: mon.maxHp,
+    moves: mon.moves,
+    frontSprite: mon.frontSprite,
+    backSprite: mon.backSprite,
+    fainted: !!mon.fainted,
+    status: mon.status || null,
+    sleepTurns: mon.sleepTurns || 0,
+    statStages: mon.statStages || { attack: 0, defense: 0, speed: 0 },
+    volatile: mon.volatile || { rechargeTurns: 0, flinch: false, lockedMove: null, furyCutter: null },
+  };
+}
+
+function arenaResolveMove(attacker, selectedMoveId, logs) {
+  const locked = attacker?.volatile?.lockedMove;
+  if (locked?.moveId && MOVES[locked.moveId]) {
+    logs.push(`${attacker.name}은/는 역린에 휩싸여 ${MOVES[locked.moveId].name}만 사용할 수 있다!`);
+    return MOVES[locked.moveId];
+  }
+  return MOVES[selectedMoveId];
+}
+
+function arenaApplyStat(mon, targetKey, stat, amount, logs, events) {
+  if (!mon || mon.fainted) return;
+  applyStatChange(mon, stat, amount);
+  logs.push(`${mon.name}의 ${arenaStatKo(stat)}이/가 ${amount > 0 ? "올라갔다" : "떨어졌다"}! (${mon.statStages[stat]})`);
+  events.push({ type: "stat", target: targetKey, name: mon.name, stat, amount, stage: mon.statStages[stat] });
+}
+
+function arenaResetFuryIfNeeded(attacker, move) {
+  if (!attacker.volatile) attacker.volatile = {};
+  if (!move?.furyCutter) attacker.volatile.furyCutter = null;
+}
+
+function simulateTestTurn(attackerInput, defenderInput, selectedMoveId) {
+  const logs = [];
+  const events = [];
+  const attacker = arenaClonePokemon(attackerInput);
+  const defender = arenaClonePokemon(defenderInput);
+  attacker.volatile = attacker.volatile || { rechargeTurns: 0, flinch: false, lockedMove: null, furyCutter: null };
+  defender.volatile = defender.volatile || { rechargeTurns: 0, flinch: false, lockedMove: null, furyCutter: null };
+  attacker.statStages = attacker.statStages || { attack: 0, defense: 0, speed: 0 };
+  defender.statStages = defender.statStages || { attack: 0, defense: 0, speed: 0 };
+
+  let move = arenaResolveMove(attacker, selectedMoveId, logs);
+  if (!move) return { ok: false, message: "존재하지 않는 기술입니다." };
+
+  events.push({ type: "turnStart", text: "예비 격투장 테스트 턴" });
+
+  let actualMove = { ...move };
+  if (move.furyCutter) {
+    const previous = attacker.volatile.furyCutter;
+    const prevStack = previous?.moveId === move.id ? Number(previous.stack || 0) : 0;
+    const stack = Math.max(1, Math.min((move.furyCutter.powers || [40, 80, 120, 160]).length, prevStack + 1));
+    actualMove.power = move.furyCutter.powers?.[stack - 1] || move.power || 40;
+    actualMove._furyStack = stack;
+    logs.push(`연속자르기 ${stack}단계! 위력 ${actualMove.power}`);
+  }
+
+  const didHit = isMoveHit(actualMove);
+  logs.push(`${attacker.name}의 ${move.name}!`);
+  events.push({
+    type: "move",
+    attacker: "p1",
+    defender: "p2",
+    moveType: move.type,
+    moveName: move.name,
+    attackerName: attacker.name,
+    defenderName: defender.name,
+    outcome: didHit ? "hit" : "miss",
+    isStatusMove: (actualMove.power || 0) === 0,
+    description: moveDescription(move),
+  });
+
+  if (!didHit) {
+    logs.push("하지만 빗나갔다!");
+    events.push({ type: "miss", attacker: "p1", defender: "p2" });
+    if (move.furyCutter) attacker.volatile.furyCutter = null;
+    if (move.id !== attacker.volatile?.lockedMove?.moveId) arenaResetFuryIfNeeded(attacker, move);
+    return { ok: true, logs, events, attacker: arenaPublicState(attacker), defender: arenaPublicState(defender), move: publicMoveLite(move) };
+  }
+
+  if (move.statusMove) {
+    const target = move.statusMove.target === "self" ? attacker : defender;
+    const targetKey = move.statusMove.target === "self" ? "p1" : "p2";
+    if (canApplyStatus(target, move.statusMove.status)) {
+      applyStatus(target, move.statusMove.status);
+      logs.push(`${target.name}은/는 ${STATUS_KO[move.statusMove.status]} 상태가 되었다!`);
+      events.push({ type: "status", target: targetKey, name: target.name, status: move.statusMove.status });
+    } else {
+      logs.push("하지만 상태이상은 통하지 않았다!");
+      events.push({ type: "message", text: "하지만 상태이상은 통하지 않았다!" });
+    }
+    arenaResetFuryIfNeeded(attacker, move);
+    return { ok: true, logs, events, attacker: arenaPublicState(attacker), defender: arenaPublicState(defender), move: publicMoveLite(move) };
+  }
+
+  if (move.heal) {
+    const before = attacker.hp;
+    const amount = Math.max(1, Math.floor(attacker.maxHp * move.heal.ratio));
+    attacker.hp = Math.min(attacker.maxHp, attacker.hp + amount);
+    const healed = attacker.hp - before;
+    logs.push(`${attacker.name}의 HP가 ${healed} 회복되었다!`);
+    events.push({ type: "heal", target: "p1", name: attacker.name, amount: healed, hp: attacker.hp, maxHp: attacker.maxHp });
+    arenaResetFuryIfNeeded(attacker, move);
+    return { ok: true, logs, events, attacker: arenaPublicState(attacker), defender: arenaPublicState(defender), move: publicMoveLite(move) };
+  }
+
+  if (move.statChange || move.statChanges) {
+    const changes = move.statChanges || [move.statChange];
+    for (const ch of changes) arenaApplyStat(ch.target === "self" ? attacker : defender, ch.target === "self" ? "p1" : "p2", ch.stat, ch.amount, logs, events);
+    arenaResetFuryIfNeeded(attacker, move);
+    return { ok: true, logs, events, attacker: arenaPublicState(attacker), defender: arenaPublicState(defender), move: publicMoveLite(move) };
+  }
+
+  if ((actualMove.power || 0) > 0) {
+    const result = calculateDamage(attacker, defender, actualMove);
+    defender.hp = Math.max(0, defender.hp - result.damage);
+    if (defender.hp <= 0) defender.fainted = true;
+    logs.push(`${defender.name}에게 ${result.damage} 피해!${result.critical ? " 급소!" : ""}`);
+    events.push({ type: "damage", attacker: "p1", defender: "p2", amount: result.damage, moveType: move.type, effectiveness: result.typeMul, critical: result.critical, hp: defender.hp, maxHp: defender.maxHp, defenderName: defender.name });
+
+    if (move.effect?.status && defender.hp > 0 && canApplyStatus(defender, move.effect.status) && Math.random() * 100 < move.effect.chance) {
+      applyStatus(defender, move.effect.status);
+      logs.push(`${defender.name}은/는 ${STATUS_KO[move.effect.status]} 상태가 되었다!`);
+      events.push({ type: "status", target: "p2", name: defender.name, status: move.effect.status });
+    }
+
+    if (move.statChance && defender.hp > 0 && Math.random() * 100 < move.statChance.chance) {
+      arenaApplyStat(move.statChance.target === "self" ? attacker : defender, move.statChance.target === "self" ? "p1" : "p2", move.statChance.stat, move.statChance.amount, logs, events);
+    }
+
+    if (move.flinchChance && defender.hp > 0 && Math.random() * 100 < move.flinchChance) {
+      defender.volatile.flinch = true;
+      logs.push(`${defender.name}은/는 풀죽었다!`);
+      events.push({ type: "message", text: `${defender.name}은/는 풀죽었다!` });
+    } else if (move.flinchChance && defender.hp > 0) {
+      logs.push(`풀죽음 판정: 미발동 (${move.flinchChance}%)`);
+    }
+
+    if (move.selfStatAfterHit) arenaApplyStat(attacker, "p1", move.selfStatAfterHit.stat, move.selfStatAfterHit.amount, logs, events);
+
+    if (move.drain && result.damage > 0) {
+      const before = attacker.hp;
+      const heal = Math.max(1, Math.floor(result.damage * move.drain.ratio));
+      attacker.hp = Math.min(attacker.maxHp, attacker.hp + heal);
+      const healed = attacker.hp - before;
+      logs.push(`${attacker.name}이/가 ${healed} HP를 흡수 회복했다!`);
+      events.push({ type: "heal", target: "p1", name: attacker.name, amount: healed, hp: attacker.hp, maxHp: attacker.maxHp });
+    }
+
+    if (move.selfStatAfterUse) arenaApplyStat(attacker, "p1", move.selfStatAfterUse.stat, move.selfStatAfterUse.amount, logs, events);
+
+    if (move.selfDamageRatio) {
+      const selfDamage = Math.max(1, Math.floor(attacker.maxHp * move.selfDamageRatio));
+      attacker.hp = Math.max(0, attacker.hp - selfDamage);
+      if (attacker.hp <= 0) attacker.fainted = true;
+      logs.push(`${attacker.name}은/는 ${move.name}의 격한 힘으로 ${selfDamage} 피해를 입었다!`);
+      events.push({ type: "damage", attacker: "p1", defender: "p1", amount: selfDamage, moveType: "normal", effectiveness: 1, critical: false, hp: attacker.hp, maxHp: attacker.maxHp, defenderName: attacker.name, selfDamage: true });
+    }
+
+    if (move.lockedMove) {
+      const current = attacker.volatile.lockedMove;
+      if (current?.moveId === move.id) {
+        current.turnsLeft = Math.max(0, Number(current.turnsLeft || 0) - 1);
+        logs.push(`역린 지속 턴: ${current.turnsLeft}턴 남음`);
+        if (current.turnsLeft <= 0) {
+          attacker.volatile.lockedMove = null;
+          logs.push(`${attacker.name}은/는 역린의 구속에서 풀려났다!`);
+          events.push({ type: "message", text: `${attacker.name}은/는 역린의 구속에서 풀려났다!` });
+        }
+      } else {
+        attacker.volatile.lockedMove = { moveId: move.id, turnsLeft: Math.max(0, (move.lockedMove.turns || 3) - 1) };
+        logs.push(`${attacker.name}은/는 역린에 휩싸였다! 교체할 수 없다!`);
+        events.push({ type: "message", text: `${attacker.name}은/는 역린에 휩싸였다! 교체할 수 없다!` });
+      }
+    } else if (!move.furyCutter) {
+      attacker.volatile.lockedMove = null;
+    }
+
+    if (move.furyCutter) {
+      attacker.volatile.furyCutter = { moveId: move.id, stack: actualMove._furyStack || 1 };
+    } else {
+      attacker.volatile.furyCutter = null;
+    }
+
+    if (move.selfDestruct) {
+      attacker.hp = 0;
+      attacker.fainted = true;
+      logs.push(`${attacker.name}은/는 사용 후 쓰러졌다!`);
+    }
+
+    if (defender.fainted) events.push({ type: "faint", target: "p2", name: defender.name });
+    if (attacker.fainted) events.push({ type: "faint", target: "p1", name: attacker.name });
+  }
+
+  return { ok: true, logs, events, attacker: arenaPublicState(attacker), defender: arenaPublicState(defender), move: publicMoveLite(move) };
+}
+
+function simulateTestMove(attackerTemplate, defenderTemplate, moveId) {
+  const attacker = createBattlePokemon({ ...attackerTemplate, moves: [MOVES[moveId] || MOVE_LIST[0]] });
+  const defender = createBattlePokemon({ ...defenderTemplate, moves: [MOVES.bodySlam || MOVE_LIST[0]] });
+  return simulateTestTurn(attacker, defender, moveId);
+}
+
+app.get("/api/admin/move-data", (req, res) => {
+  res.json({
+    ok: true,
+    moves: MOVE_LIST.map((m) => ({ ...publicMoveLite(m), category: moveCategory(m) })),
+    pokemon: pokemonPool.map(publicPokemonLite),
+    customMoves: readCustomPokemonMoves(),
+  });
+});
+
+app.get("/api/admin/pokemon-moves/custom", (req, res) => {
+  res.json({ ok: true, movesets: readCustomPokemonMoves() });
+});
+
+app.post("/api/admin/pokemon-moves", requireAdminForWrite, (req, res) => {
+  const result = sanitizePokemonMovesPayload(req.body);
+  if (result.errors.length) return res.status(400).json({ ok: false, errors: result.errors, warnings: result.warnings });
+  writeCustomPokemonMoves(result.movesets);
+  res.json({ ok: true, count: Object.keys(result.movesets).length, movesets: result.movesets, warnings: result.warnings });
+});
+
+app.delete("/api/admin/pokemon-moves", requireAdminForWrite, (req, res) => {
+  writeCustomPokemonMoves({});
+  res.json({ ok: true, count: 0, movesets: {} });
+});
+
+app.get("/api/test-arena/data", (req, res) => {
+  res.json({
+    ok: true,
+    moves: MOVE_LIST.map((m) => ({ ...publicMoveLite(m), category: moveCategory(m) })),
+    pokemon: pokemonPool.map(publicPokemonLite),
+  });
+});
+
+app.post("/api/test-arena/run", (req, res) => {
+  const moveId = String(req.body?.moveId || "").trim();
+  if (!MOVES[moveId]) return res.status(400).json({ ok: false, message: "기술을 찾을 수 없습니다." });
+
+  if (req.body?.attackerState && req.body?.defenderState) {
+    return res.json(simulateTestTurn(req.body.attackerState, req.body.defenderState, moveId));
+  }
+
+  const attackerId = Number(req.body?.attackerId);
+  const defenderId = Number(req.body?.defenderId);
+  const attacker = pokemonPool.find((p) => Number(p.id) === attackerId);
+  const defender = pokemonPool.find((p) => Number(p.id) === defenderId);
+  if (!attacker || !defender) return res.status(400).json({ ok: false, message: "포켓몬을 찾을 수 없습니다." });
+  res.json(simulateTestMove(attacker, defender, moveId));
+});
+
+app.post("/api/test-arena/reset", (req, res) => {
+  const attackerId = Number(req.body?.attackerId);
+  const defenderId = Number(req.body?.defenderId);
+  const moveId = String(req.body?.moveId || "").trim();
+  const attacker = arenaCreatePokemonFromId(attackerId, moveId);
+  const defender = arenaCreatePokemonFromId(defenderId, MOVES.bodySlam ? "bodySlam" : moveId);
+  if (!attacker || !defender) return res.status(400).json({ ok: false, message: "포켓몬을 찾을 수 없습니다." });
+  res.json({ ok: true, attacker: arenaPublicState(attacker), defender: arenaPublicState(defender) });
 });
 
 app.use(express.static("public"));
@@ -1022,6 +1492,14 @@ function doSwitch(pk, targetIndex, auto = false) {
   // HP와 상태이상(독/화상/마비/수면)은 유지한다.
   resetStatStages(prev);
   resetStatStages(target);
+  if (prev?.volatile) {
+    prev.volatile.lockedMove = null;
+    prev.volatile.furyCutter = null;
+  }
+  if (target?.volatile) {
+    target.volatile.lockedMove = null;
+    target.volatile.furyCutter = null;
+  }
 
   player.activeIndex = targetIndex;
   const next = active(pk);
@@ -1055,9 +1533,11 @@ function buildMoveUsers(actions) {
     const mon = active(pk);
     if (!action || action.type !== "move") continue;
     if (!mon || mon.fainted || mon.hp <= 0) continue;
-    const move = mon.moves[action.moveIndex];
+    let moveIndex = action.moveIndex;
+    if (mon.volatile?.lockedMove) moveIndex = mon.volatile.lockedMove.moveIndex;
+    const move = mon.moves[moveIndex];
     if (!move) continue;
-    result.push({ playerKey: pk, moveIndex: action.moveIndex, move });
+    result.push({ playerKey: pk, moveIndex, move });
   }
   return result;
 }
@@ -1135,6 +1615,113 @@ function applyDamage(attackerKey, defenderKey, move) {
   if (warn) addEvent({ type: "warning", text: warn });
 
   if (defender.hp <= 0) faintPokemon(defenderKey);
+  return result;
+}
+
+
+function statKoName(stat) {
+  return { attack: "공격", defense: "방어", speed: "스피드" }[stat] || stat;
+}
+
+function applyBattleStatEffect(targetKey, stat, amount, sourceText = "") {
+  const target = active(targetKey);
+  if (!target || target.fainted) return false;
+  applyStatChange(target, stat, amount);
+  const statKo = statKoName(stat);
+  log(`${target.name}의 ${statKo}이/가 ${amount > 0 ? "올라갔다" : "떨어졌다"}!`);
+  addEvent({ type: "stat", target: targetKey, stat, amount, name: target.name, sourceText });
+  const warn = statDangerWarning(target);
+  if (warn) addEvent({ type: "warning", text: warn });
+  return true;
+}
+
+function applyChanceStatEffect(attackerKey, defenderKey, move) {
+  const effect = move?.statChance;
+  if (!effect || !effect.stat || !effect.amount || !effect.chance) return;
+  if (Math.random() * 100 >= effect.chance) return;
+  const targetKey = effect.target === "self" ? attackerKey : defenderKey;
+  applyBattleStatEffect(targetKey, effect.stat, effect.amount, move.name);
+}
+
+function applySelfStatAfterUse(attackerKey, move) {
+  const effect = move?.selfStatAfterUse;
+  if (!effect || !effect.stat || !effect.amount) return;
+  applyBattleStatEffect(attackerKey, effect.stat, effect.amount, move.name);
+}
+
+function applySelfStatAfterHit(attackerKey, move) {
+  const effect = move?.selfStatAfterHit;
+  if (!effect || !effect.stat || !effect.amount) return;
+  applyBattleStatEffect(attackerKey, effect.stat, effect.amount, move.name);
+}
+
+function applyDrain(attackerKey, move, damage) {
+  const attacker = active(attackerKey);
+  if (!attacker || attacker.fainted || !move?.drain || !damage || damage <= 0) return;
+  const before = attacker.hp;
+  const amount = Math.max(1, Math.floor(damage * move.drain.ratio));
+  attacker.hp = Math.min(attacker.maxHp, attacker.hp + amount);
+  const healed = attacker.hp - before;
+  if (healed > 0) {
+    log(`${attacker.name}이/가 흡수한 힘으로 HP를 회복했다!`);
+    addEvent({ type: "heal", target: attackerKey, amount: healed, hp: attacker.hp, maxHp: attacker.maxHp, name: attacker.name });
+  }
+}
+
+function applySelfDamage(attackerKey, move) {
+  const attacker = active(attackerKey);
+  if (!attacker || attacker.fainted || !move?.selfDamageRatio) return;
+  const amount = Math.max(1, Math.floor(attacker.maxHp * move.selfDamageRatio));
+  attacker.hp = Math.max(0, attacker.hp - amount);
+  log(`${attacker.name}은/는 ${move.name}의 격한 반동으로 ${amount} 피해를 입었다!`);
+  addEvent({ type: "damage", attacker: attackerKey, defender: attackerKey, amount, moveType: move.type, effectiveness: 1, hp: attacker.hp, maxHp: attacker.maxHp, defenderName: attacker.name });
+  if (attacker.hp <= 0) faintPokemon(attackerKey);
+}
+
+function prepareMoveForDynamicPower(attacker, move) {
+  if (!move?.furyCutter) return move;
+  const stack = Math.max(0, attacker?.volatile?.furyCutter?.stack || 0);
+  const powers = Array.isArray(move.furyCutter.powers) ? move.furyCutter.powers : [move.power || 40];
+  const power = powers[Math.min(stack, powers.length - 1)] || move.power || 40;
+  return { ...move, power, dynamicPower: power };
+}
+
+function resetComboIfNeeded(attacker, move) {
+  if (!attacker?.volatile) return;
+  if (!move?.furyCutter) attacker.volatile.furyCutter = null;
+}
+
+function advanceFuryCutter(attacker, move, hit) {
+  if (!attacker?.volatile || !move?.furyCutter) return;
+  if (!hit) {
+    attacker.volatile.furyCutter = null;
+    return;
+  }
+  const current = Math.max(0, attacker.volatile.furyCutter?.stack || 0);
+  const maxStack = Math.max(0, (move.furyCutter.powers?.length || 1) - 1);
+  attacker.volatile.furyCutter = { moveId: move.id, stack: Math.min(maxStack, current + 1) };
+  const nextPower = move.furyCutter.powers?.[Math.min(maxStack, current + 1)];
+  if (nextPower && current < maxStack) addEvent({ type: "message", text: `${move.name}의 기세가 올라간다! 다음 위력 ${nextPower}` });
+}
+
+function beginLockIfNeeded(attacker, move, moveIndex) {
+  if (!attacker?.volatile || !move?.lockedMove) return false;
+  if (attacker.volatile.lockedMove) return true;
+  const turns = Math.max(1, move.lockedMove.turns || 3);
+  attacker.volatile.lockedMove = { moveId: move.id, moveIndex, turnsLeft: turns - 1 };
+  addEvent({ type: "warning", text: `${attacker.name}은/는 ${turns}턴 동안 ${move.name}에 휩싸였다! 교체할 수 없다!` });
+  return false;
+}
+
+function finishLockTurn(attacker, move) {
+  if (!attacker?.volatile?.lockedMove || attacker.volatile.lockedMove.moveId !== move?.id) return;
+  attacker.volatile.lockedMove.turnsLeft = Math.max(0, attacker.volatile.lockedMove.turnsLeft - 1);
+  if (attacker.volatile.lockedMove.turnsLeft <= 0) {
+    attacker.volatile.lockedMove = null;
+    addEvent({ type: "message", text: `${attacker.name}은/는 ${move.name}의 격한 기세에서 벗어났다!` });
+  } else {
+    addEvent({ type: "warning", text: `${move.name} 지속: ${attacker.volatile.lockedMove.turnsLeft}턴 남음` });
+  }
 }
 
 function useMove(attackerKey, defenderKey, moveIndex) {
@@ -1145,8 +1732,13 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   if (attacker.fainted || attacker.hp <= 0) return;
   if (defender.fainted || defender.hp <= 0) return;
 
-  const move = attacker.moves[moveIndex];
+  if (attacker.volatile?.lockedMove) moveIndex = attacker.volatile.lockedMove.moveIndex;
+  let move = attacker.moves[moveIndex];
   if (!move) return;
+  resetComboIfNeeded(attacker, move);
+  const lockAlreadyActive = !!attacker.volatile?.lockedMove;
+  const lockStartedThisTurn = beginLockIfNeeded(attacker, move, moveIndex);
+  move = prepareMoveForDynamicPower(attacker, move);
 
   if (attacker.status === "sleep") {
     attacker.sleepTurns = Math.max(0, (attacker.sleepTurns || 0) - 1);
@@ -1191,6 +1783,10 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   if (!didHit) {
     log("하지만 빗나갔다!");
     addEvent({ type: "miss", attacker: attackerKey, defender: defenderKey });
+    advanceFuryCutter(attacker, move, false);
+    applySelfStatAfterUse(attackerKey, move);
+    applySelfDamage(attackerKey, move);
+    if (lockAlreadyActive) finishLockTurn(attacker, move);
     return;
   }
 
@@ -1278,7 +1874,7 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   }
 
   if (move.power > 0) {
-    applyDamage(attackerKey, defenderKey, move);
+    const damageResult = applyDamage(attackerKey, defenderKey, move) || { damage: 0 };
 
     const defenderAfter = active(defenderKey);
     if (defenderAfter && defenderAfter.hp > 0 && !defenderAfter.fainted) {
@@ -1287,8 +1883,16 @@ function useMove(attackerKey, defenderKey, moveIndex) {
         log(`${defenderAfter.name}은/는 ${STATUS_KO[move.effect.status]} 상태가 되었다!`);
         addEvent({ type: "status", target: defenderKey, status: move.effect.status, name: defenderAfter.name });
       }
+      applyChanceStatEffect(attackerKey, defenderKey, move);
       tryApplyFlinch(attackerKey, defenderKey, move);
     }
+
+    applySelfStatAfterHit(attackerKey, move);
+    applyDrain(attackerKey, move, damageResult.damage);
+    applySelfStatAfterUse(attackerKey, move);
+    applySelfDamage(attackerKey, move);
+    advanceFuryCutter(attacker, move, true);
+    if (lockAlreadyActive) finishLockTurn(attacker, move);
 
     if (move.selfDestruct && attacker && !attacker.fainted) {
       log(`${attacker.name}은/는 대폭발의 반동으로 쓰러졌다!`);
@@ -1522,6 +2126,10 @@ function validateAction(role, action) {
     if (!mon || mon.fainted) return false;
 
     if (hasActionLock(mon)) return action.type === "recharge";
+    if (mon.volatile?.lockedMove) {
+      if (action.type !== "move") return false;
+      return Number.isInteger(action.moveIndex) && action.moveIndex === mon.volatile.lockedMove.moveIndex && !!mon.moves[action.moveIndex];
+    }
 
     if (action.type === "move") return Number.isInteger(action.moveIndex) && !!mon.moves[action.moveIndex];
     if (action.type === "switch") {

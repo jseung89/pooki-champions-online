@@ -33,7 +33,8 @@ function isMoveHit(move) {
   return Math.random() * 100 < (move.accuracy ?? 100);
 }
 
-const CRITICAL_HIT_CHANCE = 1 / 16; // 6.25%
+const CRITICAL_HIT_CHANCE = 0.10; // 푸끼몬식 일반 급소율 10%
+const HIGH_CRITICAL_HIT_CHANCE = 0.25; // 고급소 기술 25%
 const CRITICAL_HIT_MULTIPLIER = 1.5;
 
 function calculateDamage(attacker, defender, move) {
@@ -44,7 +45,8 @@ function calculateDamage(attacker, defender, move) {
   const typeMul = battleEffectiveness(move.type, defender.types);
   const randomMul = 0.9 + Math.random() * 0.15;
   const canCrit = (move.power || 0) > 0 && typeMul > 0;
-  const critical = canCrit && Math.random() < CRITICAL_HIT_CHANCE;
+  const critChance = move.highCrit ? HIGH_CRITICAL_HIT_CHANCE : CRITICAL_HIT_CHANCE;
+  const critical = canCrit && Math.random() < critChance;
   const criticalMul = critical ? CRITICAL_HIT_MULTIPLIER : 1;
 
   if (typeMul === 0) return { damage: 0, typeMul, critical: false, criticalMul: 1 };
@@ -69,7 +71,7 @@ function createBattlePokemon(template) {
     status: null,
     sleepTurns: 0,
     statStages: { attack: 0, defense: 0, speed: 0 },
-    volatile: { rechargeTurns: 0, flinch: false },
+    volatile: { rechargeTurns: 0, flinch: false, lockedMove: null, furyCutter: null },
   };
 }
 
@@ -79,6 +81,9 @@ function hasActionLock(pokemon) {
 
 function getDefaultAction(pokemon) {
   if (pokemon?.volatile?.rechargeTurns > 0) return { type: "recharge", auto: true };
+  if (pokemon?.volatile?.lockedMove && Number.isInteger(pokemon.volatile.lockedMove.moveIndex)) {
+    return { type: "move", moveIndex: pokemon.volatile.lockedMove.moveIndex, auto: true, locked: true };
+  }
   const idx = pokemon.moves.findIndex((m) => m.power > 0);
   return { type: "move", moveIndex: idx >= 0 ? idx : 0, auto: true };
 }
@@ -149,6 +154,7 @@ function statDangerWarning(pokemon) {
 module.exports = {
   STATUS_KO,
   CRITICAL_HIT_CHANCE,
+  HIGH_CRITICAL_HIT_CHANCE,
   CRITICAL_HIT_MULTIPLIER,
   stageMultiplier,
   getEffectiveSpeed,

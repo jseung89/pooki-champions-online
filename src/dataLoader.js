@@ -139,6 +139,7 @@ function sleep(ms) {
 const GEN2_FALLBACK_EXTRA = [
   { id: 197, name: "블래키", apiName: "umbreon", types: ["dark"], stats: { hp: 170, attack: 76, defense: 128, speed: 65 }, availableMoveNames: ["bite", "crunch", "quick-attack", "scary-face", "body-slam"], frontSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/197.gif", backSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/197.gif", isBaby: false, height: 10, spriteScale: 0.98 },
   { id: 229, name: "헬가", apiName: "houndoom", types: ["dark", "fire"], stats: { hp: 150, attack: 110, defense: 80, speed: 105 }, availableMoveNames: ["crunch", "bite", "flamethrower", "fire-blast", "scary-face"], frontSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/229.gif", backSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/229.gif", isBaby: false, height: 14, spriteScale: 1.08 },
+  { id: 244, name: "앤테이", apiName: "entei", types: ["fire"], stats: { hp: 190, attack: 115, defense: 95, speed: 100 }, availableMoveNames: ["flamethrower", "fire-blast", "overheat", "crunch", "bite", "extreme-speed", "will-o-wisp"], frontSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/244.gif", backSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/244.gif", isBaby: false, height: 21, spriteScale: 1.28 },
   { id: 248, name: "마기라스", apiName: "tyranitar", types: ["rock", "dark"], stats: { hp: 190, attack: 134, defense: 120, speed: 61 }, availableMoveNames: ["crunch", "bite", "rock-slide", "earthquake", "scary-face"], frontSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/248.gif", backSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/248.gif", isBaby: false, height: 20, spriteScale: 1.28 },
   { id: 208, name: "강철톤", apiName: "steelix", types: ["steel", "ground"], stats: { hp: 160, attack: 95, defense: 170, speed: 30 }, availableMoveNames: ["iron-tail", "earthquake", "dig", "rock-slide", "harden"], frontSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/208.gif", backSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/208.gif", isBaby: false, height: 92, spriteScale: 1.34 },
   { id: 212, name: "핫삼", apiName: "scizor", types: ["bug", "steel"], stats: { hp: 150, attack: 130, defense: 110, speed: 65 }, availableMoveNames: ["slash", "iron-tail", "bug-bite", "swords-dance", "quick-attack"], frontSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/212.gif", backSprite: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/212.gif", isBaby: false, height: 18, spriteScale: 1.12 },
@@ -238,7 +239,7 @@ async function buildCache() {
 
   if (result.length < 40) {
     console.warn("[DATA][WARN] API 후보가 부족합니다. 기본 포켓몬 풀로 실행합니다.");
-    return [...FALLBACK_POOL, ...GEN2_FALLBACK_EXTRA];
+    return ensureMandatoryExtraPokemon([...FALLBACK_POOL, ...GEN2_FALLBACK_EXTRA]);
   }
 
   await fs.mkdir(DATA_DIR, { recursive: true });
@@ -247,12 +248,23 @@ async function buildCache() {
   return result;
 }
 
+
+function ensureMandatoryExtraPokemon(pool) {
+  const result = Array.isArray(pool) ? [...pool] : [];
+  for (const extra of GEN2_FALLBACK_EXTRA) {
+    if (!result.some((p) => Number(p.id) === Number(extra.id)) && hasEnoughUsableMoves(extra)) {
+      result.push(extra);
+    }
+  }
+  return result.sort((a, b) => Number(a.id) - Number(b.id));
+}
+
 async function loadPokemonData() {
   console.log("[DATA] 한글 이름 캐시 확인 중...");
 
   try {
     const raw = await fs.readFile(CACHE_PATH, "utf-8");
-    const parsed = filterPlayableGen2Pool(JSON.parse(raw));
+    const parsed = ensureMandatoryExtraPokemon(filterPlayableGen2Pool(JSON.parse(raw)));
     console.log(`[DATA] 한글 이름 적용 완료 / 포켓몬 준비 완료 ${parsed.length}마리`);
     return parsed;
   } catch (_) {
@@ -260,7 +272,7 @@ async function loadPokemonData() {
       return await buildCache();
     } catch (err) {
       console.warn("[DATA][WARN] API 캐싱 실패. 기본 포켓몬 풀로 실행합니다.");
-      return [...FALLBACK_POOL, ...GEN2_FALLBACK_EXTRA];
+      return ensureMandatoryExtraPokemon([...FALLBACK_POOL, ...GEN2_FALLBACK_EXTRA]);
     }
   }
 }

@@ -1,3 +1,5 @@
+const fs = require("fs");
+const path = require("path");
 const { MOVES, MOVE_LIST, isAttackMove, isStatusMove, isPremiumMove } = require("./moveLibrary");
 const { battleEffectiveness } = require("./typeChart");
 
@@ -18,10 +20,10 @@ const PREMIUM_LIMIT_FOR_LEGENDARY = 2;
 
 const SIGNATURE_MOVESETS = {
   3: ["energyBall", "sludgeBomb", "sleepPowder", "synthesis"],
-  6: ["flamethrower", "airSlash", "earthquake", "willOWisp"],
-  9: ["surf", "iceBeam", "crunch", "harden"],
+  6: ["flamethrower", "airSlash", "dragonClaw", "overheat"],
+  9: ["surf", "waterfall", "iceBeam", "ironDefense"],
   12: ["bugBite", "airSlash", "sleepPowder", "quiverDance"],
-  15: ["poisonJab", "bugBite", "swordDance", "agility"],
+  15: ["poisonJab", "xScissor", "swordDance", "furyCutter"],
   18: ["airSlash", "quickAttack", "featherDance", "agility"],
   20: ["bodySlam", "crunch", "suckerPunch", "quickAttack"],
   22: ["airSlash", "quickAttack", "featherDance", "scaryFace"],
@@ -34,21 +36,21 @@ const SIGNATURE_MOVESETS = {
   36: ["bodySlam", "psychic", "charm", "sing"],
   38: ["flamethrower", "energyBall", "willOWisp", "quickAttack"],
   40: ["bodySlam", "sing", "perishSong", "charm"],
-  42: ["airSlash", "poisonJab", "crunch", "scaryFace"],
+  42: ["airSlash", "poisonJab", "crunch", "bite"],
   45: ["energyBall", "sludgeBomb", "sleepPowder", "synthesis"],
   47: ["bugBite", "energyBall", "sleepPowder", "poisonPowder"],
   49: ["bugBite", "psychic", "sleepPowder", "quiverDance"],
   51: ["earthquake", "rockSlide", "suckerPunch", "scaryFace"],
   53: ["slash", "suckerPunch", "quickAttack", "nastyPlot"],
-  55: ["surf", "psychic", "iceBeam", "recover"],
+  55: ["surf", "aquaTail", "iceBeam", "psychic"],
   57: ["brickBreak", "machPunch", "bulkUp", "screech"],
   59: ["flamethrower", "crunch", "extremeSpeed", "willOWisp"],
   62: ["surf", "brickBreak", "bulkUp", "hypnosis"],
   65: ["psychic", "shadowBall", "nastyPlot", "recover"],
-  68: ["brickBreak", "machPunch", "bulkUp", "screech"],
+  68: ["closeCombat", "powerUpPunch", "drainPunch", "bulkUp"],
   71: ["energyBall", "sludgeBomb", "sleepPowder", "suckerPunch"],
   73: ["surf", "sludgeBomb", "iceBeam", "sleepPowder"],
-  76: ["earthquake", "rockSlide", "explosion", "ironDefense"],
+  76: ["earthquake", "stoneEdge", "explosion", "ironDefense"],
   78: ["flamethrower", "quickAttack", "ironTail", "willOWisp"],
   80: ["surf", "psychic", "iceBeam", "recover"],
   82: ["thunderbolt", "ironTail", "thunderWave", "metalSound"],
@@ -57,7 +59,7 @@ const SIGNATURE_MOVESETS = {
   87: ["surf", "iceBeam", "rest", "bodySlam"],
   89: ["sludgeBomb", "crunch", "poisonPowder", "willOWisp"],
   91: ["iceBeam", "surf", "rockSlide", "ironDefense"],
-  94: ["shadowBall", "hypnosis", "nastyPlot", "willOWisp"],
+  94: ["shadowBall", "shadowClaw", "hypnosis", "nastyPlot"],
   95: ["rockSlide", "earthquake", "ironDefense", "screech"],
   97: ["psychic", "shadowBall", "hypnosis", "nastyPlot"],
   99: ["surf", "brickBreak", "slash", "aquaJet"],
@@ -76,13 +78,13 @@ const SIGNATURE_MOVESETS = {
   119: ["surf", "poisonJab", "aquaJet", "scaryFace"],
   121: ["surf", "psychic", "thunderbolt", "recover"],
   122: ["psychic", "thunderbolt", "thunderWave", "recover"],
-  123: ["airSlash", "slash", "swordDance", "agility"],
+  123: ["xScissor", "slash", "swordDance", "furyCutter"],
   124: ["iceBeam", "psychic", "sing", "recover"],
   125: ["thunderbolt", "brickBreak", "quickAttack", "thunderWave"],
   126: ["flamethrower", "brickBreak", "willOWisp", "quickAttack"],
   127: ["bugBite", "brickBreak", "swordDance", "bulkUp"],
   128: ["bodySlam", "earthquake", "rockSlide", "quickAttack"],
-  130: ["surf", "crunch", "dragonBreath", "dragonDance"],
+  130: ["waterfall", "crunch", "aquaTail", "dragonDance"],
   131: ["surf", "iceBeam", "rest", "sing"],
   134: ["surf", "iceBeam", "recover", "aquaJet"],
   135: ["thunderbolt", "shadowBall", "quickAttack", "thunderWave"],
@@ -90,18 +92,18 @@ const SIGNATURE_MOVESETS = {
   137: ["psychic", "thunderbolt", "iceBeam", "recover"],
   139: ["surf", "rockSlide", "iceBeam", "scaryFace"],
   141: ["surf", "rockSlide", "slash", "aquaJet"],
-  142: ["rockSlide", "airSlash", "earthquake", "quickAttack"],
+  142: ["stoneEdge", "airSlash", "earthquake", "dragonClaw"],
   143: ["bodySlam", "earthquake", "crunch", "rest"],
   144: ["iceBeam", "airSlash", "agility", "rest"],
   145: ["thunderbolt", "airSlash", "thunderWave", "agility"],
   146: ["flamethrower", "airSlash", "willOWisp", "quickAttack"],
-  149: ["dragonBreath", "airSlash", "dragonDance", "extremeSpeed"],
-  150: ["psychic", "shadowBall", "nastyPlot", "recover"],
+  149: ["outrage", "dragonClaw", "dragonDance", "airSlash"],
+  150: ["psychic", "shadowBall", "recover", "darkPulse"],
   151: ["psychic", "energyBall", "thunderWave", "recover"],
 
   154: ["energyBall", "bodySlam", "synthesis", "sleepPowder"],
-  157: ["flamethrower", "fireBlast", "quickAttack", "willOWisp"],
-  160: ["surf", "crunch", "iceBeam", "aquaJet"],
+  157: ["flamethrower", "overheat", "quickAttack", "willOWisp"],
+  160: ["waterfall", "crunch", "iceBeam", "aquaJet"],
   162: ["bodySlam", "quickAttack", "crunch", "scaryFace"],
   164: ["airSlash", "psychic", "hypnosis", "recover"],
   166: ["bugBite", "machPunch", "agility", "featherDance"],
@@ -110,7 +112,7 @@ const SIGNATURE_MOVESETS = {
   171: ["surf", "thunderbolt", "thunderWave", "recover"],
   176: ["airSlash", "psychic", "sing", "charm"],
   178: ["psychic", "airSlash", "hypnosis", "featherDance"],
-  181: ["thunderbolt", "dragonBreath", "thunderWave", "fireBlast"],
+  181: ["thunderbolt", "dragonPulse", "thunderWave", "powerUpPunch"],
   182: ["energyBall", "sludgeBomb", "sleepPowder", "synthesis"],
   184: ["surf", "bodySlam", "aquaJet", "rest"],
   185: ["rockSlide", "earthquake", "screech", "ironDefense"],
@@ -127,12 +129,12 @@ const SIGNATURE_MOVESETS = {
   205: ["bugBite", "ironTail", "explosion", "ironDefense"],
   206: ["bodySlam", "rockSlide", "quickAttack", "sing"],
   207: ["earthquake", "airSlash", "suckerPunch", "scaryFace"],
-  208: ["ironTail", "earthquake", "metalSound", "ironDefense"],
+  208: ["ironHead", "earthquake", "stoneEdge", "ironDefense"],
   210: ["bodySlam", "crunch", "brickBreak", "scaryFace"],
   211: ["surf", "poisonJab", "aquaJet", "scaryFace"],
-  212: ["bugBite", "ironTail", "bulletPunch", "swordDance"],
+  212: ["xScissor", "ironHead", "bulletPunch", "swordDance"],
   213: ["rockSlide", "bugBite", "rest", "ironDefense"],
-  214: ["bugBite", "brickBreak", "bulkUp", "swordDance"],
+  214: ["xScissor", "closeCombat", "bulkUp", "stoneEdge"],
   215: ["crunch", "iceBeam", "suckerPunch", "quickAttack"],
   217: ["bodySlam", "crunch", "earthquake", "rest"],
   219: ["flamethrower", "rockSlide", "earthquake", "willOWisp"],
@@ -143,21 +145,63 @@ const SIGNATURE_MOVESETS = {
   226: ["surf", "airSlash", "iceBeam", "agility"],
   227: ["ironTail", "airSlash", "featherDance", "ironDefense"],
   229: ["crunch", "flamethrower", "suckerPunch", "willOWisp"],
-  230: ["surf", "dragonBreath", "iceBeam", "agility"],
+  230: ["surf", "dragonPulse", "aquaTail", "agility"],
   232: ["earthquake", "rockSlide", "ironTail", "scaryFace"],
   233: ["psychic", "thunderbolt", "iceBeam", "recover"],
   234: ["bodySlam", "psychic", "hypnosis", "quickAttack"],
-  237: ["brickBreak", "machPunch", "bulkUp", "screech"],
+  237: ["closeCombat", "machPunch", "powerUpPunch", "bulkUp"],
   241: ["bodySlam", "earthquake", "milkDrink", "charm"],
   242: ["bodySlam", "recover", "thunderWave", "charm"],
   243: ["thunderbolt", "shadowBall", "thunderWave", "agility"],
-  244: ["flamethrower", "crunch", "extremeSpeed", "willOWisp"],
+  244: ["flamethrower", "bite", "willOWisp", "scaryFace"],
   245: ["surf", "iceBeam", "rest", "scaryFace"],
-  248: ["crunch", "rockSlide", "earthquake", "dragonDance"],
-  249: ["psychic", "airSlash", "recover", "thunderWave"],
-  250: ["flamethrower", "airSlash", "recover", "extremeSpeed"],
+  248: ["crunch", "stoneEdge", "earthquake", "dragonDance"],
+  249: ["psychic", "airSlash", "dragonPulse", "recover"],
+  250: ["overheat", "airSlash", "recover", "flamethrower"],
   251: ["energyBall", "psychic", "synthesis", "thunderWave"],
 };
+
+
+const CUSTOM_MOVES_PATH = path.join(__dirname, "..", "data", "pokemon_moves_custom.json");
+let customMoveCache = { mtimeMs: -1, data: {} };
+
+function normalizeKey(value) {
+  return String(value || "").trim().toLowerCase().replace(/_/g, "-").replace(/\s+/g, "-");
+}
+
+function readCustomMoveMap() {
+  try {
+    if (!fs.existsSync(CUSTOM_MOVES_PATH)) return {};
+    const stat = fs.statSync(CUSTOM_MOVES_PATH);
+    if (customMoveCache.mtimeMs === stat.mtimeMs) return customMoveCache.data;
+    const parsed = JSON.parse(fs.readFileSync(CUSTOM_MOVES_PATH, "utf8") || "{}");
+    customMoveCache = {
+      mtimeMs: stat.mtimeMs,
+      data: parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {},
+    };
+    return customMoveCache.data;
+  } catch (err) {
+    console.warn("[MOVE_ADMIN] custom move map read failed", err.message);
+    return {};
+  }
+}
+
+function moveIdsToMoves(ids) {
+  if (!Array.isArray(ids) || ids.length !== 4) return null;
+  const moves = ids.map((id) => MOVES[String(id || "").trim()]).filter(Boolean);
+  if (moves.length !== 4) return null;
+  return uniqueMoves(moves).length === 4 ? moves : moves;
+}
+
+function customMoveSetForPokemon(pokemon) {
+  const map = readCustomMoveMap();
+  const candidates = [pokemon?.apiName, pokemon?.name, pokemon?.id].map(normalizeKey).filter(Boolean);
+  for (const key of candidates) {
+    const moves = moveIdsToMoves(map[key]);
+    if (moves) return moves;
+  }
+  return null;
+}
 
 function uniqueMoves(moves) {
   const seen = new Set();
@@ -348,9 +392,16 @@ function buildAlgorithmicMoveSet(pokemon) {
   return fillToFour(pokemon, selected);
 }
 
-function buildMovesForPokemon(pokemon) {
+function buildBaseMovesForPokemon(pokemon) {
   if (!pokemon || isExcludedPokemon(pokemon)) return [];
   return signatureMoves(pokemon) || buildAlgorithmicMoveSet(pokemon);
+}
+
+function buildMovesForPokemon(pokemon) {
+  if (!pokemon || isExcludedPokemon(pokemon)) return [];
+  const custom = customMoveSetForPokemon(pokemon);
+  if (custom) return custom;
+  return buildBaseMovesForPokemon(pokemon);
 }
 
 function hasEnoughUsableMoves(pokemon) {
@@ -361,6 +412,7 @@ function hasEnoughUsableMoves(pokemon) {
 
 module.exports = {
   buildMovesForPokemon,
+  buildBaseMovesForPokemon,
   hasEnoughUsableMoves,
   buildDualTypeMoveSet: buildAlgorithmicMoveSet,
   buildSingleTypeMoveSet: buildAlgorithmicMoveSet,

@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>푸끼몬 예비 격투장</title>
+  <script src="/renderProfiles.js"></script>
+  <style>
+    :root{--bg:#0f172a;--card:#111827;--line:#334155;--txt:#e5e7eb;--muted:#94a3b8;--accent:#38bdf8;}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(135deg,#0f172a,#172554);font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:var(--txt)}
+    header{padding:22px 28px;border-bottom:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;gap:12px;align-items:center}
+    h1{font-size:26px;margin:0} h2{margin:0 0 12px}.sub{color:var(--muted);font-size:13px;margin-top:4px}
+    a{color:#bae6fd;text-decoration:none}.wrap{display:grid;grid-template-columns:340px 1fr 430px;gap:16px;padding:18px;}
+    .panel{background:rgba(15,23,42,.82);border:1px solid rgba(148,163,184,.25);border-radius:18px;padding:16px;box-shadow:0 18px 60px rgba(0,0,0,.25)}
+    label{display:block;font-size:12px;color:#cbd5e1;margin:12px 0 6px} select,input{width:100%;padding:10px 12px;border-radius:12px;background:#020617;border:1px solid #334155;color:#e5e7eb}
+    button{border:0;border-radius:13px;padding:11px 13px;font-weight:850;cursor:pointer;background:#2563eb;color:white;box-shadow:0 5px 0 #1e3a8a} button.secondary{background:#475569;box-shadow:0 5px 0 #334155} button.danger{background:#dc2626;box-shadow:0 5px 0 #7f1d1d}
+    button:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}.btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .arena-stage{height:460px;border-radius:20px;position:relative;overflow:hidden;background:linear-gradient(#dbeafe 0 45%,#86efac 45%);border:1px solid rgba(255,255,255,.18)}
+    .platform{position:absolute;border-radius:50%;background:radial-gradient(ellipse,#f8fafc 0,#cbd5e1 55%,transparent 70%);opacity:.8}.p1plat{left:70px;bottom:48px;width:260px;height:74px}.p2plat{right:70px;top:118px;width:230px;height:64px}
+    .sprite-wrap{position:absolute;display:grid;place-items:center;z-index:4;transform:translate(var(--pokemon-offset-x,0px),var(--pokemon-offset-y,0px));transition:transform 220ms ease}.mine-sprite{left:80px;bottom:76px}.opponent-sprite{right:100px;top:84px}
+    .sprite{width:auto;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 18px 14px rgba(15,23,42,.35));transition:transform 260ms cubic-bezier(.2,.9,.2,1),opacity 260ms ease,filter 260ms ease}.sprite.attack-up{transform:translate(44px,-32px) scale(1.07)}.sprite.attack-down{transform:translate(-44px,32px) scale(1.07)}.sprite.hit{transform:translateX(-16px) scale(.95);opacity:.7;filter:brightness(1.35) drop-shadow(0 18px 14px rgba(15,23,42,.25))}.sprite.fainted{opacity:0!important;filter:grayscale(1) brightness(.4);transform:rotate(-5deg) translateY(12px)}
+    .hpbox{position:absolute;background:rgba(2,6,23,.76);border:1px solid rgba(255,255,255,.18);padding:10px;border-radius:14px;min-width:220px;z-index:5}.hp1{left:32px;bottom:282px}.hp2{right:32px;top:24px}.bar{height:9px;background:#1e293b;border-radius:9px;overflow:hidden;margin-top:6px}.fill{height:100%;background:#22c55e;width:100%;transition:width 260ms ease}.mini{font-size:12px;color:#cbd5e1;margin-top:4px}
+    .battle-message{position:absolute;left:24px;right:24px;bottom:18px;z-index:8;background:rgba(2,6,23,.88);border:1px solid rgba(148,163,184,.3);border-radius:16px;padding:13px 16px;font-weight:900;color:#fff;min-height:48px;display:flex;align-items:center}
+    .battle-effect-layer{position:absolute;inset:0;z-index:7;pointer-events:none;overflow:hidden}.damage-pop{position:absolute;background:#dc2626;color:white;padding:6px 11px;border-radius:999px;font-size:18px;font-weight:950;animation:pop 780ms ease forwards;pointer-events:none;z-index:9}.damage-pop.heal{background:#16a34a}@keyframes pop{0%{opacity:0;transform:translateY(12px) scale(.6)}35%{opacity:1;transform:translateY(-10px) scale(1.08)}100%{opacity:0;transform:translateY(-34px) scale(.92)}}
+    .effect-projectile{position:absolute;left:var(--fx-start-x);top:var(--fx-start-y);width:192px;height:192px;margin-left:-96px;margin-top:-96px;background-size:1152px 192px;background-repeat:no-repeat;image-rendering:pixelated;transform-origin:50% 50%;opacity:0;filter:drop-shadow(0 10px 18px rgba(0,0,0,.35));animation:effectTravel 660ms cubic-bezier(.16,.8,.28,1) forwards,effectSprite6 660ms steps(6) forwards;z-index:10;}
+    .effect-electric{background-image:url('/assets/effects/electric-diagonal.png')}.effect-fire{background-image:url('/assets/effects/fire-diagonal.png')}.effect-water{background-image:url('/assets/effects/water-diagonal.png')}.effect-grass{background-image:url('/assets/effects/grass-diagonal.png')}.effect-ice{background-image:url('/assets/effects/ice-diagonal.png')}.effect-hit{background-image:url('/assets/effects/hit-diagonal.png')}.effect-normal{background-image:url('/assets/effects/normal-effect.png')}.effect-explosion-nuke{background-image:url('/assets/effects/explosion-nuke-effect.png')}.effect-fighting{background-image:url('/assets/effects/fighting-effect.png')}.effect-poison{background-image:url('/assets/effects/poison-effect.png')}.effect-ground{background-image:url('/assets/effects/ground-effect.png')}.effect-flying{background-image:url('/assets/effects/flying-effect.png')}.effect-psychic{background-image:url('/assets/effects/psychic-effect.png')}.effect-bug{background-image:url('/assets/effects/bug-effect.png')}.effect-rock{background-image:url('/assets/effects/rock-effect.png')}.effect-ghost{background-image:url('/assets/effects/ghost-effect.png')}.effect-dragon{background-image:url('/assets/effects/dragon-effect.png')}.effect-dark{background-image:url('/assets/effects/dark-effect.png')}.effect-steel{background-image:url('/assets/effects/steel-effect.png')}.effect-sing-note{background-image:url('/assets/effects/sing-note-effect.png')}
+    @keyframes effectSprite6{0%{background-position-x:0}100%{background-position-x:-1152px}}@keyframes effectTravel{0%{left:var(--fx-start-x);top:var(--fx-start-y);opacity:0;transform:rotate(var(--fx-rot,0deg)) scale(.35)}15%{opacity:1}78%{opacity:1}100%{left:var(--fx-end-x);top:var(--fx-end-y);opacity:0;transform:rotate(var(--fx-rot,0deg)) scale(var(--fx-scale,1.1))}}
+    .status-effect-sprite,.variation-effect-sprite{position:absolute;left:var(--status-x,var(--variation-x));top:var(--status-y,var(--variation-y));width:192px;height:192px;margin-left:-96px;margin-top:-96px;background-size:1152px 192px;background-repeat:no-repeat;image-rendering:pixelated;z-index:11;animation:effectSprite6 760ms steps(6) forwards,statusPulse 760ms ease forwards;filter:drop-shadow(0 0 15px rgba(255,255,255,.75))}.variation-effect-sprite{left:var(--variation-x);top:var(--variation-y)}@keyframes statusPulse{0%{opacity:0;transform:scale(.45)}25%{opacity:1;transform:scale(1.05)}100%{opacity:0;transform:scale(1.25)}}
+    .status-burn-apply{background-image:url('/assets/effects/status/burn-apply.png')}.status-poison-apply{background-image:url('/assets/effects/status/poison-apply.png')}.status-paralysis-apply{background-image:url('/assets/effects/status/paralysis-apply.png')}.status-sleep-apply{background-image:url('/assets/effects/status/sleep-apply.png')}.variation-heal{background-image:url('/assets/effects/heal-effect.png')}.variation-attack-up{background-image:url('/assets/effects/attack-up-effect.png')}.variation-speed-up{background-image:url('/assets/effects/speed-up-effect.png')}.variation-defense-up{background-image:url('/assets/effects/defense-up-effect.png')}.variation-intimidate-down{background-image:url('/assets/effects/intimidate-down-effect.png')}
+    .log{height:460px;overflow:auto;background:#020617;border:1px solid #334155;border-radius:14px;padding:12px;font-family:ui-monospace,Consolas,monospace;font-size:13px;white-space:pre-wrap}.moveinfo{font-size:13px;line-height:1.5;color:#dbeafe;background:#020617;border:1px solid #334155;border-radius:14px;padding:12px;margin-top:12px}.tag{display:inline-block;padding:3px 7px;border-radius:999px;background:#1e293b;color:#bae6fd;font-size:11px;margin:2px}.notice{font-size:12px;color:#fde68a;margin-top:8px;line-height:1.5}
+    @media(max-width:1100px){.wrap{grid-template-columns:1fr}.arena-stage{height:420px}}
+  </style>
+</head>
+<body>
+<header>
+  <div><h1>푸끼몬 예비 격투장</h1><div class="sub">실제 배틀 순서형 단일 기술 테스트 / 이펙트 / 로그 / 초기화</div></div>
+  <nav><a href="/">게임</a> · <a href="/move-admin.html">기술 관리자</a> · <a href="/size-admin.html">크기 관리자</a></nav>
+</header>
+<div class="wrap">
+  <section class="panel">
+    <h2>테스트 설정</h2>
+    <label>내 포켓몬</label><select id="attacker"></select>
+    <label>상대 포켓몬</label><select id="defender"></select>
+    <label>테스트 기술</label><select id="move"></select>
+    <div class="moveinfo" id="moveInfo">기술을 선택하세요.</div>
+    <div class="notice" id="lockInfo">초기화 후 테스트하세요.</div>
+    <div class="btnrow"><button id="runBtn" onclick="runTest()">1턴 실행</button><button class="secondary" onclick="resetArena()">초기화</button><button class="secondary" onclick="copyLog()">로그 복사</button></div>
+  </section>
+  <section class="panel">
+    <h2>실전 미리보기</h2>
+    <div class="arena-stage" id="arenaStage">
+      <div class="platform p1plat"></div><div class="platform p2plat"></div>
+      <div class="hpbox hp2"><b id="dName">상대</b><div id="dHpText">HP</div><div class="bar"><div id="dHp" class="fill"></div></div><div id="dMini" class="mini"></div></div>
+      <div class="hpbox hp1"><b id="aName">내 포켓몬</b><div id="aHpText">HP</div><div class="bar"><div id="aHp" class="fill"></div></div><div id="aMini" class="mini"></div></div>
+      <div class="sprite-wrap opponent-sprite"><img class="sprite" id="dSprite" /></div>
+      <div class="sprite-wrap mine-sprite"><img class="sprite" id="aSprite" /></div>
+      <div class="battle-effect-layer" id="battleEffectLayer"></div>
+      <div class="battle-message" id="battleMessage">테스트 설정 후 1턴 실행을 누르세요.</div>
+    </div>
+  </section>
+  <section class="panel">
+    <h2>결과 로그</h2>
+    <div class="log" id="log">아직 실행 전입니다.</div>
+  </section>
+</div>
+<script>
+let DATA={pokemon:[],moves:[]};
+let ARENA={attacker:null,defender:null};
+let busy=false;
+const sleep=(ms)=>new Promise(r=>setTimeout(r,ms));
+function typeKo(t){return {normal:'노말',fire:'불꽃',water:'물',grass:'풀',electric:'전기',ice:'얼음',fighting:'격투',poison:'독',ground:'땅',flying:'비행',psychic:'에스퍼',bug:'벌레',rock:'바위',ghost:'고스트',dragon:'드래곤',dark:'악',steel:'강철',fairy:'페어리'}[t]||t}
+function statusKo(s){return {burn:'화상',poison:'독',paralyze:'마비',sleep:'수면'}[s]||'정상'}
+async function load(){
+  const res=await fetch('/api/test-arena/data'); DATA=await res.json();
+  const pOpts=DATA.pokemon.map(p=>`<option value="${p.id}">${p.id}. ${p.name} (${p.apiName})</option>`).join('');
+  attacker.innerHTML=pOpts; defender.innerHTML=pOpts;
+  move.innerHTML=DATA.moves.sort((a,b)=>a.type.localeCompare(b.type)||a.name.localeCompare(b.name)).map(m=>`<option value="${m.id}">${m.name} / ${typeKo(m.type)} / ${m.power?`위력 ${m.power}`:'변화기'}</option>`).join('');
+  attacker.value=DATA.pokemon.find(p=>p.apiName==='dragonite')?.id||DATA.pokemon[0]?.id;
+  defender.value=DATA.pokemon.find(p=>p.apiName==='steelix')?.id||DATA.pokemon[1]?.id;
+  move.value=DATA.moves.find(m=>m.id==='outrage')?.id||DATA.moves[0]?.id;
+  ['attacker','defender'].forEach(id=>document.getElementById(id).addEventListener('change',resetArena));
+  move.addEventListener('change',()=>{renderMoveInfo();renderLockInfo();});
+  await resetArena();
+}
+function selectedMove(){return DATA.moves.find(m=>m.id===move.value);}
+function renderMoveInfo(){const m=selectedMove(); if(!m)return; moveInfo.innerHTML=`<b>${m.name}</b> <span class="tag">${typeKo(m.type)}</span> <span class="tag">${m.category}</span><br>위력 ${m.power||'-'} / 명중 ${m.accuracy}<br>${m.description||''}${m.highCrit?'<br>급소 보정 있음':''}${m.flinchChance?`<br>풀죽음 ${m.flinchChance}%`:''}`;}
+function renderLockInfo(){const lock=ARENA.attacker?.volatile?.lockedMove; const fury=ARENA.attacker?.volatile?.furyCutter; lockInfo.textContent=lock?.moveId?`현재 ${lock.moveId} 고정 상태: ${lock.turnsLeft}턴 남음. 다른 기술을 골라도 서버가 고정 기술을 사용합니다.`:(fury?.moveId?`연속자르기 스택: ${fury.stack}단계`:'현재 잠금/연속 상태 없음');}
+function hpText(mon){return `HP ${mon.hp}/${mon.maxHp}`}
+function stageText(mon){const s=mon.statStages||{};return `상태 ${mon.status?statusKo(mon.status):'정상'} / 공 ${s.attack||0} 방 ${s.defense||0} 속 ${s.speed||0}`}
+function getProfile(p){return window.POOKI_RENDER_PROFILES?.getRenderProfile?.(p)||{};}
+function applySpriteSize(img, pokemon, side){const profile=getProfile(pokemon);const scale=Number(profile.scale??1);const baseHeight=Number(profile.baseHeight||(side==='mine'?160:148));const widthRatio=Number(profile.widthRatio||1.75);const h=Math.round(baseHeight*scale);img.style.height=h+'px';img.style.width='auto';img.style.maxWidth=Math.round(h*Math.max(1.45,Math.min(2.85,widthRatio)))+'px';const wrap=img.closest('.sprite-wrap');if(wrap){const ox=side==='mine'?Number(profile.playerOffsetX??profile.offsetX??0):Number(profile.opponentOffsetX??profile.offsetX??0);const oy=Number(profile.offsetY||0);wrap.style.setProperty('--pokemon-offset-x',Math.round(ox)+'px');wrap.style.setProperty('--pokemon-offset-y',Math.round(oy)+'px');}}
+function renderArena(){const a=ARENA.attacker,d=ARENA.defender;if(!a||!d)return;aName.textContent=a.name;dName.textContent=d.name;aHpText.textContent=hpText(a);dHpText.textContent=hpText(d);aMini.textContent=stageText(a);dMini.textContent=stageText(d);aHp.style.width=Math.max(0,Math.round(a.hp/a.maxHp*100))+'%';dHp.style.width=Math.max(0,Math.round(d.hp/d.maxHp*100))+'%';aSprite.src=a.backSprite||a.frontSprite;dSprite.src=d.frontSprite||d.backSprite;applySpriteSize(aSprite,a,'mine');applySpriteSize(dSprite,d,'enemy');aSprite.classList.toggle('fainted',!!a.fainted);dSprite.classList.toggle('fainted',!!d.fainted);renderLockInfo();}
+async function resetArena(){const body={attackerId:attacker.value,defenderId:defender.value,moveId:move.value};const res=await fetch('/api/test-arena/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!data.ok){log.textContent=data.message||'초기화 실패';return;}ARENA.attacker=data.attacker;ARENA.defender=data.defender;renderMoveInfo();renderArena();log.textContent='초기화 완료. 1턴 실행을 눌러 실제 배틀 순서로 확인하세요.';battleMessage.textContent='예비 격투장 준비 완료';}
+async function runTest(){if(busy)return;busy=true;runBtn.disabled=true;try{const body={attackerState:ARENA.attacker,defenderState:ARENA.defender,moveId:move.value};const res=await fetch('/api/test-arena/run',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});const data=await res.json();if(!data.ok){log.textContent=data.message||'오류';return;}log.textContent=data.logs.join('\n');await playEvents(data.events||[]);ARENA.attacker=data.attacker;ARENA.defender=data.defender;renderArena();}finally{busy=false;runBtn.disabled=false;}}
+function setMessage(t){battleMessage.textContent=t||'';}
+function spriteFor(key){return key==='p1'?aSprite:dSprite}
+function wrapFor(key){return key==='p1'?document.querySelector('.mine-sprite'):document.querySelector('.opponent-sprite')}
+function point(layer,el,bias=.46){const lr=layer.getBoundingClientRect(),r=el.getBoundingClientRect();return{x:r.left+r.width/2-lr.left,y:r.top+r.height*bias-lr.top}}
+function effectClassByType(type){const t=String(type||'').toLowerCase();return {'electric':'effect-electric','fire':'effect-fire','water':'effect-water','grass':'effect-grass','ice':'effect-ice','normal':'effect-normal','fighting':'effect-fighting','poison':'effect-poison','ground':'effect-ground','flying':'effect-flying','psychic':'effect-psychic','bug':'effect-bug','rock':'effect-rock','ghost':'effect-ghost','dragon':'effect-dragon','dark':'effect-dark','steel':'effect-steel'}[t]||'effect-hit'}
+function effectClassByMove(type,name){const raw=String(name||''),lower=raw.toLowerCase();if(raw.includes('대폭발')||lower.includes('explosion'))return'effect-explosion-nuke';if(raw.includes('노래하기')||lower.includes('sing'))return'effect-sing-note';return effectClassByType(type)}
+function playMoveEffect(type,attackerKey,defenderKey,name){return new Promise(resolve=>{const layer=battleEffectLayer,as=spriteFor(attackerKey),ds=spriteFor(defenderKey);if(!layer||!as||!ds)return resolve();const s=point(layer,as),e=point(layer,ds),dx=e.x-s.x,dy=e.y-s.y;const angle=Math.atan2(dy,dx)*180/Math.PI;const cls=effectClassByMove(type,name);const fx=document.createElement('div');fx.className=`effect-projectile ${cls}`;fx.style.setProperty('--fx-start-x',s.x+'px');fx.style.setProperty('--fx-start-y',s.y+'px');fx.style.setProperty('--fx-end-x',e.x+'px');fx.style.setProperty('--fx-end-y',e.y+'px');fx.style.setProperty('--fx-rot',(cls==='effect-explosion-nuke'?0:angle+35)+'deg');fx.style.setProperty('--fx-scale',cls==='effect-explosion-nuke'?1.45:1.16);layer.appendChild(fx);let done=false;const clean=()=>{if(done)return;done=true;fx.remove();resolve();};fx.addEventListener('animationend',clean,{once:true});setTimeout(clean,900);});}
+function showDamage(targetKey,amount,heal=false){const wrap=wrapFor(targetKey);if(!wrap)return;const pop=document.createElement('div');pop.className='damage-pop'+(heal?' heal':'');pop.textContent=(heal?'+':'-')+amount;pop.style.left='50%';pop.style.top='10%';wrap.appendChild(pop);setTimeout(()=>pop.remove(),820)}
+function statusClass(status){return {'burn':'status-burn-apply','poison':'status-poison-apply','paralyze':'status-paralysis-apply','sleep':'status-sleep-apply'}[status]}
+function variationClass(stat,amount){if(amount>0){if(stat==='attack')return'variation-attack-up';if(stat==='defense')return'variation-defense-up';if(stat==='speed')return'variation-speed-up';}return'variation-intimidate-down'}
+function playLayerEffect(targetKey,cls,kind='status'){return new Promise(resolve=>{if(!cls)return resolve();const layer=battleEffectLayer,target=spriteFor(targetKey);if(!layer||!target)return resolve();const p=point(layer,target,.46);const fx=document.createElement('div');fx.className=(kind==='variation'?'variation-effect-sprite ':'status-effect-sprite ')+cls;if(kind==='variation'){fx.style.setProperty('--variation-x',p.x+'px');fx.style.setProperty('--variation-y',p.y+'px');}else{fx.style.setProperty('--status-x',p.x+'px');fx.style.setProperty('--status-y',p.y+'px');}layer.appendChild(fx);let done=false;const clean=()=>{if(done)return;done=true;fx.remove();resolve();};fx.addEventListener('animationend',clean,{once:true});setTimeout(clean,900);});}
+async function playEvents(events){for(const ev of events){if(ev.type==='turnStart'){setMessage(ev.text);await sleep(350);}else if(ev.type==='move'){setMessage(`내 ${ev.attackerName}의 ${ev.moveName}!`);const sp=spriteFor(ev.attacker);sp.classList.add('attack-up');await sleep(300);sp.classList.remove('attack-up');if(ev.outcome!=='miss'&&!ev.isStatusMove)await playMoveEffect(ev.moveType,ev.attacker,ev.defender,ev.moveName);await sleep(120);}else if(ev.type==='miss'){setMessage('하지만 공격은 빗나갔다!');await sleep(520);}else if(ev.type==='damage'){setMessage(`${ev.defenderName}이 ${ev.amount} 피해를 입었다!${ev.critical?' 급소!':''}`);const sp=spriteFor(ev.defender);sp.classList.add('hit');showDamage(ev.defender,ev.amount,false);await sleep(260);sp.classList.remove('hit');await sleep(320);}else if(ev.type==='heal'){setMessage(`${ev.name}의 HP가 회복되었다!`);await playLayerEffect(ev.target,'variation-heal','variation');showDamage(ev.target,ev.amount,true);await sleep(320);}else if(ev.type==='stat'){const ko={attack:'공격',defense:'방어',speed:'스피드'}[ev.stat]||ev.stat;setMessage(`${ev.name}의 ${ko}이/가 ${ev.amount>0?'올라갔다!':'떨어졌다!'}`);await playLayerEffect(ev.target,variationClass(ev.stat,ev.amount),'variation');await sleep(260);}else if(ev.type==='status'){setMessage(`${ev.name}이 ${statusKo(ev.status)} 상태가 되었다!`);await playLayerEffect(ev.target,statusClass(ev.status),'status');await sleep(300);}else if(ev.type==='message'||ev.type==='warning'){setMessage(ev.text||'');await sleep(650);}else if(ev.type==='faint'){setMessage(`${ev.name}이 쓰러졌다!`);spriteFor(ev.target).classList.add('fainted');await sleep(650);}}}
+async function copyLog(){await navigator.clipboard.writeText(log.textContent||''); alert('로그 복사 완료')}
+load().catch(e=>{log.textContent='로드 실패: '+e.message});
+</script>
+</body>
+</html>

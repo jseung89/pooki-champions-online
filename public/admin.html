@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>푸끼몬 관리자 센터</title>
+  <style>
+    :root{--bg:#071024;--side:#0b162b;--panel:#0f1d35;--line:#29415f;--text:#eaf3ff;--muted:#9db4d4;--accent:#60a5fa;--good:#34d399}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100vh;overflow:hidden}.app{display:grid;grid-template-columns:260px 1fr;height:100vh}.side{background:linear-gradient(180deg,#071024,#0b162b);border-right:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:14px}.brand{font-size:24px;font-weight:950;line-height:1.1}.sub{font-size:12px;color:var(--muted);line-height:1.45}.nav{display:flex;flex-direction:column;gap:8px;margin-top:10px}.nav button{width:100%;text-align:left;border:1px solid var(--line);background:#10213c;color:var(--text);padding:13px;border-radius:14px;font-weight:850;cursor:pointer}.nav button:hover,.nav button.active{border-color:var(--accent);background:#17345e}.hint{margin-top:auto;background:#091a30;border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--muted);font-size:12px;line-height:1.45}.top{height:54px;background:rgba(7,16,36,.96);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px}.title{font-weight:900}.open{color:#bfe0ff;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:12px}.content{display:grid;grid-template-rows:54px 1fr;min-width:0}.frame{width:100%;height:100%;border:0;background:#071024}.badge{display:inline-flex;background:rgba(52,211,153,.16);border:1px solid rgba(52,211,153,.4);color:#baf7de;border-radius:999px;padding:3px 8px;font-size:11px;margin-top:8px}@media(max-width:800px){.app{grid-template-columns:1fr}.side{display:none}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside class="side">
+    <div>
+      <div class="brand">푸끼몬<br>관리자 센터</div>
+      <div class="badge">local admin hub</div>
+    </div>
+    <div class="sub">각 관리 페이지를 왼쪽 메뉴에서 열 수 있습니다. 저장형 페이지는 로컬 JSON에 저장되고, Git push 후 Render에 반영하는 방식이 가장 안전합니다.</div>
+    <nav class="nav">
+      <button class="active" data-src="/move-admin.html" data-title="기술 관리자">기술 관리자</button>
+      <button data-src="/test-arena.html" data-title="푸끼몬 예비 격투장">예비 격투장</button>
+      <button data-src="/size-admin.html" data-title="푸끼몬 크기 관리자">푸끼몬 크기 관리자</button>
+      <button data-src="/size-check.html" data-title="신체검사 보기">신체검사 보기</button>
+    </nav>
+    <div class="hint">추천 순서<br>1. 기술 관리자에서 세팅 저장<br>2. 예비 격투장에서 기술 확인<br>3. 게임에서 최종 테스트<br>4. Git push</div>
+  </aside>
+  <main class="content">
+    <div class="top"><div class="title" id="pageTitle">기술 관리자</div><a class="open" id="openLink" href="/move-admin.html" target="_blank">새 창으로 열기</a></div>
+    <iframe id="adminFrame" class="frame" src="/move-admin.html"></iframe>
+  </main>
+</div>
+<script>
+const frame=document.getElementById('adminFrame');
+const title=document.getElementById('pageTitle');
+const openLink=document.getElementById('openLink');
+document.querySelectorAll('.nav button').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const src=btn.dataset.src;
+    frame.src=src;
+    title.textContent=btn.dataset.title;
+    openLink.href=src;
+  });
+});
+</script>
+</body>
+</html>
