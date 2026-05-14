@@ -1,3 +1,59 @@
+## Patch Notes - 2026.05.14 (Size Admin v2)
+
+### 포켓몬 크기 관리자 2차 패치
+- `/size-admin.html`을 scale 중심 관리자 페이지로 개편
+- 내 편 / 상대 / 둘 다 보기 전환 추가
+- 흰색 신체검사 격자 배경과 배틀 배경 전환 추가
+- 개별 포켓몬 scale +1%, +5%, +10%, -1%, -5%, -10% 조정 지원
+- 전체 / 현재 목록 / 선택 포켓몬 scale 일괄 조정 지원
+- 선택 체크박스, 현재 목록 선택, 선택 해제 기능 추가
+- 변경값만 복사, 전체 JSON 보기, 저장 기능 유지
+- 고급 위치/폭 조정은 접이식으로 정리하여 scale 조정 중심으로 사용성 개선
+- 저장 시 `data/render_profiles_custom.json`에 반영되며 게임 새로고침 후 로컬에서 즉시 적용
+
+## Patch Notes - 2026.05.14 (Size Admin)
+
+### 포켓몬 크기 관리자 페이지 추가
+- `/size-admin.html` 관리자 페이지 추가
+- 포켓몬별 `scale`, `offsetX`, `playerOffsetX`, `opponentOffsetX`, `offsetY`, `widthRatio`, `baseHeight` 실시간 조정 지원
+- 저장 시 `data/render_profiles_custom.json`에 저장되며, 로컬 게임 새로고침 후 즉시 반영
+- 게임 클라이언트와 신체검사 페이지가 `/api/render-profiles/custom` 값을 불러와 기본 렌더 프로필에 병합
+- 서버에 `/api/render-profiles/custom`, `POST /api/admin/render-profiles`, `DELETE /api/admin/render-profiles` 추가
+- `ADMIN_PASSWORD` 환경변수가 설정된 경우 저장/초기화 API에 관리자 비밀번호 필요
+- 기존 전투 로직은 변경하지 않음
+
+## Patch Notes - 2026.05.14 (Full Render Scale Audit)
+
+### 포켓몬 전수 크기 보정 패치
+- 사용자가 신체검사 페이지에서 확인한 1~2세대 포켓몬별 퍼센트 보정값을 `renderProfiles.js`에 반영
+- `100%`는 현재 유지, `80%`는 현재 대비 20% 축소, `120%`는 현재 대비 20% 확대 방식으로 적용
+- 리자몽은 현재 대비 140%로 크게 확대
+- 통과로 표시된 포켓몬은 기존 보정값 유지
+- 신체검사 페이지에서 `scale`, 내 포켓몬 px 높이, 상대 포켓몬 px 높이, `widthRatio`, X/Y 위치값을 확인할 수 있게 보강
+- 한글명 매핑을 확장해 표기 흔들림이 있어도 보정값을 안정적으로 적용
+- 전투/서버 로직 변경 없음
+
+## Patch Notes - 2026.05.14 (Pokemon Size Check Page)
+
+### 포켓몬 신체검사 페이지 추가
+- 전체 포켓몬 렌더 크기와 위치를 빠르게 확인할 수 있는 `/size-check.html` 페이지 추가
+- `public/size-check-data.js`에 현재 1~2세대 포켓몬 검수용 데이터 생성
+- 앞모습/뒷모습/양쪽 동시 보기 지원
+- 검색, 필터, 정렬, 현재 목록 복사 기능 추가
+- 전투 로직 변경 없음
+
+## Patch Notes - 2026.05.14 (Render Tuning Follow-up)
+
+### 포켓몬 렌더 미세조정 패치
+- `public/renderProfiles.js`에 1~2세대 최종진화 / 전설 / 체형 특수 포켓몬 보정 확대 유지
+- 파이어, 썬더, 프테라, 킹드라를 더 크게 보정
+- 무장조는 과대 렌더링을 줄이도록 축소 보정
+- 세레비는 더 높게 떠 있도록 `offsetY`를 부유형 기준으로 수정
+- 괴력몬은 내 포켓몬일 때 조금 더 오른쪽에 오도록 위치 보정
+- 뮤츠는 꼬리 때문에 앞으로 튀어 보이던 문제를 줄이기 위해 왼쪽 이동 보정 강화
+- 렌더 프로필에 `playerOffsetX` / `opponentOffsetX` 지원 추가
+- `public/index.html`에서 내 포켓몬 / 상대 포켓몬에 서로 다른 X축 오프셋 적용 지원
+
 ## LAN 테스트판 - 배틀 필드 이미지 배경 패치
 
 - 기준 코드: p646_lan_test_3pokemon_slot_ui_only
@@ -311,6 +367,17 @@ Health Check Path:
 - 잠만보 잠자기 필수
 - 푸크린 노래하기 / 멸망의노래 반영
 - 전설 / 환상 프리미엄 기술 최대 2개 제한
+
+
+### 2026.05.14 - 포켓몬 렌더 크기 보정 패치
+
+- 포켓몬별 렌더 프로필 시스템을 추가했습니다.
+- API height/weight 정보를 기반으로 기본 체급을 자동 분류합니다.
+- 소형 포켓몬은 과확대를 줄여 픽셀 깨짐을 완화했습니다.
+- 대형/전설/날개형 포켓몬은 더 위엄 있게 보이도록 크기와 가로폭 제한을 보정했습니다.
+- `scale`, `offsetX`, `offsetY`, `widthRatio` 기반으로 크기와 위치를 함께 조정합니다.
+- 1차 보정 대상: 뮤, 세레비, 피카츄, 이브이, 푸린, 토게피, 리자몽, 프테라, 칠색조, 루기아, 크로뱃, 무장조, 파이어, 썬더, 프리져, 갸라도스, 잠만보, 망나뇽, 마기라스, 라프라스, 강철톤, 롱스톤.
+- 포켓몬 렌더 보정값은 `public/renderProfiles.js`로 분리했습니다.
 
 ## 현재 주요 기능
 

@@ -201,7 +201,7 @@
       opacity:.75;
     }
     .sprite-row{display:block; min-height:auto; position:static;}
-    .sprite-wrap{display:grid; align-items:end; justify-items:center; position:absolute; z-index:3;}
+    .sprite-wrap{display:grid; align-items:end; justify-items:center; position:absolute; z-index:3; transform:translate(var(--pokemon-offset-x,0px), var(--pokemon-offset-y,0px)); transition:transform 260ms ease;}
     .mine-sprite{left:10%; bottom:24px;}
     .opponent-sprite{right:11%; bottom:88px;}
     .sprite{width:auto; height:132px; max-width:190px; object-fit:contain; image-rendering:pixelated; filter:drop-shadow(0 18px 14px rgba(15,23,42,.28)); transition:transform 300ms cubic-bezier(.2,.9,.2,1),opacity 300ms ease,filter 300ms ease;}
@@ -671,7 +671,6 @@
     .variation-speed-up{background-image:url("/assets/effects/speed-up-effect.png"); filter:saturate(1.95) contrast(1.36) brightness(1.17) drop-shadow(0 0 18px rgba(90,190,255,.82));}
     .variation-defense-up{background-image:url("/assets/effects/defense-up-effect.png"); filter:saturate(1.85) contrast(1.32) brightness(1.16) drop-shadow(0 0 18px rgba(130,210,255,.78));}
     .variation-intimidate-down{background-image:url("/assets/effects/intimidate-down-effect.png"); filter:saturate(1.95) contrast(1.42) brightness(1.12) drop-shadow(0 0 18px rgba(150,80,255,.82));}
-    .variation-haze{background-image:url("/assets/effects/ghost-effect.png"); filter:saturate(1.85) contrast(1.45) brightness(1.08) drop-shadow(0 0 20px rgba(110,70,220,.86));}
     @keyframes variationSprite6{from{background-position:0 0;}to{background-position:-1152px 0;}}
     @keyframes variationPop{
       0%{opacity:0; transform:translate(-50%,-50%) translate(var(--variation-x), var(--variation-y)) scale(calc(var(--variation-scale) * .7));}
@@ -839,6 +838,18 @@
     </div>
   </main>
 
+  <script src="/renderProfiles.js"></script>
+  <script>
+    window.POOKI_RENDER_PROFILES_READY = fetch('/api/render-profiles/custom')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if(data?.profiles && window.POOKI_RENDER_PROFILES?.setCustomOverrides){
+          window.POOKI_RENDER_PROFILES.setCustomOverrides(data.profiles);
+          if(typeof renderBattleView === 'function') renderBattleView();
+        }
+      })
+      .catch(() => null);
+  </script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     // pooki_online_player_token_lan_test_3pokemon_field_bg
@@ -1407,19 +1418,31 @@
 
     function hpPct(p){ return p?.maxHp ? Math.max(0,Math.round((p.hp/p.maxHp)*100)) : 0; }
     function spriteScale(p){
-      const raw = Number(p?.spriteScale || 1);
+      const profile = window.POOKI_RENDER_PROFILES?.getRenderProfile?.(p) || {};
+      const raw = Number(profile.scale ?? p?.spriteScale ?? 1);
       if (!Number.isFinite(raw)) return 1;
-      return Math.max(0.75, Math.min(1.65, raw));
+      return Math.max(0.55, Math.min(1.75, raw));
     }
     function applySpriteSize(img, pokemon){
-      const raw = Number(pokemon?.spriteScale || 1);
-      const scale = Number.isFinite(raw) ? Math.max(0.78, Math.min(1.65, raw)) : 1;
+      if(!img) return;
+      const profile = window.POOKI_RENDER_PROFILES?.getRenderProfile?.(pokemon) || {};
+      const scale = spriteScale(pokemon);
       const isMySprite = img.id === "mySprite";
-      const baseHeight = isMySprite ? 160 : 148;
+      const baseHeight = Number(profile.baseHeight || (isMySprite ? 160 : 148));
+      const widthRatio = Number(profile.widthRatio || 1.75);
       const height = Math.round(baseHeight * scale);
       img.style.height = `${height}px`;
       img.style.width = "auto";
-      img.style.maxWidth = `${Math.round(height * 1.62)}px`;
+      img.style.maxWidth = `${Math.round(height * Math.max(1.45, Math.min(2.85, widthRatio)))}px`;
+      const wrap = img.closest?.(".sprite-wrap");
+      if(wrap){
+        const offsetX = isMySprite
+          ? Number(profile.playerOffsetX ?? profile.offsetX ?? 0)
+          : Number(profile.opponentOffsetX ?? profile.offsetX ?? 0);
+        const offsetY = Number(profile.offsetY || 0);
+        wrap.style.setProperty("--pokemon-offset-x", `${Math.round(offsetX)}px`);
+        wrap.style.setProperty("--pokemon-offset-y", `${Math.round(offsetY)}px`);
+      }
     }
     function statusText(p){ return p?.status ? STATUS_KO[p.status] : "정상"; }
     function formatStage(v){ return v>0 ? `+${v}` : `${v}`; }
@@ -1478,7 +1501,7 @@
       return "효과 1배";
     }
     function moveButtonClass(move,mult){ if(!move||move.power===0)return "eff-status"; if(mult===0)return "eff-immune"; if(mult>=4)return "eff-ultra"; if(mult>=2)return "eff-super"; if(mult<1)return "eff-resist"; return "eff-neutral"; }
-    function moveDescription(move){ if(!move)return""; if(move.selfDestruct)return"초고위력 기술입니다. 사용 후 자신도 쓰러집니다."; if(move.resetStatStages)return"양쪽 포켓몬의 모든 공격/방어/스피드 랭크 변화를 초기화합니다."; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChanges){ return move.statChanges.map((c)=>{ const s={attack:"공격",defense:"방어",speed:"스피드"}[c.stat]||c.stat; const t=c.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=c.amount>0?"올립니다":"내립니다"; return `${t}의 ${s}을/를 ${Math.abs(c.amount)}랭크 ${d}`; }).join(" / ")+"."; } if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
+    function moveDescription(move){ if(!move)return""; if(move.selfDestruct)return"초고위력 기술입니다. 사용 후 자신도 쓰러집니다."; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChanges){ return move.statChanges.map((c)=>{ const s={attack:"공격",defense:"방어",speed:"스피드"}[c.stat]||c.stat; const t=c.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=c.amount>0?"올립니다":"내립니다"; return `${t}의 ${s}을/를 ${Math.abs(c.amount)}랭크 ${d}`; }).join(" / ")+"."; } if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
     function buildMoveHelp(move,enemy){
       if(!move)return"기술 위에 마우스를 올리면 설명이 나옵니다.";
       const mine = (myRole==="p1"||myRole==="p2") ? activePokemon(myRole) : null;
@@ -2171,7 +2194,6 @@
       if(raw.includes("칼춤") || raw.includes("나쁜음모") || lower.includes("swords") || lower.includes("nasty")) return "attack-up";
       if(raw.includes("고속이동") || lower.includes("agility")) return "speed-up";
       if(raw.includes("방어태세") || raw.includes("철벽") || lower.includes("harden") || lower.includes("iron")) return "defense-up";
-      if(raw.includes("흑안개") || lower.includes("haze")) return "haze";
       if(raw.includes("겁나는얼굴") || raw.includes("멸망의노래") || raw.includes("애교부리기") || raw.includes("깃털댄스") || raw.includes("싫은소리") || raw.includes("금속음") || raw.includes("실뿜기") || raw.includes("간지르기") || lower.includes("scary") || lower.includes("perish") || lower.includes("charm") || lower.includes("feather") || lower.includes("screech") || lower.includes("metal") || lower.includes("string") || lower.includes("tickle")) return "intimidate-down";
       return "";
     }
@@ -2201,7 +2223,6 @@
       if(effectKey==="speed-up") return "variation-speed-up";
       if(effectKey==="defense-up") return "variation-defense-up";
       if(effectKey==="intimidate-down") return "variation-intimidate-down";
-      if(effectKey==="haze") return "variation-haze";
       return "";
     }
 
@@ -2384,16 +2405,6 @@
       }
       if(ev.type==="heal"){ playGameSfx("heal"); const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const lastMove=lastActionByRole[ev.target]||""; const variationKey=variationEffectKeyFromMoveName(lastMove)||"heal"; setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); await playVariationMoveEffect(variationKey,ev.target); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(Math.max(120,DELAY.damage-540)); return; }
       if(ev.type==="miss"){ playGameSfx("miss"); const attackerMine=ev.attacker===myRole; const attackerEffect=attackerMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage("하지만 공격은 빗나갔다!",true); showCustomEffect(attackerEffect,"💦"); await sleep(DELAY.miss); return; }
-      if(ev.type==="statReset"){
-        playGameSfx("debuff");
-        const targets=Array.isArray(ev.targets)?ev.targets:[ev.attacker,ev.defender].filter(Boolean);
-        targets.forEach(applyVisualStatReset);
-        renderBattleView();
-        setMessage("흑안개가 모든 능력 변화를 지워버렸다!",true);
-        await playVariationMoveEffect("haze",ev.attacker||myRole);
-        await sleep(360);
-        return;
-      }
       if(ev.type==="stat"){
         playGameSfx(ev.amount > 0 ? "buff" : "debuff");
         const isMineTarget=ev.target===myRole;

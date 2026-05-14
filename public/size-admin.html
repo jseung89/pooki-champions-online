@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>푸끼몬 크기 관리자</title>
+  <style>
+    :root{
+      --navy:#071b52;--blue:#2563eb;--bg:#eef6ff;--card:#fff;--line:#bfdbfe;--muted:#64748b;
+      --danger:#dc2626;--ok:#15803d;--warn:#b45309;--ink:#0f172a;--soft:#f8fbff;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+    header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.97);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:14px 18px;box-shadow:0 6px 22px rgba(15,23,42,.08)}
+    h1{margin:0 0 5px;color:var(--navy);font-size:23px}.sub{color:var(--muted);font-size:13px;line-height:1.45}.bar{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}.bar input{min-width:220px}
+    input,select,button{height:36px;border:1px solid #bdd5ff;border-radius:11px;background:#fff;padding:0 10px;font-size:13px;color:#0f172a}button{cursor:pointer;font-weight:900;background:#0f2d77;color:#fff;border-color:#0f2d77;box-shadow:0 3px 0 #071a4a}button:active{transform:translateY(1px);box-shadow:0 2px 0 #071a4a}.danger{background:#b91c1c;border-color:#b91c1c}.ghost{background:#fff;color:#0f2d77}.ok{background:#15803d;border-color:#15803d}.warnbtn{background:#b45309;border-color:#b45309}
+    .seg{display:inline-flex;border:1px solid #bdd5ff;border-radius:12px;overflow:hidden;background:#fff}.seg button{height:34px;border-radius:0;border:0;box-shadow:none;background:#fff;color:#1e3a8a;border-right:1px solid #dbeafe}.seg button:last-child{border-right:0}.seg button.active{background:#0f2d77;color:#fff}
+    main{padding:18px}.summary{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.badge{background:#fff;border:1px solid var(--line);border-radius:999px;padding:7px 11px;font-weight:900;color:#1e3a8a;font-size:13px}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:16px}
+    .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;margin:14px 0;box-shadow:0 6px 18px rgba(15,23,42,.06)}.panel-title{font-weight:950;color:#0b2c75;margin-bottom:8px}.scale-buttons{display:flex;gap:6px;flex-wrap:wrap}.scale-buttons button{min-width:58px}.scope-note{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.45}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 22px rgba(15,23,42,.08);overflow:hidden}.card.changed{outline:3px solid rgba(37,99,235,.28)}.card.selected{outline:3px solid rgba(21,128,61,.35)}
+    .meta{padding:12px;display:flex;justify-content:space-between;gap:10px}.name{font-weight:950;color:#0b2c75;font-size:17px;display:flex;align-items:center;gap:7px}.name input{width:18px;height:18px;min-width:18px}.api{font-size:12px;color:var(--muted);font-weight:700}.types{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}.type{font-size:11px;background:#eef2ff;color:#1e3a8a;border-radius:999px;padding:3px 7px;font-weight:800}.stat{text-align:right;font-size:12px;line-height:1.45;color:#334155}.tag{border-radius:999px;padding:2px 7px;font-size:11px;font-weight:900}.tag.saved{background:#dcfce7;color:#166534}.tag.changed{background:#fef3c7;color:#92400e}.tag.base{background:#e0f2fe;color:#075985}
+    .preview{position:relative;height:250px;margin:0 12px 12px;border:2px solid #3b82f6;border-radius:18px;overflow:hidden;background:#fff}.preview.battle{background:linear-gradient(#7dd3fc,#c7f9cc 58%,#d8b56a 59%,#a3e635)}.preview.battle::before{content:"";position:absolute;inset:0;background-image:url('/assets/battle-field.png');background-size:cover;background-position:center;opacity:.96}.preview.measure{background-color:#fbfdff;background-image:linear-gradient(to right,rgba(148,163,184,.22) 1px,transparent 1px),linear-gradient(to bottom,rgba(148,163,184,.22) 1px,transparent 1px),linear-gradient(to right,rgba(59,130,246,.25) 1px,transparent 1px),linear-gradient(to bottom,rgba(59,130,246,.25) 1px,transparent 1px);background-size:10px 10px,10px 10px,50px 50px,50px 50px}.floor{position:absolute;left:7%;right:7%;bottom:42px;height:3px;background:rgba(15,23,42,.38);z-index:2}.floor::after{content:"바닥선 0px";position:absolute;right:0;bottom:5px;font-size:10px;color:rgba(15,23,42,.62);font-weight:950}.center-line{position:absolute;left:50%;top:0;bottom:0;border-left:1px dashed rgba(37,99,235,.45);z-index:1}.ruler{position:absolute;left:7px;bottom:42px;top:8px;width:42px;z-index:2;pointer-events:none}.ruler span{position:absolute;left:0;font-size:10px;font-weight:950;color:#475569;background:rgba(255,255,255,.72);border-radius:6px;padding:1px 4px}.ruler .r50{bottom:50px}.ruler .r100{bottom:100px}.ruler .r150{bottom:150px}.ruler .r200{bottom:200px}
+    .sprite-wrap{position:absolute;z-index:3;display:grid;align-items:end;justify-items:center;transform:translate(var(--pokemon-offset-x,0px),var(--pokemon-offset-y,0px))}.sprite-wrap.player{left:50%;bottom:42px;transform:translate(calc(-50% + var(--pokemon-offset-x,0px)),var(--pokemon-offset-y,0px))}.sprite-wrap.opponent{left:50%;bottom:42px;transform:translate(calc(-50% + var(--pokemon-offset-x,0px)),var(--pokemon-offset-y,0px))}.sprite-wrap.both-player{left:30%;bottom:42px;transform:translate(calc(-50% + var(--pokemon-offset-x,0px)),var(--pokemon-offset-y,0px))}.sprite-wrap.both-opponent{left:70%;bottom:42px;transform:translate(calc(-50% + var(--pokemon-offset-x,0px)),var(--pokemon-offset-y,0px))}.sprite{width:auto;object-fit:contain;image-rendering:pixelated;filter:drop-shadow(0 12px 10px rgba(15,23,42,.26))}.side-label{position:absolute;top:8px;right:8px;z-index:5;background:rgba(15,23,42,.75);color:#fff;font-size:11px;font-weight:950;border-radius:999px;padding:5px 8px}
+    .profile{margin:0 12px 10px;padding:10px;background:#f8fbff;border:1px solid #dbeafe;border-radius:14px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px;white-space:pre-wrap;color:#1f2937;line-height:1.45}.profile strong{color:#0f2d77}.scale-editor{padding:0 12px 12px}.big-scale{display:grid;grid-template-columns:1fr 76px 76px 76px 76px;gap:6px;margin-bottom:8px}.big-scale input{width:100%;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:950}.big-scale button{height:36px;padding:0}.fine{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.fine button{height:32px;min-width:58px;padding:0 8px}.advanced{border:1px solid #dbeafe;border-radius:14px;padding:8px;background:#fcfdff}.advanced summary{cursor:pointer;font-size:12px;font-weight:950;color:#1e3a8a}.tool-row{display:grid;grid-template-columns:110px 1fr 42px 42px;gap:6px;align-items:center;margin-top:6px}.tool-row label{font-size:12px;font-weight:900;color:#1e3a8a}.tool-row input{width:100%;height:32px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.tool-row button{height:32px;padding:0}.card-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.error{color:var(--danger);font-weight:900}
+    textarea{width:100%;min-height:260px;border:1px solid var(--line);border-radius:14px;padding:12px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}.modal{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:18px}.modal.show{display:flex}.modal-box{width:min(980px,100%);background:#fff;border-radius:20px;padding:16px;border:1px solid var(--line);box-shadow:0 18px 60px rgba(0,0,0,.25)}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}.big-scale{grid-template-columns:1fr 54px 54px}.tool-row{grid-template-columns:90px 1fr 38px 38px}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>푸끼몬 크기 관리자</h1>
+  <div class="sub">포켓몬 크기를 <b>scale 중심</b>으로 실시간 조정합니다. 저장하면 <b>data/render_profiles_custom.json</b>에 저장되고, 게임 새로고침 시 로컬에 바로 반영됩니다.</div>
+  <div class="bar">
+    <input id="search" placeholder="검색: 리자몽, charizard" />
+    <select id="filter"><option value="all">전체</option><option value="changed">이번 변경</option><option value="custom">관리자 저장값</option><option value="large">큰 포켓몬</option><option value="small">작은 포켓몬</option><option value="flying">날개형</option></select>
+    <select id="sort"><option value="id">번호순</option><option value="name">이름순</option><option value="scale-desc">큰 scale순</option><option value="scale-asc">작은 scale순</option><option value="height-desc">큰 px순</option><option value="height-asc">작은 px순</option></select>
+    <span class="seg" id="viewMode"><button data-value="player" class="active">내 편</button><button data-value="opponent">상대</button><button data-value="both">둘 다</button></span>
+    <span class="seg" id="bgMode"><button data-value="measure" class="active">신체검사</button><button data-value="battle">배틀</button></span>
+    <input id="adminPassword" placeholder="관리자 비밀번호(설정한 경우만)" type="password" />
+    <button id="saveAll" class="ok">저장</button>
+    <button id="copyChanged">변경값 복사</button>
+    <button id="showJson" class="ghost">JSON 보기</button>
+    <button id="clearCustom" class="danger">전체 초기화</button>
+    <a href="/size-check.html"><button class="ghost" type="button">신체검사</button></a>
+  </div>
+</header>
+<main>
+  <div class="summary" id="summary"></div>
+  <section class="panel">
+    <div class="panel-title">일괄 스케일 조정</div>
+    <div class="bar" style="margin-top:0">
+      <select id="bulkScope"><option value="visible">현재 목록</option><option value="selected">선택 포켓몬</option><option value="all">전체 포켓몬</option></select>
+      <div class="scale-buttons">
+        <button data-bulk="0.90">-10%</button><button data-bulk="0.95">-5%</button><button data-bulk="0.99">-1%</button>
+        <button data-bulk="1.01">+1%</button><button data-bulk="1.05">+5%</button><button data-bulk="1.10">+10%</button>
+      </div>
+      <button id="selectVisible" class="ghost">현재 목록 선택</button>
+      <button id="clearSelection" class="ghost">선택 해제</button>
+    </div>
+    <div class="scope-note">권장 사용법: 필터/검색으로 대상만 남긴 뒤 현재 목록 +5% 또는 -5%를 적용하고, 이상한 포켓몬만 개별 조정하세요.</div>
+  </section>
+  <section class="grid" id="grid"></section>
+</main>
+<div class="modal" id="jsonModal"><div class="modal-box"><h3>현재 저장 대상 JSON</h3><textarea id="jsonOutput" readonly></textarea><div class="bar"><button id="copyJson">JSON 복사</button><button id="closeJson" class="ghost">닫기</button></div></div></div>
+<script src="/renderProfiles.js"></script>
+<script src="/size-check-data.js"></script>
+<script>
+(function(){
+  const data = Array.isArray(window.POOKI_SIZE_CHECK_DATA) ? window.POOKI_SIZE_CHECK_DATA : [];
+  const grid = document.getElementById('grid');
+  const search = document.getElementById('search');
+  const filter = document.getElementById('filter');
+  const sort = document.getElementById('sort');
+  const summary = document.getElementById('summary');
+  const adminPassword = document.getElementById('adminPassword');
+  const bulkScope = document.getElementById('bulkScope');
+  const baseSystem = window.POOKI_RENDER_PROFILES || {};
+  const groups = baseSystem.GROUP_BY_API_NAME || {};
+  let customProfiles = {};
+  let initialCustomProfiles = {};
+  let dirty = new Set();
+  let selected = new Set();
+  let viewMode = 'player';
+  let bgMode = 'measure';
+
+  const EDIT_KEYS = ['scale','offsetX','playerOffsetX','opponentOffsetX','offsetY','widthRatio','baseHeight'];
+  function apiName(p){ return String(p.apiName || p.name || '').toLowerCase().replace(/_/g,'-').replace(/\s+/g,'-'); }
+  function n(v,f=0){ const x=Number(v); return Number.isFinite(x)?x:f; }
+  function round(v, d=2){ const m=10**d; return Math.round(n(v)*m)/m; }
+  function clone(obj){ return JSON.parse(JSON.stringify(obj || {})); }
+  function baseProfile(p){ return baseSystem.getBaseRenderProfile?.(p) || baseSystem.getRenderProfile?.(p) || {}; }
+  function profileOf(p){ return baseSystem.getRenderProfile?.(p) || {}; }
+  function originalScale(p){ return n(baseProfile(p).scale, 1); }
+  function currentScale(p){ return n(profileOf(p).scale, 1); }
+  function editableProfile(p){ return customProfiles[apiName(p)] || {}; }
+  function applyCustom(){ baseSystem.setCustomOverrides?.(customProfiles); }
+  function spriteSize(p,isMine){ const prof=profileOf(p); const scale=n(prof.scale,1); const base=n(prof.baseHeight || (isMine?160:148), isMine?160:148); const h=Math.round(base*scale); const wr=Math.max(1.45,Math.min(2.85,n(prof.widthRatio,1.75))); return {height:h,maxWidth:Math.round(h*wr)}; }
+  function offsets(p,isMine){ const prof=profileOf(p); const x=isMine?n(prof.playerOffsetX ?? prof.offsetX,0):n(prof.opponentOffsetX ?? prof.offsetX,0); return {x:Math.round(x),y:Math.round(n(prof.offsetY,0))}; }
+  function markDirty(api){ dirty.add(api); }
+  function setField(api,key,val,rerender=true){
+    if(!customProfiles[api]) customProfiles[api]={};
+    if(val==='' || val==null || !Number.isFinite(Number(val))) delete customProfiles[api][key];
+    else customProfiles[api][key]=round(Number(val), key==='scale'||key==='widthRatio'?3:0);
+    if(Object.keys(customProfiles[api]).length===0) delete customProfiles[api];
+    markDirty(api); applyCustom(); if(rerender) render();
+  }
+  function setScale(api,scale,rerender=true){ setField(api,'scale',Math.max(0.30,Math.min(2.50,n(scale,1))),rerender); }
+  function adjustScale(api,mul,rerender=true){ const p=data.find(x=>apiName(x)===api); if(!p)return; setScale(api,currentScale(p)*mul,rerender); }
+  function adjustField(api,key,delta){ const p=data.find(x=>apiName(x)===api); if(!p)return; const cur=editableProfile(p)[key] ?? profileOf(p)[key] ?? 0; setField(api,key,Number(cur)+delta); }
+  function resetCard(api){ delete customProfiles[api]; markDirty(api); applyCustom(); render(); }
+  function activeList(){ return applyFilter(data); }
+  function scopedList(){ const scope=bulkScope.value; if(scope==='all') return data.slice(); if(scope==='selected') return data.filter(p=>selected.has(apiName(p))); return activeList(); }
+  function bulkScale(mul){ const list=scopedList(); if(!list.length){ alert('적용할 포켓몬이 없습니다.'); return; } if(!confirm(`${list.length}마리 scale을 ${Math.round((mul-1)*100)}% 조정할까요?`)) return; list.forEach(p=>adjustScale(apiName(p),mul,false)); applyCustom(); render(); }
+  function spriteHtml(p,isMine,cls){ const src=isMine?p.backSprite:p.frontSprite; const s=spriteSize(p,isMine); const o=offsets(p,isMine); return `<div class="sprite-wrap ${cls}" style="--pokemon-offset-x:${o.x}px;--pokemon-offset-y:${o.y}px">${src?`<img class="sprite" loading="lazy" src="${src}" style="height:${s.height}px;max-width:${s.maxWidth}px" />`:`<div>?</div>`}</div>`; }
+  function stageHtml(p){
+    const cls = `preview ${bgMode}`;
+    const ruler = bgMode==='measure' ? '<div class="center-line"></div><div class="ruler"><span class="r50">50px</span><span class="r100">100px</span><span class="r150">150px</span><span class="r200">200px</span></div>' : '';
+    const label = viewMode==='player' ? '내 편 기준' : viewMode==='opponent' ? '상대 기준' : '내 편 / 상대 비교';
+    if(viewMode==='both') return `<div class="${cls}">${ruler}<div class="side-label">${label}</div><div class="floor"></div>${spriteHtml(p,true,'both-player')}${spriteHtml(p,false,'both-opponent')}</div>`;
+    if(viewMode==='opponent') return `<div class="${cls}">${ruler}<div class="side-label">${label}</div><div class="floor"></div>${spriteHtml(p,false,'opponent')}</div>`;
+    return `<div class="${cls}">${ruler}<div class="side-label">${label}</div><div class="floor"></div>${spriteHtml(p,true,'player')}</div>`;
+  }
+  function inputRow(api,label,key,step){ const p=data.find(x=>apiName(x)===api); const value=editableProfile(p)[key] ?? ''; return `<div class="tool-row"><label>${label}</label><input data-api="${api}" data-key="${key}" value="${value}" placeholder="기본값" /><button data-adj="${api}|${key}|${-step}">−</button><button data-adj="${api}|${key}|${step}">+</button></div>`; }
+  function card(p){
+    const api=apiName(p); const prof=profileOf(p); const base=baseProfile(p); const mine=spriteSize(p,true); const opp=spriteSize(p,false);
+    const changed=dirty.has(api); const hasCustom=!!customProfiles[api]; const isSelected=selected.has(api);
+    const changePct = Math.round((currentScale(p)/Math.max(0.01, originalScale(p)))*100);
+    const label=hasCustom?'<span class="tag saved">저장값</span>':(changed?'<span class="tag changed">변경됨</span>':'<span class="tag base">기본</span>');
+    return `<article class="card ${changed?'changed':''} ${isSelected?'selected':''}" data-api="${api}">
+      <div class="meta"><div><div class="name"><input type="checkbox" data-select="${api}" ${isSelected?'checked':''}/> #${p.id} ${p.name}</div><div class="api">${api} · ${label}</div><div class="types">${(p.types||[]).map(t=>`<span class="type">${t}</span>`).join('')}</div></div><div class="stat">H ${p.height ?? '-'}<br/>scale ${currentScale(p).toFixed(3)}<br/>${changePct}%</div></div>
+      ${stageHtml(p)}
+      <div class="profile"><strong>scale ${currentScale(p).toFixed(3)}</strong> / 기준대비 ${changePct}%\n내 ${mine.height}px / 상대 ${opp.height}px / ratio ${n(prof.widthRatio,1.75).toFixed(2)}\nx ${Math.round(n(prof.offsetX,0))} / playerX ${Math.round(n(prof.playerOffsetX ?? prof.offsetX,0))} / opponentX ${Math.round(n(prof.opponentOffsetX ?? prof.offsetX,0))} / y ${Math.round(n(prof.offsetY,0))}</div>
+      <div class="scale-editor">
+        <div class="big-scale"><input data-api="${api}" data-key="scale" value="${currentScale(p).toFixed(3)}"/><button data-scale="${api}|0.90">-10%</button><button data-scale="${api}|0.95">-5%</button><button data-scale="${api}|1.05">+5%</button><button data-scale="${api}|1.10">+10%</button></div>
+        <div class="fine"><button data-scale="${api}|0.99">-1%</button><button data-scale="${api}|1.01">+1%</button><button data-reset="${api}" class="ghost">초기화</button><button data-copy="${api}">값 복사</button></div>
+        <details class="advanced"><summary>고급 위치/폭 조정</summary>${inputRow(api,'widthRatio','widthRatio',0.05)}${inputRow(api,'offsetY','offsetY',2)}${inputRow(api,'offsetX','offsetX',2)}${inputRow(api,'playerX','playerOffsetX',2)}${inputRow(api,'opponentX','opponentOffsetX',2)}${inputRow(api,'baseHeight','baseHeight',4)}</details>
+      </div>
+    </article>`;
+  }
+  function applyFilter(list){
+    const q=search.value.trim().toLowerCase(); let arr=list.filter(p=>!q || p.name.includes(q) || apiName(p).includes(q));
+    const f=filter.value; if(f==='changed') arr=arr.filter(p=>dirty.has(apiName(p))); if(f==='custom') arr=arr.filter(p=>customProfiles[apiName(p)]); if(f==='large') arr=arr.filter(p=>currentScale(p)>1.15); if(f==='small') arr=arr.filter(p=>currentScale(p)<.9); if(f==='flying') arr=arr.filter(p=>['wideFlying','legendaryWide'].includes(groups[apiName(p)]) || (p.types||[]).includes('flying'));
+    if(sort.value==='name') arr.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
+    else if(sort.value==='scale-desc') arr.sort((a,b)=>currentScale(b)-currentScale(a));
+    else if(sort.value==='scale-asc') arr.sort((a,b)=>currentScale(a)-currentScale(b));
+    else if(sort.value==='height-desc') arr.sort((a,b)=>spriteSize(b,viewMode!=='opponent').height-spriteSize(a,viewMode!=='opponent').height);
+    else if(sort.value==='height-asc') arr.sort((a,b)=>spriteSize(a,viewMode!=='opponent').height-spriteSize(b,viewMode!=='opponent').height);
+    else arr.sort((a,b)=>n(a.id)-n(b.id));
+    return arr;
+  }
+  function cleanProfilesForSave(){ const out={}; Object.entries(customProfiles).forEach(([api,prof])=>{ const clean={}; EDIT_KEYS.forEach(k=>{ if(prof[k]!=null && Number.isFinite(Number(prof[k]))) clean[k]=round(Number(prof[k]), k==='scale'||k==='widthRatio'?3:0); }); if(Object.keys(clean).length) out[api]=clean; }); return out; }
+  function changedProfilesForCopy(){ const out={}; dirty.forEach(api=>{ if(customProfiles[api]) out[api]=customProfiles[api]; else out[api]=null; }); return out; }
+  function jsonText(all=true){ return JSON.stringify(all?cleanProfilesForSave():changedProfilesForCopy(), null, 2); }
+  function render(){ const arr=applyFilter(data); summary.innerHTML=`<span class="badge">표시 ${arr.length} / 전체 ${data.length}</span><span class="badge">선택 ${selected.size}</span><span class="badge">저장값 ${Object.keys(customProfiles).length}</span><span class="badge">이번 변경 ${dirty.size}</span><span class="badge">${viewMode==='player'?'내 편':viewMode==='opponent'?'상대':'둘 다'} · ${bgMode==='measure'?'신체검사':'배틀'}</span>`; grid.innerHTML=arr.map(card).join(''); }
+  async function load(){ try{ const r=await fetch('/api/render-profiles/custom'); const d=await r.json(); customProfiles=d?.profiles||{}; initialCustomProfiles=clone(customProfiles); applyCustom(); }catch(e){ console.warn(e); } render(); }
+  async function save(){ const profiles=cleanProfilesForSave(); const count=Object.keys(profiles).length; if(!confirm(`관리자 저장값 ${count}개를 저장할까요? 저장 후 게임 화면을 새로고침하면 반영됩니다.`)) return; const res=await fetch('/api/admin/render-profiles',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':adminPassword.value||''},body:JSON.stringify({profiles})}); const payload=await res.json().catch(()=>({})); if(!res.ok||!payload.ok){ alert(payload.message||'저장 실패'); return; } dirty.clear(); customProfiles=payload.profiles||profiles; initialCustomProfiles=clone(customProfiles); applyCustom(); render(); alert(`저장 완료: ${Object.keys(customProfiles).length}개`); }
+  async function clearAll(){ if(!confirm('관리자 저장값을 모두 삭제할까요? 기본 보정값으로 돌아갑니다.')) return; const res=await fetch('/api/admin/render-profiles',{method:'DELETE',headers:{'Content-Type':'application/json','x-admin-password':adminPassword.value||''}}); const payload=await res.json().catch(()=>({})); if(!res.ok||!payload.ok){ alert(payload.message||'초기화 실패'); return; } customProfiles={}; initialCustomProfiles={}; dirty.clear(); applyCustom(); render(); }
+  function showJson(all=true){ document.getElementById('jsonOutput').value=jsonText(all); document.getElementById('jsonModal').classList.add('show'); }
+  function setSeg(container, value){ [...container.querySelectorAll('button')].forEach(b=>b.classList.toggle('active',b.dataset.value===value)); }
+  grid.addEventListener('input',e=>{ const el=e.target; if(!el.matches('input[data-api]')) return; setField(el.dataset.api,el.dataset.key,el.value); });
+  grid.addEventListener('change',e=>{ const el=e.target; if(!el.matches('input[data-select]')) return; const api=el.dataset.select; if(el.checked) selected.add(api); else selected.delete(api); render(); });
+  grid.addEventListener('click',async e=>{ const btn=e.target.closest('button'); if(!btn) return; if(btn.dataset.scale){ const [api,mul]=btn.dataset.scale.split('|'); adjustScale(api,Number(mul)); } if(btn.dataset.adj){ const [api,key,delta]=btn.dataset.adj.split('|'); adjustField(api,key,Number(delta)); } if(btn.dataset.reset) resetCard(btn.dataset.reset); if(btn.dataset.copy){ const text=`${btn.dataset.copy}: ${JSON.stringify(customProfiles[btn.dataset.copy]||{},null,2)}`; try{await navigator.clipboard.writeText(text);alert('복사 완료');}catch(_){prompt('복사',text);} } });
+  document.getElementById('viewMode').addEventListener('click',e=>{ const b=e.target.closest('button[data-value]'); if(!b)return; viewMode=b.dataset.value; setSeg(e.currentTarget,viewMode); render(); });
+  document.getElementById('bgMode').addEventListener('click',e=>{ const b=e.target.closest('button[data-value]'); if(!b)return; bgMode=b.dataset.value; setSeg(e.currentTarget,bgMode); render(); });
+  document.querySelectorAll('[data-bulk]').forEach(b=>b.addEventListener('click',()=>bulkScale(Number(b.dataset.bulk))));
+  document.getElementById('selectVisible').addEventListener('click',()=>{ activeList().forEach(p=>selected.add(apiName(p))); render(); });
+  document.getElementById('clearSelection').addEventListener('click',()=>{ selected.clear(); render(); });
+  [search,filter,sort].forEach(el=>el.addEventListener('input',render));
+  document.getElementById('saveAll').addEventListener('click',save); document.getElementById('clearCustom').addEventListener('click',clearAll); document.getElementById('showJson').addEventListener('click',()=>showJson(true)); document.getElementById('copyChanged').addEventListener('click',async()=>{ const text=jsonText(false); try{await navigator.clipboard.writeText(text);alert('변경값 복사 완료');}catch(_){document.getElementById('jsonOutput').value=text;document.getElementById('jsonModal').classList.add('show');} }); document.getElementById('closeJson').addEventListener('click',()=>document.getElementById('jsonModal').classList.remove('show')); document.getElementById('copyJson').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(document.getElementById('jsonOutput').value);alert('JSON 복사 완료');}catch(_){} });
+  load();
+})();
+</script>
+</body>
+</html>

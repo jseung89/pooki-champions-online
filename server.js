@@ -1,5 +1,7 @@
 const os = require("os");
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
@@ -33,6 +35,78 @@ const server = http.createServer(app);
 const io = new Server(server);
 const PORT = process.env.PORT || 3000;
 // POOKI_LAN_TEST_3POKEMON_FIELD_BG
+
+app.use(express.json({ limit: "1mb" }));
+
+const CUSTOM_RENDER_PROFILE_PATH = path.join(__dirname, "data", "render_profiles_custom.json");
+
+function ensureDataDir() {
+  fs.mkdirSync(path.dirname(CUSTOM_RENDER_PROFILE_PATH), { recursive: true });
+}
+
+function readCustomRenderProfiles() {
+  try {
+    ensureDataDir();
+    if (!fs.existsSync(CUSTOM_RENDER_PROFILE_PATH)) return {};
+    const parsed = JSON.parse(fs.readFileSync(CUSTOM_RENDER_PROFILE_PATH, "utf8") || "{}");
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
+  } catch (err) {
+    console.warn("[ADMIN] render profile read failed", err.message);
+    return {};
+  }
+}
+
+function writeCustomRenderProfiles(data) {
+  ensureDataDir();
+  fs.writeFileSync(CUSTOM_RENDER_PROFILE_PATH, `${JSON.stringify(data || {}, null, 2)}\n`, "utf8");
+}
+
+function sanitizeProfileValue(profile) {
+  const out = {};
+  const allowed = ["scale", "offsetX", "playerOffsetX", "opponentOffsetX", "offsetY", "widthRatio", "baseHeight"];
+  for (const key of allowed) {
+    if (profile?.[key] === undefined || profile?.[key] === null || profile?.[key] === "") continue;
+    const value = Number(profile[key]);
+    if (Number.isFinite(value)) out[key] = value;
+  }
+  return out;
+}
+
+function sanitizeRenderProfilePayload(payload) {
+  const source = payload?.profiles && typeof payload.profiles === "object" ? payload.profiles : payload;
+  const out = {};
+  if (!source || typeof source !== "object" || Array.isArray(source)) return out;
+  for (const [rawName, profile] of Object.entries(source)) {
+    const name = String(rawName || "").trim().toLowerCase().replace(/_/g, "-").replace(/\s+/g, "-");
+    if (!name || !profile || typeof profile !== "object" || Array.isArray(profile)) continue;
+    const clean = sanitizeProfileValue(profile);
+    if (Object.keys(clean).length) out[name] = clean;
+  }
+  return out;
+}
+
+function requireAdminForWrite(req, res, next) {
+  const expected = process.env.ADMIN_PASSWORD || "";
+  if (!expected) return next();
+  const provided = req.get("x-admin-password") || req.body?.adminPassword || "";
+  if (provided !== expected) return res.status(403).json({ ok: false, message: "관리자 비밀번호가 올바르지 않습니다." });
+  return next();
+}
+
+app.get("/api/render-profiles/custom", (req, res) => {
+  res.json({ ok: true, profiles: readCustomRenderProfiles() });
+});
+
+app.post("/api/admin/render-profiles", requireAdminForWrite, (req, res) => {
+  const profiles = sanitizeRenderProfilePayload(req.body);
+  writeCustomRenderProfiles(profiles);
+  res.json({ ok: true, count: Object.keys(profiles).length, profiles });
+});
+
+app.delete("/api/admin/render-profiles", requireAdminForWrite, (req, res) => {
+  writeCustomRenderProfiles({});
+  res.json({ ok: true, count: 0, profiles: {} });
+});
 
 app.use(express.static("public"));
 
@@ -493,14 +567,6 @@ function moveExpectedValue(move, attacker, defender) {
   if (move.heal) {
     const hpRatio = attacker?.maxHp ? attacker.hp / attacker.maxHp : 1;
     return hpRatio < 0.35 ? 130 : hpRatio < 0.55 ? 70 : 5;
-  }
-  if (move.resetStatStages && !move.power) {
-    const attackerStages = attacker?.statStages || {};
-    const defenderStages = defender?.statStages || {};
-    const enemyBoost = Math.max(0, defenderStages.attack || 0) + Math.max(0, defenderStages.defense || 0) + Math.max(0, defenderStages.speed || 0);
-    const ownPenalty = Math.max(0, -(attackerStages.attack || 0)) + Math.max(0, -(attackerStages.defense || 0)) + Math.max(0, -(attackerStages.speed || 0));
-    const ownBoost = Math.max(0, attackerStages.attack || 0) + Math.max(0, attackerStages.defense || 0) + Math.max(0, attackerStages.speed || 0);
-    return enemyBoost >= 3 || ownPenalty >= 2 ? 115 + Math.random() * 25 - ownBoost * 18 : 8 + Math.random() * 10;
   }
   if ((move.statChange || move.statChanges) && !move.power) {
     const changes = move.statChanges || [move.statChange];
@@ -1125,15 +1191,6 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   if (!didHit) {
     log("하지만 빗나갔다!");
     addEvent({ type: "miss", attacker: attackerKey, defender: defenderKey });
-    return;
-  }
-
-  if (move.resetStatStages) {
-    resetStatStages(attacker);
-    resetStatStages(defender);
-    log("흑안개가 모든 능력 변화를 지워버렸다!");
-    addEvent({ type: "statReset", targets: [attackerKey, defenderKey], moveName: move.name, attacker: attackerKey, defender: defenderKey });
-    addEvent({ type: "message", text: "흑안개가 모든 능력 변화를 지워버렸다!" });
     return;
   }
 
