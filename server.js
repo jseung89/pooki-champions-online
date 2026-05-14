@@ -272,6 +272,7 @@ function publicMoveLite(move) {
     selfStatAfterHit: move.selfStatAfterHit || null,
     selfStatAfterUse: move.selfStatAfterUse || null,
     furyCutter: move.furyCutter || null,
+    multiHit: move.multiHit || null,
     selfDestruct: !!move.selfDestruct,
     recharge: move.recharge || 0,
     danger: move.danger || "",
@@ -283,6 +284,7 @@ function moveCategory(move) {
   if (move.statusMove) return "상태이상";
   if (move.heal || move.rest || move.drain) return "회복/흡수";
   if (move.statChange || move.statChanges || move.selfStatAfterHit || move.selfStatAfterUse || move.statChance) return "능력변화";
+  if (move.multiHit) return "다단히트";
   if (move.lockedMove || move.furyCutter || move.selfDamageRatio || move.recharge || move.selfDestruct) return "특수공격";
   if ((move.power || 0) > 0) return "공격";
   return "기타";
@@ -348,6 +350,19 @@ function arenaResetFuryIfNeeded(attacker, move) {
   if (!move?.furyCutter) attacker.volatile.furyCutter = null;
 }
 
+function resolveMultiHitCount(move) {
+  if (!move?.multiHit) return 1;
+  if (Number.isFinite(Number(move.multiHit.fixed))) return Math.max(1, Number(move.multiHit.fixed));
+  const min = Math.max(1, Number(move.multiHit.min || 2));
+  const max = Math.max(min, Number(move.multiHit.max || 5));
+  return min + Math.floor(Math.random() * (max - min + 1));
+}
+
+function selfStatEffectsList(move) {
+  if (!move?.selfStatAfterUse) return [];
+  return Array.isArray(move.selfStatAfterUse) ? move.selfStatAfterUse : [move.selfStatAfterUse];
+}
+
 function simulateTestTurn(attackerInput, defenderInput, selectedMoveId) {
   const logs = [];
   const events = [];
@@ -386,6 +401,7 @@ function simulateTestTurn(attackerInput, defenderInput, selectedMoveId) {
     outcome: didHit ? "hit" : "miss",
     isStatusMove: (actualMove.power || 0) === 0,
     description: moveDescription(move),
+    isMultiHit: !!move.multiHit,
   });
 
   if (!didHit) {
@@ -430,11 +446,30 @@ function simulateTestTurn(attackerInput, defenderInput, selectedMoveId) {
   }
 
   if ((actualMove.power || 0) > 0) {
-    const result = calculateDamage(attacker, defender, actualMove);
-    defender.hp = Math.max(0, defender.hp - result.damage);
-    if (defender.hp <= 0) defender.fainted = true;
-    logs.push(`${defender.name}에게 ${result.damage} 피해!${result.critical ? " 급소!" : ""}`);
-    events.push({ type: "damage", attacker: "p1", defender: "p2", amount: result.damage, moveType: move.type, effectiveness: result.typeMul, critical: result.critical, hp: defender.hp, maxHp: defender.maxHp, defenderName: defender.name });
+    const hitCount = resolveMultiHitCount(move);
+    let totalDamage = 0;
+    let actualHits = 0;
+    let lastResult = null;
+    for (let i = 1; i <= hitCount; i += 1) {
+      if (defender.fainted || defender.hp <= 0) break;
+      if (move.multiHit) {
+        logs.push(`${i}회째 공격!`);
+        events.push({ type: "message", text: `${move.name} ${i}회째 공격!` });
+      }
+      const result = calculateDamage(attacker, defender, actualMove);
+      lastResult = result;
+      defender.hp = Math.max(0, defender.hp - result.damage);
+      totalDamage += result.damage;
+      actualHits += 1;
+      if (defender.hp <= 0) defender.fainted = true;
+      logs.push(`${defender.name}에게 ${result.damage} 피해!${result.critical ? " 급소!" : ""}`);
+      events.push({ type: "damage", attacker: "p1", defender: "p2", amount: result.damage, moveType: move.type, effectiveness: result.typeMul, critical: result.critical, hp: defender.hp, maxHp: defender.maxHp, defenderName: defender.name, hitIndex: move.multiHit ? i : null, hitCount: move.multiHit ? hitCount : null, isMultiHit: !!move.multiHit });
+      if (result.typeMul === 0) break;
+    }
+    if (move.multiHit) {
+      logs.push(`총 ${actualHits}회 맞았다! 총 피해 ${totalDamage}`);
+      events.push({ type: "message", text: `총 ${actualHits}회 맞았다!` });
+    }
 
     if (move.effect?.status && defender.hp > 0 && canApplyStatus(defender, move.effect.status) && Math.random() * 100 < move.effect.chance) {
       applyStatus(defender, move.effect.status);
@@ -456,16 +491,16 @@ function simulateTestTurn(attackerInput, defenderInput, selectedMoveId) {
 
     if (move.selfStatAfterHit) arenaApplyStat(attacker, "p1", move.selfStatAfterHit.stat, move.selfStatAfterHit.amount, logs, events);
 
-    if (move.drain && result.damage > 0) {
+    if (move.drain && totalDamage > 0) {
       const before = attacker.hp;
-      const heal = Math.max(1, Math.floor(result.damage * move.drain.ratio));
+      const heal = Math.max(1, Math.floor(totalDamage * move.drain.ratio));
       attacker.hp = Math.min(attacker.maxHp, attacker.hp + heal);
       const healed = attacker.hp - before;
       logs.push(`${attacker.name}이/가 ${healed} HP를 흡수 회복했다!`);
       events.push({ type: "heal", target: "p1", name: attacker.name, amount: healed, hp: attacker.hp, maxHp: attacker.maxHp });
     }
 
-    if (move.selfStatAfterUse) arenaApplyStat(attacker, "p1", move.selfStatAfterUse.stat, move.selfStatAfterUse.amount, logs, events);
+    for (const effect of selfStatEffectsList(move)) arenaApplyStat(attacker, "p1", effect.stat, effect.amount, logs, events);
 
     if (move.selfDamageRatio) {
       const selfDamage = Math.max(1, Math.floor(attacker.maxHp * move.selfDamageRatio));
@@ -1580,7 +1615,7 @@ function tryApplyFlinch(attackerKey, defenderKey, move) {
   }
 }
 
-function applyDamage(attackerKey, defenderKey, move) {
+function applyDamage(attackerKey, defenderKey, move, meta = {}) {
   const attacker = active(attackerKey);
   const defender = active(defenderKey);
   const result = calculateDamage(attacker, defender, move);
@@ -1602,6 +1637,10 @@ function applyDamage(attackerKey, defenderKey, move) {
     hp: defender.hp,
     maxHp: defender.maxHp,
     defenderName: defender.name,
+    hitIndex: move.multiHit ? (meta.hitIndex || null) : null,
+    hitCount: move.multiHit ? (meta.hitCount || null) : null,
+    isMultiHit: !!move.multiHit,
+    hitEffectType: move.type,
   });
 
   if (result.typeMul === 0) addEvent({ type: "message", text: "효과가 없다!" });
@@ -1616,6 +1655,28 @@ function applyDamage(attackerKey, defenderKey, move) {
 
   if (defender.hp <= 0) faintPokemon(defenderKey);
   return result;
+}
+
+function applyDamageSequence(attackerKey, defenderKey, move) {
+  const hitCount = resolveMultiHitCount(move);
+  let totalDamage = 0;
+  let actualHits = 0;
+  let lastResult = null;
+  for (let i = 1; i <= hitCount; i += 1) {
+    const defender = active(defenderKey);
+    if (!defender || defender.fainted || defender.hp <= 0) break;
+    if (move.multiHit) addEvent({ type: "message", text: `${move.name} ${i}회째 공격!` });
+    const result = applyDamage(attackerKey, defenderKey, move, { hitIndex: i, hitCount });
+    lastResult = result;
+    totalDamage += result.damage || 0;
+    actualHits += 1;
+    if (result.typeMul === 0) break;
+  }
+  if (move.multiHit) {
+    log(`총 ${actualHits}회 맞았다!`);
+    addEvent({ type: "message", text: `총 ${actualHits}회 맞았다!` });
+  }
+  return { damage: totalDamage, hits: actualHits, lastResult };
 }
 
 
@@ -1644,9 +1705,12 @@ function applyChanceStatEffect(attackerKey, defenderKey, move) {
 }
 
 function applySelfStatAfterUse(attackerKey, move) {
-  const effect = move?.selfStatAfterUse;
-  if (!effect || !effect.stat || !effect.amount) return;
-  applyBattleStatEffect(attackerKey, effect.stat, effect.amount, move.name);
+  const effects = selfStatEffectsList(move);
+  if (!effects.length) return;
+  for (const effect of effects) {
+    if (!effect || !effect.stat || !effect.amount) continue;
+    applyBattleStatEffect(attackerKey, effect.stat, effect.amount, move.name);
+  }
 }
 
 function applySelfStatAfterHit(attackerKey, move) {
@@ -1773,6 +1837,7 @@ function useMove(attackerKey, defenderKey, moveIndex) {
     outcome: didHit ? (move.power > 0 ? "hit" : "status") : "miss",
     isStatusMove: move.power === 0,
     description: moveDescription(move),
+    isMultiHit: !!move.multiHit,
   });
 
   if (move.recharge) {
@@ -1874,7 +1939,7 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   }
 
   if (move.power > 0) {
-    const damageResult = applyDamage(attackerKey, defenderKey, move) || { damage: 0 };
+    const damageResult = applyDamageSequence(attackerKey, defenderKey, move) || { damage: 0 };
 
     const defenderAfter = active(defenderKey);
     if (defenderAfter && defenderAfter.hp > 0 && !defenderAfter.fainted) {

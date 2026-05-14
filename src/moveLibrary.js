@@ -82,6 +82,16 @@ const MOVES = {
   shadowClaw: { id: "shadowClaw", apiName: "shadow-claw", name: "섀도크루", type: "ghost", power: 70, accuracy: 100, highCrit: true },
   xScissor: { id: "xScissor", apiName: "x-scissor", name: "시저크로스", type: "bug", power: 80, accuracy: 100 },
   furyCutter: { id: "furyCutter", apiName: "fury-cutter", name: "연속자르기", type: "bug", power: 40, accuracy: 95, furyCutter: { powers: [40, 80, 120, 160] }, tags: ["combo", "bug-support"] },
+  doubleChop: { id: "doubleChop", apiName: "dual-chop", name: "더블촙", type: "dragon", power: 40, accuracy: 90, multiHit: { fixed: 2 }, tags: ["multi-hit"] },
+  doubleKick: { id: "doubleKick", apiName: "double-kick", name: "두번치기", type: "fighting", power: 30, accuracy: 100, multiHit: { fixed: 2 }, tags: ["multi-hit"] },
+  rockBlast: { id: "rockBlast", apiName: "rock-blast", name: "락블레스트", type: "rock", power: 25, accuracy: 90, multiHit: { min: 2, max: 5 }, tags: ["multi-hit"] },
+  bulletSeed: { id: "bulletSeed", apiName: "bullet-seed", name: "기관총", type: "grass", power: 25, accuracy: 100, multiHit: { min: 2, max: 5 }, tags: ["multi-hit"] },
+  icicleSpear: { id: "icicleSpear", apiName: "icicle-spear", name: "고드름침", type: "ice", power: 25, accuracy: 100, multiHit: { min: 2, max: 5 }, tags: ["multi-hit"] },
+  boneRush: { id: "boneRush", apiName: "bone-rush", name: "본러시", type: "ground", power: 25, accuracy: 90, multiHit: { min: 2, max: 5 }, tags: ["multi-hit"] },
+  scaleShot: { id: "scaleShot", apiName: "scale-shot", name: "스케일샷", type: "dragon", power: 25, accuracy: 90, multiHit: { min: 2, max: 5 }, selfStatAfterUse: [
+    { stat: "speed", amount: 1 },
+    { stat: "defense", amount: -1 },
+  ], danger: "2~5회 타격 후 내 스피드가 오르고 방어가 떨어집니다.", tags: ["multi-hit", "risk"] },
   leechLife: { id: "leechLife", apiName: "leech-life", name: "흡혈", type: "bug", power: 80, accuracy: 100, drain: { ratio: 0.5 }, tags: ["recovery"] },
   stoneEdge: { id: "stoneEdge", apiName: "stone-edge", name: "스톤에지", type: "rock", power: 100, accuracy: 80, highCrit: true, tags: ["premium"] },
   powerUpPunch: { id: "powerUpPunch", apiName: "power-up-punch", name: "그로우펀치", type: "fighting", power: 40, accuracy: 100, selfStatAfterHit: { stat: "attack", amount: 1 }, tags: ["setup"] },
@@ -165,7 +175,14 @@ function moveDescription(move) {
 
   if (move.lockedMove) return `${move.lockedMove.turns || 3}턴 동안 같은 기술만 사용하며 교체할 수 없습니다. 매 사용 후 HP를 잃습니다.`;
   if (move.furyCutter) return `연속으로 사용할수록 위력이 증가합니다. (${move.furyCutter.powers.join(" → ")})`;
+  if (move.multiHit) {
+    if (move.multiHit.fixed) return `${move.multiHit.fixed}회 연속 타격합니다.`;
+    return `${move.multiHit.min || 2}~${move.multiHit.max || 5}회 연속 타격합니다.`;
+  }
   if (move.drain) return `준 피해의 ${Math.round(move.drain.ratio * 100)}%만큼 HP를 회복합니다.`;
+  if (Array.isArray(move.selfStatAfterUse)) {
+    return `사용 후 ${move.selfStatAfterUse.map((e) => `${{ attack: "공격", defense: "방어", speed: "스피드" }[e.stat] || e.stat} ${e.amount > 0 ? "+" : ""}${e.amount}`).join(" / ")} 변화가 발생합니다.`;
+  }
   if (move.selfStatAfterHit) {
     const statKo = { attack: "공격", defense: "방어", speed: "스피드" }[move.selfStatAfterHit.stat] || move.selfStatAfterHit.stat;
     return `명중 후 내 포켓몬의 ${statKo}이/가 ${Math.abs(move.selfStatAfterHit.amount)}랭크 ${move.selfStatAfterHit.amount > 0 ? "올라갑니다" : "떨어집니다"}.`;

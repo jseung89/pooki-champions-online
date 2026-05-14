@@ -585,6 +585,29 @@
       background-image:url("/assets/effects/sing-note-effect.png");
       filter:saturate(1.95) contrast(1.36) brightness(1.2) drop-shadow(0 0 17px rgba(235,160,255,.84));
     }
+
+    .effect-projectile.effect-normal-multihit{background-image:url("/assets/effects/multihit/normal_multihit.png");}
+    .effect-projectile.effect-fire-multihit{background-image:url("/assets/effects/multihit/fire_multihit.png");}
+    .effect-projectile.effect-water-multihit{background-image:url("/assets/effects/multihit/water_multihit.png");}
+    .effect-projectile.effect-grass-multihit{background-image:url("/assets/effects/multihit/grass_multihit.png");}
+    .effect-projectile.effect-electric-multihit{background-image:url("/assets/effects/multihit/electric_multihit.png");}
+    .effect-projectile.effect-ice-multihit{background-image:url("/assets/effects/multihit/ice_multihit.png");}
+    .effect-projectile.effect-fighting-multihit{background-image:url("/assets/effects/multihit/fighting_multihit.png");}
+    .effect-projectile.effect-poison-multihit{background-image:url("/assets/effects/multihit/poison_multihit.png");}
+    .effect-projectile.effect-ground-multihit{background-image:url("/assets/effects/multihit/ground_multihit.png");}
+    .effect-projectile.effect-flying-multihit{background-image:url("/assets/effects/multihit/flying_multihit.png");}
+    .effect-projectile.effect-psychic-multihit{background-image:url("/assets/effects/multihit/psychic_multihit.png");}
+    .effect-projectile.effect-bug-multihit{background-image:url("/assets/effects/multihit/bug_multihit.png");}
+    .effect-projectile.effect-rock-multihit{background-image:url("/assets/effects/multihit/rock_multihit.png");}
+    .effect-projectile.effect-ghost-multihit{background-image:url("/assets/effects/multihit/ghost_multihit.png");}
+    .effect-projectile.effect-dragon-multihit{background-image:url("/assets/effects/multihit/dragon_multihit.png");}
+    .effect-projectile.effect-dark-multihit{background-image:url("/assets/effects/multihit/dark_multihit.png");}
+    .effect-projectile.effect-steel-multihit{background-image:url("/assets/effects/multihit/steel_multihit.png");}
+    .effect-projectile[class*="-multihit"]{filter:saturate(1.55) contrast(1.32) brightness(1.12) drop-shadow(0 0 13px rgba(255,255,255,.55));}
+    .sprite.multi-hit-up{animation:multiHitUp 160ms ease-out;}
+    .sprite.multi-hit-down{animation:multiHitDown 160ms ease-out;}
+    @keyframes multiHitUp{0%{transform:translate(0,0)}45%{transform:translate(12px,-5px) scale(1.035)}100%{transform:translate(0,0)}}
+    @keyframes multiHitDown{0%{transform:translate(0,0)}45%{transform:translate(-12px,5px) scale(1.035)}100%{transform:translate(0,0)}}
     @keyframes effectSprite6{
       from{background-position:0 0;}
       to{background-position:-1152px 0;}
@@ -2047,34 +2070,31 @@
       return raw.includes("노래하기") || raw.includes("sing");
     }
 
-    function effectClassByType(type){
+    function effectClassByType(type, multi=false){
       const t=String(type||"").toLowerCase();
-      if(t==="electric") return "effect-electric";
-      if(t==="fire") return "effect-fire";
-      if(t==="water") return "effect-water";
-      if(t==="grass") return "effect-grass";
-      if(t==="ice") return "effect-ice";
-      if(t==="normal") return "effect-normal";
-      if(t==="fighting") return "effect-fighting";
-      if(t==="poison") return "effect-poison";
-      if(t==="ground") return "effect-ground";
-      if(t==="flying") return "effect-flying";
-      if(t==="psychic") return "effect-psychic";
-      if(t==="bug") return "effect-bug";
-      if(t==="rock") return "effect-rock";
-      if(t==="ghost") return "effect-ghost";
-      if(t==="dragon") return "effect-dragon";
-      if(t==="dark") return "effect-dark";
-      if(t==="steel") return "effect-steel";
-      return "effect-hit";
+      const map={electric:"effect-electric",fire:"effect-fire",water:"effect-water",grass:"effect-grass",ice:"effect-ice",normal:"effect-normal",fighting:"effect-fighting",poison:"effect-poison",ground:"effect-ground",flying:"effect-flying",psychic:"effect-psychic",bug:"effect-bug",rock:"effect-rock",ghost:"effect-ghost",dragon:"effect-dragon",dark:"effect-dark",steel:"effect-steel"};
+      const base=map[t]||"effect-hit";
+      return multi && map[t] ? `${base}-multihit` : base;
     }
 
-    function effectClassByMove(type, moveName){
+    function effectClassByMove(type, moveName, multi=false){
       const raw=String(moveName||"");
       const lower=raw.toLowerCase();
-      if(raw.includes("대폭발") || lower.includes("explosion")) return "effect-explosion-nuke";
-      if(isSingMoveName(moveName)) return "effect-sing-note";
-      return effectClassByType(type);
+      if(!multi && (raw.includes("대폭발") || lower.includes("explosion"))) return "effect-explosion-nuke";
+      if(!multi && isSingMoveName(moveName)) return "effect-sing-note";
+      return effectClassByType(type, multi);
+    }
+
+    function playMultiHitBump(playerKey){
+      return new Promise((resolve)=>{
+        const sprite=resolveEffectSprite(playerKey);
+        if(!sprite) return resolve();
+        const cls=playerKey===myRole ? "multi-hit-up" : "multi-hit-down";
+        sprite.classList.remove("multi-hit-up","multi-hit-down");
+        void sprite.offsetWidth;
+        sprite.classList.add(cls);
+        setTimeout(()=>{sprite.classList.remove(cls); resolve();}, 170);
+      });
     }
 
     function resolveEffectSprite(playerKey){
@@ -2093,7 +2113,7 @@
       };
     }
 
-    function playSpriteMoveEffect(moveType, attackerKey, defenderKey, moveName){
+    function playSpriteMoveEffect(moveType, attackerKey, defenderKey, moveName, multi=false){
       return new Promise((resolve)=>{
         try{
           const layer=document.getElementById("battleEffectLayer");
@@ -2110,7 +2130,7 @@
 
           const actualAngle=Math.atan2(dy, dx) * 180 / Math.PI;
           const baseSheetAngle=-35;
-          const effectClass=effectClassByMove(moveType, moveName);
+          const effectClass=effectClassByMove(moveType, moveName, multi);
           const isExplosionNuke=effectClass==="effect-explosion-nuke";
           const rotate=isExplosionNuke ? 0 : actualAngle - baseSheetAngle;
 
@@ -2123,7 +2143,7 @@
           fx.style.setProperty("--fx-rot", `${rotate}deg`);
 
           const t=String(moveType||"").toLowerCase();
-          const scale=isExplosionNuke ? 1.45 : ((t==="electric" || t==="fire") ? 1.24 : (t==="normal" || t==="fighting" || t==="hit" ? 1.08 : 1.16));
+          const scale=isExplosionNuke ? 1.45 : (multi ? 0.64 : ((t==="electric" || t==="fire") ? 1.24 : (t==="normal" || t==="fighting" || t==="hit" ? 1.08 : 1.16)));
           fx.style.setProperty("--fx-scale", scale);
 
           layer.appendChild(fx);
@@ -2138,7 +2158,7 @@
           };
 
           fx.addEventListener("animationend", cleanup, {once:true});
-          setTimeout(cleanup, 880);
+          setTimeout(cleanup, multi ? 760 : 880);
         }catch(err){
           console.warn("battle effect failed", err);
           resolve();
@@ -2377,10 +2397,12 @@
           await sleep(180);
           return;
         }
-        attackerEl.classList.add(isMine?"attack-up":"attack-down");
-        await sleep(DELAY.lunge);
-        attackerEl.classList.remove("attack-up","attack-down");
-        await playSpriteMoveEffect(ev.moveType, ev.attacker, ev.defender, ev.moveName);
+        if(!ev.isMultiHit){
+          attackerEl.classList.add(isMine?"attack-up":"attack-down");
+          await sleep(DELAY.lunge);
+          attackerEl.classList.remove("attack-up","attack-down");
+          await playSpriteMoveEffect(ev.moveType, ev.attacker, ev.defender, ev.moveName, false);
+        }
         await sleep(120);
         return;
       }
@@ -2390,7 +2412,13 @@
         const isMineHit=targetKey===myRole;
         const targetSprite=isMineHit?document.getElementById("mySprite"):document.getElementById("opponentSprite");
         const targetWrap=isMineHit?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite");
-        setMessage(`${isMineHit?"내":"상대"} ${ev.defenderName||ev.name||"포켓몬"}이 ${ev.amount} 피해를 입었다!`,true);
+        const multi=ev.isMultiHit === true;
+        const hitLabel=multi ? `${ev.hitIndex||"?"}타째! ` : "";
+        setMessage(`${hitLabel}${isMineHit?"내":"상대"} ${ev.defenderName||ev.name||"포켓몬"}이 ${ev.amount} 피해를 입었다!${ev.critical?" 급소!":""}`,true);
+        if(multi){
+          await playMultiHitBump(ev.attacker);
+          await playSpriteMoveEffect(ev.moveType, ev.attacker, ev.defender, ev.moveName||"", true);
+        }
         if(ev.type==="statusDamage"){
           const statusKind=normalizeStatusName(ev.status||ev.reason||ev.source||ev.statusName||"");
           if(statusKind==="burn" || statusKind==="poison") await playStatusSpriteEffect(statusKind,"damage",targetKey);

@@ -1,3 +1,36 @@
+
+## Patch Notes - 2026.05.14 (Multi-hit Normal Attack Branch Fix)
+
+### 버그 수정
+- 일반 공격기가 1타짜리 다단히트처럼 처리되던 문제 수정
+- 다단히트 연출은 `isMultiHit === true` 이벤트에서만 실행되도록 분기 강화
+- 일반 기술 damage 이벤트에는 `hitIndex` / `hitCount`가 붙지 않도록 서버 이벤트 정리
+- 예비 격투장과 본게임 모두 동일한 분기 기준 적용
+
+
+## Patch Notes - 2026.05.14 (Multi-hit Completion)
+
+### 다단히트 완성 패치
+- 17개 타입별 다단히트 전용 이펙트 PNG를 `public/assets/effects/multihit/`에 추가
+- 다단히트 기술은 각 hit마다 작은 타입별 이펙트가 재생되도록 수정
+- 각 hit마다 공격 포켓몬이 짧게 전진했다 돌아오는 `multiHitBump` 모션 추가
+- 각 hit마다 데미지 팝업과 HP 감소가 순차적으로 보이도록 예비 격투장 연출 보강
+- 각 hit마다 독립 급소 판정 결과가 로그/데미지 메시지에 반영되도록 이벤트 정보 보강
+- 기절 시 남은 hit는 중단되고, 스케일샷 후속 랭크 변화는 기술 종료 후 1회만 적용
+- 페어리 다단히트 이펙트는 현재 페어리 다단히트 기술이 없어 제외
+
+## Patch Notes - 2026.05.14 (Multi-hit Move Patch)
+
+### 다단히트 기술 패치
+- 다단히트 공통 엔진 추가
+- 더블촙, 두번치기, 락블레스트, 기관총, 고드름침, 본러시, 스케일샷 추가
+- 고정 2회 타격과 2~5회 랜덤 타격을 모두 지원
+- 타격별 데미지 이벤트와 총 타격 수 로그 추가
+- 스케일샷은 2~5회 타격 후 스피드 +1 / 방어 -1 적용
+- 예비 격투장에서도 다단히트 로그와 이펙트 순서를 확인할 수 있도록 반영
+- 기술 관리자에서 다단히트 기술 카테고리/설명 표시 지원
+- 일부 포켓몬 기본 기술 배치에 다단히트 기술을 적절히 반영
+
 ## Patch Notes - 2026.05.14 (Admin Hub & Learnable Move Filter)
 
 ### 관리자 페이지 통합 및 기술 관리자 안전 필터 패치
@@ -471,3 +504,8 @@ git push
 ```
 
 Render가 GitHub 변경을 감지해 자동 배포합니다.
+
+## Patch Note - Multi-hit event flag fix
+- Fixed multi-hit damage events incorrectly sending `isMultiHit: false` because `move.multiHit` is an object, not boolean `true`.
+- Multi-hit damage events now use `isMultiHit: !!move.multiHit`, allowing per-hit effects, per-hit bump animation, and per-hit HP updates to run correctly.
+- Normal single-hit attacks remain separated from multi-hit attacks.
