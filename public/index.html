@@ -1121,6 +1121,142 @@
     .lobby-chat-line,.lobby-chat-text,.lobby-chat-empty{color:#dbeafe!important;font-weight:850!important;}
     .lobby-chat-name{color:#93c5fd!important;font-weight:950!important;margin-right:6px;}
 
+
+    /* v6.11 lobby image asset integration */
+    body{
+      background:
+        linear-gradient(180deg,rgba(3,7,18,.12),rgba(3,7,18,.36)),
+        radial-gradient(circle at 12% 12%,rgba(37,99,235,.28),transparent 30%),
+        url('/assets/lobby/lobby-main-bg-v2.png') center center / cover no-repeat fixed!important;
+      background-color:#071737!important;
+    }
+    body::before{
+      background:
+        linear-gradient(115deg,transparent 0 18%,rgba(255,255,255,.035) 19%,transparent 28% 100%),
+        radial-gradient(ellipse at 50% 105%,rgba(37,99,235,.34) 0 24%,transparent 55%),
+        repeating-linear-gradient(90deg,rgba(255,255,255,.028) 0 1px,transparent 1px 96px)!important;
+      opacity:.78!important;
+    }
+    .lobby-card{
+      background:linear-gradient(135deg,rgba(13,28,64,.76),rgba(7,18,44,.86) 62%,rgba(24,22,84,.70))!important;
+      border-color:rgba(191,219,254,.38)!important;
+      backdrop-filter:blur(14px) saturate(1.16)!important;
+    }
+    .lobby-title-emblem-img{
+      display:block;
+      width:min(560px,54vw);
+      max-height:96px;
+      object-fit:contain;
+      object-position:left center;
+      margin:0 0 2px -6px;
+      filter:drop-shadow(0 12px 22px rgba(0,0,0,.28)) drop-shadow(0 0 16px rgba(37,99,235,.18));
+    }
+    .lobby-title-fallback{
+      position:absolute!important;
+      width:1px!important;height:1px!important;
+      overflow:hidden!important;clip:rect(0 0 0 0)!important;
+      white-space:nowrap!important;
+    }
+    .lobby-sub{color:#dbeafe!important;text-shadow:0 2px 16px rgba(0,0,0,.38)!important;margin-top:0!important;}
+    .lobby-sub-small{color:#aebee0!important;}
+    .lobby-emblem{
+      background:linear-gradient(145deg,rgba(15,23,42,.74),rgba(29,78,216,.86) 58%,rgba(124,58,237,.78))!important;
+    }
+    .room-card{
+      background:linear-gradient(180deg,rgba(8,22,54,.94),rgba(6,16,40,.97))!important;
+      border-color:rgba(147,197,253,.22)!important;
+    }
+    .room-art{
+      height:126px!important;
+      background-size:cover!important;
+      background-position:center center!important;
+      background-repeat:no-repeat!important;
+    }
+    .room-art::before{
+      background:linear-gradient(180deg,rgba(7,18,44,.10),rgba(7,18,44,.18) 42%,rgba(7,18,44,.70))!important;
+      z-index:1!important;
+    }
+    .room-art::after{z-index:2!important;}
+    .arena-tag{z-index:4!important;background:rgba(3,7,18,.48)!important;backdrop-filter:blur(6px);}
+    .room-icon{
+      display:block!important;
+      width:78px!important;height:78px!important;
+      right:12px!important;top:14px!important;
+      font-size:0!important;color:transparent!important;
+      background-size:contain!important;background-repeat:no-repeat!important;background-position:center!important;
+      border-radius:18px;
+      z-index:4!important;
+      animation:roomIconFloat 2.8s ease-in-out infinite alternate;
+    }
+    .room-card[data-theme="pallet"] .room-art{background-image:url('/assets/lobby/city-taecho-banner.png')!important;}
+    .room-card[data-theme="gray"] .room-art{background-image:url('/assets/lobby/city-gray-banner.png')!important;}
+    .room-card[data-theme="blue"] .room-art{background-image:url('/assets/lobby/city-blue-banner.png')!important;}
+    .room-card[data-theme="rainbow"] .room-art{background-image:url('/assets/lobby/city-rainbow-banner.png')!important;}
+    .room-card[data-theme="rainbow"] .room-art::before{
+      background:linear-gradient(180deg,rgba(7,18,44,.08),rgba(7,18,44,.20) 42%,rgba(7,18,44,.74))!important;
+      opacity:1!important;height:auto!important;top:0!important;bottom:0!important;filter:none!important;
+    }
+    .room-card[data-theme="pallet"] .room-icon{background-image:url('/assets/lobby/city-taecho-emblem.png')!important;}
+    .room-card[data-theme="gray"] .room-icon{background-image:url('/assets/lobby/city-gray-emblem.png')!important;}
+    .room-card[data-theme="blue"] .room-icon{background-image:url('/assets/lobby/city-blue-emblem.png')!important;}
+    .room-card[data-theme="rainbow"] .room-icon{background-image:url('/assets/lobby/city-rainbow-emblem.png')!important;}
+    .room-body{padding-top:16px!important;}
+    .room-name{color:#f8fbff!important;}
+    .room-meta{font-size:13px!important;}
+    .side-lobby-card{
+      background:linear-gradient(180deg,rgba(9,23,56,.86),rgba(4,12,32,.92))!important;
+      backdrop-filter:blur(13px) saturate(1.16)!important;
+    }
+    @media(max-width:900px){
+      .lobby-title-emblem-img{width:min(440px,78vw);max-height:78px;}
+      .room-art{height:118px!important;}
+    }
+
+
+    /* v6.12 championship lobby visual refresh */
+    body{
+      background:
+        linear-gradient(90deg,rgba(2,6,23,.58) 0%,rgba(2,6,23,.38) 34%,rgba(2,6,23,.50) 100%),
+        linear-gradient(180deg,rgba(2,6,23,.34),rgba(2,6,23,.72)),
+        url('/assets/lobby/lobby-main-bg-v2.png') center center / cover no-repeat fixed!important;
+      background-color:#050f2a!important;
+    }
+    body::before{
+      background:
+        radial-gradient(circle at 18% 18%,rgba(96,165,250,.16),transparent 34%),
+        radial-gradient(circle at 80% 20%,rgba(250,204,21,.08),transparent 28%),
+        repeating-linear-gradient(90deg,rgba(255,255,255,.018) 0 1px,transparent 1px 104px),
+        repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 104px)!important;
+      opacity:.66!important;
+    }
+    .lobby-card{
+      background:linear-gradient(135deg,rgba(10,22,52,.78),rgba(5,16,42,.88) 58%,rgba(17,22,72,.80))!important;
+      border-color:rgba(191,219,254,.34)!important;
+      box-shadow:0 28px 80px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.08)!important;
+    }
+    .side-lobby-card{
+      background:linear-gradient(180deg,rgba(7,17,46,.88),rgba(3,10,30,.94))!important;
+      border-color:rgba(147,197,253,.24)!important;
+      box-shadow:0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.06)!important;
+    }
+    .lobby-emblem{
+      background:
+        radial-gradient(circle at 50% 42%,rgba(255,255,255,.16),transparent 42%),
+        url('/assets/lobby/lobby-main-emblem-v2.png') center center / 84% 84% no-repeat,
+        linear-gradient(145deg,rgba(15,23,42,.72),rgba(29,78,216,.72) 58%,rgba(124,58,237,.62))!important;
+      font-size:0!important;
+      color:transparent!important;
+      overflow:hidden!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 24px rgba(0,0,0,.28),0 0 24px rgba(37,99,235,.20)!important;
+    }
+    .lobby-emblem::after{
+      border-color:rgba(250,204,21,.72)!important;
+      box-shadow:0 0 24px rgba(250,204,21,.23), inset 0 0 18px rgba(96,165,250,.10)!important;
+    }
+    .lobby-title-emblem-img{
+      filter:drop-shadow(0 10px 22px rgba(0,0,0,.34)) drop-shadow(0 0 14px rgba(96,165,250,.14))!important;
+    }
+
 </style>
 
 </head>
@@ -1149,7 +1285,8 @@
                 <span class="season-badge">SEASON 1</span>
                 <span class="live-badge" id="lobbyLiveBadge">온라인 확인 중</span>
               </div>
-              <div class="lobby-title">푸끼몬 챔피언스 온라인</div>
+              <img class="lobby-title-emblem-img" src="/assets/lobby/lobby-title-emblem.png" alt="푸끼몬 챔피언스 온라인" />
+              <div class="lobby-title lobby-title-fallback">푸끼몬 챔피언스 온라인</div>
               <div class="lobby-sub">도시를 선택하고 챔피언을 향해 도전하라</div>
               <div class="lobby-sub-small">온라인 트레이너들과 실시간 배틀에 참가하세요</div>
             </div>

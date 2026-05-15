@@ -538,3 +538,21 @@ Render가 GitHub 변경을 감지해 자동 배포합니다.
 - 배틀 화면의 교체 포켓몬 영역에 선택한 팀 포켓몬 스프라이트, Lv.50, HP, 타입 정보를 작게 표시하도록 개선했습니다.
 - 배틀 화면의 사이드 패널, 기술 설명, 로그, 채팅창을 딥블루 HUD 톤으로 통일했습니다.
 - 어두운 배경 위의 텍스트 가독성을 우선으로 조정했습니다.
+
+## Patch Notes - v6.11 Lobby Image Asset Integration
+
+- Added lobby image assets under `public/assets/lobby/`.
+- Applied the generated lobby background to the main lobby screen.
+- Replaced city card header art with generated 2:1 banner images.
+- Replaced city card emoji icons with generated city emblem assets.
+- Added the generated title emblem image to the lobby title area while keeping fallback text for accessibility.
+- Kept gameplay and battle logic unchanged; this patch only updates lobby visual presentation and README notes.
+
+
+## Patch Notes - v6.12 Championship Lobby Visual Refresh
+
+- 메인 로비 배경을 챔피언십 스타디움형 신규 이미지 `lobby-main-bg-v2.png`로 교체했습니다.
+- 좌측 상단 대표 엠블럼을 신규 `lobby-main-emblem-v2.png` 이미지로 교체했습니다.
+- 기존 상단 타이틀 로고와 도시 카드 배너/엠블럼은 유지했습니다.
+- 새 배경 위에서도 로비 카드와 사이드 패널 가독성이 유지되도록 딥블루 오버레이와 글래스 패널 톤을 보정했습니다.
+- 게임 로직은 변경하지 않았습니다.
