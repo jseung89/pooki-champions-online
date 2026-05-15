@@ -8,6 +8,8 @@ const MOVES = {
   hyperBeam: { id: "hyperBeam", apiName: "hyper-beam", name: "파괴광선", type: "normal", power: 150, accuracy: 90, recharge: 1, danger: "사용 후 다음 턴 반동으로 행동할 수 없습니다.", tags: ["premium"] },
   explosion: { id: "explosion", apiName: "explosion", name: "대폭발", type: "normal", power: 400, accuracy: 100, selfDestruct: true, danger: "사용 후 자신도 쓰러지는 초고위력 조커 기술입니다.", tags: ["signature", "premium"] },
 
+  doubleEdge: { id: "doubleEdge", apiName: "double-edge", name: "이판사판태클", type: "normal", power: 120, accuracy: 100, recoil: { ratio: 1 / 3 }, danger: "준 피해의 1/3만큼 반동 피해를 입습니다.", tags: ["premium", "risk", "recoil"] },
+
   sing: { id: "sing", apiName: "sing", name: "노래하기", type: "normal", power: 0, accuracy: 60, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
   perishSong: { id: "perishSong", apiName: "perish-song", name: "멸망의노래", type: "normal", power: 0, accuracy: 100, fixedDamageRatio: 0.5, statChangeAfterDamage: { target: "enemy", stat: "speed", amount: -1 }, tags: ["signature"] },
   rest: { id: "rest", apiName: "rest", name: "잠자기", type: "psychic", power: 0, accuracy: 100, rest: { turns: 2 }, tags: ["recovery"] },
@@ -17,6 +19,7 @@ const MOVES = {
 
   flamethrower: { id: "flamethrower", apiName: "flamethrower", name: "화염방사", type: "fire", power: 90, accuracy: 100, effect: { chance: 10, status: "burn" }, tags: ["premium"] },
   fireBlast: { id: "fireBlast", apiName: "fire-blast", name: "불대문자", type: "fire", power: 110, accuracy: 85, effect: { chance: 10, status: "burn" }, tags: ["premium"] },
+  flareBlitz: { id: "flareBlitz", apiName: "flare-blitz", name: "플레어드라이브", type: "fire", power: 120, accuracy: 100, recoil: { ratio: 1 / 3 }, effect: { chance: 10, status: "burn" }, danger: "준 피해의 1/3만큼 반동 피해를 입고, 10% 확률로 화상을 입힙니다.", tags: ["premium", "risk", "recoil"] },
   willOWisp: { id: "willOWisp", apiName: "will-o-wisp", name: "도깨비불", type: "fire", power: 0, accuracy: 85, statusMove: { target: "enemy", status: "burn" }, tags: ["status"] },
 
   surf: { id: "surf", apiName: "surf", name: "파도타기", type: "water", power: 90, accuracy: 100, tags: ["premium"] },
@@ -27,11 +30,13 @@ const MOVES = {
 
   razorLeaf: { id: "razorLeaf", apiName: "razor-leaf", name: "잎날가르기", type: "grass", power: 65, accuracy: 95, highCrit: true },
   energyBall: { id: "energyBall", apiName: "energy-ball", name: "에너지볼", type: "grass", power: 90, accuracy: 100, statChance: { chance: 10, target: "enemy", stat: "defense", amount: -1 }, tags: ["premium"] },
+  woodHammer: { id: "woodHammer", apiName: "wood-hammer", name: "우드해머", type: "grass", power: 120, accuracy: 100, recoil: { ratio: 1 / 3 }, danger: "준 피해의 1/3만큼 반동 피해를 입습니다.", tags: ["premium", "risk", "recoil"] },
   sleepPowder: { id: "sleepPowder", apiName: "sleep-powder", name: "수면가루", type: "grass", power: 0, accuracy: 65, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
   poisonPowder: { id: "poisonPowder", apiName: "poison-powder", name: "독가루", type: "poison", power: 0, accuracy: 75, statusMove: { target: "enemy", status: "poison" }, tags: ["status"] },
 
   thunderbolt: { id: "thunderbolt", apiName: "thunderbolt", name: "10만볼트", type: "electric", power: 90, accuracy: 100, effect: { chance: 10, status: "paralyze" }, tags: ["premium"] },
   thunder: { id: "thunder", apiName: "thunder", name: "번개", type: "electric", power: 120, accuracy: 75, effect: { chance: 30, status: "paralyze" }, tags: ["premium"] },
+  wildCharge: { id: "wildCharge", apiName: "wild-charge", name: "와일드볼트", type: "electric", power: 90, accuracy: 100, recoil: { ratio: 1 / 4 }, danger: "준 피해의 1/4만큼 반동 피해를 입습니다.", tags: ["premium", "risk", "recoil"] },
   thunderWave: { id: "thunderWave", apiName: "thunder-wave", name: "전기자석파", type: "electric", power: 0, accuracy: 90, statusMove: { target: "enemy", status: "paralyze" }, tags: ["status"] },
 
   karateChop: { id: "karateChop", apiName: "karate-chop", name: "태권당수", type: "fighting", power: 70, accuracy: 100, highCrit: true },
@@ -47,6 +52,7 @@ const MOVES = {
   wingAttack: { id: "wingAttack", apiName: "wing-attack", name: "날개치기", type: "flying", power: 60, accuracy: 100 },
   aerialAce: { id: "aerialAce", apiName: "aerial-ace", name: "제비반환", type: "flying", power: 60, accuracy: 100 },
   airSlash: { id: "airSlash", apiName: "air-slash", name: "에어슬래시", type: "flying", power: 75, accuracy: 95, flinchChance: 30 },
+  braveBird: { id: "braveBird", apiName: "brave-bird", name: "브레이브버드", type: "flying", power: 120, accuracy: 100, recoil: { ratio: 1 / 3 }, danger: "준 피해의 1/3만큼 반동 피해를 입습니다.", tags: ["premium", "risk", "recoil"] },
   steelWing: { id: "steelWing", apiName: "steel-wing", name: "강철날개", type: "steel", power: 70, accuracy: 90 },
 
   confusion: { id: "confusion", apiName: "confusion", name: "염동력", type: "psychic", power: 50, accuracy: 100 },
@@ -56,6 +62,7 @@ const MOVES = {
 
   bugBite: { id: "bugBite", apiName: "bug-bite", name: "벌레먹기", type: "bug", power: 60, accuracy: 100 },
   rockSlide: { id: "rockSlide", apiName: "rock-slide", name: "스톤샤워", type: "rock", power: 75, accuracy: 90, flinchChance: 30, tags: ["premium"] },
+  headSmash: { id: "headSmash", apiName: "head-smash", name: "양날박치기", type: "rock", power: 120, accuracy: 90, recoil: { ratio: 1 / 3 }, danger: "준 피해의 1/3만큼 반동 피해를 입습니다.", tags: ["premium", "risk", "recoil"] },
 
   shadowBall: { id: "shadowBall", apiName: "shadow-ball", name: "섀도볼", type: "ghost", power: 80, accuracy: 100, statChance: { chance: 20, target: "enemy", stat: "defense", amount: -1 }, tags: ["premium"] },
   dragonBreath: { id: "dragonBreath", apiName: "dragon-breath", name: "용의숨결", type: "dragon", power: 60, accuracy: 100, effect: { chance: 30, status: "paralyze" } },
@@ -69,7 +76,7 @@ const MOVES = {
 
   dragonClaw: { id: "dragonClaw", apiName: "dragon-claw", name: "드래곤클로", type: "dragon", power: 80, accuracy: 100 },
   dragonPulse: { id: "dragonPulse", apiName: "dragon-pulse", name: "용의파동", type: "dragon", power: 85, accuracy: 100, tags: ["premium"] },
-  outrage: { id: "outrage", apiName: "outrage", name: "역린", type: "dragon", power: 120, accuracy: 100, lockedMove: { turns: 3 }, selfDamageRatio: 0.08, danger: "3턴 동안 역린만 사용하며 교체할 수 없습니다. 매 사용 후 최대 HP의 8%를 잃습니다.", tags: ["premium", "risk"] },
+  outrage: { id: "outrage", apiName: "outrage", name: "역린", type: "dragon", power: 120, accuracy: 100, lockedMove: { turns: 3 }, selfDamageRatio: 0.12, danger: "3턴 동안 역린만 사용하며 교체할 수 없습니다. 매 사용 후 최대 HP의 12%를 잃습니다.", tags: ["premium", "risk"] },
   dracoMeteor: { id: "dracoMeteor", apiName: "draco-meteor", name: "용성군", type: "dragon", power: 130, accuracy: 90, selfStatAfterUse: { stat: "attack", amount: -2 }, danger: "사용 후 내 공격이 크게 떨어집니다.", tags: ["premium", "risk"] },
 
   ironHead: { id: "ironHead", apiName: "iron-head", name: "아이언헤드", type: "steel", power: 80, accuracy: 100, flinchChance: 30 },
@@ -146,6 +153,7 @@ function isPremiumMove(move) {
 function moveDescription(move) {
   if (!move) return "";
   if (move.selfDestruct) return "초고위력 기술입니다. 사용 후 자신도 쓰러집니다.";
+  if (move.recoil) return `강하게 공격하지만 준 피해의 ${move.recoil.ratio >= 0.333 ? "1/3" : "1/4"}만큼 반동 피해를 입습니다.`;
   if (move.recharge) return "초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다.";
   if (move.rest) return `HP를 모두 회복하고 ${move.rest.turns}턴 동안 수면 상태가 됩니다.`;
   if (move.heal) return `자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio * 100)}%만큼 회복합니다.`;

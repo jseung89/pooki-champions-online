@@ -51,26 +51,29 @@
     }
     .brand{display:flex; align-items:center; gap:14px;}
     .brand-badge{
-      width:54px; height:54px; border-radius:17px;
-      display:grid; place-items:center; font-size:28px;
-      background:linear-gradient(135deg,#3b82f6,#1745bd);
-      box-shadow:inset 0 0 0 2px rgba(255,255,255,.18),0 10px 22px rgba(0,0,0,.2);
+      width:62px; height:62px; border-radius:0;
+      display:grid; place-items:center;
+      background:url('/assets/lobby/lobby-main-emblem-v2.png') center center / contain no-repeat;
+      box-shadow:none;
+      filter:drop-shadow(0 8px 16px rgba(0,0,0,.34)) drop-shadow(0 0 16px rgba(59,130,246,.28));
+      flex:0 0 auto;
     }
     .title{font-size:22px; font-weight:950; letter-spacing:-.3px;}
     .role{font-size:15px; font-weight:850; opacity:.95; margin-top:3px;}
 
     .header-center{
-      background:#fff;
-      color:var(--text);
+      background:linear-gradient(135deg,rgba(15,47,121,.72),rgba(18,68,170,.38));
+      color:white;
       border-radius:24px;
       padding:10px 16px;
       display:grid;
       grid-template-columns:1fr 1fr 1fr;
       gap:10px;
       align-items:center;
+      box-shadow:inset 0 0 0 1px rgba(147,197,253,.22),0 10px 26px rgba(0,0,0,.16);
     }
     .mini-block{display:grid; gap:4px; text-align:center;}
-    .mini-label{font-size:12px; font-weight:850; color:var(--muted);}
+    .mini-label{font-size:12px; font-weight:850; color:rgba(219,234,254,.86);}
     .mini-value{font-size:18px; font-weight:950;}
     .role-chip{
       display:inline-flex; justify-content:center; align-items:center;
@@ -1326,7 +1329,7 @@
     
     <header class="topbar">
       <div class="brand">
-        <div class="brand-badge">🛡️</div>
+        <div class="brand-badge" aria-label="푸끼몬 챔피언스 엠블럼"></div>
         <div>
           <div class="title">푸끼몬 챔피언스 온라인</div>
           <div class="role" id="roleText">서버 연결 중...</div>
@@ -1946,7 +1949,14 @@
     }
 
     function typeKo(type){ return currentState?.typeKo?.[type] || TYPE_KO_FALLBACK[type] || type; }
-    function opponentRole(){ return myRole === "p1" ? "p2" : "p1"; }
+    function opponentRole(){ return opponentOfRole(perspectiveRole()); }
+
+    function perspectiveRole(){ return (myRole==="p1" || myRole==="p2") ? myRole : "p1"; }
+    function opponentOfRole(role){ return role === "p1" ? "p2" : "p1"; }
+    function isPlayerOnMineSide(playerKey){ return playerKey === perspectiveRole(); }
+    function spriteIdForPlayer(playerKey){ return isPlayerOnMineSide(playerKey) ? "mySprite" : "opponentSprite"; }
+    function spriteWrapForPlayer(playerKey){ return document.querySelector(isPlayerOnMineSide(playerKey) ? ".mine-sprite" : ".opponent-sprite"); }
+    function effectIdForPlayer(playerKey){ return isPlayerOnMineSide(playerKey) ? "myEffect" : "opponentEffect"; }
     function activePokemon(playerKey){
       const p=currentState?.players?.[playerKey];
       if(!p || !Array.isArray(p.team) || p.team.length===0) return null;
@@ -2213,8 +2223,8 @@
     }
 
     function renderBattleSummary(){
-      const mineKey = (myRole==="p1" || myRole==="p2") ? myRole : "p1";
-      const enemyKey = mineKey==="p1" ? "p2" : "p1";
+      const mineKey = perspectiveRole();
+      const enemyKey = opponentOfRole(mineKey);
       const mine = activePokemon(mineKey);
       const enemy = activePokemon(enemyKey);
       const best = bestMoveForCurrentMatchup(mine, enemy);
@@ -2298,7 +2308,7 @@
     }
 
     function hideBattleSpriteForPendingFaint(playerKey){
-      const sprite = playerKey===myRole ? document.getElementById("mySprite") : document.getElementById("opponentSprite");
+      const sprite = document.getElementById(spriteIdForPlayer(playerKey));
       if(!sprite) return;
       sprite.classList.add("fainted");
       sprite.style.opacity="0";
@@ -2310,8 +2320,8 @@
     function renderBattleView(){
       if(!currentState?.players) return;
 
-      const mineKey = (myRole==="p1" || myRole==="p2") ? myRole : "p1";
-      const enemyKey = (mineKey==="p1") ? "p2" : "p1";
+      const mineKey = perspectiveRole();
+      const enemyKey = opponentOfRole(mineKey);
 
       const mine = getDisplayPokemon(mineKey);
       const enemy = getDisplayPokemon(enemyKey);
@@ -2658,7 +2668,7 @@
       return new Promise((resolve)=>{
         const sprite=resolveEffectSprite(playerKey);
         if(!sprite) return resolve();
-        const cls=playerKey===myRole ? "multi-hit-up" : "multi-hit-down";
+        const cls=isPlayerOnMineSide(playerKey) ? "multi-hit-up" : "multi-hit-down";
         sprite.classList.remove("multi-hit-up","multi-hit-down");
         void sprite.offsetWidth;
         sprite.classList.add(cls);
@@ -2667,10 +2677,11 @@
     }
 
     function resolveEffectSprite(playerKey){
-      const directId = playerKey===myRole ? "mySprite" : "opponentSprite";
+      const mineSide=isPlayerOnMineSide(playerKey);
+      const directId = mineSide ? "mySprite" : "opponentSprite";
       return document.getElementById(directId)
-        || document.querySelector(playerKey===myRole ? ".mine-sprite .sprite" : ".opponent-sprite .sprite")
-        || document.querySelector(playerKey===myRole ? ".mine-sprite img" : ".opponent-sprite img");
+        || document.querySelector(mineSide ? ".mine-sprite .sprite" : ".opponent-sprite .sprite")
+        || document.querySelector(mineSide ? ".mine-sprite img" : ".opponent-sprite img");
     }
 
     function pointInEffectLayer(layer, el, yBias){
@@ -2769,10 +2780,11 @@
     }
 
     function resolveStatusSprite(playerKey){
-      const directId=playerKey===myRole ? "mySprite" : "opponentSprite";
+      const mineSide=isPlayerOnMineSide(playerKey);
+      const directId=mineSide ? "mySprite" : "opponentSprite";
       return document.getElementById(directId)
-        || document.querySelector(playerKey===myRole ? ".mine-sprite .sprite" : ".opponent-sprite .sprite")
-        || document.querySelector(playerKey===myRole ? ".mine-sprite img" : ".opponent-sprite img");
+        || document.querySelector(mineSide ? ".mine-sprite .sprite" : ".opponent-sprite .sprite")
+        || document.querySelector(mineSide ? ".mine-sprite img" : ".opponent-sprite img");
     }
 
 
@@ -2884,14 +2896,14 @@
 
 
     async function playEventSlow(ev){
-      if(!myRole||myRole==="spectator"){ if(ev.text)setMessage(ev.text,true); await sleep(DELAY.message); return; }
+      if(!myRole){ if(ev.text)setMessage(ev.text,true); await sleep(DELAY.message); return; }
       if(ev.type==="turnStart"){ setMessage(ev.text||`${ev.turn}턴`,true); await sleep(DELAY.turnStart); return; }
       if(ev.type==="message"||ev.type==="warning"){ setMessage(ev.type==="warning"?`⚠ ${ev.text}`:ev.text,ev.type!=="warning"); await sleep(ev.type==="warning"?DELAY.message+250:DELAY.message); return; }
       if(ev.type==="switch"){
         lastActionByRole[ev.player]=`교체: ${ev.to}`;
-        const isMineSwitch=ev.player===myRole;
+        const isMineSwitch=isPlayerOnMineSide(ev.player);
         const who=isMineSwitch?"내":"상대";
-        const sprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        const sprite=document.getElementById(spriteIdForPlayer(ev.player));
         const arena=document.querySelector(".arena-stage");
         const fromWasFainted = !!(ev.fromFainted || ev.skipSwitchOut || ev.forceAfterFaint);
 
@@ -2917,7 +2929,7 @@
         // switch 이벤트가 오는 이 순간에만 다음 포켓몬 표시를 허용한다.
         applyVisualSwitch(ev.player,ev.to);
         renderBattleView();
-        const newSprite=isMineSwitch?document.getElementById("mySprite"):document.getElementById("opponentSprite");
+        const newSprite=document.getElementById(spriteIdForPlayer(ev.player));
         if(newSprite){
           clearTransientSpriteState(newSprite);
           newSprite.style.visibility="";
@@ -2932,11 +2944,11 @@
       }
       if(ev.type==="move"){
         lastActionByRole[ev.attacker]=ev.moveName || "기술 사용";
-        const isMine=ev.attacker===myRole;
-        const attackerEl=isMine?document.getElementById("mySprite"):document.getElementById("opponentSprite");
-        const attackerWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite");
-        const attackerEffect=isMine?document.getElementById("myEffect"):document.getElementById("opponentEffect");
-        const defenderEffect=isMine?document.getElementById("opponentEffect"):document.getElementById("myEffect");
+        const isMine=isPlayerOnMineSide(ev.attacker);
+        const attackerEl=document.getElementById(spriteIdForPlayer(ev.attacker));
+        const attackerWrap=spriteWrapForPlayer(ev.attacker);
+        const attackerEffect=document.getElementById(effectIdForPlayer(ev.attacker));
+        const defenderEffect=document.getElementById(effectIdForPlayer(ev.defender));
         const who=isMine?"내":"상대";
         setMessage(`${who} ${ev.attackerName}의 ${ev.moveName}!`,true);
         await sleep(DELAY.moveText);
@@ -2978,9 +2990,9 @@
       if(ev.type==="damage"||ev.type==="statusDamage"){
         playGameSfx(ev.critical ? "critical" : "hit");
         const targetKey=ev.defender||ev.target;
-        const isMineHit=targetKey===myRole;
-        const targetSprite=isMineHit?document.getElementById("mySprite"):document.getElementById("opponentSprite");
-        const targetWrap=isMineHit?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite");
+        const isMineHit=isPlayerOnMineSide(targetKey);
+        const targetSprite=document.getElementById(spriteIdForPlayer(targetKey));
+        const targetWrap=spriteWrapForPlayer(targetKey);
         const multi=ev.isMultiHit === true;
         const hitLabel=multi ? `${ev.hitIndex||"?"}타째! ` : "";
         setMessage(`${hitLabel}${isMineHit?"내":"상대"} ${ev.defenderName||ev.name||"포켓몬"}이 ${ev.amount} 피해를 입었다!${ev.critical?" 급소!":""}`,true);
@@ -3002,11 +3014,11 @@
         await sleep(DELAY.damage-400);
         return;
       }
-      if(ev.type==="heal"){ playGameSfx("heal"); const isMine=ev.target===myRole; const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const lastMove=lastActionByRole[ev.target]||""; const variationKey=variationEffectKeyFromMoveName(lastMove)||"heal"; setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); await playVariationMoveEffect(variationKey,ev.target); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(Math.max(120,DELAY.damage-540)); return; }
-      if(ev.type==="miss"){ playGameSfx("miss"); const attackerMine=ev.attacker===myRole; const attackerEffect=attackerMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage("하지만 공격은 빗나갔다!",true); showCustomEffect(attackerEffect,"💦"); await sleep(DELAY.miss); return; }
+      if(ev.type==="heal"){ playGameSfx("heal"); const isMine=isPlayerOnMineSide(ev.target); const targetWrap=isMine?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite"); const lastMove=lastActionByRole[ev.target]||""; const variationKey=variationEffectKeyFromMoveName(lastMove)||"heal"; setMessage(`${isMine?"내":"상대"} ${ev.name}의 HP가 회복되었다!`,true); await playVariationMoveEffect(variationKey,ev.target); showDamage(targetWrap,`+${ev.amount}`,true); await sleep(180); applyVisualHeal(ev.target,ev.hp); renderBattleView(); await sleep(Math.max(120,DELAY.damage-540)); return; }
+      if(ev.type==="miss"){ playGameSfx("miss"); const attackerMine=isPlayerOnMineSide(ev.attacker); const attackerEffect=attackerMine?document.getElementById("myEffect"):document.getElementById("opponentEffect"); setMessage("하지만 공격은 빗나갔다!",true); showCustomEffect(attackerEffect,"💦"); await sleep(DELAY.miss); return; }
       if(ev.type==="stat"){
         playGameSfx(ev.amount > 0 ? "buff" : "debuff");
-        const isMineTarget=ev.target===myRole;
+        const isMineTarget=isPlayerOnMineSide(ev.target);
         const statKo={attack:"공격",defense:"방어",speed:"스피드"}[ev.stat]||ev.stat;
         const wrap=isMineTarget?document.querySelector(".mine-sprite"):document.querySelector(".opponent-sprite");
         const lastMove=lastActionByRole[isMineTarget?myRole:opponentRole()]||"";
@@ -3018,7 +3030,7 @@
         await sleep(Math.max(120,DELAY.stat-520));
         return;
       }
-      if(ev.type==="status"){ playGameSfx(ev.status === "sleep" ? "sleep" : "debuff"); const isMineTarget=ev.target===myRole; const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect"); const icon={burn:"🔥",poison:"☠️",paralyze:"⚡",sleep:"💤"}[ev.status]||"❗"; const lastMove=lastActionByRole[ev.target]||""; const skipIcon=ev.status==="sleep" && variationEffectKeyFromMoveName(lastMove)==="rest-sleep"; setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`,true); applyVisualStatus(ev.target,ev.status); renderBattleView(); if(!skipIcon) showCustomEffect(effectEl,icon); await sleep(DELAY.status); return; }
+      if(ev.type==="status"){ playGameSfx(ev.status === "sleep" ? "sleep" : "debuff"); const isMineTarget=isPlayerOnMineSide(ev.target); const effectEl=isMineTarget?document.getElementById("myEffect"):document.getElementById("opponentEffect"); const icon={burn:"🔥",poison:"☠️",paralyze:"⚡",sleep:"💤"}[ev.status]||"❗"; const lastMove=lastActionByRole[ev.target]||""; const skipIcon=ev.status==="sleep" && variationEffectKeyFromMoveName(lastMove)==="rest-sleep"; setMessage(`${isMineTarget?"내":"상대"} ${ev.name||"포켓몬"}이 ${STATUS_KO[ev.status]||ev.status} 상태가 되었다!`,true); applyVisualStatus(ev.target,ev.status); renderBattleView(); if(!skipIcon) showCustomEffect(effectEl,icon); await sleep(DELAY.status); return; }
             if(ev.type==="skip"){
         const skippedMine=ev.player===myRole;
         setMessage(ev.text||"행동할 수 없다!",true);
@@ -3039,7 +3051,7 @@
         return;
       }
       if(ev.type==="faint"){
-        const isMine=ev.target===myRole;
+        const isMine=isPlayerOnMineSide(ev.target);
         faintPending[ev.target] = true;
         setMessage(`${isMine?"내":"상대"} ${ev.name||"포켓몬"}이 쓰러졌다!`,true);
         const sprite=isMine?document.getElementById("mySprite"):document.getElementById("opponentSprite");

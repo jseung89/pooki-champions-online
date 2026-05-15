@@ -269,6 +269,7 @@ function publicMoveLite(move) {
     drain: move.drain || null,
     lockedMove: move.lockedMove || null,
     selfDamageRatio: move.selfDamageRatio || null,
+    recoil: move.recoil || null,
     selfStatAfterHit: move.selfStatAfterHit || null,
     selfStatAfterUse: move.selfStatAfterUse || null,
     furyCutter: move.furyCutter || null,
@@ -285,7 +286,7 @@ function moveCategory(move) {
   if (move.heal || move.rest || move.drain) return "회복/흡수";
   if (move.statChange || move.statChanges || move.selfStatAfterHit || move.selfStatAfterUse || move.statChance) return "능력변화";
   if (move.multiHit) return "다단히트";
-  if (move.lockedMove || move.furyCutter || move.selfDamageRatio || move.recharge || move.selfDestruct) return "특수공격";
+  if (move.lockedMove || move.furyCutter || move.selfDamageRatio || move.recoil || move.recharge || move.selfDestruct) return "특수공격";
   if ((move.power || 0) > 0) return "공격";
   return "기타";
 }
@@ -498,6 +499,17 @@ function simulateTestTurn(attackerInput, defenderInput, selectedMoveId) {
       const healed = attacker.hp - before;
       logs.push(`${attacker.name}이/가 ${healed} HP를 흡수 회복했다!`);
       events.push({ type: "heal", target: "p1", name: attacker.name, amount: healed, hp: attacker.hp, maxHp: attacker.maxHp });
+    }
+
+    if (move.recoil && totalDamage > 0) {
+      const ratio = Number(move.recoil.ratio || 0);
+      if (Number.isFinite(ratio) && ratio > 0) {
+        const recoilDamage = Math.max(1, Math.floor(totalDamage * ratio));
+        attacker.hp = Math.max(0, attacker.hp - recoilDamage);
+        if (attacker.hp <= 0) attacker.fainted = true;
+        logs.push(`${attacker.name}은/는 반동으로 ${recoilDamage} 피해를 입었다!`);
+        events.push({ type: "damage", attacker: "p1", defender: "p1", amount: recoilDamage, moveType: move.type, moveName: move.name, effectiveness: 1, critical: false, hp: attacker.hp, maxHp: attacker.maxHp, defenderName: attacker.name, selfDamage: true, recoil: true });
+      }
     }
 
     for (const effect of selfStatEffectsList(move)) arenaApplyStat(attacker, "p1", effect.stat, effect.amount, logs, events);
@@ -1738,7 +1750,34 @@ function applySelfDamage(attackerKey, move) {
   const amount = Math.max(1, Math.floor(attacker.maxHp * move.selfDamageRatio));
   attacker.hp = Math.max(0, attacker.hp - amount);
   log(`${attacker.name}은/는 ${move.name}의 격한 반동으로 ${amount} 피해를 입었다!`);
-  addEvent({ type: "damage", attacker: attackerKey, defender: attackerKey, amount, moveType: move.type, effectiveness: 1, hp: attacker.hp, maxHp: attacker.maxHp, defenderName: attacker.name });
+  addEvent({ type: "damage", attacker: attackerKey, defender: attackerKey, amount, moveType: move.type, moveName: move.name, effectiveness: 1, hp: attacker.hp, maxHp: attacker.maxHp, defenderName: attacker.name, selfDamage: true });
+  if (attacker.hp <= 0) faintPokemon(attackerKey);
+}
+
+
+function applyRecoilDamage(attackerKey, move, dealtDamage) {
+  const attacker = active(attackerKey);
+  if (!attacker || attacker.fainted || !move?.recoil || !dealtDamage || dealtDamage <= 0) return;
+  const ratio = Number(move.recoil.ratio || 0);
+  if (!Number.isFinite(ratio) || ratio <= 0) return;
+  const amount = Math.max(1, Math.floor(dealtDamage * ratio));
+  attacker.hp = Math.max(0, attacker.hp - amount);
+  log(`${attacker.name}은/는 반동으로 ${amount} 피해를 입었다!`);
+  addEvent({
+    type: "damage",
+    attacker: attackerKey,
+    defender: attackerKey,
+    amount,
+    moveType: move.type,
+    moveName: move.name,
+    effectiveness: 1,
+    critical: false,
+    hp: attacker.hp,
+    maxHp: attacker.maxHp,
+    defenderName: attacker.name,
+    selfDamage: true,
+    recoil: true,
+  });
   if (attacker.hp <= 0) faintPokemon(attackerKey);
 }
 
@@ -1954,6 +1993,7 @@ function useMove(attackerKey, defenderKey, moveIndex) {
 
     applySelfStatAfterHit(attackerKey, move);
     applyDrain(attackerKey, move, damageResult.damage);
+    applyRecoilDamage(attackerKey, move, damageResult.damage);
     applySelfStatAfterUse(attackerKey, move);
     applySelfDamage(attackerKey, move);
     advanceFuryCutter(attacker, move, true);
