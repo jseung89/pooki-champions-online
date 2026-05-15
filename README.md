@@ -509,3 +509,32 @@ Render가 GitHub 변경을 감지해 자동 배포합니다.
 - Fixed multi-hit damage events incorrectly sending `isMultiHit: false` because `move.multiHit` is an object, not boolean `true`.
 - Multi-hit damage events now use `isMultiHit: !!move.multiHit`, allowing per-hit effects, per-hit bump animation, and per-hit HP updates to run correctly.
 - Normal single-hit attacks remain separated from multi-hit attacks.
+
+
+## Patch Note - Champions lobby gate redesign
+- Redesigned the main lobby into a Champions Lobby style game gate.
+- Added SEASON 1 badge, live online/room status badge, emblem-style title area, and stronger game lobby copy.
+- Reworked room cards into arena cards with themed visual headers for 태초마을, 회색시티, 블루시티, 무지개시티.
+- Upgraded right-side lobby panels, ranking panel, online users, and lobby chat to a game HUD style.
+- Added hover glow, floating room icons, deeper blue arena background, and responsive layout refinements.
+- Preserved existing room join, AI match, login, ranking, and lobby chat logic.
+
+
+## Patch Notes - v6.6 Premium Champions Lobby HUD
+
+- 로비 메인 패널을 밝은 웹 카드 느낌에서 딥블루 반투명 HUD 스타일로 고급화했습니다.
+- 도시 선택 카드를 프리미엄 배틀 아레나 카드 톤으로 재정리하고, STARTER/ROCK/AQUA/EVENT ARENA 라벨을 추가했습니다.
+- 우측 접속자/랭킹/채팅 패널을 네이비 글래스 HUD로 통일했습니다.
+- 버튼 그림자와 광택을 조정해 장난감 같은 느낌을 줄이고 게임 CTA 느낌을 강화했습니다.
+- 하단 안내 문구를 `ONLINE · ARENA · 챔피언을 향한 첫 전장` 형태로 변경했습니다.
+- 기능 로직은 변경하지 않고 로비 UI 빌드업 중심으로 패치했습니다.
+
+
+## Patch Notes - v6.8 Battle HUD Visibility + Team Select Cleanup
+
+- 로비 채팅 / 랭킹 렌더링에서 어두운 패널과 충돌하던 인라인 글자색을 제거하고 밝은 HUD 톤으로 통일했습니다.
+- 팀 선택 상단 3개 슬롯에서 `메인 포켓몬 / 벤치 1 / 벤치 2` 문구를 제거했습니다.
+- 팀 선택 슬롯의 포켓몬명, Lv.50, HP 정보가 어두운 배경에서도 잘 보이도록 색상을 보정했습니다.
+- 배틀 화면의 교체 포켓몬 영역에 선택한 팀 포켓몬 스프라이트, Lv.50, HP, 타입 정보를 작게 표시하도록 개선했습니다.
+- 배틀 화면의 사이드 패널, 기술 설명, 로그, 채팅창을 딥블루 HUD 톤으로 통일했습니다.
+- 어두운 배경 위의 텍스트 가독성을 우선으로 조정했습니다.
