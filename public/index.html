@@ -1260,6 +1260,233 @@
       filter:drop-shadow(0 10px 22px rgba(0,0,0,.34)) drop-shadow(0 0 14px rgba(96,165,250,.14))!important;
     }
 
+
+    /* v6.13 Mobile Mode Foundation Patch */
+    .mobile-collapse-toggle{display:none;}
+    .mobile-mode-toggle{white-space:nowrap;}
+    body.mobile-mode{padding:0;overflow-x:hidden;background-attachment:scroll!important;}
+    body.mobile-mode .lobby{width:100%;min-height:100svh;padding:12px;align-content:start;gap:12px;}
+    body.mobile-mode .lobby-shell{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;}
+    body.mobile-mode .lobby-card{border-radius:22px!important;padding:16px!important;}
+    body.mobile-mode .lobby-head{display:grid!important;grid-template-columns:1fr!important;gap:14px!important;align-items:start!important;margin-bottom:14px!important;}
+    body.mobile-mode .lobby-brand-block{gap:10px!important;align-items:center!important;}
+    body.mobile-mode .lobby-emblem{width:58px!important;height:58px!important;border-radius:18px!important;}
+    body.mobile-mode .lobby-title-emblem-img{width:min(300px,72vw)!important;max-height:58px!important;object-fit:contain!important;object-position:left center!important;}
+    body.mobile-mode .lobby-sub{font-size:13px!important;margin-top:4px!important;}
+    body.mobile-mode .lobby-sub-small{font-size:11px!important;}
+    body.mobile-mode .lobby-kicker{gap:6px!important;margin-bottom:6px!important;}
+    body.mobile-mode .season-badge,body.mobile-mode .live-badge{font-size:11px!important;padding:5px 9px!important;}
+    body.mobile-mode .lobby-userbar{justify-content:flex-start!important;gap:7px!important;}
+    body.mobile-mode .lobby-userbar .small-btn,body.mobile-mode .lobby-userbar .mobile-mode-toggle{font-size:12px!important;padding:9px 10px!important;border-radius:12px!important;}
+    body.mobile-mode .room-grid{grid-template-columns:1fr!important;gap:12px!important;}
+    body.mobile-mode .room-card{min-height:unset!important;border-radius:18px!important;overflow:hidden!important;}
+    body.mobile-mode .room-art{height:104px!important;}
+    body.mobile-mode .room-icon{width:48px!important;height:48px!important;left:12px!important;top:12px!important;}
+    body.mobile-mode .room-body{padding:12px 14px 14px!important;gap:8px!important;}
+    body.mobile-mode .room-name{font-size:23px!important;}
+    body.mobile-mode .room-meta{gap:4px!important;font-size:12px!important;}
+    body.mobile-mode .room-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+    body.mobile-mode .room-enter{height:44px!important;font-size:15px!important;border-radius:14px!important;}
+    body.mobile-mode .lobby-side{gap:10px!important;}
+    body.mobile-mode .side-lobby-card{border-radius:18px!important;padding:13px!important;}
+    body.mobile-mode .side-lobby-title{font-size:15px!important;margin-bottom:8px!important;}
+    body.mobile-mode .lobby-chat-card{min-height:unset!important;}
+    body.mobile-mode .lobby-chat-messages{height:128px!important;}
+    body.mobile-mode .lobby-note{font-size:12px!important;padding:0 8px 12px!important;}
+
+    body.mobile-mode .game{width:100%!important;min-height:100svh!important;border:0!important;border-radius:0!important;margin:0!important;overflow:visible!important;box-shadow:none!important;background:rgba(3,10,30,.96)!important;}
+    body.mobile-mode .topbar{grid-template-columns:1fr!important;gap:10px!important;padding:12px!important;position:sticky;top:0;z-index:50;}
+    body.mobile-mode .brand-badge{width:46px!important;height:46px!important;}
+    body.mobile-mode .title{font-size:18px!important;}
+    body.mobile-mode .role{font-size:12px!important;}
+    body.mobile-mode .header-center{grid-template-columns:1fr 1fr 1fr!important;padding:8px!important;border-radius:18px!important;}
+    body.mobile-mode .mini-label{font-size:10px!important;}
+    body.mobile-mode .mini-value{font-size:14px!important;}
+    body.mobile-mode .role-chip{min-width:0!important;padding:7px 8px!important;font-size:12px!important;}
+    body.mobile-mode .timer{font-size:22px!important;}
+    body.mobile-mode .timer-unit{font-size:12px!important;color:#dbeafe!important;}
+    body.mobile-mode .header-right{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;background:rgba(3,10,30,.38)!important;border:1px solid rgba(147,197,253,.18)!important;color:#f8fbff!important;border-radius:18px!important;padding:8px!important;}
+    body.mobile-mode .conn-pill{font-size:12px!important;padding:7px 9px!important;background:rgba(15,23,42,.42)!important;color:#f8fbff!important;border-color:rgba(147,197,253,.18)!important;}
+    body.mobile-mode .header-right .leave-room-btn,body.mobile-mode .header-right .mobile-mode-toggle{font-size:12px!important;padding:9px 10px!important;border-radius:12px!important;}
+
+    body.mobile-mode .team-screen{min-height:calc(100svh - 132px)!important;padding:12px!important;background:linear-gradient(180deg,#061739,#071b46)!important;}
+    body.mobile-mode .team-layout{grid-template-columns:1fr!important;gap:12px!important;}
+    body.mobile-mode .team-main{padding:14px!important;border-radius:20px!important;}
+    body.mobile-mode .team-head{display:grid!important;grid-template-columns:1fr auto!important;gap:10px!important;margin-bottom:12px!important;}
+    body.mobile-mode .team-title{font-size:20px!important;}
+    body.mobile-mode .team-sub{font-size:12px!important;}
+    body.mobile-mode .team-timer b{font-size:26px!important;}
+    body.mobile-mode .selected-row{grid-template-columns:1fr!important;gap:8px!important;margin-bottom:12px!important;}
+    body.mobile-mode .selected-arrow{display:none!important;}
+    body.mobile-mode .selected-slot{min-height:82px!important;grid-template-columns:58px 1fr!important;gap:10px!important;padding:12px 10px 10px!important;text-align:left!important;border-radius:16px!important;place-items:unset!important;align-items:center!important;}
+    body.mobile-mode .selected-slot.empty{grid-template-columns:1fr!important;min-height:70px!important;text-align:center!important;place-items:center!important;}
+    body.mobile-mode .selected-slot img{width:54px!important;height:54px!important;margin:0!important;}
+    body.mobile-mode .slot-role{position:static!important;transform:none!important;background:transparent!important;color:#bfdbfe!important;padding:0!important;font-size:13px!important;display:block!important;}
+    body.mobile-mode .selected-mon-name,body.mobile-mode .selected-slot div[style*="font-size:23px"]{font-size:17px!important;color:#f8fbff!important;}
+    body.mobile-mode .selected-mon-meta{font-size:12px!important;}
+    body.mobile-mode .candidate-title{font-size:13px!important;margin:8px 0!important;}
+    body.mobile-mode .candidate-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important;max-height:none!important;overflow:visible!important;}
+    body.mobile-mode .team-btn{min-height:126px!important;padding:8px!important;grid-template-rows:auto 48px auto!important;gap:5px!important;border-radius:14px!important;overflow:hidden!important;}
+    body.mobile-mode .team-btn img{width:46px!important;height:46px!important;}
+    body.mobile-mode .candidate-name{font-size:13px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    body.mobile-mode .move-list{display:none!important;}
+    body.mobile-mode .card-num{width:20px!important;height:20px!important;font-size:10px!important;}
+    body.mobile-mode .type-pill{font-size:10px!important;padding:3px 7px!important;}
+    body.mobile-mode .side-box{border-radius:20px!important;padding:12px!important;}
+    body.mobile-mode .opponent-mini-grid{grid-template-columns:repeat(6,minmax(0,1fr))!important;gap:5px!important;}
+    body.mobile-mode .mini-mon img{width:30px!important;height:30px!important;}
+    body.mobile-mode .side-info{font-size:12px!important;line-height:1.45!important;}
+    body.mobile-mode .participants{grid-template-columns:1fr!important;}
+    body.mobile-mode .team-submit{font-size:18px!important;padding:15px 12px!important;}
+
+    body.mobile-mode .battle{grid-template-columns:1fr!important;gap:10px!important;padding:10px!important;background:linear-gradient(180deg,#061739,#071b46)!important;}
+    body.mobile-mode .opponent{order:1;min-height:unset!important;border-radius:18px!important;padding:12px!important;}
+    body.mobile-mode .arena-panel{order:2;border-radius:18px!important;padding:8px!important;}
+    body.mobile-mode .mine{order:3;min-height:unset!important;border-radius:18px!important;padding:12px!important;}
+    body.mobile-mode .arena-stage{height:300px!important;min-height:300px!important;border-radius:16px!important;}
+    body.mobile-mode .battle-message{min-height:42px!important;font-size:17px!important;border-radius:14px!important;padding:10px 12px!important;}
+    body.mobile-mode .name-main{font-size:16px!important;}
+    body.mobile-mode .hp-row{grid-template-columns:28px 1fr 70px!important;font-size:12px!important;gap:6px!important;}
+    body.mobile-mode .stage-row{gap:5px!important;}
+    body.mobile-mode .stage{font-size:11px!important;padding:4px 7px!important;}
+    body.mobile-mode .info-extra{display:none!important;}
+    body.mobile-mode .section-label{font-size:12px!important;margin-top:8px!important;}
+    body.mobile-mode .bench{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+    body.mobile-mode .bench-card{min-height:72px!important;padding:8px!important;border-radius:14px!important;}
+    body.mobile-mode .bench-sprite{width:42px!important;height:42px!important;}
+    body.mobile-mode .bench-name{font-size:13px!important;}
+    body.mobile-mode .bench-sub{font-size:11px!important;}
+    body.mobile-mode .sprite{max-width:118px!important;max-height:118px!important;}
+    body.mobile-mode .mine-sprite{left:13%!important;bottom:10%!important;}
+    body.mobile-mode .opponent-sprite{right:12%!important;top:10%!important;}
+    body.mobile-mode .vs-mark{font-size:42px!important;}
+    body.mobile-mode .controls{display:grid!important;grid-template-columns:1fr!important;gap:10px!important;padding:10px!important;background:linear-gradient(180deg,#071b46,#050e28)!important;}
+    body.mobile-mode .buttons{grid-template-columns:repeat(2,minmax(0,1fr))!important;max-height:none!important;overflow:visible!important;border-radius:18px!important;padding:10px!important;gap:8px!important;}
+    body.mobile-mode .control-title{font-size:15px!important;}
+    body.mobile-mode .move-btn,body.mobile-mode .switch-btn{min-height:64px!important;font-size:14px!important;padding:10px!important;border-radius:14px!important;}
+    body.mobile-mode .move-btn .meta,body.mobile-mode .switch-btn .meta{font-size:10px!important;margin-top:4px!important;}
+    body.mobile-mode .move-help{max-height:150px!important;min-height:unset!important;overflow:auto!important;border-radius:18px!important;padding:12px!important;font-size:12px!important;}
+    body.mobile-mode .move-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+    body.mobile-mode .mobile-collapse-toggle{display:flex!important;align-items:center;justify-content:space-between;width:100%;background:rgba(15,40,88,.92)!important;color:#dbeafe!important;border:1px solid rgba(147,197,253,.22)!important;box-shadow:none!important;padding:12px 14px!important;border-radius:14px!important;font-size:14px!important;}
+    body.mobile-mode .mobile-collapse-toggle::after{content:"⌄";font-weight:950;}
+    body.mobile-mode .logs{display:none;height:150px!important;border-radius:18px!important;font-size:12px!important;}
+    body.mobile-mode.mobile-logs-open .logs{display:block!important;}
+    body.mobile-mode .chat-panel{border-radius:18px!important;padding:10px!important;}
+    body.mobile-mode .chat-title{display:none!important;}
+    body.mobile-mode .chat-messages,body.mobile-mode .chat-form{display:none!important;}
+    body.mobile-mode.mobile-chat-open .chat-messages{display:block!important;height:130px!important;}
+    body.mobile-mode.mobile-chat-open .chat-form{display:grid!important;}
+    body.mobile-mode #mainActionButton{font-size:14px!important;border-radius:14px!important;margin-top:8px!important;}
+
+    @media(max-width:760px){
+      body:not(.desktop-mode){padding:0;overflow-x:hidden;background-attachment:scroll!important;}
+      body:not(.desktop-mode) .lobby{width:100%;min-height:100svh;padding:12px;align-content:start;gap:12px;}
+      body:not(.desktop-mode) .lobby-shell{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;}
+      body:not(.desktop-mode) .lobby-card{border-radius:22px!important;padding:16px!important;}
+      body:not(.desktop-mode) .lobby-head{display:grid!important;grid-template-columns:1fr!important;gap:14px!important;align-items:start!important;margin-bottom:14px!important;}
+      body:not(.desktop-mode) .lobby-brand-block{gap:10px!important;align-items:center!important;}
+      body:not(.desktop-mode) .lobby-emblem{width:58px!important;height:58px!important;border-radius:18px!important;}
+      body:not(.desktop-mode) .lobby-title-emblem-img{width:min(300px,72vw)!important;max-height:58px!important;object-fit:contain!important;object-position:left center!important;}
+      body:not(.desktop-mode) .lobby-userbar{justify-content:flex-start!important;gap:7px!important;}
+      body:not(.desktop-mode) .room-grid{grid-template-columns:1fr!important;gap:12px!important;}
+      body:not(.desktop-mode) .room-card{min-height:unset!important;border-radius:18px!important;overflow:hidden!important;}
+      body:not(.desktop-mode) .room-art{height:104px!important;}
+      body:not(.desktop-mode) .room-body{padding:12px 14px 14px!important;gap:8px!important;}
+      body:not(.desktop-mode) .room-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+      body:not(.desktop-mode) .lobby-side{gap:10px!important;}
+      body:not(.desktop-mode) .game{width:100%!important;min-height:100svh!important;border:0!important;border-radius:0!important;margin:0!important;overflow:visible!important;box-shadow:none!important;}
+      body:not(.desktop-mode) .topbar{grid-template-columns:1fr!important;gap:10px!important;padding:12px!important;position:sticky;top:0;z-index:50;}
+      body:not(.desktop-mode) .header-right{display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;}
+      body:not(.desktop-mode) .team-layout{grid-template-columns:1fr!important;}
+      body:not(.desktop-mode) .selected-row{grid-template-columns:1fr!important;gap:8px!important;}
+      body:not(.desktop-mode) .selected-arrow{display:none!important;}
+      body:not(.desktop-mode) .selected-slot{min-height:82px!important;grid-template-columns:58px 1fr!important;}
+      body:not(.desktop-mode) .candidate-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;}
+      body:not(.desktop-mode) .team-btn{min-height:126px!important;}
+      body:not(.desktop-mode) .move-list{display:none!important;}
+      body:not(.desktop-mode) .battle{grid-template-columns:1fr!important;}
+      body:not(.desktop-mode) .opponent{order:1;min-height:unset!important;}
+      body:not(.desktop-mode) .arena-panel{order:2;}
+      body:not(.desktop-mode) .mine{order:3;min-height:unset!important;}
+      body:not(.desktop-mode) .arena-stage{height:300px!important;min-height:300px!important;}
+      body:not(.desktop-mode) .sprite{max-width:118px!important;max-height:118px!important;}
+      body:not(.desktop-mode) .controls{grid-template-columns:1fr!important;}
+      body:not(.desktop-mode) .buttons{grid-template-columns:repeat(2,minmax(0,1fr))!important;max-height:none!important;overflow:visible!important;}
+      body:not(.desktop-mode) .mobile-collapse-toggle{display:flex!important;}
+      body:not(.desktop-mode) .logs{display:none;height:150px!important;}
+      body:not(.desktop-mode).mobile-logs-open .logs{display:block!important;}
+      body:not(.desktop-mode) .chat-title{display:none!important;}
+      body:not(.desktop-mode) .chat-messages,body:not(.desktop-mode) .chat-form{display:none!important;}
+      body:not(.desktop-mode).mobile-chat-open .chat-messages{display:block!important;height:130px!important;}
+      body:not(.desktop-mode).mobile-chat-open .chat-form{display:grid!important;}
+    }
+
+
+    /* v6.14 Mobile Selection & Battle UI Rebuild Patch */
+    .mobile-battle-summary{display:none;}
+    .mobile-bench-panel{display:none;}
+    body.mobile-mode .game .topbar{display:none!important;}
+    body.mobile-mode .team-screen{min-height:100svh!important;padding:10px!important;background:linear-gradient(180deg,#061739,#071b46)!important;}
+    body.mobile-mode .mobile-team-rebuild{display:grid;gap:12px;max-width:480px;margin:0 auto;color:#f8fbff;}
+    body.mobile-mode .mobile-team-block{background:linear-gradient(180deg,rgba(10,31,75,.92),rgba(5,16,42,.96));border:1px solid rgba(147,197,253,.24);border-radius:18px;padding:12px;box-shadow:0 14px 28px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.06);}
+    body.mobile-mode .mobile-team-block-title{font-size:15px;font-weight:1000;color:#f8fbff;margin-bottom:9px;display:flex;align-items:center;gap:6px;}
+    body.mobile-mode .mobile-team-block-title::before{content:"◆";color:#facc15;font-size:11px;}
+    body.mobile-mode .mobile-opponent-mini-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;}
+    body.mobile-mode .mobile-opponent-mini-grid .mini-mon{background:rgba(30,64,175,.26);border:1px solid rgba(147,197,253,.22);border-radius:10px;min-height:48px;display:grid;place-items:center;padding:3px;}
+    body.mobile-mode .mobile-opponent-mini-grid .mini-mon span{font-size:9px;font-weight:900;color:#bfdbfe;line-height:1;}
+    body.mobile-mode .mobile-opponent-mini-grid .mini-mon img{width:30px!important;height:30px!important;object-fit:contain;image-rendering:pixelated;}
+    body.mobile-mode .mobile-candidate-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;max-height:none!important;overflow:visible!important;}
+    body.mobile-mode .mobile-candidate-grid .team-btn{min-height:102px!important;padding:8px!important;grid-template-rows:auto 42px auto auto!important;gap:4px!important;border-radius:13px!important;}
+    body.mobile-mode .mobile-candidate-grid .team-btn img{width:42px!important;height:42px!important;margin:0 auto!important;}
+    body.mobile-mode .mobile-candidate-grid .move-list{display:none!important;}
+    body.mobile-mode .mobile-selected-row{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;margin:0!important;}
+    body.mobile-mode .mobile-selected-row .selected-slot{min-height:74px!important;grid-template-columns:54px 1fr!important;gap:10px!important;padding:10px!important;text-align:left!important;align-items:center!important;place-items:unset!important;background:rgba(15,40,88,.66)!important;border:1px solid rgba(147,197,253,.30)!important;}
+    body.mobile-mode .mobile-selected-row .selected-slot.empty{grid-template-columns:1fr!important;place-items:center!important;text-align:center!important;}
+    body.mobile-mode .mobile-selected-row .selected-slot.empty::before,body.mobile-mode .mobile-selected-row .selected-slot.empty::after{display:none!important;}
+    body.mobile-mode .mobile-selected-row .selected-slot img{width:48px!important;height:48px!important;margin:0!important;}
+    body.mobile-mode .mobile-team-submit{position:sticky;bottom:10px;z-index:20;width:100%;font-size:18px!important;padding:15px 12px!important;border-radius:16px!important;background:linear-gradient(180deg,#fbbf24,#b7791f)!important;color:#fff!important;box-shadow:0 6px 0 #7c4a03,0 14px 24px rgba(0,0,0,.32)!important;}
+
+    body.mobile-mode .mobile-battle-summary{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;position:sticky;top:0;z-index:60;margin:0;padding:8px 10px;background:linear-gradient(180deg,rgba(6,23,57,.98),rgba(5,14,40,.98));border-bottom:1px solid rgba(147,197,253,.24);color:#f8fbff;}
+    body.mobile-mode .mobile-fighter{min-width:0;background:rgba(15,40,88,.66);border:1px solid rgba(147,197,253,.22);border-radius:12px;padding:7px;}
+    body.mobile-mode .mobile-player-label{font-size:10px;font-weight:950;color:#93c5fd;margin-bottom:3px;}
+    body.mobile-mode .mobile-mon-line{display:flex;align-items:center;justify-content:space-between;gap:5px;font-size:11px;white-space:nowrap;}
+    body.mobile-mode .mobile-mon-line b{font-size:13px;overflow:hidden;text-overflow:ellipsis;}
+    body.mobile-mode .mobile-mon-line span{font-size:10px;color:#dbeafe;}
+    body.mobile-mode .mobile-hpbar{height:7px;border-radius:999px;background:rgba(15,23,42,.70);border:1px solid rgba(147,197,253,.18);overflow:hidden;margin-top:5px;}
+    body.mobile-mode .mobile-hpbar>div{height:100%;background:linear-gradient(90deg,#22c55e,#a3e635);border-radius:999px;transition:width .35s ease;}
+    body.mobile-mode .mobile-vs-pill{display:grid;place-items:center;width:34px;height:34px;border-radius:999px;background:linear-gradient(180deg,#facc15,#b7791f);color:#fff;font-size:12px;font-weight:1000;box-shadow:0 5px 12px rgba(0,0,0,.28);}
+    body.mobile-mode .mobile-summary-empty{grid-column:1/-1;text-align:center;font-weight:900;color:#dbeafe;}
+
+    body.mobile-mode .battle{grid-template-columns:1fr!important;gap:8px!important;padding:8px!important;background:linear-gradient(180deg,#061739,#071b46)!important;}
+    body.mobile-mode .battle .mine,body.mobile-mode .battle .opponent{display:none!important;}
+    body.mobile-mode .arena-panel{order:1;border-radius:16px!important;padding:8px!important;}
+    body.mobile-mode .arena-stage{height:290px!important;min-height:290px!important;border-radius:15px!important;}
+    body.mobile-mode .battle-message{font-size:15px!important;min-height:38px!important;padding:9px 11px!important;}
+    body.mobile-mode .sprite{max-width:92px!important;max-height:92px!important;}
+    body.mobile-mode .mine-sprite{left:14%!important;bottom:11%!important;}
+    body.mobile-mode .opponent-sprite{right:14%!important;top:11%!important;}
+    body.mobile-mode .vs-mark{font-size:34px!important;opacity:.85!important;}
+    body.mobile-mode .controls{display:grid!important;grid-template-columns:1fr!important;gap:8px!important;padding:8px!important;background:linear-gradient(180deg,#071b46,#050e28)!important;}
+    body.mobile-mode .buttons{order:1;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;max-height:none!important;overflow:visible!important;border-radius:16px!important;padding:9px!important;background:linear-gradient(180deg,rgba(10,31,75,.96),rgba(5,16,42,.98))!important;}
+    body.mobile-mode .buttons .control-title{grid-column:1/-1;font-size:14px!important;color:#f8fbff!important;}
+    body.mobile-mode .move-btn,body.mobile-mode .switch-btn{min-height:58px!important;font-size:14px!important;padding:9px!important;border-radius:13px!important;}
+    body.mobile-mode .move-btn .meta,body.mobile-mode .switch-btn .meta{font-size:10px!important;margin-top:4px!important;line-height:1.25!important;}
+    body.mobile-mode .mobile-move-toggle{order:2;}
+    body.mobile-mode #moveHelp{order:3;display:none!important;max-height:190px!important;min-height:unset!important;overflow:auto!important;border-radius:16px!important;padding:12px!important;font-size:12px!important;}
+    body.mobile-mode.mobile-movehelp-open #moveHelp{display:block!important;}
+    body.mobile-mode .mobile-bench-toggle{order:4;}
+    body.mobile-mode #mobileBenchPanel{order:5;display:none!important;background:linear-gradient(180deg,rgba(10,31,75,.96),rgba(5,16,42,.98));border:1px solid rgba(147,197,253,.22);border-radius:16px;padding:9px;gap:8px;}
+    body.mobile-mode.mobile-bench-open #mobileBenchPanel{display:grid!important;grid-template-columns:1fr!important;}
+    body.mobile-mode #mobileBenchPanel .bench-card{display:flex!important;align-items:center!important;gap:10px!important;min-height:62px!important;padding:8px!important;background:rgba(15,40,88,.66)!important;border:1px solid rgba(147,197,253,.22)!important;color:#f8fbff!important;}
+    body.mobile-mode #mobileBenchPanel .bench-sprite{width:42px!important;height:42px!important;}
+    body.mobile-mode .battle-log-wrap{order:6;}
+    body.mobile-mode .chat-panel{order:7;}
+    body.mobile-mode .logs{display:none!important;height:140px!important;border-radius:16px!important;}
+    body.mobile-mode.mobile-logs-open .logs{display:block!important;}
+    body.mobile-mode .chat-messages,body.mobile-mode .chat-form{display:none!important;}
+    body.mobile-mode.mobile-chat-open .chat-messages{display:block!important;height:120px!important;}
+    body.mobile-mode.mobile-chat-open .chat-form{display:grid!important;}
+
 </style>
 
 </head>
@@ -1296,6 +1523,7 @@
           </div>
           <div class="lobby-userbar">
             <span class="user-chip" id="currentUserChip">비로그인</span>
+            <button class="small-btn mobile-mode-toggle" type="button" onclick="toggleMobileMode()">📱 모바일</button>
             <button class="small-btn" onclick="requestLobby()">새로고침</button>
             <button class="small-btn" onclick="logoutUser()">로그아웃</button>
           </div>
@@ -1358,12 +1586,15 @@
         <div class="conn-pill"><span class="conn-dot off" id="roomP1Dot"></span><span id="roomP1Text">P1 대기</span></div>
         <div class="conn-pill"><span class="conn-dot off" id="roomP2Dot"></span><span id="roomP2Text">P2 대기</span></div>
         <div class="conn-pill"><span>👁️</span><span id="roomSpectators">관전자 0명</span></div>
+        <button class="mobile-mode-toggle" type="button" onclick="toggleMobileMode()" style="padding:9px 12px;border-radius:12px;font-size:13px;box-shadow:0 4px 0 #1e3a8a;">📱 모바일</button>
         <button class="leave-room-btn" onclick="leaveRoom()" style="padding:9px 12px;border-radius:12px;font-size:13px;box-shadow:0 4px 0 #334155;">로비</button>
       </div>
     </header>
 
 
     <section class="team-screen" id="teamScreen"></section>
+
+    <section class="mobile-battle-summary" id="mobileBattleSummary" aria-live="polite"></section>
 
     
     <section class="battle" id="battleScreen">
@@ -1404,13 +1635,18 @@
     
     <section class="controls">
       <div class="buttons" id="buttons"></div>
+      <button type="button" class="mobile-collapse-toggle mobile-move-toggle" onclick="toggleMobilePanel('moveHelp')">기술 설명 보기</button>
       <div class="move-help" id="moveHelp">기술 위에 마우스를 올리면 설명이 나옵니다.</div>
-      <div>
+      <button type="button" class="mobile-collapse-toggle mobile-bench-toggle" onclick="toggleMobilePanel('bench')">교체 포켓몬 보기</button>
+      <div class="mobile-bench-panel" id="mobileBenchPanel"></div>
+      <div class="battle-log-wrap">
+        <button type="button" class="mobile-collapse-toggle" onclick="toggleMobilePanel('logs')">배틀 로그 보기</button>
         <div class="logs" id="logs"></div>
         <button id="mainActionButton" class="reset-btn" style="margin-top:10px;width:100%;" onclick="mainGameAction()">항복</button>
       </div>
-      <div class="chat-panel">
+      <div class="chat-panel" id="battleChatPanel">
         <div class="chat-title">채팅</div>
+        <button type="button" class="mobile-collapse-toggle" onclick="toggleMobilePanel('chat')">채팅 보기</button>
         <div class="chat-messages" id="chatMessages"></div>
         <form class="chat-form" onsubmit="sendChat(event)">
           <input id="chatInput" maxlength="120" autocomplete="off" placeholder="메시지 입력..." />
@@ -1482,6 +1718,39 @@
       socket.emit("requestLobby");
       return false;
     }
+
+
+    function applyUiMode(mode){
+      const mobile = mode === "mobile";
+      document.body.classList.toggle("mobile-mode", mobile);
+      document.body.classList.toggle("desktop-mode", mode === "desktop");
+      document.querySelectorAll(".mobile-mode-toggle").forEach(btn=>{
+        btn.textContent = mobile ? "🖥️ PC" : "📱 모바일";
+        btn.setAttribute("aria-pressed", mobile ? "true" : "false");
+      });
+    }
+    function toggleMobileMode(){
+      const mobile = !document.body.classList.contains("mobile-mode");
+      const mode = mobile ? "mobile" : "desktop";
+      localStorage.setItem("pookiUiMode", mode);
+      applyUiMode(mode);
+      if(currentState && typeof render === "function") render();
+    }
+    function initUiMode(){
+      const saved = localStorage.getItem("pookiUiMode");
+      if(saved === "mobile" || saved === "desktop") applyUiMode(saved);
+      else applyUiMode(window.matchMedia && window.matchMedia("(max-width: 760px)").matches ? "mobile" : "desktop");
+    }
+    function toggleMobilePanel(panel){
+      if(panel === "logs") document.body.classList.toggle("mobile-logs-open");
+      if(panel === "chat") document.body.classList.toggle("mobile-chat-open");
+      if(panel === "moveHelp") document.body.classList.toggle("mobile-movehelp-open");
+      if(panel === "bench") document.body.classList.toggle("mobile-bench-open");
+    }
+    window.toggleMobileMode = toggleMobileMode;
+    window.toggleMobilePanel = toggleMobilePanel;
+    document.addEventListener("DOMContentLoaded", initUiMode);
+
     function logoutUser(){
       try { socket.emit("logoutUser"); } catch(e) {}
       localStorage.removeItem(USER_ID_KEY);
@@ -2240,6 +2509,32 @@
         </div>`;
     }
 
+
+    function mobileHpBar(p){
+      if(!p) return `<div class="mobile-hpbar"><div style="width:0%"></div></div>`;
+      return `<div class="mobile-hpbar"><div style="width:${hpPct(p)}%"></div></div>`;
+    }
+
+    function renderMobileBattleSummary(){
+      const mineKey = perspectiveRole();
+      const enemyKey = opponentOfRole(mineKey);
+      const mine = getDisplayPokemon(mineKey);
+      const enemy = getDisplayPokemon(enemyKey);
+      if(!mine || !enemy) return `<div class="mobile-summary-empty">배틀 데이터를 준비하는 중입니다.</div>`;
+      return `
+        <div class="mobile-fighter mobile-fighter-me">
+          <div class="mobile-player-label">${myRole === "spectator" ? playerNameOf(mineKey) : "플레이어 1"}</div>
+          <div class="mobile-mon-line"><b>${mine.name}</b><span>HP ${mine.hp}/${mine.maxHp}</span></div>
+          ${mobileHpBar(mine)}
+        </div>
+        <div class="mobile-vs-pill">VS</div>
+        <div class="mobile-fighter mobile-fighter-enemy">
+          <div class="mobile-player-label">${myRole === "spectator" ? playerNameOf(enemyKey) : "플레이어 2"}</div>
+          <div class="mobile-mon-line"><b>${enemy.name}</b><span>HP ${enemy.hp}/${enemy.maxHp}</span></div>
+          ${mobileHpBar(enemy)}
+        </div>`;
+    }
+
     function renderPokemonInfo(id,p,label,playerKey=null){
       const el=document.getElementById(id);
       if(!p){
@@ -2375,13 +2670,28 @@
       }
 
       renderBenchFor(mineKey);
+      renderMobileBenchPanel(mineKey);
       const summary=document.getElementById("battleSummaryPanel");
       if(summary) summary.innerHTML=renderBattleSummary();
+      const mobileSummary=document.getElementById("mobileBattleSummary");
+      if(mobileSummary) mobileSummary.innerHTML=renderMobileBattleSummary();
     }
 
     function renderBench(){
       if(myRole!=="p1"&&myRole!=="p2")return;
       renderBenchFor(myRole);
+    }
+
+    function benchCardMarkup(p,idx,label){
+      return `
+        <div class="bench-card ${p.fainted?"fainted":""}">
+          <img class="bench-sprite" src="${p.frontSprite || p.backSprite || ""}" alt="${p.name}" />
+          <div class="bench-meta">
+            <div class="bench-head"><span class="bench-name">${p.name}</span><span class="bench-slot">${label}</span></div>
+            <div class="bench-sub">Lv.50 · HP ${p.hp}/${p.maxHp}</div>
+            <div class="bench-types">${(p.types||[]).map(t=>`<span class="type-pill">${typeKo(t)}</span>`).join("")}</div>
+          </div>
+        </div>`;
     }
 
     function renderBenchFor(playerKey){
@@ -2390,21 +2700,52 @@
 
       const team=visualPlayerTeam(playerKey);
       const activeIdx=visualActiveIndex(playerKey);
+      const bench=team.map((p,idx)=>({p,idx})).filter(x=>x.idx!==activeIdx);
 
-      if(!team.length){
-        benchEl.innerHTML=`<div class="bench-card">교체 포켓몬 준비 중</div>`;
+      if(!bench.length){
+        benchEl.innerHTML=`<div class="bench-card">교체 포켓몬 없음</div>`;
         return;
       }
 
-      benchEl.innerHTML=team.map((p,idx)=>`
-        <div class="bench-card ${idx===activeIdx?"active":""} ${p.fainted?"fainted":""}">
-          <img class="bench-sprite" src="${p.frontSprite || p.backSprite || ""}" alt="${p.name}" />
-          <div class="bench-meta">
-            <div class="bench-head"><span class="bench-name">${p.name}</span><span class="bench-slot">${idx===activeIdx?"출전 중":`교체 ${idx}`}</span></div>
-            <div class="bench-sub">Lv.50 · HP ${p.hp}/${p.maxHp}</div>
-            <div class="bench-types">${(p.types||[]).map(t=>`<span class="type-pill">${typeKo(t)}</span>`).join("")}</div>
-          </div>
-        </div>`).join("");
+      benchEl.innerHTML=bench.map((x,n)=>benchCardMarkup(x.p,x.idx,`교체 ${n+1}`)).join("");
+    }
+
+    function renderMobileBenchPanel(playerKey){
+      const el=document.getElementById("mobileBenchPanel");
+      if(!el || !currentState?.players?.[playerKey]) return;
+      const team=visualPlayerTeam(playerKey);
+      const activeIdx=visualActiveIndex(playerKey);
+      const bench=team.map((p,idx)=>({p,idx})).filter(x=>x.idx!==activeIdx);
+      el.innerHTML = bench.length ? bench.map((x,n)=>benchCardMarkup(x.p,x.idx,`교체 ${n+1}`)).join("") : `<div class="bench-card">교체 포켓몬 없음</div>`;
+    }
+
+    function renderMobileTeamSelect(screen, player, enemy, roomInfo, selectedMon, selectedSlot, renderCard){
+      screen.innerHTML=`
+        <div class="mobile-team-rebuild">
+          <section class="mobile-team-block mobile-opponent-block">
+            <div class="mobile-team-block-title">상대 포켓몬 12마리</div>
+            <div class="mobile-opponent-mini-grid">
+              ${(enemy.candidatePool||[]).slice(0,12).map((p,idx)=>`<div class="mini-mon" title="${p.name}"><span>${idx+1}</span><img src="${p.frontSprite}" alt="${p.name}" /></div>`).join("")}
+            </div>
+          </section>
+
+          <section class="mobile-team-block">
+            <div class="mobile-team-block-title">포켓몬 선택창</div>
+            <div class="candidate-grid mobile-candidate-grid">${(player.candidatePool||[]).map((p,idx)=>renderCard(p,false,idx)).join("")}</div>
+          </section>
+
+          <section class="mobile-team-block mobile-selected-block">
+            <div class="mobile-team-block-title">선택한 포켓몬</div>
+            <div class="selected-row mobile-selected-row">
+              ${selectedSlot(selectedMon[0],1)}
+              ${selectedSlot(selectedMon[1],2)}
+              ${selectedSlot(selectedMon[2],3)}
+            </div>
+          </section>
+
+          <button class="team-submit mobile-team-submit" ${selectedTeamIds.length!==TEAM_SIZE?"disabled":""} onclick="submitTeam()">이대로 출전</button>
+          <div class="team-caption">선발 1마리와 교체 2마리를 선택하면 출전할 수 있습니다.</div>
+        </div>`;
     }
 
     function renderTeamSelect(){
@@ -2500,6 +2841,11 @@
             <div>• ${p.moves[3]?.name || "-"}</div>
           </div>
         </button>`;
+
+      if(document.body.classList.contains("mobile-mode")){
+        renderMobileTeamSelect(screen, player, enemy, roomInfo, selectedMon, selectedSlot, renderCard);
+        return;
+      }
 
       screen.innerHTML=`
         <div class="team-layout">
