@@ -9,8 +9,16 @@ const { Server } = require("socket.io");
 const { loadPokemonData } = require("./src/dataLoader");
 const { createDraft } = require("./src/randomDraft");
 const { buildMovesForPokemon, buildBaseMovesForPokemon } = require("./src/moveBuilder");
-const { MOVES, MOVE_LIST, moveDescription } = require("./src/moveLibrary");
+const { MOVES, MOVE_LIST, moveDescription, defaultPpForMove, reloadMoveBalanceData } = require("./src/moveLibrary");
 const { battleEffectiveness, effectivenessLabel, TYPE_KO } = require("./src/typeChart");
+const {
+  ensureBalanceFiles,
+  getBattleBalance,
+  writeBattleBalance,
+  getMoveBalanceOverrides,
+  writeMoveBalanceOverrides,
+  normalizeMoveBalanceOverrides,
+} = require("./src/balanceConfig");
 const {
   createBattlePokemon,
   hasActionLock,
@@ -26,6 +34,12 @@ const {
   endTurnStatusDamage,
   hpWarning,
   statDangerWarning,
+  STRUGGLE_MOVE,
+  applyBattleBalanceToStruggle,
+  reloadBattleBalance,
+  moveHasPp,
+  hasAnyPpMove,
+  consumeMovePp,
   STATUS_KO,
   CRITICAL_HIT_CHANCE,
   CRITICAL_HIT_MULTIPLIER,
@@ -41,6 +55,7 @@ app.use(express.json({ limit: "1mb" }));
 
 const CUSTOM_RENDER_PROFILE_PATH = path.join(__dirname, "data", "render_profiles_custom.json");
 const CUSTOM_POKEMON_MOVES_PATH = path.join(__dirname, "data", "pokemon_moves_custom.json");
+ensureBalanceFiles();
 
 function ensureDataDir() {
   fs.mkdirSync(path.dirname(CUSTOM_RENDER_PROFILE_PATH), { recursive: true });
@@ -207,11 +222,42 @@ function sanitizeRenderProfilePayload(payload) {
   return out;
 }
 
+function expectedAdminKey() {
+  return process.env.ADMIN_KEY || process.env.ADMIN_PASSWORD || "2467";
+}
+
+function providedAdminKey(req) {
+  return req.get("x-admin-key") || req.get("x-admin-password") || req.body?.adminKey || req.body?.adminPassword || req.query?.adminKey || "";
+}
+
+function isAdminAuthorized(req) {
+  const expected = expectedAdminKey();
+  return !!expected && String(providedAdminKey(req)) === String(expected);
+}
+
 function requireAdminForWrite(req, res, next) {
-  const expected = process.env.ADMIN_PASSWORD || "";
-  if (!expected) return next();
-  const provided = req.get("x-admin-password") || req.body?.adminPassword || "";
-  if (provided !== expected) return res.status(403).json({ ok: false, message: "관리자 비밀번호가 올바르지 않습니다." });
+  if (!isAdminAuthorized(req)) {
+    return res.status(403).json({ ok: false, message: "관리자 키가 올바르지 않습니다." });
+  }
+  return next();
+}
+
+function expectedBalanceAdminKey() {
+  return expectedAdminKey();
+}
+
+function providedBalanceAdminKey(req) {
+  return providedAdminKey(req);
+}
+
+function isBalanceAdminAuthorized(req) {
+  return isAdminAuthorized(req);
+}
+
+function requireBalanceAdmin(req, res, next) {
+  if (!isBalanceAdminAuthorized(req)) {
+    return res.status(403).json({ ok: false, message: "관리자 키가 올바르지 않습니다." });
+  }
   return next();
 }
 
@@ -228,6 +274,38 @@ app.post("/api/admin/render-profiles", requireAdminForWrite, (req, res) => {
 app.delete("/api/admin/render-profiles", requireAdminForWrite, (req, res) => {
   writeCustomRenderProfiles({});
   res.json({ ok: true, count: 0, profiles: {} });
+});
+
+
+app.post("/api/admin/balance/verify", (req, res) => {
+  if (!isBalanceAdminAuthorized(req)) return res.status(403).json({ ok: false, message: "관리자 키가 올바르지 않습니다." });
+  res.json({ ok: true });
+});
+
+app.post("/api/admin/balance/load", requireBalanceAdmin, (req, res) => {
+  res.json({
+    ok: true,
+    moves: MOVE_LIST.map(publicMoveLite),
+    overrides: getMoveBalanceOverrides(),
+    battleBalance: getBattleBalance(),
+  });
+});
+
+app.post("/api/admin/balance/save", requireBalanceAdmin, (req, res) => {
+  const { overrides, errors } = normalizeMoveBalanceOverrides(req.body?.overrides || {}, MOVE_LIST.map((m) => m.id));
+  if (errors.length) return res.status(400).json({ ok: false, message: "저장할 수 없는 기술 설정이 있습니다.", errors });
+  const battleBalance = writeBattleBalance(req.body?.battleBalance || getBattleBalance());
+  const savedOverrides = writeMoveBalanceOverrides(overrides);
+  reloadBattleBalance();
+  applyBattleBalanceToStruggle();
+  reloadMoveBalanceData();
+  res.json({
+    ok: true,
+    count: Object.keys(savedOverrides).length,
+    overrides: savedOverrides,
+    battleBalance,
+    moves: MOVE_LIST.map(publicMoveLite),
+  });
 });
 
 
@@ -256,6 +334,8 @@ function publicMoveLite(move) {
     type: move.type,
     power: move.power || 0,
     accuracy: move.accuracy ?? 100,
+    pp: move.pp ?? move.maxPp ?? defaultPpForMove(move),
+    maxPp: move.maxPp ?? move.pp ?? defaultPpForMove(move),
     priority: move.priority || 0,
     tags: move.tags || [],
     highCrit: !!move.highCrit,
@@ -623,6 +703,21 @@ app.post("/api/test-arena/reset", (req, res) => {
   const defender = arenaCreatePokemonFromId(defenderId, MOVES.bodySlam ? "bodySlam" : moveId);
   if (!attacker || !defender) return res.status(400).json({ ok: false, message: "포켓몬을 찾을 수 없습니다." });
   res.json({ ok: true, attacker: arenaPublicState(attacker), defender: arenaPublicState(defender) });
+});
+
+const ADMIN_PROTECTED_PAGES = new Set([
+  "/move-admin.html",
+  "/size-admin.html",
+  "/size-check.html",
+  "/test-arena.html",
+  "/admin-balance.html",
+]);
+
+app.use((req, res, next) => {
+  if (req.method !== "GET") return next();
+  if (!ADMIN_PROTECTED_PAGES.has(req.path)) return next();
+  if (isAdminAuthorized(req)) return next();
+  return res.redirect("/admin.html");
 });
 
 app.use(express.static("public"));
@@ -1080,7 +1175,7 @@ function ensureAITeamReady(reason = "ensure_ai_team_ready") {
   return !!ai.teamReady;
 }
 function moveExpectedValue(move, attacker, defender) {
-  if (!move) return -9999;
+  if (!move || !moveHasPp(move)) return -9999;
   if (move.heal) {
     const hpRatio = attacker?.maxHp ? attacker.hp / attacker.maxHp : 1;
     return hpRatio < 0.35 ? 130 : hpRatio < 0.55 ? 70 : 5;
@@ -1124,6 +1219,7 @@ function chooseAIAction(role = "p2") {
 
   const moves = Array.isArray(mon.moves) ? mon.moves : [];
   if (!moves.length) return null;
+  if (!hasAnyPpMove(mon)) return { type: "move", moveIndex: 0, auto: true, struggle: true };
 
   let bestIndex = 0;
   let bestScore = -9999;
@@ -1582,8 +1678,9 @@ function buildMoveUsers(actions) {
     if (!mon || mon.fainted || mon.hp <= 0) continue;
     let moveIndex = action.moveIndex;
     if (mon.volatile?.lockedMove) moveIndex = mon.volatile.lockedMove.moveIndex;
-    const move = mon.moves[moveIndex];
+    let move = mon.moves[moveIndex];
     if (!move) continue;
+    if (!hasAnyPpMove(mon)) move = STRUGGLE_MOVE;
     result.push({ playerKey: pk, moveIndex, move });
   }
   return result;
@@ -1838,6 +1935,15 @@ function useMove(attackerKey, defenderKey, moveIndex) {
   if (attacker.volatile?.lockedMove) moveIndex = attacker.volatile.lockedMove.moveIndex;
   let move = attacker.moves[moveIndex];
   if (!move) return;
+  const forceStruggle = !hasAnyPpMove(attacker);
+  if (forceStruggle) {
+    move = STRUGGLE_MOVE;
+    if (attacker.volatile?.lockedMove) attacker.volatile.lockedMove = null;
+  } else if (!moveHasPp(move)) {
+    log(`${attacker.name}은/는 ${move.name}의 PP가 부족해서 움직일 수 없었다!`);
+    addEvent({ type: "skip", player: attackerKey, reason: "noPp", text: `${move.name}의 PP가 부족합니다!` });
+    return;
+  }
   resetComboIfNeeded(attacker, move);
   const lockAlreadyActive = !!attacker.volatile?.lockedMove;
   const lockStartedThisTurn = beginLockIfNeeded(attacker, move, moveIndex);
@@ -1862,7 +1968,10 @@ function useMove(attackerKey, defenderKey, moveIndex) {
     return;
   }
 
+  consumeMovePp(move);
+
   const didHit = isMoveHit(move);
+  if (move.isStruggle) addEvent({ type: "warning", text: `${attacker.name}은/는 사용할 수 있는 기술이 없어 발버둥쳤다!` });
   log(`${battle.players[attackerKey].label}의 ${attacker.name}, ${move.name}!`);
 
   addEvent({
@@ -2130,6 +2239,7 @@ function actionName(pk, action) {
   }
   if (action.type === "move") {
     const mon = active(pk);
+    if (mon && !hasAnyPpMove(mon)) return "발버둥";
     return mon?.moves?.[action.moveIndex]?.name || "기술";
   }
   return action.type;
@@ -2233,10 +2343,15 @@ function validateAction(role, action) {
     if (hasActionLock(mon)) return action.type === "recharge";
     if (mon.volatile?.lockedMove) {
       if (action.type !== "move") return false;
-      return Number.isInteger(action.moveIndex) && action.moveIndex === mon.volatile.lockedMove.moveIndex && !!mon.moves[action.moveIndex];
+      if (!hasAnyPpMove(mon)) return Number.isInteger(action.moveIndex) && !!mon.moves[action.moveIndex];
+      return Number.isInteger(action.moveIndex) && action.moveIndex === mon.volatile.lockedMove.moveIndex && !!mon.moves[action.moveIndex] && moveHasPp(mon.moves[action.moveIndex]);
     }
 
-    if (action.type === "move") return Number.isInteger(action.moveIndex) && !!mon.moves[action.moveIndex];
+    if (action.type === "move") {
+      if (!Number.isInteger(action.moveIndex) || !mon.moves[action.moveIndex]) return false;
+      if (!hasAnyPpMove(mon)) return true;
+      return moveHasPp(mon.moves[action.moveIndex]);
+    }
     if (action.type === "switch") {
       const target = player.team[action.targetIndex];
       return !!target && !target.fainted && action.targetIndex !== player.activeIndex;

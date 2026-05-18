@@ -66,6 +66,9 @@
 <script src="/size-check-data.js"></script>
 <script>
 (function(){
+  const ADMIN_PARAMS = new URLSearchParams(location.search);
+  const ADMIN_KEY = ADMIN_PARAMS.get('adminKey') || sessionStorage.getItem('pookiAdminKey') || '';
+  if (ADMIN_KEY) sessionStorage.setItem('pookiAdminKey', ADMIN_KEY);
   const data = Array.isArray(window.POOKI_SIZE_CHECK_DATA) ? window.POOKI_SIZE_CHECK_DATA : [];
   const grid = document.getElementById('grid');
   const search = document.getElementById('search');
@@ -73,6 +76,7 @@
   const sort = document.getElementById('sort');
   const summary = document.getElementById('summary');
   const adminPassword = document.getElementById('adminPassword');
+  if (adminPassword && ADMIN_KEY) adminPassword.value = ADMIN_KEY;
   const bulkScope = document.getElementById('bulkScope');
   const baseSystem = window.POOKI_RENDER_PROFILES || {};
   const groups = baseSystem.GROUP_BY_API_NAME || {};
@@ -153,8 +157,8 @@
   function jsonText(all=true){ return JSON.stringify(all?cleanProfilesForSave():changedProfilesForCopy(), null, 2); }
   function render(){ const arr=applyFilter(data); summary.innerHTML=`<span class="badge">표시 ${arr.length} / 전체 ${data.length}</span><span class="badge">선택 ${selected.size}</span><span class="badge">저장값 ${Object.keys(customProfiles).length}</span><span class="badge">이번 변경 ${dirty.size}</span><span class="badge">${viewMode==='player'?'내 편':viewMode==='opponent'?'상대':'둘 다'} · ${bgMode==='measure'?'신체검사':'배틀'}</span>`; grid.innerHTML=arr.map(card).join(''); }
   async function load(){ try{ const r=await fetch('/api/render-profiles/custom'); const d=await r.json(); customProfiles=d?.profiles||{}; initialCustomProfiles=clone(customProfiles); applyCustom(); }catch(e){ console.warn(e); } render(); }
-  async function save(){ const profiles=cleanProfilesForSave(); const count=Object.keys(profiles).length; if(!confirm(`관리자 저장값 ${count}개를 저장할까요? 저장 후 게임 화면을 새로고침하면 반영됩니다.`)) return; const res=await fetch('/api/admin/render-profiles',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':adminPassword.value||''},body:JSON.stringify({profiles})}); const payload=await res.json().catch(()=>({})); if(!res.ok||!payload.ok){ alert(payload.message||'저장 실패'); return; } dirty.clear(); customProfiles=payload.profiles||profiles; initialCustomProfiles=clone(customProfiles); applyCustom(); render(); alert(`저장 완료: ${Object.keys(customProfiles).length}개`); }
-  async function clearAll(){ if(!confirm('관리자 저장값을 모두 삭제할까요? 기본 보정값으로 돌아갑니다.')) return; const res=await fetch('/api/admin/render-profiles',{method:'DELETE',headers:{'Content-Type':'application/json','x-admin-password':adminPassword.value||''}}); const payload=await res.json().catch(()=>({})); if(!res.ok||!payload.ok){ alert(payload.message||'초기화 실패'); return; } customProfiles={}; initialCustomProfiles={}; dirty.clear(); applyCustom(); render(); }
+  async function save(){ const profiles=cleanProfilesForSave(); const count=Object.keys(profiles).length; if(!confirm(`관리자 저장값 ${count}개를 저장할까요? 저장 후 게임 화면을 새로고침하면 반영됩니다.`)) return; const res=await fetch('/api/admin/render-profiles',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':adminPassword.value||'', 'x-admin-key':ADMIN_KEY||adminPassword.value||''},body:JSON.stringify({profiles})}); const payload=await res.json().catch(()=>({})); if(!res.ok||!payload.ok){ alert(payload.message||'저장 실패'); return; } dirty.clear(); customProfiles=payload.profiles||profiles; initialCustomProfiles=clone(customProfiles); applyCustom(); render(); alert(`저장 완료: ${Object.keys(customProfiles).length}개`); }
+  async function clearAll(){ if(!confirm('관리자 저장값을 모두 삭제할까요? 기본 보정값으로 돌아갑니다.')) return; const res=await fetch('/api/admin/render-profiles',{method:'DELETE',headers:{'Content-Type':'application/json','x-admin-password':adminPassword.value||'', 'x-admin-key':ADMIN_KEY||adminPassword.value||''}}); const payload=await res.json().catch(()=>({})); if(!res.ok||!payload.ok){ alert(payload.message||'초기화 실패'); return; } customProfiles={}; initialCustomProfiles={}; dirty.clear(); applyCustom(); render(); }
   function showJson(all=true){ document.getElementById('jsonOutput').value=jsonText(all); document.getElementById('jsonModal').classList.add('show'); }
   function setSeg(container, value){ [...container.querySelectorAll('button')].forEach(b=>b.classList.toggle('active',b.dataset.value===value)); }
   grid.addEventListener('input',e=>{ const el=e.target; if(!el.matches('input[data-api]')) return; setField(el.dataset.api,el.dataset.key,el.value); });

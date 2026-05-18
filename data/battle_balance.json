@@ -1,0 +1,22 @@
+{
+  "sleep": {
+    "minTurns": 2,
+    "maxTurns": 3
+  },
+  "struggle": {
+    "power": 50,
+    "accuracy": 100,
+    "recoilMaxHpRatio": 0.25
+  },
+  "defaultPp": {
+    "heal": 3,
+    "status": 5,
+    "buff": 5,
+    "normalAttack": 10,
+    "strongAttack": 5,
+    "dangerAttack": 3,
+    "multiHit": 8,
+    "priority": 8,
+    "explosion": 1
+  }
+}

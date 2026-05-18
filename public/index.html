@@ -2373,6 +2373,8 @@
       return "효과 1배";
     }
     function moveButtonClass(move,mult){ if(!move||move.power===0)return "eff-status"; if(mult===0)return "eff-immune"; if(mult>=4)return "eff-ultra"; if(mult>=2)return "eff-super"; if(mult<1)return "eff-resist"; return "eff-neutral"; }
+    function movePpText(move){ if(!move||!Number.isFinite(move.pp)||!Number.isFinite(move.maxPp)) return "PP -"; return `PP ${move.pp}/${move.maxPp}`; }
+    function hasAnyPpMove(mon){ return Array.isArray(mon?.moves) && mon.moves.some(m=>!Number.isFinite(m?.pp)||m.pp>0); }
     function moveDescription(move){ if(!move)return""; if(move.selfDestruct)return"초고위력 기술입니다. 사용 후 자신도 쓰러집니다."; if(move.recharge)return"초고위력 기술입니다. 사용 후 다음 턴 반동으로 행동할 수 없습니다."; if(move.heal)return`자신의 HP를 최대 HP의 ${Math.round(move.heal.ratio*100)}%만큼 회복합니다.`; if(move.statChanges){ return move.statChanges.map((c)=>{ const s={attack:"공격",defense:"방어",speed:"스피드"}[c.stat]||c.stat; const t=c.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=c.amount>0?"올립니다":"내립니다"; return `${t}의 ${s}을/를 ${Math.abs(c.amount)}랭크 ${d}`; }).join(" / ")+"."; } if(move.statChange){ const s={attack:"공격",defense:"방어",speed:"스피드"}[move.statChange.stat]||move.statChange.stat; const t=move.statChange.target==="self"?"내 포켓몬":"상대 포켓몬"; const d=move.statChange.amount>0?"올립니다":"내립니다"; return`${t}의 ${s}을/를 ${Math.abs(move.statChange.amount)}랭크 ${d}.`; } if(move.statusMove){ const s=STATUS_KO[move.statusMove.status]||move.statusMove.status; return`상대를 ${s} 상태로 만듭니다.`; } if(move.effect?.status){ const s=STATUS_KO[move.effect.status]||move.effect.status; return`공격 후 ${move.effect.chance}% 확률로 ${s} 상태를 부여합니다.`; } return"직접 피해를 주는 공격 기술입니다."; }
     function buildMoveHelp(move,enemy){
       if(!move)return"기술 위에 마우스를 올리면 설명이 나옵니다.";
@@ -2390,15 +2392,15 @@
       const danger=move.recharge?`<div style="margin-top:8px;color:#b91c1c;font-weight:950;">⚠ 사용 후 다음 턴 반동으로 행동 불가</div>`:"";
       const immune=mult===0&&move.power>0?`<div style="margin-top:8px;color:#b91c1c;font-weight:950;">⚠ 현재 상대에게 효과가 없습니다.</div>`:"";
       return `
-        <div><b style="font-size:18px;">${move.name}</b> <span class="tag">${typeKo(move.type)}</span><span class="tag">${category}</span><span class="tag">${effectLabel}</span></div>
+        <div><b style="font-size:18px;">${move.name}</b> <span class="tag">${typeKo(move.type)}</span><span class="tag">${category}</span><span class="tag">${effectLabel}</span><span class="tag">${movePpText(move)}</span></div>
         <div class="move-grid">
           <div class="move-stat">위력<br/><b>${move.power>0?move.power:"-"}</b></div>
           <div class="move-stat">명중<br/><b>${move.accuracy}</b></div>
           <div class="move-stat">상대 효과<br/><b>${move.power>0?effectLabel:"상태 변화"}</b></div>
-          <div class="move-stat">자속<br/><b>${stabText}</b></div>
+          <div class="move-stat">PP<br/><b>${movePpText(move).replace("PP ","")}</b></div>
         </div>
         <div style="margin-top:10px;">${moveDescription(move)}</div>
-        <div style="margin-top:8px;opacity:.9;">${enemy?`현재 상대 ${enemy.name} 기준으로 계산 중입니다.`:"상대 기준 상성을 계산합니다."}</div>
+        <div style="margin-top:8px;opacity:.9;">${stabText} · ${enemy?`현재 상대 ${enemy.name} 기준으로 계산 중입니다.`:"상대 기준 상성을 계산합니다."}</div>
         <div class="recommend">${recommend}</div>
         ${danger}${immune}`;
     }
@@ -2927,8 +2929,13 @@
       const helpPanel=document.getElementById("moveHelp");
       if(helpPanel) helpPanel.innerHTML=buildMoveHelp(helpMove,enemy);
       const locked = mine.volatile?.lockedMove;
+      const noPpMoves = !hasAnyPpMove(mine);
+      if(noPpMoves){
+        buttons.innerHTML=`<div class="control-title">${mine.name}은/는 사용할 수 있는 기술이 없습니다. 발버둥칩니다!</div><button class="move-btn eff-neutral" onclick="selectMove(0)">발버둥<span class="meta">노말 / 위력 50 / 명중 100 / 반동 25%</span></button>${player.team.map((p,idx)=>idx===player.activeIndex?"":`<button class="switch-btn" ${p.fainted?"disabled":""} onclick="selectSwitch(${idx})">교체: ${p.name}<span class="meta">HP ${p.hp}/${p.maxHp}</span></button>`).join("")}`;
+        return;
+      }
       const lockNotice = locked ? `<div class="control-title">${mine.name}은/는 ${mine.moves?.[locked.moveIndex]?.name || "기술"}에 묶여 있습니다. 교체 불가 / 남은 턴 ${locked.turnsLeft}</div>` : `<div class="control-title">${mine.name}의 행동 선택 / 20초 제한</div>`;
-      buttons.innerHTML=`${lockNotice}${mine.moves.map((m,idx)=>{ const mult=battleEffectiveness(m.type,enemy?.types||[]); const cls=moveButtonClass(m,mult); const label=m.power>0?effectText(mult):"변화기"; const disabled=locked&&idx!==locked.moveIndex?"disabled":""; return `<button class="move-btn ${cls}" ${disabled} onclick="selectMove(${idx})" onmouseenter="updateMoveHelp(${idx})" onfocus="updateMoveHelp(${idx})">${m.name}<span class="meta">${typeKo(m.type)} / ${m.power>0?"위력 "+m.power:"변화기"} / 명중 ${m.accuracy} / ${label}</span></button>`; }).join("")}${player.team.map((p,idx)=>idx===player.activeIndex?"":`<button class="switch-btn" ${(p.fainted||locked)?"disabled":""} onclick="selectSwitch(${idx})">${locked?"교체 불가":"교체"}: ${p.name}<span class="meta">HP ${p.hp}/${p.maxHp}</span></button>`).join("")}`;
+      buttons.innerHTML=`${lockNotice}${mine.moves.map((m,idx)=>{ const mult=battleEffectiveness(m.type,enemy?.types||[]); const cls=moveButtonClass(m,mult); const label=m.power>0?effectText(mult):"변화기"; const noPp=Number.isFinite(m.pp)&&m.pp<=0; const disabled=(locked&&idx!==locked.moveIndex)||noPp?"disabled":""; return `<button class="move-btn ${cls}" ${disabled} onclick="selectMove(${idx})" onmouseenter="updateMoveHelp(${idx})" onfocus="updateMoveHelp(${idx})">${m.name}<span class="meta">${typeKo(m.type)} / ${m.power>0?"위력 "+m.power:"변화기"} / 명중 ${m.accuracy} / ${label} / ${movePpText(m)}</span></button>`; }).join("")}${player.team.map((p,idx)=>idx===player.activeIndex?"":`<button class="switch-btn" ${(p.fainted||locked)?"disabled":""} onclick="selectSwitch(${idx})">${locked?"교체 불가":"교체"}: ${p.name}<span class="meta">HP ${p.hp}/${p.maxHp}</span></button>`).join("")}`;
     }
 
     function renderLogs(){

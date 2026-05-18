@@ -5,45 +5,90 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>푸끼몬 관리자 센터</title>
   <style>
-    :root{--bg:#071024;--side:#0b162b;--panel:#0f1d35;--line:#29415f;--text:#eaf3ff;--muted:#9db4d4;--accent:#60a5fa;--good:#34d399}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100vh;overflow:hidden}.app{display:grid;grid-template-columns:260px 1fr;height:100vh}.side{background:linear-gradient(180deg,#071024,#0b162b);border-right:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:14px}.brand{font-size:24px;font-weight:950;line-height:1.1}.sub{font-size:12px;color:var(--muted);line-height:1.45}.nav{display:flex;flex-direction:column;gap:8px;margin-top:10px}.nav button{width:100%;text-align:left;border:1px solid var(--line);background:#10213c;color:var(--text);padding:13px;border-radius:14px;font-weight:850;cursor:pointer}.nav button:hover,.nav button.active{border-color:var(--accent);background:#17345e}.hint{margin-top:auto;background:#091a30;border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--muted);font-size:12px;line-height:1.45}.top{height:54px;background:rgba(7,16,36,.96);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px}.title{font-weight:900}.open{color:#bfe0ff;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:12px}.content{display:grid;grid-template-rows:54px 1fr;min-width:0}.frame{width:100%;height:100%;border:0;background:#071024}.badge{display:inline-flex;background:rgba(52,211,153,.16);border:1px solid rgba(52,211,153,.4);color:#baf7de;border-radius:999px;padding:3px 8px;font-size:11px;margin-top:8px}@media(max-width:800px){.app{grid-template-columns:1fr}.side{display:none}}
+    :root{--bg:#071024;--side:#0b162b;--panel:#0f1d35;--line:#29415f;--text:#eaf3ff;--muted:#9db4d4;--accent:#60a5fa;--good:#34d399;--danger:#fb7185;--gold:#f6c75e}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100vh;overflow:hidden}
+    .hidden{display:none!important}.auth{min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at top,#14366a 0,#071024 52%,#040913 100%);padding:22px}.auth-card{width:min(460px,100%);background:linear-gradient(180deg,rgba(15,29,53,.94),rgba(7,16,36,.96));border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:0 24px 70px rgba(0,0,0,.42)}.auth h1{margin:0 0 8px;font-size:28px;letter-spacing:-.03em}.auth p{margin:0 0 18px;color:var(--muted);line-height:1.5;font-size:14px}.auth label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}.auth input{width:100%;border:1px solid var(--line);border-radius:13px;background:#061224;color:var(--text);padding:13px;outline:none;font-size:16px}.auth input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(96,165,250,.16)}.auth .row{display:flex;gap:10px;margin-top:14px}.auth button{flex:1;border:0;border-radius:13px;padding:12px 14px;font-weight:900;cursor:pointer}.auth .enter{background:linear-gradient(180deg,#ffd777,#e5a933);color:#111827}.auth .home{background:#10213c;color:var(--text);border:1px solid var(--line)}.msg{margin-top:12px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.06);color:var(--muted);white-space:pre-wrap}.msg.err{color:#ffd0d5;background:rgba(251,113,133,.12);border:1px solid rgba(251,113,133,.35)}
+    .app{display:grid;grid-template-columns:260px 1fr;height:100vh}.side{background:linear-gradient(180deg,#071024,#0b162b);border-right:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:14px}.brand{font-size:24px;font-weight:950;line-height:1.1}.sub{font-size:12px;color:var(--muted);line-height:1.45}.nav{display:flex;flex-direction:column;gap:8px;margin-top:10px}.nav button{width:100%;text-align:left;border:1px solid var(--line);background:#10213c;color:var(--text);padding:13px;border-radius:14px;font-weight:850;cursor:pointer}.nav button:hover,.nav button.active{border-color:var(--accent);background:#17345e}.nav button.balance{border-color:rgba(246,199,94,.42);background:rgba(246,199,94,.09)}.nav button.balance.active{background:rgba(246,199,94,.18);border-color:var(--gold)}.hint{margin-top:auto;background:#091a30;border:1px solid var(--line);border-radius:14px;padding:12px;color:var(--muted);font-size:12px;line-height:1.45}.top{height:54px;background:rgba(7,16,36,.96);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 16px;gap:10px}.title{font-weight:900}.top-actions{display:flex;gap:8px;align-items:center}.open,.logout{color:#bfe0ff;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:12px;background:transparent;cursor:pointer}.logout{color:#ffd0d5;border-color:rgba(251,113,133,.42)}.content{display:grid;grid-template-rows:54px 1fr;min-width:0}.frame{width:100%;height:100%;border:0;background:#071024}.badge{display:inline-flex;background:rgba(52,211,153,.16);border:1px solid rgba(52,211,153,.4);color:#baf7de;border-radius:999px;padding:3px 8px;font-size:11px;margin-top:8px}@media(max-width:800px){.app{grid-template-columns:1fr}.side{display:none}}
   </style>
 </head>
 <body>
-<div class="app">
+<section id="authPanel" class="auth">
+  <div class="auth-card">
+    <h1>푸끼몬 관리자 인증</h1>
+    <p>관리자 센터에 들어가려면 인증키가 필요합니다. 로컬 기본 인증키는 <b>2467</b>이며, 배포 환경에서는 <b>ADMIN_KEY</b> 값으로 검증됩니다.</p>
+    <label for="adminKeyInput">관리자 인증키</label>
+    <input id="adminKeyInput" type="password" placeholder="관리자키 입력" autocomplete="current-password" />
+    <div class="row">
+      <button class="enter" id="verifyBtn">관리자 센터 입장</button>
+      <button class="home" type="button" onclick="location.href='/'">로비로 돌아가기</button>
+    </div>
+    <div id="authMsg" class="msg hidden"></div>
+  </div>
+</section>
+<div id="adminApp" class="app hidden">
   <aside class="side">
     <div>
       <div class="brand">푸끼몬<br>관리자 센터</div>
-      <div class="badge">local admin hub</div>
+      <div class="badge">admin key required</div>
     </div>
-    <div class="sub">각 관리 페이지를 왼쪽 메뉴에서 열 수 있습니다. 저장형 페이지는 로컬 JSON에 저장되고, Git push 후 Render에 반영하는 방식이 가장 안전합니다.</div>
+    <div class="sub">관리자키 인증 후 각 관리 메뉴를 사용할 수 있습니다. 저장형 페이지는 로컬 JSON에 저장되고, Git push 후 배포에 반영하는 방식이 가장 안전합니다.</div>
     <nav class="nav">
       <button class="active" data-src="/move-admin.html" data-title="기술 관리자">기술 관리자</button>
+      <button class="balance" data-src="/admin-balance.html" data-title="기술 밸런스 관리">기술 밸런스 관리</button>
       <button data-src="/test-arena.html" data-title="푸끼몬 예비 격투장">예비 격투장</button>
       <button data-src="/size-admin.html" data-title="푸끼몬 크기 관리자">푸끼몬 크기 관리자</button>
       <button data-src="/size-check.html" data-title="신체검사 보기">신체검사 보기</button>
     </nav>
-    <div class="hint">추천 순서<br>1. 기술 관리자에서 세팅 저장<br>2. 예비 격투장에서 기술 확인<br>3. 게임에서 최종 테스트<br>4. Git push</div>
+    <div class="hint">추천 순서<br>1. 기술/밸런스 세팅 저장<br>2. 예비 격투장에서 기술 확인<br>3. 게임에서 최종 테스트<br>4. Git push</div>
   </aside>
   <main class="content">
-    <div class="top"><div class="title" id="pageTitle">기술 관리자</div><a class="open" id="openLink" href="/move-admin.html" target="_blank">새 창으로 열기</a></div>
-    <iframe id="adminFrame" class="frame" src="/move-admin.html"></iframe>
+    <div class="top"><div class="title" id="pageTitle">기술 관리자</div><div class="top-actions"><a class="open" id="openLink" href="/move-admin.html" target="_blank">새 창으로 열기</a><button class="logout" id="logoutBtn">잠금</button></div></div>
+    <iframe id="adminFrame" class="frame" title="관리자 화면"></iframe>
   </main>
 </div>
 <script>
 const frame=document.getElementById('adminFrame');
 const title=document.getElementById('pageTitle');
 const openLink=document.getElementById('openLink');
-document.querySelectorAll('.nav button').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    const src=btn.dataset.src;
-    frame.src=src;
-    title.textContent=btn.dataset.title;
-    openLink.href=src;
-  });
-});
+const authPanel=document.getElementById('authPanel');
+const adminApp=document.getElementById('adminApp');
+const adminKeyInput=document.getElementById('adminKeyInput');
+const authMsg=document.getElementById('authMsg');
+let adminKey=sessionStorage.getItem('pookiAdminKey')||'';
+function showAuthMsg(text){authMsg.textContent=text;authMsg.className='msg err';authMsg.classList.remove('hidden');}
+function withAdminKey(src){
+  const url=new URL(src, location.origin);
+  url.searchParams.set('adminKey', adminKey);
+  if(url.pathname.endsWith('/admin-balance.html')) url.searchParams.set('embedded','1');
+  return url.pathname+url.search+url.hash;
+}
+function loadPage(btn){
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const src=btn.dataset.src;
+  const authed=withAdminKey(src);
+  frame.src=authed;
+  title.textContent=btn.dataset.title;
+  openLink.href=authed;
+}
+async function verify(){
+  adminKey=adminKeyInput.value.trim();
+  if(!adminKey){showAuthMsg('관리자키를 입력하세요.');return;}
+  try{
+    const res=await fetch('/api/admin/balance/verify',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':adminKey},body:JSON.stringify({adminKey})});
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok||data.ok===false) throw new Error(data.message||'관리자 인증 실패');
+    sessionStorage.setItem('pookiAdminKey', adminKey);
+    authPanel.classList.add('hidden');
+    adminApp.classList.remove('hidden');
+    loadPage(document.querySelector('.nav button.active'));
+  }catch(err){showAuthMsg(err.message||'관리자 인증 실패');}
+}
+document.querySelectorAll('.nav button').forEach(btn=>btn.addEventListener('click',()=>loadPage(btn)));
+document.getElementById('verifyBtn').addEventListener('click',verify);
+adminKeyInput.addEventListener('keydown',e=>{if(e.key==='Enter')verify();});
+document.getElementById('logoutBtn').addEventListener('click',()=>{sessionStorage.removeItem('pookiAdminKey');location.reload();});
+if(adminKey){adminKeyInput.value=adminKey;verify();}
 </script>
 </body>
 </html>

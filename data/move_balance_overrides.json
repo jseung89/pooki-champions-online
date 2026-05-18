@@ -1,0 +1,8 @@
+{
+  "bodySlam": {
+    "power": 85,
+    "accuracy": 100,
+    "maxPp": 10,
+    "pp": 10
+  }
+}

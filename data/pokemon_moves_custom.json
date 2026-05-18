@@ -1,1 +1,578 @@
-{}
+{
+  "venusaur": [
+    "gigaDrain",
+    "sludgeBomb",
+    "sleepPowder",
+    "earthquake"
+  ],
+  "charizard": [
+    "overheat",
+    "airSlash",
+    "steelWing",
+    "flamethrower"
+  ],
+  "blastoise": [
+    "surf",
+    "darkPulse",
+    "iceBeam",
+    "flashCannon"
+  ],
+  "pidgeot": [
+    "braveBird",
+    "airSlash",
+    "quickAttack",
+    "featherDance"
+  ],
+  "fearow": [
+    "braveBird",
+    "airSlash",
+    "steelWing",
+    "scaryFace"
+  ],
+  "arbok": [
+    "poisonJab",
+    "crunch",
+    "earthquake",
+    "leechLife"
+  ],
+  "pikachu": [
+    "thunderbolt",
+    "quickAttack",
+    "thunderWave",
+    "nastyPlot"
+  ],
+  "raichu": [
+    "thunderbolt",
+    "wildCharge",
+    "thunder",
+    "thunderWave"
+  ],
+  "sandslash": [
+    "earthquake",
+    "slash",
+    "rockSlide",
+    "shadowClaw"
+  ],
+  "nidoqueen": [
+    "sludgeBomb",
+    "earthquake",
+    "bodySlam",
+    "iceBeam"
+  ],
+  "ninetales": [
+    "flamethrower",
+    "energyBall",
+    "willOWisp",
+    "overheat"
+  ],
+  "vileplume": [
+    "energyBall",
+    "sludgeBomb",
+    "sleepPowder",
+    "poisonPowder"
+  ],
+  "parasect": [
+    "bulletSeed",
+    "leechLife",
+    "sleepPowder",
+    "poisonPowder"
+  ],
+  "venomoth": [
+    "bugBite",
+    "sludgeBomb",
+    "sleepPowder",
+    "quiverDance"
+  ],
+  "dugtrio": [
+    "earthquake",
+    "rockSlide",
+    "suckerPunch",
+    "rockBlast"
+  ],
+  "persian": [
+    "slash",
+    "suckerPunch",
+    "quickAttack",
+    "bite"
+  ],
+  "primeape": [
+    "closeCombat",
+    "machPunch",
+    "bulkUp",
+    "screech"
+  ],
+  "arcanine": [
+    "flareBlitz",
+    "wildCharge",
+    "extremeSpeed",
+    "closeCombat"
+  ],
+  "poliwrath": [
+    "surf",
+    "closeCombat",
+    "bulkUp",
+    "hypnosis"
+  ],
+  "alakazam": [
+    "psychic",
+    "shadowBall",
+    "nastyPlot",
+    "energyBall"
+  ],
+  "golem": [
+    "earthquake",
+    "stoneEdge",
+    "explosion",
+    "rockBlast"
+  ],
+  "rapidash": [
+    "flamethrower",
+    "doubleEdge",
+    "ironTail",
+    "flareBlitz"
+  ],
+  "magneton": [
+    "thunderbolt",
+    "flashCannon",
+    "thunderWave",
+    "metalSound"
+  ],
+  "dodrio": [
+    "airSlash",
+    "quickAttack",
+    "featherDance",
+    "doubleEdge"
+  ],
+  "muk": [
+    "sludgeBomb",
+    "screech",
+    "poisonPowder",
+    "darkPulse"
+  ],
+  "cloyster": [
+    "icicleSpear",
+    "surf",
+    "rockSlide",
+    "rockBlast"
+  ],
+  "gengar": [
+    "shadowBall",
+    "sludgeBomb",
+    "hypnosis",
+    "drainPunch"
+  ],
+  "hypno": [
+    "psychic",
+    "shadowBall",
+    "hypnosis",
+    "drainPunch"
+  ],
+  "electrode": [
+    "thunderbolt",
+    "thunderWave",
+    "explosion",
+    "screech"
+  ],
+  "exeggutor": [
+    "psychic",
+    "energyBall",
+    "sleepPowder",
+    "woodHammer"
+  ],
+  "hitmonlee": [
+    "closeCombat",
+    "machPunch",
+    "bulkUp",
+    "screech"
+  ],
+  "hitmonchan": [
+    "closeCombat",
+    "machPunch",
+    "bulkUp",
+    "bulletPunch"
+  ],
+  "lickitung": [
+    "bodySlam",
+    "crunch",
+    "earthquake",
+    "doubleEdge"
+  ],
+  "weezing": [
+    "sludgeBomb",
+    "flamethrower",
+    "willOWisp",
+    "screech"
+  ],
+  "rhydon": [
+    "earthquake",
+    "rockSlide",
+    "ironTail",
+    "rockBlast"
+  ],
+  "chansey": [
+    "bodySlam",
+    "rest",
+    "thunderWave",
+    "charm"
+  ],
+  "tangela": [
+    "energyBall",
+    "sleepPowder",
+    "gigaDrain",
+    "poisonPowder"
+  ],
+  "kangaskhan": [
+    "bodySlam",
+    "suckerPunch",
+    "earthquake",
+    "doubleEdge"
+  ],
+  "seadra": [
+    "surf",
+    "iceBeam",
+    "dragonBreath",
+    "scaleShot"
+  ],
+  "seaking": [
+    "surf",
+    "poisonJab",
+    "aquaJet",
+    "doubleEdge"
+  ],
+  "mr-mime": [
+    "psychic",
+    "brickBreak",
+    "thunderWave",
+    "powerUpPunch"
+  ],
+  "jynx": [
+    "iceBeam",
+    "psychic",
+    "sing",
+    "drainPunch"
+  ],
+  "electabuzz": [
+    "thunderbolt",
+    "brickBreak",
+    "thunder",
+    "doubleChop"
+  ],
+  "magmar": [
+    "flamethrower",
+    "powerUpPunch",
+    "doubleEdge",
+    "flareBlitz"
+  ],
+  "pinsir": [
+    "bugBite",
+    "closeCombat",
+    "swordDance",
+    "earthquake"
+  ],
+  "tauros": [
+    "bodySlam",
+    "earthquake",
+    "rockSlide",
+    "doubleEdge"
+  ],
+  "gyarados": [
+    "waterfall",
+    "crunch",
+    "outrage",
+    "dragonDance"
+  ],
+  "lapras": [
+    "surf",
+    "iceBeam",
+    "rest",
+    "hydroPump"
+  ],
+  "vaporeon": [
+    "bite",
+    "iceBeam",
+    "aquaTail",
+    "aquaJet"
+  ],
+  "jolteon": [
+    "thunderbolt",
+    "shadowBall",
+    "wildCharge",
+    "bite"
+  ],
+  "flareon": [
+    "flamethrower",
+    "flareBlitz",
+    "bite",
+    "willOWisp"
+  ],
+  "porygon": [
+    "psychic",
+    "thunderbolt",
+    "iceBeam",
+    "hyperBeam"
+  ],
+  "omastar": [
+    "surf",
+    "rockSlide",
+    "iceBeam",
+    "rockBlast"
+  ],
+  "aerodactyl": [
+    "headSmash",
+    "stoneEdge",
+    "airSlash",
+    "ironHead"
+  ],
+  "articuno": [
+    "iceBeam",
+    "airSlash",
+    "hyperBeam",
+    "braveBird"
+  ],
+  "zapdos": [
+    "thunderbolt",
+    "airSlash",
+    "thunder",
+    "braveBird"
+  ],
+  "moltres": [
+    "braveBird",
+    "flamethrower",
+    "airSlash",
+    "flareBlitz"
+  ],
+  "mewtwo": [
+    "psychic",
+    "shadowBall",
+    "hyperBeam",
+    "darkPulse"
+  ],
+  "mew": [
+    "psychic",
+    "energyBall",
+    "leechLife",
+    "dracoMeteor"
+  ],
+  "meganium": [
+    "woodHammer",
+    "gigaDrain",
+    "bulletSeed",
+    "sleepPowder"
+  ],
+  "typhlosion": [
+    "flamethrower",
+    "overheat",
+    "fireBlast",
+    "earthquake"
+  ],
+  "noctowl": [
+    "airSlash",
+    "psychic",
+    "hypnosis",
+    "screech"
+  ],
+  "ledian": [
+    "bugBite",
+    "machPunch",
+    "stringShot",
+    "featherDance"
+  ],
+  "lanturn": [
+    "surf",
+    "thunderbolt",
+    "thunderWave",
+    "screech"
+  ],
+  "ampharos": [
+    "thunder",
+    "thunderbolt",
+    "dragonPulse",
+    "powerUpPunch"
+  ],
+  "bellossom": [
+    "woodHammer",
+    "sludgeBomb",
+    "sleepPowder",
+    "charm"
+  ],
+  "azumarill": [
+    "surf",
+    "bodySlam",
+    "aquaJet",
+    "powerUpPunch"
+  ],
+  "sudowoodo": [
+    "rockSlide",
+    "earthquake",
+    "powerUpPunch",
+    "rockBlast"
+  ],
+  "politoed": [
+    "surf",
+    "iceBeam",
+    "sing",
+    "screech"
+  ],
+  "jumpluff": [
+    "energyBall",
+    "sleepPowder",
+    "bulletSeed",
+    "charm"
+  ],
+  "sunflora": [
+    "gigaDrain",
+    "sludgeBomb",
+    "bulletSeed",
+    "sleepPowder"
+  ],
+  "espeon": [
+    "psychic",
+    "shadowBall",
+    "nastyPlot",
+    "charm"
+  ],
+  "umbreon": [
+    "suckerPunch",
+    "darkPulse",
+    "nastyPlot",
+    "screech"
+  ],
+  "murkrow": [
+    "crunch",
+    "airSlash",
+    "suckerPunch",
+    "nightSlash"
+  ],
+  "slowking": [
+    "surf",
+    "psychic",
+    "iceBeam",
+    "hydroPump"
+  ],
+  "girafarig": [
+    "psychic",
+    "bodySlam",
+    "crunch",
+    "doubleEdge"
+  ],
+  "forretress": [
+    "stringShot",
+    "flashCannon",
+    "explosion",
+    "metalSound"
+  ],
+  "dunsparce": [
+    "screech",
+    "scaryFace",
+    "thunderWave",
+    "sing"
+  ],
+  "gligar": [
+    "earthquake",
+    "airSlash",
+    "suckerPunch",
+    "xScissor"
+  ],
+  "granbull": [
+    "bodySlam",
+    "crunch",
+    "brickBreak",
+    "closeCombat"
+  ],
+  "qwilfish": [
+    "scaleShot",
+    "poisonJab",
+    "aquaJet",
+    "aquaTail"
+  ],
+  "shuckle": [
+    "rockBlast",
+    "bugBite",
+    "rockSlide",
+    "ironDefense"
+  ],
+  "sneasel": [
+    "crunch",
+    "icicleSpear",
+    "suckerPunch",
+    "aerialAce"
+  ],
+  "ursaring": [
+    "doubleEdge",
+    "crunch",
+    "earthquake",
+    "rockSlide"
+  ],
+  "magcargo": [
+    "flamethrower",
+    "rockBlast",
+    "earthquake",
+    "willOWisp"
+  ],
+  "piloswine": [
+    "earthquake",
+    "icicleSpear",
+    "rockSlide",
+    "doubleEdge"
+  ],
+  "octillery": [
+    "hydroPump",
+    "iceBeam",
+    "sludgeBomb",
+    "energyBall"
+  ],
+  "houndoom": [
+    "crunch",
+    "flamethrower",
+    "suckerPunch",
+    "overheat"
+  ],
+  "kingdra": [
+    "surf",
+    "dracoMeteor",
+    "scaleShot",
+    "aquaTail"
+  ],
+  "donphan": [
+    "earthquake",
+    "rockSlide",
+    "ironTail",
+    "ironHead"
+  ],
+  "porygon2": [
+    "psychic",
+    "thunderbolt",
+    "iceBeam",
+    "hyperBeam"
+  ],
+  "stantler": [
+    "bodySlam",
+    "psychic",
+    "hypnosis",
+    "hyperBeam"
+  ],
+  "blissey": [
+    "bodySlam",
+    "rest",
+    "thunderWave",
+    "charm"
+  ],
+  "entei": [
+    "flareBlitz",
+    "flamethrower",
+    "bite",
+    "extremeSpeed"
+  ],
+  "suicune": [
+    "surf",
+    "iceBeam",
+    "hydroPump",
+    "doubleEdge"
+  ],
+  "celebi": [
+    "energyBall",
+    "psychic",
+    "gigaDrain",
+    "hyperBeam"
+  ]
+}

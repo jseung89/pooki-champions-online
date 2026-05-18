@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>푸끼몬 기술 밸런스 관리자</title>
+  <style>
+    :root { color-scheme: dark; --bg:#071225; --panel:rgba(12,26,52,.88); --panel2:rgba(18,38,76,.9); --line:rgba(135,174,255,.24); --text:#eef6ff; --muted:#9eb4d7; --gold:#f6c75e; --blue:#56a8ff; --danger:#ff6978; --ok:#58d68d; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background:radial-gradient(circle at top, #14366a 0, #071225 55%, #040913 100%); color:var(--text); }
+    .wrap { max-width:1280px; margin:0 auto; padding:28px 18px 60px; }
+    .hero { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:18px; }
+    h1 { margin:0; font-size:28px; letter-spacing:-.03em; }
+    .sub { color:var(--muted); margin-top:6px; font-size:14px; }
+    .panel { background:linear-gradient(180deg, var(--panel), rgba(7,18,37,.92)); border:1px solid var(--line); border-radius:18px; padding:18px; box-shadow:0 18px 45px rgba(0,0,0,.32); }
+    .auth { max-width:520px; margin:10vh auto; }
+    label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+    input, textarea, select { width:100%; border:1px solid var(--line); border-radius:10px; background:rgba(2,9,23,.72); color:var(--text); padding:10px 11px; outline:none; }
+    input:focus, textarea:focus { border-color:rgba(86,168,255,.72); box-shadow:0 0 0 3px rgba(86,168,255,.13); }
+    button { border:0; border-radius:12px; padding:10px 14px; color:#06101f; background:linear-gradient(180deg, #ffd777, #e5a933); font-weight:800; cursor:pointer; }
+    button.secondary { color:var(--text); background:rgba(86,168,255,.18); border:1px solid rgba(86,168,255,.35); }
+    button.danger { color:#fff; background:rgba(255,105,120,.24); border:1px solid rgba(255,105,120,.42); }
+    button:disabled { opacity:.45; cursor:not-allowed; }
+    .row { display:flex; gap:10px; align-items:end; flex-wrap:wrap; }
+    .row > * { flex:1; min-width:160px; }
+    .toolbar { display:flex; gap:10px; align-items:center; justify-content:space-between; margin-bottom:14px; flex-wrap:wrap; }
+    .toolbar .left { display:flex; gap:10px; flex:1; min-width:260px; }
+    .badge { display:inline-flex; align-items:center; gap:6px; border:1px solid var(--line); background:rgba(255,255,255,.06); color:var(--muted); padding:5px 9px; border-radius:999px; font-size:12px; }
+    .grid { display:grid; grid-template-columns: 1.25fr .95fr; gap:16px; align-items:start; }
+    .tableWrap { max-height:68vh; overflow:auto; border:1px solid var(--line); border-radius:14px; }
+    table { width:100%; border-collapse:collapse; min-width:760px; }
+    th, td { padding:9px 10px; border-bottom:1px solid rgba(135,174,255,.13); text-align:left; font-size:13px; white-space:nowrap; }
+    th { position:sticky; top:0; background:#102246; z-index:2; color:#cfe1ff; }
+    tr { cursor:pointer; }
+    tr:hover, tr.active { background:rgba(86,168,255,.13); }
+    .type { color:var(--gold); font-weight:700; }
+    .muted { color:var(--muted); }
+    .editor h2 { margin:0 0 4px; font-size:20px; }
+    .editor .id { color:var(--muted); font-size:13px; margin-bottom:14px; }
+    .formGrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .formGrid .wide { grid-column:1 / -1; }
+    .commonGrid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; }
+    .msg { margin-top:12px; padding:10px 12px; border-radius:12px; background:rgba(255,255,255,.06); color:var(--muted); white-space:pre-wrap; }
+    .msg.ok { color:#c4ffdc; background:rgba(88,214,141,.12); border:1px solid rgba(88,214,141,.25); }
+    .msg.err { color:#ffd0d5; background:rgba(255,105,120,.12); border:1px solid rgba(255,105,120,.25); }
+    .hidden { display:none !important; }
+    body.embedded .wrap { max-width:none; padding:18px; }
+    body.embedded #authPanel { margin:4vh auto; }
+    body.embedded .hero { margin-top:0; }
+    body.embedded .hero h1 { font-size:24px; }
+    @media (max-width: 920px) { .grid { grid-template-columns:1fr; } .commonGrid, .formGrid { grid-template-columns:1fr 1fr; } }
+    @media (max-width: 560px) { .hero { align-items:flex-start; flex-direction:column; } .commonGrid, .formGrid { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section id="authPanel" class="panel auth">
+      <h1>기술 밸런스 관리자</h1>
+      <p class="sub">관리자 키를 입력해야 기술 밸런스 데이터를 조회하고 저장할 수 있습니다.</p>
+      <label for="adminKeyInput">관리자 키</label>
+      <input id="adminKeyInput" type="password" placeholder="ADMIN_KEY" autocomplete="current-password" />
+      <div class="row" style="margin-top:14px">
+        <button id="verifyBtn">입장</button>
+        <button class="secondary" onclick="location.href='/'">로비로 돌아가기</button>
+      </div>
+      <div id="authMsg" class="msg hidden"></div>
+    </section>
+
+    <main id="adminApp" class="hidden">
+      <div class="hero">
+        <div>
+          <h1>푸끼몬 기술 밸런스 관리자</h1>
+          <div class="sub">기술 위력 / 명중률 / PP / 회복량 / 반동 / 공통 룰을 JSON override로 관리합니다.</div>
+        </div>
+        <div class="row" style="flex:0 0 auto; min-width:320px">
+          <button class="secondary" id="reloadBtn">다시 불러오기</button>
+          <button id="saveBtn">저장</button>
+          <button class="danger" id="logoutBtn">잠금</button>
+        </div>
+      </div>
+
+      <section class="panel" style="margin-bottom:16px">
+        <div class="toolbar">
+          <div class="left">
+            <input id="searchInput" placeholder="기술명, ID, 타입 검색" />
+            <select id="typeFilter"><option value="">전체 타입</option></select>
+          </div>
+          <span class="badge"><span id="moveCount">0</span>개 기술</span>
+          <span class="badge">override <span id="overrideCount">0</span>개</span>
+        </div>
+        <div class="commonGrid">
+          <div><label>수면 최소 턴</label><input id="sleepMin" type="number" min="0" max="10" /></div>
+          <div><label>수면 최대 턴</label><input id="sleepMax" type="number" min="0" max="10" /></div>
+          <div><label>발버둥 위력</label><input id="strugglePower" type="number" min="1" max="999" /></div>
+          <div><label>발버둥 명중률</label><input id="struggleAccuracy" type="number" min="1" max="100" /></div>
+          <div><label>발버둥 반동 비율</label><input id="struggleRecoil" type="number" step="0.01" min="0" max="1" /></div>
+          <div><label>회복기 기본 PP</label><input id="ppHeal" type="number" min="0" max="99" /></div>
+          <div><label>상태이상 기본 PP</label><input id="ppStatus" type="number" min="0" max="99" /></div>
+          <div><label>버프/디버프 기본 PP</label><input id="ppBuff" type="number" min="0" max="99" /></div>
+          <div><label>일반 공격 기본 PP</label><input id="ppNormal" type="number" min="0" max="99" /></div>
+          <div><label>강력기 기본 PP</label><input id="ppStrong" type="number" min="0" max="99" /></div>
+          <div><label>초위험기 기본 PP</label><input id="ppDanger" type="number" min="0" max="99" /></div>
+          <div><label>대폭발 기본 PP</label><input id="ppExplosion" type="number" min="0" max="99" /></div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <section class="panel">
+          <div class="tableWrap">
+            <table>
+              <thead><tr><th>ID</th><th>이름</th><th>타입</th><th>위력</th><th>명중</th><th>PP</th><th>분류</th></tr></thead>
+              <tbody id="moveTbody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel editor">
+          <h2 id="editTitle">기술을 선택하세요</h2>
+          <div id="editId" class="id">목록에서 수정할 기술을 클릭하세요.</div>
+          <div id="editForm" class="hidden">
+            <div class="formGrid">
+              <div><label>위력 power</label><input id="editPower" type="number" min="0" max="999" /></div>
+              <div><label>명중률 accuracy</label><input id="editAccuracy" type="number" min="1" max="100" /></div>
+              <div><label>PP</label><input id="editPp" type="number" min="0" max="99" /></div>
+              <div><label>회복량 healRatio</label><input id="editHealRatio" type="number" step="0.01" min="0" max="1" placeholder="예: 0.33" /></div>
+              <div><label>반동 recoilRatio</label><input id="editRecoilRatio" type="number" step="0.01" min="0" max="1" placeholder="예: 0.33" /></div>
+              <div class="wide"><label>설명 / danger</label><textarea id="editDanger" rows="3" maxlength="300"></textarea></div>
+            </div>
+            <div class="row" style="margin-top:12px">
+              <button id="applyBtn">이 기술 수정 반영</button>
+              <button class="secondary" id="clearMoveBtn">이 기술 override 제거</button>
+            </div>
+            <div id="baseInfo" class="msg"></div>
+          </div>
+          <div id="mainMsg" class="msg hidden"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(location.search);
+    const embeddedMode = params.get('embedded') === '1';
+    if (embeddedMode) document.body.classList.add('embedded');
+    let adminKey = params.get('adminKey') || sessionStorage.getItem('pookiAdminKey') || sessionStorage.getItem('pookiBalanceAdminKey') || '';
+    let moves = [];
+    let overrides = {};
+    let battleBalance = null;
+    let selectedId = null;
+
+    const $ = (id) => document.getElementById(id);
+    const numOrBlank = (value) => value === undefined || value === null || value === '' ? '' : Number(value);
+    const showMsg = (el, text, kind='') => { el.textContent = text; el.className = `msg ${kind}`; el.classList.remove('hidden'); };
+    const hideMsg = (el) => el.classList.add('hidden');
+
+    function authHeaders() { return { 'Content-Type': 'application/json', 'x-admin-key': adminKey }; }
+    async function postJson(url, body) {
+      const res = await fetch(url, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ adminKey, ...(body || {}) }) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.ok === false) throw new Error(data.message || data.errors?.join('\n') || '요청 실패');
+      return data;
+    }
+
+    function moveCategory(m) {
+      if (m.statusMove) return '상태이상';
+      if (m.heal || m.rest || m.drain) return '회복/흡수';
+      if (m.statChange || m.statChanges || m.selfStatAfterHit || m.selfStatAfterUse || m.statChance) return '능력변화';
+      if (m.multiHit) return '다단히트';
+      if (m.lockedMove || m.furyCutter || m.selfDamageRatio || m.recoil || m.recharge || m.selfDestruct) return '특수공격';
+      if ((m.power || 0) > 0) return '공격';
+      return '기타';
+    }
+
+    function effectiveMove(m) {
+      const o = overrides[m.id] || {};
+      return {
+        ...m,
+        power: o.power ?? m.power,
+        accuracy: o.accuracy ?? m.accuracy,
+        maxPp: o.maxPp ?? o.pp ?? m.maxPp ?? m.pp,
+        healRatio: o.healRatio ?? m.heal?.ratio,
+        recoilRatio: o.recoilRatio ?? m.recoil?.ratio,
+        danger: o.danger ?? m.danger,
+      };
+    }
+
+    function renderFilters() {
+      const types = [...new Set(moves.map(m => m.type).filter(Boolean))].sort();
+      $('typeFilter').innerHTML = '<option value="">전체 타입</option>' + types.map(t => `<option value="${t}">${t}</option>`).join('');
+    }
+
+    function renderTable() {
+      const q = $('searchInput').value.trim().toLowerCase();
+      const type = $('typeFilter').value;
+      const filtered = moves.filter(m => {
+        const text = `${m.id} ${m.name} ${m.type}`.toLowerCase();
+        return (!q || text.includes(q)) && (!type || m.type === type);
+      });
+      $('moveCount').textContent = filtered.length;
+      $('overrideCount').textContent = Object.keys(overrides).length;
+      $('moveTbody').innerHTML = filtered.map(m => {
+        const e = effectiveMove(m);
+        const active = m.id === selectedId ? 'active' : '';
+        return `<tr class="${active}" data-id="${m.id}"><td>${m.id}</td><td>${m.name}</td><td class="type">${m.type}</td><td>${e.power ?? 0}</td><td>${e.accuracy ?? 100}</td><td>${e.maxPp ?? '-'}</td><td>${moveCategory(m)}</td></tr>`;
+      }).join('');
+      document.querySelectorAll('#moveTbody tr').forEach(tr => tr.addEventListener('click', () => selectMove(tr.dataset.id)));
+    }
+
+    function renderBattleBalance() {
+      if (!battleBalance) return;
+      $('sleepMin').value = battleBalance.sleep?.minTurns ?? 2;
+      $('sleepMax').value = battleBalance.sleep?.maxTurns ?? 3;
+      $('strugglePower').value = battleBalance.struggle?.power ?? 50;
+      $('struggleAccuracy').value = battleBalance.struggle?.accuracy ?? 100;
+      $('struggleRecoil').value = battleBalance.struggle?.recoilMaxHpRatio ?? 0.25;
+      $('ppHeal').value = battleBalance.defaultPp?.heal ?? 3;
+      $('ppStatus').value = battleBalance.defaultPp?.status ?? 5;
+      $('ppBuff').value = battleBalance.defaultPp?.buff ?? 5;
+      $('ppNormal').value = battleBalance.defaultPp?.normalAttack ?? 10;
+      $('ppStrong').value = battleBalance.defaultPp?.strongAttack ?? 5;
+      $('ppDanger').value = battleBalance.defaultPp?.dangerAttack ?? 3;
+      $('ppExplosion').value = battleBalance.defaultPp?.explosion ?? 1;
+    }
+
+    function collectBattleBalance() {
+      return {
+        sleep: { minTurns: Number($('sleepMin').value), maxTurns: Number($('sleepMax').value) },
+        struggle: { power: Number($('strugglePower').value), accuracy: Number($('struggleAccuracy').value), recoilMaxHpRatio: Number($('struggleRecoil').value) },
+        defaultPp: {
+          heal: Number($('ppHeal').value), status: Number($('ppStatus').value), buff: Number($('ppBuff').value), normalAttack: Number($('ppNormal').value),
+          strongAttack: Number($('ppStrong').value), dangerAttack: Number($('ppDanger').value), explosion: Number($('ppExplosion').value),
+          multiHit: battleBalance?.defaultPp?.multiHit ?? 8, priority: battleBalance?.defaultPp?.priority ?? 8,
+        }
+      };
+    }
+
+    function selectMove(id) {
+      selectedId = id;
+      const m = moves.find(x => x.id === id);
+      if (!m) return;
+      const o = overrides[id] || {};
+      $('editTitle').textContent = `${m.name} (${m.type})`;
+      $('editId').textContent = id;
+      $('editForm').classList.remove('hidden');
+      $('editPower').value = numOrBlank(o.power ?? m.power);
+      $('editAccuracy').value = numOrBlank(o.accuracy ?? m.accuracy);
+      $('editPp').value = numOrBlank(o.maxPp ?? o.pp ?? m.maxPp ?? m.pp);
+      $('editHealRatio').value = numOrBlank(o.healRatio ?? m.heal?.ratio);
+      $('editRecoilRatio').value = numOrBlank(o.recoilRatio ?? m.recoil?.ratio);
+      $('editDanger').value = o.danger ?? m.danger ?? '';
+      $('baseInfo').textContent = `기본 설명: ${m.description || '-'}\n현재 override: ${JSON.stringify(o, null, 2)}`;
+      renderTable();
+    }
+
+    function applySelectedMove() {
+      if (!selectedId) return;
+      const next = {};
+      const fields = [
+        ['power', $('editPower').value], ['accuracy', $('editAccuracy').value], ['pp', $('editPp').value], ['maxPp', $('editPp').value],
+        ['healRatio', $('editHealRatio').value], ['recoilRatio', $('editRecoilRatio').value], ['danger', $('editDanger').value.trim()],
+      ];
+      for (const [key, value] of fields) {
+        if (value === '' || value === null || value === undefined) continue;
+        next[key] = key === 'danger' ? value : Number(value);
+      }
+      overrides[selectedId] = next;
+      selectMove(selectedId);
+      showMsg($('mainMsg'), `${selectedId} 수정값을 임시 반영했습니다. 저장을 눌러야 파일에 기록됩니다.`, 'ok');
+    }
+
+    function clearSelectedMove() {
+      if (!selectedId) return;
+      delete overrides[selectedId];
+      selectMove(selectedId);
+      showMsg($('mainMsg'), `${selectedId} override를 제거했습니다. 저장을 눌러야 파일에 기록됩니다.`, 'ok');
+    }
+
+    async function loadBalance() {
+      const data = await postJson('/api/admin/balance/load', {});
+      moves = data.moves || [];
+      overrides = data.overrides || {};
+      battleBalance = data.battleBalance || {};
+      renderFilters();
+      renderBattleBalance();
+      renderTable();
+    }
+
+    async function verify() {
+      adminKey = $('adminKeyInput').value.trim();
+      try {
+        await postJson('/api/admin/balance/verify', {});
+        sessionStorage.setItem('pookiBalanceAdminKey', adminKey);
+        sessionStorage.setItem('pookiAdminKey', adminKey);
+        $('authPanel').classList.add('hidden');
+        $('adminApp').classList.remove('hidden');
+        await loadBalance();
+      } catch (err) {
+        showMsg($('authMsg'), err.message, 'err');
+      }
+    }
+
+    async function save() {
+      hideMsg($('mainMsg'));
+      if (!confirm('현재 밸런스 수정값을 JSON 파일에 저장할까요?')) return;
+      try {
+        const data = await postJson('/api/admin/balance/save', { overrides, battleBalance: collectBattleBalance() });
+        moves = data.moves || moves;
+        overrides = data.overrides || {};
+        battleBalance = data.battleBalance || collectBattleBalance();
+        renderBattleBalance(); renderTable(); if (selectedId) selectMove(selectedId);
+        showMsg($('mainMsg'), `저장 완료. override ${Object.keys(overrides).length}개`, 'ok');
+      } catch (err) {
+        showMsg($('mainMsg'), err.message, 'err');
+      }
+    }
+
+    $('verifyBtn').addEventListener('click', verify);
+    $('adminKeyInput').addEventListener('keydown', e => { if (e.key === 'Enter') verify(); });
+    $('reloadBtn').addEventListener('click', () => loadBalance().catch(err => showMsg($('mainMsg'), err.message, 'err')));
+    $('saveBtn').addEventListener('click', save);
+    $('logoutBtn').addEventListener('click', () => { sessionStorage.removeItem('pookiBalanceAdminKey'); sessionStorage.removeItem('pookiAdminKey'); location.href = '/admin.html'; });
+    $('searchInput').addEventListener('input', renderTable);
+    $('typeFilter').addEventListener('change', renderTable);
+    $('applyBtn').addEventListener('click', applySelectedMove);
+    $('clearMoveBtn').addEventListener('click', clearSelectedMove);
+
+    if (adminKey) {
+      $('adminKeyInput').value = adminKey;
+      verify();
+    }
+  </script>
+</body>
+</html>

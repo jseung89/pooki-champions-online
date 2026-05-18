@@ -1,21 +1,22 @@
 const { TYPE_KO } = require("./typeChart");
+const { getBattleBalance, getMoveBalanceOverrides, reloadMoveBalanceOverrides } = require("./balanceConfig");
 
-const MOVES = {
+const BASE_MOVES = {
   bodySlam: { id: "bodySlam", apiName: "body-slam", name: "누르기", type: "normal", power: 85, accuracy: 100, effect: { chance: 20, status: "paralyze" }, tags: ["reliable"] },
   quickAttack: { id: "quickAttack", apiName: "quick-attack", name: "전광석화", type: "normal", power: 40, accuracy: 100, priority: 1, tags: ["priority"] },
   extremeSpeed: { id: "extremeSpeed", apiName: "extreme-speed", name: "신속", type: "normal", power: 80, accuracy: 100, priority: 2, tags: ["priority", "premium"] },
   slash: { id: "slash", apiName: "slash", name: "베어가르기", type: "normal", power: 70, accuracy: 100, highCrit: true },
   hyperBeam: { id: "hyperBeam", apiName: "hyper-beam", name: "파괴광선", type: "normal", power: 150, accuracy: 90, recharge: 1, danger: "사용 후 다음 턴 반동으로 행동할 수 없습니다.", tags: ["premium"] },
-  explosion: { id: "explosion", apiName: "explosion", name: "대폭발", type: "normal", power: 400, accuracy: 100, selfDestruct: true, danger: "사용 후 자신도 쓰러지는 초고위력 조커 기술입니다.", tags: ["signature", "premium"] },
+  explosion: { id: "explosion", apiName: "explosion", name: "대폭발", type: "normal", power: 500, accuracy: 100, selfDestruct: true, danger: "사용 후 자신도 쓰러지는 초고위력 조커 기술입니다.", tags: ["signature", "premium"] },
 
   doubleEdge: { id: "doubleEdge", apiName: "double-edge", name: "이판사판태클", type: "normal", power: 120, accuracy: 100, recoil: { ratio: 1 / 3 }, danger: "준 피해의 1/3만큼 반동 피해를 입습니다.", tags: ["premium", "risk", "recoil"] },
 
-  sing: { id: "sing", apiName: "sing", name: "노래하기", type: "normal", power: 0, accuracy: 60, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
+  sing: { id: "sing", apiName: "sing", name: "노래하기", type: "normal", power: 0, accuracy: 50, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
   perishSong: { id: "perishSong", apiName: "perish-song", name: "멸망의노래", type: "normal", power: 0, accuracy: 100, fixedDamageRatio: 0.5, statChangeAfterDamage: { target: "enemy", stat: "speed", amount: -1 }, tags: ["signature"] },
   rest: { id: "rest", apiName: "rest", name: "잠자기", type: "psychic", power: 0, accuracy: 100, rest: { turns: 2 }, tags: ["recovery"] },
-  recover: { id: "recover", apiName: "recover", name: "HP회복", type: "normal", power: 0, accuracy: 100, heal: { target: "self", ratio: 0.5 }, tags: ["recovery"] },
-  milkDrink: { id: "milkDrink", apiName: "milk-drink", name: "우유마시기", type: "normal", power: 0, accuracy: 100, heal: { target: "self", ratio: 0.5 }, tags: ["recovery"] },
-  synthesis: { id: "synthesis", apiName: "synthesis", name: "광합성", type: "grass", power: 0, accuracy: 100, heal: { target: "self", ratio: 0.5 }, tags: ["recovery"] },
+  recover: { id: "recover", apiName: "recover", name: "HP회복", type: "normal", power: 0, accuracy: 100, heal: { target: "self", ratio: 0.33 }, tags: ["recovery"] },
+  milkDrink: { id: "milkDrink", apiName: "milk-drink", name: "우유마시기", type: "normal", power: 0, accuracy: 100, heal: { target: "self", ratio: 0.33 }, tags: ["recovery"] },
+  synthesis: { id: "synthesis", apiName: "synthesis", name: "광합성", type: "grass", power: 0, accuracy: 100, heal: { target: "self", ratio: 0.33 }, tags: ["recovery"] },
 
   flamethrower: { id: "flamethrower", apiName: "flamethrower", name: "화염방사", type: "fire", power: 90, accuracy: 100, effect: { chance: 10, status: "burn" }, tags: ["premium"] },
   fireBlast: { id: "fireBlast", apiName: "fire-blast", name: "불대문자", type: "fire", power: 110, accuracy: 85, effect: { chance: 10, status: "burn" }, tags: ["premium"] },
@@ -31,7 +32,7 @@ const MOVES = {
   razorLeaf: { id: "razorLeaf", apiName: "razor-leaf", name: "잎날가르기", type: "grass", power: 65, accuracy: 95, highCrit: true },
   energyBall: { id: "energyBall", apiName: "energy-ball", name: "에너지볼", type: "grass", power: 90, accuracy: 100, statChance: { chance: 10, target: "enemy", stat: "defense", amount: -1 }, tags: ["premium"] },
   woodHammer: { id: "woodHammer", apiName: "wood-hammer", name: "우드해머", type: "grass", power: 120, accuracy: 100, recoil: { ratio: 1 / 3 }, danger: "준 피해의 1/3만큼 반동 피해를 입습니다.", tags: ["premium", "risk", "recoil"] },
-  sleepPowder: { id: "sleepPowder", apiName: "sleep-powder", name: "수면가루", type: "grass", power: 0, accuracy: 65, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
+  sleepPowder: { id: "sleepPowder", apiName: "sleep-powder", name: "수면가루", type: "grass", power: 0, accuracy: 55, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
   poisonPowder: { id: "poisonPowder", apiName: "poison-powder", name: "독가루", type: "poison", power: 0, accuracy: 75, statusMove: { target: "enemy", status: "poison" }, tags: ["status"] },
 
   thunderbolt: { id: "thunderbolt", apiName: "thunderbolt", name: "10만볼트", type: "electric", power: 90, accuracy: 100, effect: { chance: 10, status: "paralyze" }, tags: ["premium"] },
@@ -57,7 +58,7 @@ const MOVES = {
 
   confusion: { id: "confusion", apiName: "confusion", name: "염동력", type: "psychic", power: 50, accuracy: 100 },
   psychic: { id: "psychic", apiName: "psychic", name: "사이코키네시스", type: "psychic", power: 90, accuracy: 100, tags: ["premium"] },
-  hypnosis: { id: "hypnosis", apiName: "hypnosis", name: "최면술", type: "psychic", power: 0, accuracy: 60, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
+  hypnosis: { id: "hypnosis", apiName: "hypnosis", name: "최면술", type: "psychic", power: 0, accuracy: 50, statusMove: { target: "enemy", status: "sleep" }, tags: ["status"] },
   agility: { id: "agility", apiName: "agility", name: "고속이동", type: "psychic", power: 0, accuracy: 100, statChange: { target: "self", stat: "speed", amount: 2 }, tags: ["setup"] },
 
   bugBite: { id: "bugBite", apiName: "bug-bite", name: "벌레먹기", type: "bug", power: 60, accuracy: 100 },
@@ -134,6 +135,86 @@ const MOVES = {
   ], tags: ["utility"] },
   harden: { id: "harden", apiName: "harden", name: "방어태세", type: "normal", power: 0, accuracy: 100, statChange: { target: "self", stat: "defense", amount: 1 }, tags: ["utility"] },
 };
+
+function cloneMove(move) {
+  return JSON.parse(JSON.stringify(move));
+}
+
+const MOVES = Object.fromEntries(Object.entries(BASE_MOVES).map(([id, move]) => [id, cloneMove(move)]));
+
+function resetMovesToBase() {
+  for (const id of Object.keys(MOVES)) {
+    if (!BASE_MOVES[id]) delete MOVES[id];
+  }
+  for (const [id, move] of Object.entries(BASE_MOVES)) {
+    const fresh = cloneMove(move);
+    if (MOVES[id]) {
+      for (const key of Object.keys(MOVES[id])) delete MOVES[id][key];
+      Object.assign(MOVES[id], fresh);
+    } else {
+      MOVES[id] = fresh;
+    }
+  }
+}
+
+function applyMoveBalanceOverrides(overrides = getMoveBalanceOverrides()) {
+  resetMovesToBase();
+  for (const [id, override] of Object.entries(overrides || {})) {
+    const move = MOVES[id];
+    if (!move || !override || typeof override !== "object") continue;
+    if (Number.isFinite(Number(override.power))) move.power = Math.max(0, Math.min(999, Math.round(Number(override.power))));
+    if (Number.isFinite(Number(override.accuracy))) move.accuracy = Math.max(1, Math.min(100, Math.round(Number(override.accuracy))));
+    if (Number.isFinite(Number(override.maxPp ?? override.pp))) {
+      const pp = Math.max(0, Math.min(99, Math.round(Number(override.maxPp ?? override.pp))));
+      move.maxPp = pp;
+      move.pp = pp;
+    }
+    if (Number.isFinite(Number(override.healRatio))) {
+      const ratio = Math.max(0, Math.min(1, Number(override.healRatio)));
+      if (move.heal) move.heal.ratio = ratio;
+      else move.heal = { target: "self", ratio };
+    }
+    if (Number.isFinite(Number(override.recoilRatio))) {
+      const ratio = Math.max(0, Math.min(1, Number(override.recoilRatio)));
+      if (move.recoil) move.recoil.ratio = ratio;
+      else if (ratio > 0) move.recoil = { ratio };
+    }
+    if (typeof override.danger === "string") move.danger = override.danger.slice(0, 300);
+    if (typeof override.description === "string") move.danger = override.description.slice(0, 300);
+  }
+  return MOVES;
+}
+
+function reloadMoveBalanceData() {
+  const overrides = reloadMoveBalanceOverrides();
+  applyMoveBalanceOverrides(overrides);
+  return MOVES;
+}
+
+applyMoveBalanceOverrides(getMoveBalanceOverrides());
+
+const HIGH_RISK_MOVE_IDS = new Set(["hyperBeam", "dracoMeteor", "outrage", "flareBlitz", "braveBird", "headSmash", "doubleEdge", "woodHammer"]);
+
+function defaultPpForMove(move) {
+  if (!move) return 0;
+  const pp = getBattleBalance().defaultPp || {};
+  if (move.id === "explosion" || move.selfDestruct) return pp.explosion ?? 1;
+  if (move.rest || move.heal) return pp.heal ?? 3;
+  if (move.statusMove || move.fixedDamageRatio) return pp.status ?? 5;
+  if (move.statChange || move.statChanges) return pp.buff ?? 5;
+  if (move.multiHit) return pp.multiHit ?? 8;
+  if (move.priority) return pp.priority ?? 8;
+  if ((move.power || 0) >= 130 || move.recharge || HIGH_RISK_MOVE_IDS.has(move.id)) return pp.dangerAttack ?? 3;
+  if ((move.power || 0) >= 110) return pp.strongAttack ?? 5;
+  return pp.normalAttack ?? 10;
+}
+
+function withDefaultPp(move) {
+  if (!move) return move;
+  const maxPp = Number.isFinite(move.maxPp) ? move.maxPp : defaultPpForMove(move);
+  const pp = Number.isFinite(move.pp) ? move.pp : maxPp;
+  return { ...move, maxPp, pp };
+}
 
 const MOVE_LIST = Object.values(MOVES);
 const PREMIUM_MOVE_IDS = new Set(MOVE_LIST.filter((m) => m.tags?.includes("premium")).map((m) => m.id));
@@ -218,5 +299,9 @@ module.exports = {
   isAttackMove,
   isStatusMove,
   moveDescription,
+  defaultPpForMove,
+  withDefaultPp,
+  applyMoveBalanceOverrides,
+  reloadMoveBalanceData,
   TYPE_KO,
 };

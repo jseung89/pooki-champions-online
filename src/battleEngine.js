@@ -1,4 +1,6 @@
 const { battleEffectiveness } = require("./typeChart");
+const { withDefaultPp } = require("./moveLibrary");
+const { getBattleBalance, reloadBattleBalance } = require("./balanceConfig");
 
 const STATUS_KO = {
   burn: "화상",
@@ -37,6 +39,45 @@ const CRITICAL_HIT_CHANCE = 0.10; // 푸끼몬식 일반 급소율 10%
 const HIGH_CRITICAL_HIT_CHANCE = 0.25; // 고급소 기술 25%
 const CRITICAL_HIT_MULTIPLIER = 1.5;
 
+const STRUGGLE_MOVE = {
+  id: "struggle",
+  apiName: "struggle",
+  name: "발버둥",
+  type: "normal",
+  power: 50,
+  accuracy: 100,
+  selfDamageRatio: 0.25,
+  isStruggle: true,
+  danger: "사용 후 내 최대 HP의 25%만큼 반동 피해를 입습니다.",
+};
+
+function applyBattleBalanceToStruggle() {
+  const balance = getBattleBalance();
+  const struggle = balance.struggle || {};
+  STRUGGLE_MOVE.power = Number.isFinite(Number(struggle.power)) ? Math.max(1, Math.round(Number(struggle.power))) : 50;
+  STRUGGLE_MOVE.accuracy = Number.isFinite(Number(struggle.accuracy)) ? Math.max(1, Math.min(100, Math.round(Number(struggle.accuracy)))) : 100;
+  STRUGGLE_MOVE.selfDamageRatio = Number.isFinite(Number(struggle.recoilMaxHpRatio)) ? Math.max(0, Math.min(1, Number(struggle.recoilMaxHpRatio))) : 0.25;
+  STRUGGLE_MOVE.danger = `사용 후 내 최대 HP의 ${Math.round(STRUGGLE_MOVE.selfDamageRatio * 100)}%만큼 반동 피해를 입습니다.`;
+  return STRUGGLE_MOVE;
+}
+
+applyBattleBalanceToStruggle();
+
+function moveHasPp(move) {
+  if (!move || move.isStruggle) return true;
+  return !Number.isFinite(move.pp) || move.pp > 0;
+}
+
+function hasAnyPpMove(pokemon) {
+  return Array.isArray(pokemon?.moves) && pokemon.moves.some((m) => moveHasPp(m));
+}
+
+function consumeMovePp(move) {
+  if (!move || move.isStruggle || !Number.isFinite(move.pp)) return false;
+  move.pp = Math.max(0, move.pp - 1);
+  return true;
+}
+
 function calculateDamage(attacker, defender, move) {
   const attack = attacker.stats.attack * stageMultiplier(attacker.statStages.attack);
   const defense = defender.stats.defense * stageMultiplier(defender.statStages.defense);
@@ -64,7 +105,7 @@ function createBattlePokemon(template) {
     stats: { ...template.stats },
     hp: template.stats.hp,
     maxHp: template.stats.hp,
-    moves: template.moves.map((m) => ({ ...m })),
+    moves: template.moves.map((m) => withDefaultPp(m)),
     frontSprite: template.frontSprite,
     backSprite: template.backSprite,
     fainted: false,
@@ -84,8 +125,9 @@ function getDefaultAction(pokemon) {
   if (pokemon?.volatile?.lockedMove && Number.isInteger(pokemon.volatile.lockedMove.moveIndex)) {
     return { type: "move", moveIndex: pokemon.volatile.lockedMove.moveIndex, auto: true, locked: true };
   }
-  const idx = pokemon.moves.findIndex((m) => m.power > 0);
-  return { type: "move", moveIndex: idx >= 0 ? idx : 0, auto: true };
+  const idx = pokemon.moves.findIndex((m) => moveHasPp(m) && m.power > 0);
+  const anyIdx = pokemon.moves.findIndex((m) => moveHasPp(m));
+  return { type: "move", moveIndex: idx >= 0 ? idx : anyIdx >= 0 ? anyIdx : 0, auto: true };
 }
 
 function getActionLockReason(pokemon) {
@@ -121,7 +163,12 @@ function canApplyStatus(target, status) {
 
 function applyStatus(target, status) {
   target.status = status;
-  if (status === "sleep") target.sleepTurns = Math.random() < 0.5 ? 3 : 4;
+  if (status === "sleep") {
+    const sleep = getBattleBalance().sleep || { minTurns: 2, maxTurns: 3 };
+    const min = Math.max(0, Math.round(Number(sleep.minTurns ?? 2)));
+    const max = Math.max(min, Math.round(Number(sleep.maxTurns ?? 3)));
+    target.sleepTurns = min + Math.floor(Math.random() * (max - min + 1));
+  }
 }
 
 function endTurnStatusDamage(pokemon) {
@@ -172,4 +219,10 @@ module.exports = {
   endTurnStatusDamage,
   hpWarning,
   statDangerWarning,
+  STRUGGLE_MOVE,
+  applyBattleBalanceToStruggle,
+  reloadBattleBalance,
+  moveHasPp,
+  hasAnyPpMove,
+  consumeMovePp,
 };
