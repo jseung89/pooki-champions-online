@@ -1,0 +1,772 @@
+{
+  "starters": [
+    {
+      "id": 1,
+      "apiName": "bulbasaur",
+      "name": "이상해씨",
+      "types": [
+        "grass",
+        "poison"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 49,
+        "defense": 49,
+        "speed": 45
+      },
+      "baseStats": {
+        "hp": 45,
+        "attack": 49,
+        "defense": 49,
+        "speed": 45
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/1.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/1.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "이상해풀",
+      "finalEvolution": "이상해꽃",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 16
+    },
+    {
+      "id": 4,
+      "apiName": "charmander",
+      "name": "파이리",
+      "types": [
+        "fire"
+      ],
+      "stats": {
+        "hp": 39,
+        "attack": 52,
+        "defense": 43,
+        "speed": 65
+      },
+      "baseStats": {
+        "hp": 39,
+        "attack": 52,
+        "defense": 43,
+        "speed": 65
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/4.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/4.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "리자드",
+      "finalEvolution": "리자몽",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 16
+    },
+    {
+      "id": 7,
+      "apiName": "squirtle",
+      "name": "꼬부기",
+      "types": [
+        "water"
+      ],
+      "stats": {
+        "hp": 44,
+        "attack": 48,
+        "defense": 65,
+        "speed": 43
+      },
+      "baseStats": {
+        "hp": 44,
+        "attack": 48,
+        "defense": 65,
+        "speed": 43
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/7.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/7.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "어니부기",
+      "finalEvolution": "거북왕",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 16
+    },
+    {
+      "id": 10,
+      "apiName": "caterpie",
+      "name": "캐터피",
+      "types": [
+        "bug"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 30,
+        "defense": 35,
+        "speed": 45
+      },
+      "baseStats": {
+        "hp": 45,
+        "attack": 30,
+        "defense": 35,
+        "speed": 45
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/10.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/10.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "단데기",
+      "finalEvolution": "버터플",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 7
+    },
+    {
+      "id": 13,
+      "apiName": "weedle",
+      "name": "뿔충이",
+      "types": [
+        "bug",
+        "poison"
+      ],
+      "stats": {
+        "hp": 40,
+        "attack": 35,
+        "defense": 30,
+        "speed": 50
+      },
+      "baseStats": {
+        "hp": 40,
+        "attack": 35,
+        "defense": 30,
+        "speed": 50
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/13.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/13.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "딱충이",
+      "finalEvolution": "독침붕",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 7
+    },
+    {
+      "id": 16,
+      "apiName": "pidgey",
+      "name": "구구",
+      "types": [
+        "normal",
+        "flying"
+      ],
+      "stats": {
+        "hp": 40,
+        "attack": 45,
+        "defense": 40,
+        "speed": 56
+      },
+      "baseStats": {
+        "hp": 40,
+        "attack": 45,
+        "defense": 40,
+        "speed": 56
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/16.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/16.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "피죤",
+      "finalEvolution": "피죤투",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 18
+    },
+    {
+      "id": 29,
+      "apiName": "nidoran-f",
+      "name": "니드런♀",
+      "types": [
+        "poison"
+      ],
+      "stats": {
+        "hp": 55,
+        "attack": 47,
+        "defense": 52,
+        "speed": 41
+      },
+      "baseStats": {
+        "hp": 55,
+        "attack": 47,
+        "defense": 52,
+        "speed": 41
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/29.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/29.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "니드리나",
+      "finalEvolution": "니드퀸",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 16
+    },
+    {
+      "id": 32,
+      "apiName": "nidoran-m",
+      "name": "니드런♂",
+      "types": [
+        "poison"
+      ],
+      "stats": {
+        "hp": 46,
+        "attack": 57,
+        "defense": 40,
+        "speed": 50
+      },
+      "baseStats": {
+        "hp": 46,
+        "attack": 57,
+        "defense": 40,
+        "speed": 50
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/32.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/32.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "니드리노",
+      "finalEvolution": "니드킹",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 16
+    },
+    {
+      "id": 43,
+      "apiName": "oddish",
+      "name": "뚜벅쵸",
+      "types": [
+        "grass",
+        "poison"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 50,
+        "defense": 55,
+        "speed": 30
+      },
+      "baseStats": {
+        "hp": 45,
+        "attack": 50,
+        "defense": 55,
+        "speed": 30
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/43.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/43.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "냄새꼬",
+      "finalEvolution": "라플레시아",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 21
+    },
+    {
+      "id": 63,
+      "apiName": "abra",
+      "name": "캐이시",
+      "types": [
+        "psychic"
+      ],
+      "stats": {
+        "hp": 25,
+        "attack": 20,
+        "defense": 15,
+        "speed": 90
+      },
+      "baseStats": {
+        "hp": 25,
+        "attack": 20,
+        "defense": 15,
+        "speed": 90
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/63.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/63.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "윤겔라",
+      "finalEvolution": "후딘",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 16
+    },
+    {
+      "id": 66,
+      "apiName": "machop",
+      "name": "알통몬",
+      "types": [
+        "fighting"
+      ],
+      "stats": {
+        "hp": 70,
+        "attack": 80,
+        "defense": 50,
+        "speed": 35
+      },
+      "baseStats": {
+        "hp": 70,
+        "attack": 80,
+        "defense": 50,
+        "speed": 35
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/66.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/66.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "근육몬",
+      "finalEvolution": "괴력몬",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 28
+    },
+    {
+      "id": 69,
+      "apiName": "bellsprout",
+      "name": "모다피",
+      "types": [
+        "grass",
+        "poison"
+      ],
+      "stats": {
+        "hp": 50,
+        "attack": 75,
+        "defense": 35,
+        "speed": 40
+      },
+      "baseStats": {
+        "hp": 50,
+        "attack": 75,
+        "defense": 35,
+        "speed": 40
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/69.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/69.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "우츠동",
+      "finalEvolution": "우츠보트",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 21
+    },
+    {
+      "id": 74,
+      "apiName": "geodude",
+      "name": "꼬마돌",
+      "types": [
+        "rock",
+        "ground"
+      ],
+      "stats": {
+        "hp": 40,
+        "attack": 80,
+        "defense": 100,
+        "speed": 20
+      },
+      "baseStats": {
+        "hp": 40,
+        "attack": 80,
+        "defense": 100,
+        "speed": 20
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/74.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/74.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "데구리",
+      "finalEvolution": "딱구리",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 25
+    },
+    {
+      "id": 92,
+      "apiName": "gastly",
+      "name": "고오스",
+      "types": [
+        "ghost",
+        "poison"
+      ],
+      "stats": {
+        "hp": 30,
+        "attack": 35,
+        "defense": 30,
+        "speed": 80
+      },
+      "baseStats": {
+        "hp": 30,
+        "attack": 35,
+        "defense": 30,
+        "speed": 80
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/92.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/92.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "고우스트",
+      "finalEvolution": "팬텀",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 25
+    },
+    {
+      "id": 147,
+      "apiName": "dratini",
+      "name": "미뇽",
+      "types": [
+        "dragon"
+      ],
+      "stats": {
+        "hp": 41,
+        "attack": 64,
+        "defense": 45,
+        "speed": 50
+      },
+      "baseStats": {
+        "hp": 41,
+        "attack": 64,
+        "defense": 45,
+        "speed": 50
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/147.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/147.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "신뇽",
+      "finalEvolution": "망나뇽",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 30
+    },
+    {
+      "id": 152,
+      "apiName": "chikorita",
+      "name": "치코리타",
+      "types": [
+        "grass"
+      ],
+      "stats": {
+        "hp": 45,
+        "attack": 49,
+        "defense": 65,
+        "speed": 45
+      },
+      "baseStats": {
+        "hp": 45,
+        "attack": 49,
+        "defense": 65,
+        "speed": 45
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/152.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/152.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "베이리프",
+      "finalEvolution": "메가니움",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 16
+    },
+    {
+      "id": 155,
+      "apiName": "cyndaquil",
+      "name": "브케인",
+      "types": [
+        "fire"
+      ],
+      "stats": {
+        "hp": 39,
+        "attack": 52,
+        "defense": 43,
+        "speed": 65
+      },
+      "baseStats": {
+        "hp": 39,
+        "attack": 52,
+        "defense": 43,
+        "speed": 65
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/155.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/155.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "마그케인",
+      "finalEvolution": "블레이범",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 14
+    },
+    {
+      "id": 158,
+      "apiName": "totodile",
+      "name": "리아코",
+      "types": [
+        "water"
+      ],
+      "stats": {
+        "hp": 50,
+        "attack": 65,
+        "defense": 64,
+        "speed": 43
+      },
+      "baseStats": {
+        "hp": 50,
+        "attack": 65,
+        "defense": 64,
+        "speed": 43
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/158.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/158.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "엘리게이",
+      "finalEvolution": "장크로다일",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 18
+    },
+    {
+      "id": 179,
+      "apiName": "mareep",
+      "name": "메리프",
+      "types": [
+        "electric"
+      ],
+      "stats": {
+        "hp": 55,
+        "attack": 40,
+        "defense": 40,
+        "speed": 35
+      },
+      "baseStats": {
+        "hp": 55,
+        "attack": 40,
+        "defense": 40,
+        "speed": 35
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/179.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/179.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "보송송",
+      "finalEvolution": "전룡",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 15
+    },
+    {
+      "id": 187,
+      "apiName": "hoppip",
+      "name": "통통코",
+      "types": [
+        "grass",
+        "flying"
+      ],
+      "stats": {
+        "hp": 35,
+        "attack": 35,
+        "defense": 40,
+        "speed": 50
+      },
+      "baseStats": {
+        "hp": 35,
+        "attack": 35,
+        "defense": 40,
+        "speed": 50
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/187.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/187.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "두코",
+      "finalEvolution": "솜솜코",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 18
+    },
+    {
+      "id": 246,
+      "apiName": "larvitar",
+      "name": "애버라스",
+      "types": [
+        "rock",
+        "ground"
+      ],
+      "stats": {
+        "hp": 50,
+        "attack": 64,
+        "defense": 50,
+        "speed": 41
+      },
+      "baseStats": {
+        "hp": 50,
+        "attack": 64,
+        "defense": 50,
+        "speed": 41
+      },
+      "frontSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/246.gif",
+      "backSprite": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/246.gif",
+      "evolutionStage": 0,
+      "evolutionLineLength": 3,
+      "evolvesTo": "데기라스",
+      "finalEvolution": "마기라스",
+      "finalEvolutionAvailable": true,
+      "starterEligible": true,
+      "evolutionLevel": 30
+    }
+  ],
+  "threeStageFirst": [
+    1,
+    4,
+    7,
+    10,
+    13,
+    16,
+    29,
+    32,
+    43,
+    63,
+    66,
+    69,
+    74,
+    92,
+    147,
+    152,
+    155,
+    158,
+    179,
+    187,
+    246
+  ],
+  "twoStageFirst": [
+    19,
+    21,
+    23,
+    27,
+    37,
+    41,
+    46,
+    48,
+    50,
+    52,
+    54,
+    56,
+    58,
+    60,
+    72,
+    77,
+    79,
+    81,
+    84,
+    86,
+    88,
+    90,
+    96,
+    98,
+    100,
+    102,
+    104,
+    109,
+    111,
+    116,
+    118,
+    120,
+    129,
+    133,
+    138,
+    140,
+    161,
+    163,
+    165,
+    167,
+    170,
+    177,
+    190,
+    191,
+    194,
+    198,
+    204,
+    209,
+    216,
+    218,
+    220,
+    223,
+    228,
+    231
+  ],
+  "evolvableBasic": [],
+  "safeFallback": [
+    46,
+    48,
+    72,
+    77,
+    84,
+    86,
+    88,
+    102,
+    109,
+    111,
+    116,
+    118,
+    120,
+    129,
+    133,
+    138,
+    140,
+    172,
+    173,
+    174,
+    175,
+    177,
+    193,
+    204,
+    209,
+    216,
+    218,
+    220,
+    223,
+    228,
+    231,
+    236,
+    238,
+    239,
+    240
+  ],
+  "blockedStarterIds": [
+    83,
+    95,
+    106,
+    107,
+    108,
+    113,
+    115,
+    122,
+    124,
+    125,
+    126,
+    127,
+    128,
+    131,
+    132,
+    137,
+    142,
+    143,
+    185,
+    200,
+    203,
+    206,
+    213,
+    214,
+    225,
+    226,
+    227,
+    234,
+    235,
+    241
+  ],
+  "note": "v6.18.8d: 3단 진화 1단계 우선, 2단 진화 1단계 보조, 단일 기본형 fallback 제한"
+}

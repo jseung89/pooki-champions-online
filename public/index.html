@@ -1203,6 +1203,14 @@
     .room-card[data-theme="gray"] .room-icon{background-image:url('/assets/lobby/city-gray-emblem.png')!important;}
     .room-card[data-theme="blue"] .room-icon{background-image:url('/assets/lobby/city-blue-emblem.png')!important;}
     .room-card[data-theme="rainbow"] .room-icon{background-image:url('/assets/lobby/city-rainbow-emblem.png')!important;}
+    .room-card[data-theme="adventure"] .room-art{background-image:url('/assets/lobby/adventure-card.png')!important;}
+    .room-card[data-theme="viridian"] .room-art{background-image:url('/assets/lobby/evergreen-city-card.png')!important;}
+    .room-card[data-theme="fuchsia"] .room-art{background-image:url('/assets/lobby/fuchsia-city-card.png')!important;}
+    .room-card[data-theme="lavender"] .room-art{background-image:url('/assets/lobby/lavender-town-card.png')!important;}
+    .room-card[data-theme="adventure"] .room-icon{background-image:url('/assets/lobby/adventure-emblem.png')!important;}
+    .room-card[data-theme="viridian"] .room-icon{background-image:url('/assets/lobby/evergreen-city-emblem.png')!important;}
+    .room-card[data-theme="fuchsia"] .room-icon{background-image:url('/assets/lobby/fuchsia-city-emblem.png')!important;}
+    .room-card[data-theme="lavender"] .room-icon{background-image:url('/assets/lobby/lavender-town-emblem.png')!important;}
     .room-body{padding-top:16px!important;}
     .room-name{color:#f8fbff!important;}
     .room-meta{font-size:13px!important;}
@@ -1486,6 +1494,106 @@
     body.mobile-mode .chat-messages,body.mobile-mode .chat-form{display:none!important;}
     body.mobile-mode.mobile-chat-open .chat-messages{display:block!important;height:120px!important;}
     body.mobile-mode.mobile-chat-open .chat-form{display:grid!important;}
+
+
+    /* v6.18.8b lobby card banner ratio sync */
+    .room-grid .room-card{
+      display:flex!important;
+      flex-direction:column!important;
+      overflow:hidden!important;
+    }
+    .room-grid .room-card .room-art{
+      position:relative!important;
+      width:100%!important;
+      height:126px!important;
+      min-height:126px!important;
+      max-height:126px!important;
+      flex:0 0 126px!important;
+      overflow:hidden!important;
+      border-radius:24px 24px 0 0!important;
+      background-size:cover!important;
+      background-repeat:no-repeat!important;
+      background-position:center center!important;
+      isolation:isolate!important;
+    }
+    .room-grid .room-card .room-art::before{
+      content:""!important;
+      position:absolute!important;
+      inset:0!important;
+      height:auto!important;
+      background:linear-gradient(180deg,rgba(7,18,44,.08) 0%,rgba(7,18,44,.20) 42%,rgba(7,18,44,.74) 100%)!important;
+      opacity:1!important;
+      filter:none!important;
+      z-index:1!important;
+      pointer-events:none!important;
+    }
+    .room-grid .room-card .room-art::after{
+      content:""!important;
+      position:absolute!important;
+      left:16px!important;
+      right:16px!important;
+      bottom:13px!important;
+      height:14px!important;
+      border-radius:999px!important;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.34),transparent)!important;
+      box-shadow:0 0 18px rgba(255,255,255,.14)!important;
+      filter:none!important;
+      z-index:2!important;
+      pointer-events:none!important;
+    }
+    .room-grid .room-card .arena-tag{
+      left:13px!important;
+      top:11px!important;
+      z-index:5!important;
+    }
+    .room-grid .room-card .room-icon{
+      width:70px!important;
+      height:70px!important;
+      right:12px!important;
+      top:14px!important;
+      max-width:70px!important;
+      max-height:70px!important;
+      background-size:contain!important;
+      background-position:center center!important;
+      background-repeat:no-repeat!important;
+      transform-origin:center!important;
+      z-index:5!important;
+      filter:drop-shadow(0 12px 15px rgba(0,0,0,.36)) drop-shadow(0 0 12px rgba(255,255,255,.14))!important;
+    }
+    .room-grid .room-card[data-theme="pallet"] .room-art{background-position:center 48%!important;}
+    .room-grid .room-card[data-theme="gray"] .room-art{background-position:center 50%!important;}
+    .room-grid .room-card[data-theme="blue"] .room-art{background-position:center 48%!important;}
+    .room-grid .room-card[data-theme="rainbow"] .room-art{background-position:center 50%!important;}
+    .room-grid .room-card[data-theme="adventure"] .room-art,
+    .room-grid .room-card[data-theme="viridian"] .room-art,
+    .room-grid .room-card[data-theme="fuchsia"] .room-art,
+    .room-grid .room-card[data-theme="lavender"] .room-art{
+      background-position:center center!important;
+    }
+    .room-grid .room-card .room-body{
+      flex:1 1 auto!important;
+    }
+    .room-grid .room-card .room-actions{
+      margin-top:auto!important;
+    }
+    body.mobile-mode .room-grid .room-card .room-art,
+    body:not(.desktop-mode) .room-grid .room-card .room-art{
+      height:104px!important;
+      min-height:104px!important;
+      max-height:104px!important;
+      flex-basis:104px!important;
+      border-radius:17px 17px 0 0!important;
+    }
+    body.mobile-mode .room-grid .room-card .room-icon,
+    body:not(.desktop-mode) .room-grid .room-card .room-icon{
+      width:52px!important;
+      height:52px!important;
+      max-width:52px!important;
+      max-height:52px!important;
+      right:12px!important;
+      left:auto!important;
+      top:12px!important;
+    }
 
 </style>
 
@@ -2096,11 +2204,11 @@
       const lobbyMessages=lobby?.lobbyChatMessages||[];
       const logged=!!localStorage.getItem(USER_ID_KEY);
       note.textContent = logged
-        ? (lobby?.dataReady ? `ONLINE ${online.length} · ARENA ${rooms.length || 4} · 챔피언을 향한 첫 전장을 선택하세요.` : "포켓몬 데이터를 준비 중입니다. 잠시만 기다려주세요.")
+        ? (lobby?.dataReady ? `ONLINE ${online.length} · ARENA ${rooms.length || 7} · 챔피언을 향한 첫 전장을 선택하세요.` : "포켓몬 데이터를 준비 중입니다. 잠시만 기다려주세요.")
         : "로그인 후 방에 입장할 수 있습니다.";
 
       const liveBadge=document.getElementById("lobbyLiveBadge");
-      if(liveBadge) liveBadge.textContent = `온라인 ${online.length}명 / 활성 룸 ${rooms.length || 4}개`;
+      if(liveBadge) liveBadge.textContent = `온라인 ${online.length}명 / 활성 룸 ${rooms.length || 7}개`;
       const onlineSummary=document.getElementById("onlineSummary");
       const onlineBox=document.getElementById("onlineUsers");
       if(onlineSummary) onlineSummary.textContent = `현재 접속자 ${online.length}명`;
@@ -2136,13 +2244,14 @@
         lobbyChatBox.scrollTop=lobbyChatBox.scrollHeight;
       }
 
-      grid.innerHTML=rooms.map(room=>{
+      const adventureCard = (typeof renderAdventureEntryCard === "function") ? renderAdventureEntryCard() : `<article class="room-card adventure-room-card" data-theme="adventure"><div class="room-art"><div class="arena-tag">ADVENTURE</div><div class="room-icon">🧭</div></div><div class="room-body"><div class="room-name">푸끼몬 모험 모드</div><div><span class="room-status select">1인 도전</span></div><div class="room-meta"><div>스타터 1마리 선택 · 포획으로 팀 확장</div><div>기존 배틀 UI/이펙트 기반 모험</div></div></div><div class="room-actions"><button class="room-enter" onclick="startAdventureMode()">모험 모드</button></div></article>`;
+      grid.innerHTML=adventureCard + rooms.map(room=>{
         const filled=(room.p1Connected?1:0)+(room.p2Connected?1:0);
         const statusClass=room.phase==="TEAM_SELECT"?"select":(room.phase==="ACTION_SELECT"||room.phase==="TURN_RESOLVE"||room.phase==="FORCE_SWITCH"?"battle":"");
         const p1=room.p1Connected ? escapeHtml(room.p1Name||"플레이어 1") : "빈자리";
         const p2=room.p2Connected ? escapeHtml(room.p2Name||"플레이어 2") : "빈자리";
-        const theme = room.id === "pallet" ? "pallet" : room.id === "pewter" ? "gray" : room.id === "cerulean" ? "blue" : room.id === "celadon" ? "rainbow" : "arena";
-        const arenaTag = room.id === "pallet" ? "STARTER ARENA" : room.id === "pewter" ? "ROCK ARENA" : room.id === "cerulean" ? "AQUA ARENA" : room.id === "celadon" ? "EVENT ARENA" : "BATTLE ARENA";
+        const theme = room.id === "viridian" ? "viridian" : room.id === "fuchsia" ? "fuchsia" : room.id === "lavender" ? "lavender" : room.id === "pallet" ? "pallet" : room.id === "pewter" ? "gray" : room.id === "cerulean" ? "blue" : room.id === "celadon" ? "rainbow" : "arena";
+        const arenaTag = room.id === "viridian" ? "EVERGREEN CITY" : room.id === "fuchsia" ? "FUCHSIA CITY" : room.id === "lavender" ? "LAVENDER TOWN" : room.id === "pallet" ? "STARTER ARENA" : room.id === "pewter" ? "ROCK ARENA" : room.id === "cerulean" ? "AQUA ARENA" : room.id === "celadon" ? "EVENT ARENA" : "BATTLE ARENA";
         return `<article class="room-card" data-theme="${theme}">
           <div class="room-art"><div class="arena-tag">${arenaTag}</div><div class="room-icon">${room.icon||"🏟️"}</div></div>
           <div class="room-body">
@@ -3472,5 +3581,6 @@
     function sleep(ms){ return new Promise(resolve=>setTimeout(resolve,ms)); }
     function escapeHtml(text){ return String(text).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
   </script>
+  <script src="/adventureMode.js"></script>
 </body>
 </html>

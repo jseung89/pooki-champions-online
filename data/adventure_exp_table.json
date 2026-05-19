@@ -1,0 +1,1226 @@
+{
+  "3": {
+    "baseExperience": 135
+  },
+  "venusaur": {
+    "baseExperience": 135
+  },
+  "이상해꽃": {
+    "baseExperience": 135
+  },
+  "6": {
+    "baseExperience": 139
+  },
+  "charizard": {
+    "baseExperience": 139
+  },
+  "리자몽": {
+    "baseExperience": 139
+  },
+  "9": {
+    "baseExperience": 135
+  },
+  "blastoise": {
+    "baseExperience": 135
+  },
+  "거북왕": {
+    "baseExperience": 135
+  },
+  "12": {
+    "baseExperience": 109
+  },
+  "butterfree": {
+    "baseExperience": 109
+  },
+  "버터플": {
+    "baseExperience": 109
+  },
+  "15": {
+    "baseExperience": 110
+  },
+  "beedrill": {
+    "baseExperience": 110
+  },
+  "독침붕": {
+    "baseExperience": 110
+  },
+  "18": {
+    "baseExperience": 131
+  },
+  "pidgeot": {
+    "baseExperience": 131
+  },
+  "피죤투": {
+    "baseExperience": 131
+  },
+  "20": {
+    "baseExperience": 116
+  },
+  "raticate": {
+    "baseExperience": 116
+  },
+  "레트라": {
+    "baseExperience": 116
+  },
+  "22": {
+    "baseExperience": 122
+  },
+  "fearow": {
+    "baseExperience": 122
+  },
+  "깨비드릴조": {
+    "baseExperience": 122
+  },
+  "24": {
+    "baseExperience": 119
+  },
+  "arbok": {
+    "baseExperience": 119
+  },
+  "아보크": {
+    "baseExperience": 119
+  },
+  "25": {
+    "baseExperience": 97
+  },
+  "pikachu": {
+    "baseExperience": 97
+  },
+  "피카츄": {
+    "baseExperience": 97
+  },
+  "26": {
+    "baseExperience": 131
+  },
+  "raichu": {
+    "baseExperience": 131
+  },
+  "라이츄": {
+    "baseExperience": 131
+  },
+  "28": {
+    "baseExperience": 119
+  },
+  "sandslash": {
+    "baseExperience": 119
+  },
+  "고지": {
+    "baseExperience": 119
+  },
+  "31": {
+    "baseExperience": 132
+  },
+  "nidoqueen": {
+    "baseExperience": 132
+  },
+  "니드퀸": {
+    "baseExperience": 132
+  },
+  "34": {
+    "baseExperience": 132
+  },
+  "nidoking": {
+    "baseExperience": 132
+  },
+  "니드킹": {
+    "baseExperience": 132
+  },
+  "36": {
+    "baseExperience": 126
+  },
+  "clefable": {
+    "baseExperience": 126
+  },
+  "픽시": {
+    "baseExperience": 126
+  },
+  "38": {
+    "baseExperience": 134
+  },
+  "ninetales": {
+    "baseExperience": 134
+  },
+  "나인테일": {
+    "baseExperience": 134
+  },
+  "40": {
+    "baseExperience": 121
+  },
+  "wigglytuff": {
+    "baseExperience": 121
+  },
+  "푸크린": {
+    "baseExperience": 121
+  },
+  "42": {
+    "baseExperience": 124
+  },
+  "golbat": {
+    "baseExperience": 124
+  },
+  "골뱃": {
+    "baseExperience": 124
+  },
+  "45": {
+    "baseExperience": 123
+  },
+  "vileplume": {
+    "baseExperience": 123
+  },
+  "라플레시아": {
+    "baseExperience": 123
+  },
+  "47": {
+    "baseExperience": 106
+  },
+  "parasect": {
+    "baseExperience": 106
+  },
+  "파라섹트": {
+    "baseExperience": 106
+  },
+  "49": {
+    "baseExperience": 123
+  },
+  "venomoth": {
+    "baseExperience": 123
+  },
+  "도나리": {
+    "baseExperience": 123
+  },
+  "51": {
+    "baseExperience": 119
+  },
+  "dugtrio": {
+    "baseExperience": 119
+  },
+  "닥트리오": {
+    "baseExperience": 119
+  },
+  "53": {
+    "baseExperience": 125
+  },
+  "persian": {
+    "baseExperience": 125
+  },
+  "페르시온": {
+    "baseExperience": 125
+  },
+  "55": {
+    "baseExperience": 131
+  },
+  "golduck": {
+    "baseExperience": 131
+  },
+  "골덕": {
+    "baseExperience": 131
+  },
+  "57": {
+    "baseExperience": 124
+  },
+  "primeape": {
+    "baseExperience": 124
+  },
+  "성원숭": {
+    "baseExperience": 124
+  },
+  "59": {
+    "baseExperience": 143
+  },
+  "arcanine": {
+    "baseExperience": 143
+  },
+  "윈디": {
+    "baseExperience": 143
+  },
+  "62": {
+    "baseExperience": 132
+  },
+  "poliwrath": {
+    "baseExperience": 132
+  },
+  "강챙이": {
+    "baseExperience": 132
+  },
+  "65": {
+    "baseExperience": 134
+  },
+  "alakazam": {
+    "baseExperience": 134
+  },
+  "후딘": {
+    "baseExperience": 134
+  },
+  "68": {
+    "baseExperience": 128
+  },
+  "machamp": {
+    "baseExperience": 128
+  },
+  "괴력몬": {
+    "baseExperience": 128
+  },
+  "71": {
+    "baseExperience": 127
+  },
+  "victreebel": {
+    "baseExperience": 127
+  },
+  "우츠보트": {
+    "baseExperience": 127
+  },
+  "73": {
+    "baseExperience": 136
+  },
+  "tentacruel": {
+    "baseExperience": 136
+  },
+  "독파리": {
+    "baseExperience": 136
+  },
+  "76": {
+    "baseExperience": 124
+  },
+  "golem": {
+    "baseExperience": 124
+  },
+  "딱구리": {
+    "baseExperience": 124
+  },
+  "78": {
+    "baseExperience": 133
+  },
+  "rapidash": {
+    "baseExperience": 133
+  },
+  "날쌩마": {
+    "baseExperience": 133
+  },
+  "80": {
+    "baseExperience": 124
+  },
+  "slowbro": {
+    "baseExperience": 124
+  },
+  "야도란": {
+    "baseExperience": 124
+  },
+  "82": {
+    "baseExperience": 119
+  },
+  "magneton": {
+    "baseExperience": 119
+  },
+  "레어코일": {
+    "baseExperience": 119
+  },
+  "83": {
+    "baseExperience": 103
+  },
+  "farfetchd": {
+    "baseExperience": 103
+  },
+  "파오리": {
+    "baseExperience": 103
+  },
+  "85": {
+    "baseExperience": 128
+  },
+  "dodrio": {
+    "baseExperience": 128
+  },
+  "두트리오": {
+    "baseExperience": 128
+  },
+  "87": {
+    "baseExperience": 126
+  },
+  "dewgong": {
+    "baseExperience": 126
+  },
+  "쥬레곤": {
+    "baseExperience": 126
+  },
+  "89": {
+    "baseExperience": 128
+  },
+  "muk": {
+    "baseExperience": 128
+  },
+  "질뻐기": {
+    "baseExperience": 128
+  },
+  "91": {
+    "baseExperience": 129
+  },
+  "cloyster": {
+    "baseExperience": 129
+  },
+  "파르셀": {
+    "baseExperience": 129
+  },
+  "94": {
+    "baseExperience": 133
+  },
+  "gengar": {
+    "baseExperience": 133
+  },
+  "팬텀": {
+    "baseExperience": 133
+  },
+  "95": {
+    "baseExperience": 104
+  },
+  "onix": {
+    "baseExperience": 104
+  },
+  "롱스톤": {
+    "baseExperience": 104
+  },
+  "97": {
+    "baseExperience": 126
+  },
+  "hypno": {
+    "baseExperience": 126
+  },
+  "슬리퍼": {
+    "baseExperience": 126
+  },
+  "99": {
+    "baseExperience": 122
+  },
+  "kingler": {
+    "baseExperience": 122
+  },
+  "킹크랩": {
+    "baseExperience": 122
+  },
+  "101": {
+    "baseExperience": 138
+  },
+  "electrode": {
+    "baseExperience": 138
+  },
+  "붐볼": {
+    "baseExperience": 138
+  },
+  "103": {
+    "baseExperience": 133
+  },
+  "exeggutor": {
+    "baseExperience": 133
+  },
+  "나시": {
+    "baseExperience": 133
+  },
+  "105": {
+    "baseExperience": 110
+  },
+  "marowak": {
+    "baseExperience": 110
+  },
+  "텅구리": {
+    "baseExperience": 110
+  },
+  "106": {
+    "baseExperience": 121
+  },
+  "hitmonlee": {
+    "baseExperience": 121
+  },
+  "시라소몬": {
+    "baseExperience": 121
+  },
+  "107": {
+    "baseExperience": 119
+  },
+  "hitmonchan": {
+    "baseExperience": 119
+  },
+  "홍수몬": {
+    "baseExperience": 119
+  },
+  "108": {
+    "baseExperience": 106
+  },
+  "lickitung": {
+    "baseExperience": 106
+  },
+  "내루미": {
+    "baseExperience": 106
+  },
+  "110": {
+    "baseExperience": 124
+  },
+  "weezing": {
+    "baseExperience": 124
+  },
+  "또도가스": {
+    "baseExperience": 124
+  },
+  "112": {
+    "baseExperience": 124
+  },
+  "rhydon": {
+    "baseExperience": 124
+  },
+  "코뿌리": {
+    "baseExperience": 124
+  },
+  "113": {
+    "baseExperience": 142
+  },
+  "chansey": {
+    "baseExperience": 142
+  },
+  "럭키": {
+    "baseExperience": 142
+  },
+  "114": {
+    "baseExperience": 115
+  },
+  "tangela": {
+    "baseExperience": 115
+  },
+  "덩쿠리": {
+    "baseExperience": 115
+  },
+  "115": {
+    "baseExperience": 133
+  },
+  "kangaskhan": {
+    "baseExperience": 133
+  },
+  "캥카": {
+    "baseExperience": 133
+  },
+  "117": {
+    "baseExperience": 118
+  },
+  "seadra": {
+    "baseExperience": 118
+  },
+  "시드라": {
+    "baseExperience": 118
+  },
+  "119": {
+    "baseExperience": 120
+  },
+  "seaking": {
+    "baseExperience": 120
+  },
+  "왕콘치": {
+    "baseExperience": 120
+  },
+  "121": {
+    "baseExperience": 137
+  },
+  "starmie": {
+    "baseExperience": 137
+  },
+  "아쿠스타": {
+    "baseExperience": 137
+  },
+  "122": {
+    "baseExperience": 121
+  },
+  "mr-mime": {
+    "baseExperience": 121
+  },
+  "마임맨": {
+    "baseExperience": 121
+  },
+  "123": {
+    "baseExperience": 133
+  },
+  "scyther": {
+    "baseExperience": 133
+  },
+  "스라크": {
+    "baseExperience": 133
+  },
+  "124": {
+    "baseExperience": 124
+  },
+  "jynx": {
+    "baseExperience": 124
+  },
+  "루주라": {
+    "baseExperience": 124
+  },
+  "125": {
+    "baseExperience": 131
+  },
+  "electabuzz": {
+    "baseExperience": 131
+  },
+  "에레브": {
+    "baseExperience": 131
+  },
+  "126": {
+    "baseExperience": 130
+  },
+  "magmar": {
+    "baseExperience": 130
+  },
+  "마그마": {
+    "baseExperience": 130
+  },
+  "127": {
+    "baseExperience": 129
+  },
+  "pinsir": {
+    "baseExperience": 129
+  },
+  "쁘사이저": {
+    "baseExperience": 129
+  },
+  "128": {
+    "baseExperience": 133
+  },
+  "tauros": {
+    "baseExperience": 133
+  },
+  "켄타로스": {
+    "baseExperience": 133
+  },
+  "130": {
+    "baseExperience": 139
+  },
+  "gyarados": {
+    "baseExperience": 139
+  },
+  "갸라도스": {
+    "baseExperience": 139
+  },
+  "131": {
+    "baseExperience": 139
+  },
+  "lapras": {
+    "baseExperience": 139
+  },
+  "라프라스": {
+    "baseExperience": 139
+  },
+  "134": {
+    "baseExperience": 138
+  },
+  "vaporeon": {
+    "baseExperience": 138
+  },
+  "샤미드": {
+    "baseExperience": 138
+  },
+  "135": {
+    "baseExperience": 141
+  },
+  "jolteon": {
+    "baseExperience": 141
+  },
+  "쥬피썬더": {
+    "baseExperience": 141
+  },
+  "136": {
+    "baseExperience": 130
+  },
+  "flareon": {
+    "baseExperience": 130
+  },
+  "부스터": {
+    "baseExperience": 130
+  },
+  "137": {
+    "baseExperience": 105
+  },
+  "porygon": {
+    "baseExperience": 105
+  },
+  "폴리곤": {
+    "baseExperience": 105
+  },
+  "139": {
+    "baseExperience": 124
+  },
+  "omastar": {
+    "baseExperience": 124
+  },
+  "암스타": {
+    "baseExperience": 124
+  },
+  "141": {
+    "baseExperience": 127
+  },
+  "kabutops": {
+    "baseExperience": 127
+  },
+  "투구푸스": {
+    "baseExperience": 127
+  },
+  "142": {
+    "baseExperience": 141
+  },
+  "aerodactyl": {
+    "baseExperience": 141
+  },
+  "프테라": {
+    "baseExperience": 141
+  },
+  "143": {
+    "baseExperience": 140
+  },
+  "snorlax": {
+    "baseExperience": 140
+  },
+  "잠만보": {
+    "baseExperience": 140
+  },
+  "144": {
+    "baseExperience": 146
+  },
+  "articuno": {
+    "baseExperience": 146
+  },
+  "프리져": {
+    "baseExperience": 146
+  },
+  "145": {
+    "baseExperience": 148
+  },
+  "zapdos": {
+    "baseExperience": 148
+  },
+  "썬더": {
+    "baseExperience": 148
+  },
+  "146": {
+    "baseExperience": 147
+  },
+  "moltres": {
+    "baseExperience": 147
+  },
+  "파이어": {
+    "baseExperience": 147
+  },
+  "149": {
+    "baseExperience": 148
+  },
+  "dragonite": {
+    "baseExperience": 148
+  },
+  "망나뇽": {
+    "baseExperience": 148
+  },
+  "150": {
+    "baseExperience": 172
+  },
+  "mewtwo": {
+    "baseExperience": 172
+  },
+  "뮤츠": {
+    "baseExperience": 172
+  },
+  "151": {
+    "baseExperience": 153
+  },
+  "mew": {
+    "baseExperience": 153
+  },
+  "뮤": {
+    "baseExperience": 153
+  },
+  "154": {
+    "baseExperience": 135
+  },
+  "meganium": {
+    "baseExperience": 135
+  },
+  "메가니움": {
+    "baseExperience": 135
+  },
+  "157": {
+    "baseExperience": 139
+  },
+  "typhlosion": {
+    "baseExperience": 139
+  },
+  "블레이범": {
+    "baseExperience": 139
+  },
+  "160": {
+    "baseExperience": 136
+  },
+  "feraligatr": {
+    "baseExperience": 136
+  },
+  "장크로다일": {
+    "baseExperience": 136
+  },
+  "162": {
+    "baseExperience": 119
+  },
+  "furret": {
+    "baseExperience": 119
+  },
+  "다꼬리": {
+    "baseExperience": 119
+  },
+  "164": {
+    "baseExperience": 123
+  },
+  "noctowl": {
+    "baseExperience": 123
+  },
+  "야부엉": {
+    "baseExperience": 123
+  },
+  "166": {
+    "baseExperience": 110
+  },
+  "ledian": {
+    "baseExperience": 110
+  },
+  "레디안": {
+    "baseExperience": 110
+  },
+  "168": {
+    "baseExperience": 106
+  },
+  "ariados": {
+    "baseExperience": 106
+  },
+  "아리아도스": {
+    "baseExperience": 106
+  },
+  "169": {
+    "baseExperience": 145
+  },
+  "crobat": {
+    "baseExperience": 145
+  },
+  "크로뱃": {
+    "baseExperience": 145
+  },
+  "171": {
+    "baseExperience": 127
+  },
+  "lanturn": {
+    "baseExperience": 127
+  },
+  "랜턴": {
+    "baseExperience": 127
+  },
+  "178": {
+    "baseExperience": 126
+  },
+  "xatu": {
+    "baseExperience": 126
+  },
+  "네이티오": {
+    "baseExperience": 126
+  },
+  "181": {
+    "baseExperience": 129
+  },
+  "ampharos": {
+    "baseExperience": 129
+  },
+  "전룡": {
+    "baseExperience": 129
+  },
+  "182": {
+    "baseExperience": 123
+  },
+  "bellossom": {
+    "baseExperience": 123
+  },
+  "아르코": {
+    "baseExperience": 123
+  },
+  "184": {
+    "baseExperience": 114
+  },
+  "azumarill": {
+    "baseExperience": 114
+  },
+  "마릴리": {
+    "baseExperience": 114
+  },
+  "185": {
+    "baseExperience": 107
+  },
+  "sudowoodo": {
+    "baseExperience": 107
+  },
+  "꼬지모": {
+    "baseExperience": 107
+  },
+  "186": {
+    "baseExperience": 130
+  },
+  "politoed": {
+    "baseExperience": 130
+  },
+  "왕구리": {
+    "baseExperience": 130
+  },
+  "189": {
+    "baseExperience": 128
+  },
+  "jumpluff": {
+    "baseExperience": 128
+  },
+  "솜솜코": {
+    "baseExperience": 128
+  },
+  "192": {
+    "baseExperience": 111
+  },
+  "sunflora": {
+    "baseExperience": 111
+  },
+  "해루미": {
+    "baseExperience": 111
+  },
+  "195": {
+    "baseExperience": 113
+  },
+  "quagsire": {
+    "baseExperience": 113
+  },
+  "누오": {
+    "baseExperience": 113
+  },
+  "196": {
+    "baseExperience": 138
+  },
+  "espeon": {
+    "baseExperience": 138
+  },
+  "에브이": {
+    "baseExperience": 138
+  },
+  "197": {
+    "baseExperience": 134
+  },
+  "umbreon": {
+    "baseExperience": 134
+  },
+  "블래키": {
+    "baseExperience": 134
+  },
+  "198": {
+    "baseExperience": 114
+  },
+  "murkrow": {
+    "baseExperience": 114
+  },
+  "니로우": {
+    "baseExperience": 114
+  },
+  "199": {
+    "baseExperience": 124
+  },
+  "slowking": {
+    "baseExperience": 124
+  },
+  "야도킹": {
+    "baseExperience": 124
+  },
+  "200": {
+    "baseExperience": 118
+  },
+  "misdreavus": {
+    "baseExperience": 118
+  },
+  "무우마": {
+    "baseExperience": 118
+  },
+  "203": {
+    "baseExperience": 122
+  },
+  "girafarig": {
+    "baseExperience": 122
+  },
+  "키링키": {
+    "baseExperience": 122
+  },
+  "205": {
+    "baseExperience": 117
+  },
+  "forretress": {
+    "baseExperience": 117
+  },
+  "쏘콘": {
+    "baseExperience": 117
+  },
+  "206": {
+    "baseExperience": 113
+  },
+  "dunsparce": {
+    "baseExperience": 113
+  },
+  "노고치": {
+    "baseExperience": 113
+  },
+  "207": {
+    "baseExperience": 118
+  },
+  "gligar": {
+    "baseExperience": 118
+  },
+  "글라이거": {
+    "baseExperience": 118
+  },
+  "208": {
+    "baseExperience": 125
+  },
+  "steelix": {
+    "baseExperience": 125
+  },
+  "강철톤": {
+    "baseExperience": 125
+  },
+  "210": {
+    "baseExperience": 117
+  },
+  "granbull": {
+    "baseExperience": 117
+  },
+  "그랑블루": {
+    "baseExperience": 117
+  },
+  "211": {
+    "baseExperience": 119
+  },
+  "qwilfish": {
+    "baseExperience": 119
+  },
+  "침바루": {
+    "baseExperience": 119
+  },
+  "212": {
+    "baseExperience": 127
+  },
+  "scizor": {
+    "baseExperience": 127
+  },
+  "핫삼": {
+    "baseExperience": 127
+  },
+  "213": {
+    "baseExperience": 130
+  },
+  "shuckle": {
+    "baseExperience": 130
+  },
+  "단단지": {
+    "baseExperience": 130
+  },
+  "214": {
+    "baseExperience": 131
+  },
+  "heracross": {
+    "baseExperience": 131
+  },
+  "헤라크로스": {
+    "baseExperience": 131
+  },
+  "215": {
+    "baseExperience": 121
+  },
+  "sneasel": {
+    "baseExperience": 121
+  },
+  "포푸니": {
+    "baseExperience": 121
+  },
+  "217": {
+    "baseExperience": 127
+  },
+  "ursaring": {
+    "baseExperience": 127
+  },
+  "링곰": {
+    "baseExperience": 127
+  },
+  "219": {
+    "baseExperience": 110
+  },
+  "magcargo": {
+    "baseExperience": 110
+  },
+  "마그카르고": {
+    "baseExperience": 110
+  },
+  "221": {
+    "baseExperience": 119
+  },
+  "piloswine": {
+    "baseExperience": 119
+  },
+  "메꾸리": {
+    "baseExperience": 119
+  },
+  "224": {
+    "baseExperience": 121
+  },
+  "octillery": {
+    "baseExperience": 121
+  },
+  "대포무노": {
+    "baseExperience": 121
+  },
+  "225": {
+    "baseExperience": 97
+  },
+  "delibird": {
+    "baseExperience": 97
+  },
+  "딜리버드": {
+    "baseExperience": 97
+  },
+  "226": {
+    "baseExperience": 127
+  },
+  "mantine": {
+    "baseExperience": 127
+  },
+  "만타인": {
+    "baseExperience": 127
+  },
+  "227": {
+    "baseExperience": 121
+  },
+  "skarmory": {
+    "baseExperience": 121
+  },
+  "무장조": {
+    "baseExperience": 121
+  },
+  "229": {
+    "baseExperience": 132
+  },
+  "houndoom": {
+    "baseExperience": 132
+  },
+  "헬가": {
+    "baseExperience": 132
+  },
+  "230": {
+    "baseExperience": 137
+  },
+  "kingdra": {
+    "baseExperience": 137
+  },
+  "킹드라": {
+    "baseExperience": 137
+  },
+  "232": {
+    "baseExperience": 126
+  },
+  "donphan": {
+    "baseExperience": 126
+  },
+  "코리갑": {
+    "baseExperience": 126
+  },
+  "233": {
+    "baseExperience": 130
+  },
+  "porygon2": {
+    "baseExperience": 130
+  },
+  "폴리곤2": {
+    "baseExperience": 130
+  },
+  "234": {
+    "baseExperience": 125
+  },
+  "stantler": {
+    "baseExperience": 125
+  },
+  "노라키": {
+    "baseExperience": 125
+  },
+  "237": {
+    "baseExperience": 118
+  },
+  "hitmontop": {
+    "baseExperience": 118
+  },
+  "카포에라": {
+    "baseExperience": 118
+  },
+  "241": {
+    "baseExperience": 134
+  },
+  "miltank": {
+    "baseExperience": 134
+  },
+  "밀탱크": {
+    "baseExperience": 134
+  },
+  "242": {
+    "baseExperience": 154
+  },
+  "blissey": {
+    "baseExperience": 154
+  },
+  "해피너스": {
+    "baseExperience": 154
+  },
+  "243": {
+    "baseExperience": 151
+  },
+  "raikou": {
+    "baseExperience": 151
+  },
+  "라이코": {
+    "baseExperience": 151
+  },
+  "245": {
+    "baseExperience": 147
+  },
+  "suicune": {
+    "baseExperience": 147
+  },
+  "스이쿤": {
+    "baseExperience": 147
+  },
+  "248": {
+    "baseExperience": 146
+  },
+  "tyranitar": {
+    "baseExperience": 146
+  },
+  "마기라스": {
+    "baseExperience": 146
+  },
+  "249": {
+    "baseExperience": 168
+  },
+  "lugia": {
+    "baseExperience": 168
+  },
+  "루기아": {
+    "baseExperience": 168
+  },
+  "250": {
+    "baseExperience": 165
+  },
+  "ho-oh": {
+    "baseExperience": 165
+  },
+  "칠색조": {
+    "baseExperience": 165
+  },
+  "251": {
+    "baseExperience": 153
+  },
+  "celebi": {
+    "baseExperience": 153
+  },
+  "세레비": {
+    "baseExperience": 153
+  }
+}

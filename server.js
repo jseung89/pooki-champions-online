@@ -720,6 +720,32 @@ app.use((req, res, next) => {
   return res.redirect("/admin.html");
 });
 
+
+const ADVENTURE_DATA_FILES = new Set([
+  "adventure_config.json",
+  "adventure_learnsets.json",
+  "adventure_items.json",
+  "adventure_rewards.json",
+  "adventure_capture.json",
+  "adventure_capture_rates.json",
+  "adventure_basic_pokemon.json",
+  "adventure_starter_pool.json",
+  "adventure_base_stats.json",
+  "adventure_evolutions.json",
+  "adventure_exp_table.json",
+  "adventure_moves.json",
+  "adventure_moves_raw.json",
+  "adventure_move_effect_map.json",
+  "adventure_move_tiers.json",
+  "adventure_blocked_moves.json",
+  "adventure_equipment.json",
+]);
+app.get("/data/:file", (req, res, next) => {
+  const file = String(req.params.file || "");
+  if (!ADVENTURE_DATA_FILES.has(file)) return next();
+  res.sendFile(path.join(__dirname, "data", file));
+});
+
 app.use(express.static("public"));
 
 app.get("/health", (req, res) => {
@@ -763,6 +789,9 @@ const ROOM_DEFS = [
   { id: "pewter", name: "회색시티", icon: "🪨" },
   { id: "cerulean", name: "블루시티", icon: "💧" },
   { id: "celadon", name: "무지개시티", icon: "🌈" },
+  { id: "viridian", name: "상록시티", icon: "🌿" },
+  { id: "fuchsia", name: "연분홍시티", icon: "🌸" },
+  { id: "lavender", name: "보라타운", icon: "🌙" },
 ];
 
 const rooms = new Map();
@@ -3051,7 +3080,7 @@ async function start() {
   console.log(" 푸끼몬 챔피언스 온라인");
   console.log("========================================");
   console.log("[BOOT] 서버 시작 중...");
-  console.log("[ROOM] 4룸 모드: 태초마을 / 회색시티 / 블루시티 / 무지개시티");
+  console.log("[ROOM] 7룸 모드: 태초마을 / 회색시티 / 블루시티 / 무지개시티 / 상록시티 / 연분홍시티 / 보라타운");
   console.log("[DATA] 데이터 모드: 1~2세대 최종진화체 + 피카츄 + 전설");
   console.log("[MOVE] 기술 세팅 준비 완료");
   console.log("[TYPE] 타입 상성표 준비 완료");

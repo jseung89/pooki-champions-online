@@ -1,0 +1,109 @@
+{
+  "bulkUp": {
+    "selfStatChanges": {
+      "attack": 1,
+      "defense": 1
+    }
+  },
+  "벌크업": {
+    "selfStatChanges": {
+      "attack": 1,
+      "defense": 1
+    }
+  },
+  "ironDefense": {
+    "selfStatChanges": {
+      "defense": 2
+    }
+  },
+  "철벽": {
+    "selfStatChanges": {
+      "defense": 2
+    }
+  },
+  "powerUpPunch": {
+    "afterHitSelfStatChanges": {
+      "attack": 1
+    }
+  },
+  "그로우펀치": {
+    "afterHitSelfStatChanges": {
+      "attack": 1
+    }
+  },
+  "swordsDance": {
+    "selfStatChanges": {
+      "attack": 2
+    }
+  },
+  "swordDance": {
+    "selfStatChanges": {
+      "attack": 2
+    }
+  },
+  "칼춤": {
+    "selfStatChanges": {
+      "attack": 2
+    }
+  },
+  "agility": {
+    "selfStatChanges": {
+      "speed": 2
+    }
+  },
+  "고속이동": {
+    "selfStatChanges": {
+      "speed": 2
+    }
+  },
+  "growl": {
+    "targetStatChanges": {
+      "attack": -1
+    }
+  },
+  "울음소리": {
+    "targetStatChanges": {
+      "attack": -1
+    }
+  },
+  "scaryFace": {
+    "targetStatChanges": {
+      "speed": -2
+    }
+  },
+  "겁나는얼굴": {
+    "targetStatChanges": {
+      "speed": -2
+    }
+  },
+  "screech": {
+    "targetStatChanges": {
+      "defense": -2
+    }
+  },
+  "싫은소리": {
+    "targetStatChanges": {
+      "defense": -2
+    }
+  },
+  "harden": {
+    "selfStatChanges": {
+      "defense": 1
+    }
+  },
+  "단단해지기": {
+    "selfStatChanges": {
+      "defense": 1
+    }
+  },
+  "defenseCurl": {
+    "selfStatChanges": {
+      "defense": 1
+    }
+  },
+  "방어태세": {
+    "selfStatChanges": {
+      "defense": 1
+    }
+  }
+}

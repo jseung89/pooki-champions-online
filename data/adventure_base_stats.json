@@ -1,0 +1,2450 @@
+{
+  "3": {
+    "hp": 141,
+    "attack": 91,
+    "defense": 92,
+    "speed": 80
+  },
+  "venusaur": {
+    "hp": 141,
+    "attack": 91,
+    "defense": 92,
+    "speed": 80
+  },
+  "이상해꽃": {
+    "hp": 141,
+    "attack": 91,
+    "defense": 92,
+    "speed": 80
+  },
+  "6": {
+    "hp": 139,
+    "attack": 97,
+    "defense": 82,
+    "speed": 100
+  },
+  "charizard": {
+    "hp": 139,
+    "attack": 97,
+    "defense": 82,
+    "speed": 100
+  },
+  "리자몽": {
+    "hp": 139,
+    "attack": 97,
+    "defense": 82,
+    "speed": 100
+  },
+  "9": {
+    "hp": 140,
+    "attack": 84,
+    "defense": 103,
+    "speed": 78
+  },
+  "blastoise": {
+    "hp": 140,
+    "attack": 84,
+    "defense": 103,
+    "speed": 78
+  },
+  "거북왕": {
+    "hp": 140,
+    "attack": 84,
+    "defense": 103,
+    "speed": 78
+  },
+  "12": {
+    "hp": 124,
+    "attack": 68,
+    "defense": 65,
+    "speed": 70
+  },
+  "butterfree": {
+    "hp": 124,
+    "attack": 68,
+    "defense": 65,
+    "speed": 70
+  },
+  "버터플": {
+    "hp": 124,
+    "attack": 68,
+    "defense": 65,
+    "speed": 70
+  },
+  "15": {
+    "hp": 128,
+    "attack": 68,
+    "defense": 60,
+    "speed": 75
+  },
+  "beedrill": {
+    "hp": 128,
+    "attack": 68,
+    "defense": 60,
+    "speed": 75
+  },
+  "독침붕": {
+    "hp": 128,
+    "attack": 68,
+    "defense": 60,
+    "speed": 75
+  },
+  "18": {
+    "hp": 143,
+    "attack": 75,
+    "defense": 73,
+    "speed": 101
+  },
+  "pidgeot": {
+    "hp": 143,
+    "attack": 75,
+    "defense": 73,
+    "speed": 101
+  },
+  "피죤투": {
+    "hp": 143,
+    "attack": 75,
+    "defense": 73,
+    "speed": 101
+  },
+  "20": {
+    "hp": 119,
+    "attack": 66,
+    "defense": 65,
+    "speed": 97
+  },
+  "raticate": {
+    "hp": 119,
+    "attack": 66,
+    "defense": 65,
+    "speed": 97
+  },
+  "레트라": {
+    "hp": 119,
+    "attack": 66,
+    "defense": 65,
+    "speed": 97
+  },
+  "22": {
+    "hp": 128,
+    "attack": 76,
+    "defense": 63,
+    "speed": 100
+  },
+  "fearow": {
+    "hp": 128,
+    "attack": 76,
+    "defense": 63,
+    "speed": 100
+  },
+  "깨비드릴조": {
+    "hp": 128,
+    "attack": 76,
+    "defense": 63,
+    "speed": 100
+  },
+  "24": {
+    "hp": 124,
+    "attack": 80,
+    "defense": 74,
+    "speed": 80
+  },
+  "arbok": {
+    "hp": 124,
+    "attack": 80,
+    "defense": 74,
+    "speed": 80
+  },
+  "아보크": {
+    "hp": 124,
+    "attack": 80,
+    "defense": 74,
+    "speed": 80
+  },
+  "25": {
+    "hp": 102,
+    "attack": 53,
+    "defense": 45,
+    "speed": 90
+  },
+  "pikachu": {
+    "hp": 102,
+    "attack": 53,
+    "defense": 45,
+    "speed": 90
+  },
+  "피카츄": {
+    "hp": 102,
+    "attack": 53,
+    "defense": 45,
+    "speed": 90
+  },
+  "26": {
+    "hp": 124,
+    "attack": 90,
+    "defense": 68,
+    "speed": 110
+  },
+  "raichu": {
+    "hp": 124,
+    "attack": 90,
+    "defense": 68,
+    "speed": 110
+  },
+  "라이츄": {
+    "hp": 124,
+    "attack": 90,
+    "defense": 68,
+    "speed": 110
+  },
+  "28": {
+    "hp": 137,
+    "attack": 73,
+    "defense": 83,
+    "speed": 65
+  },
+  "sandslash": {
+    "hp": 137,
+    "attack": 73,
+    "defense": 83,
+    "speed": 65
+  },
+  "고지": {
+    "hp": 137,
+    "attack": 73,
+    "defense": 83,
+    "speed": 65
+  },
+  "31": {
+    "hp": 149,
+    "attack": 84,
+    "defense": 86,
+    "speed": 76
+  },
+  "nidoqueen": {
+    "hp": 149,
+    "attack": 84,
+    "defense": 86,
+    "speed": 76
+  },
+  "니드퀸": {
+    "hp": 149,
+    "attack": 84,
+    "defense": 86,
+    "speed": 76
+  },
+  "34": {
+    "hp": 142,
+    "attack": 94,
+    "defense": 76,
+    "speed": 85
+  },
+  "nidoking": {
+    "hp": 142,
+    "attack": 94,
+    "defense": 76,
+    "speed": 85
+  },
+  "니드킹": {
+    "hp": 142,
+    "attack": 94,
+    "defense": 76,
+    "speed": 85
+  },
+  "36": {
+    "hp": 154,
+    "attack": 83,
+    "defense": 82,
+    "speed": 60
+  },
+  "clefable": {
+    "hp": 154,
+    "attack": 83,
+    "defense": 82,
+    "speed": 60
+  },
+  "픽시": {
+    "hp": 154,
+    "attack": 83,
+    "defense": 82,
+    "speed": 60
+  },
+  "38": {
+    "hp": 135,
+    "attack": 79,
+    "defense": 88,
+    "speed": 100
+  },
+  "ninetales": {
+    "hp": 135,
+    "attack": 79,
+    "defense": 88,
+    "speed": 100
+  },
+  "나인테일": {
+    "hp": 135,
+    "attack": 79,
+    "defense": 88,
+    "speed": 100
+  },
+  "40": {
+    "hp": 192,
+    "attack": 78,
+    "defense": 48,
+    "speed": 45
+  },
+  "wigglytuff": {
+    "hp": 192,
+    "attack": 78,
+    "defense": 48,
+    "speed": 45
+  },
+  "푸크린": {
+    "hp": 192,
+    "attack": 78,
+    "defense": 48,
+    "speed": 45
+  },
+  "42": {
+    "hp": 137,
+    "attack": 73,
+    "defense": 73,
+    "speed": 90
+  },
+  "golbat": {
+    "hp": 137,
+    "attack": 73,
+    "defense": 73,
+    "speed": 90
+  },
+  "골뱃": {
+    "hp": 137,
+    "attack": 73,
+    "defense": 73,
+    "speed": 90
+  },
+  "45": {
+    "hp": 137,
+    "attack": 95,
+    "defense": 88,
+    "speed": 50
+  },
+  "vileplume": {
+    "hp": 137,
+    "attack": 95,
+    "defense": 88,
+    "speed": 50
+  },
+  "라플레시아": {
+    "hp": 137,
+    "attack": 95,
+    "defense": 88,
+    "speed": 50
+  },
+  "47": {
+    "hp": 124,
+    "attack": 78,
+    "defense": 80,
+    "speed": 35
+  },
+  "parasect": {
+    "hp": 124,
+    "attack": 78,
+    "defense": 80,
+    "speed": 35
+  },
+  "파라섹트": {
+    "hp": 124,
+    "attack": 78,
+    "defense": 80,
+    "speed": 35
+  },
+  "49": {
+    "hp": 132,
+    "attack": 78,
+    "defense": 68,
+    "speed": 90
+  },
+  "venomoth": {
+    "hp": 132,
+    "attack": 78,
+    "defense": 68,
+    "speed": 90
+  },
+  "도나리": {
+    "hp": 132,
+    "attack": 78,
+    "defense": 68,
+    "speed": 90
+  },
+  "51": {
+    "hp": 102,
+    "attack": 75,
+    "defense": 60,
+    "speed": 120
+  },
+  "dugtrio": {
+    "hp": 102,
+    "attack": 75,
+    "defense": 60,
+    "speed": 120
+  },
+  "닥트리오": {
+    "hp": 102,
+    "attack": 75,
+    "defense": 60,
+    "speed": 120
+  },
+  "53": {
+    "hp": 128,
+    "attack": 68,
+    "defense": 63,
+    "speed": 115
+  },
+  "persian": {
+    "hp": 128,
+    "attack": 68,
+    "defense": 63,
+    "speed": 115
+  },
+  "페르시온": {
+    "hp": 128,
+    "attack": 68,
+    "defense": 63,
+    "speed": 115
+  },
+  "55": {
+    "hp": 141,
+    "attack": 89,
+    "defense": 79,
+    "speed": 85
+  },
+  "golduck": {
+    "hp": 141,
+    "attack": 89,
+    "defense": 79,
+    "speed": 85
+  },
+  "골덕": {
+    "hp": 141,
+    "attack": 89,
+    "defense": 79,
+    "speed": 85
+  },
+  "57": {
+    "hp": 128,
+    "attack": 83,
+    "defense": 65,
+    "speed": 95
+  },
+  "primeape": {
+    "hp": 128,
+    "attack": 83,
+    "defense": 65,
+    "speed": 95
+  },
+  "성원숭": {
+    "hp": 128,
+    "attack": 83,
+    "defense": 65,
+    "speed": 95
+  },
+  "59": {
+    "hp": 149,
+    "attack": 105,
+    "defense": 80,
+    "speed": 95
+  },
+  "arcanine": {
+    "hp": 149,
+    "attack": 105,
+    "defense": 80,
+    "speed": 95
+  },
+  "윈디": {
+    "hp": 149,
+    "attack": 105,
+    "defense": 80,
+    "speed": 95
+  },
+  "62": {
+    "hp": 149,
+    "attack": 83,
+    "defense": 93,
+    "speed": 70
+  },
+  "poliwrath": {
+    "hp": 149,
+    "attack": 83,
+    "defense": 93,
+    "speed": 70
+  },
+  "강챙이": {
+    "hp": 149,
+    "attack": 83,
+    "defense": 93,
+    "speed": 70
+  },
+  "65": {
+    "hp": 119,
+    "attack": 93,
+    "defense": 70,
+    "speed": 120
+  },
+  "alakazam": {
+    "hp": 119,
+    "attack": 93,
+    "defense": 70,
+    "speed": 120
+  },
+  "후딘": {
+    "hp": 119,
+    "attack": 93,
+    "defense": 70,
+    "speed": 120
+  },
+  "68": {
+    "hp": 149,
+    "attack": 98,
+    "defense": 83,
+    "speed": 55
+  },
+  "machamp": {
+    "hp": 149,
+    "attack": 98,
+    "defense": 83,
+    "speed": 55
+  },
+  "괴력몬": {
+    "hp": 149,
+    "attack": 98,
+    "defense": 83,
+    "speed": 55
+  },
+  "71": {
+    "hp": 141,
+    "attack": 103,
+    "defense": 68,
+    "speed": 70
+  },
+  "victreebel": {
+    "hp": 141,
+    "attack": 103,
+    "defense": 68,
+    "speed": 70
+  },
+  "우츠보트": {
+    "hp": 141,
+    "attack": 103,
+    "defense": 68,
+    "speed": 70
+  },
+  "73": {
+    "hp": 141,
+    "attack": 75,
+    "defense": 93,
+    "speed": 100
+  },
+  "tentacruel": {
+    "hp": 141,
+    "attack": 75,
+    "defense": 93,
+    "speed": 100
+  },
+  "독파리": {
+    "hp": 141,
+    "attack": 75,
+    "defense": 93,
+    "speed": 100
+  },
+  "76": {
+    "hp": 141,
+    "attack": 88,
+    "defense": 98,
+    "speed": 45
+  },
+  "golem": {
+    "hp": 141,
+    "attack": 88,
+    "defense": 98,
+    "speed": 45
+  },
+  "딱구리": {
+    "hp": 141,
+    "attack": 88,
+    "defense": 98,
+    "speed": 45
+  },
+  "78": {
+    "hp": 128,
+    "attack": 90,
+    "defense": 75,
+    "speed": 105
+  },
+  "rapidash": {
+    "hp": 128,
+    "attack": 90,
+    "defense": 75,
+    "speed": 105
+  },
+  "날쌩마": {
+    "hp": 128,
+    "attack": 90,
+    "defense": 75,
+    "speed": 105
+  },
+  "80": {
+    "hp": 154,
+    "attack": 88,
+    "defense": 95,
+    "speed": 35
+  },
+  "slowbro": {
+    "hp": 154,
+    "attack": 88,
+    "defense": 95,
+    "speed": 35
+  },
+  "야도란": {
+    "hp": 154,
+    "attack": 88,
+    "defense": 95,
+    "speed": 35
+  },
+  "82": {
+    "hp": 115,
+    "attack": 90,
+    "defense": 83,
+    "speed": 70
+  },
+  "magneton": {
+    "hp": 115,
+    "attack": 90,
+    "defense": 83,
+    "speed": 70
+  },
+  "레어코일": {
+    "hp": 115,
+    "attack": 90,
+    "defense": 83,
+    "speed": 70
+  },
+  "83": {
+    "hp": 117,
+    "attack": 74,
+    "defense": 59,
+    "speed": 60
+  },
+  "farfetchd": {
+    "hp": 117,
+    "attack": 74,
+    "defense": 59,
+    "speed": 60
+  },
+  "파오리": {
+    "hp": 117,
+    "attack": 74,
+    "defense": 59,
+    "speed": 60
+  },
+  "85": {
+    "hp": 124,
+    "attack": 85,
+    "defense": 65,
+    "speed": 110
+  },
+  "dodrio": {
+    "hp": 124,
+    "attack": 85,
+    "defense": 65,
+    "speed": 110
+  },
+  "두트리오": {
+    "hp": 124,
+    "attack": 85,
+    "defense": 65,
+    "speed": 110
+  },
+  "87": {
+    "hp": 149,
+    "attack": 70,
+    "defense": 88,
+    "speed": 70
+  },
+  "dewgong": {
+    "hp": 149,
+    "attack": 70,
+    "defense": 88,
+    "speed": 70
+  },
+  "쥬레곤": {
+    "hp": 149,
+    "attack": 70,
+    "defense": 88,
+    "speed": 70
+  },
+  "89": {
+    "hp": 162,
+    "attack": 85,
+    "defense": 88,
+    "speed": 50
+  },
+  "muk": {
+    "hp": 162,
+    "attack": 85,
+    "defense": 88,
+    "speed": 50
+  },
+  "질뻐기": {
+    "hp": 162,
+    "attack": 85,
+    "defense": 88,
+    "speed": 50
+  },
+  "91": {
+    "hp": 115,
+    "attack": 90,
+    "defense": 113,
+    "speed": 70
+  },
+  "cloyster": {
+    "hp": 115,
+    "attack": 90,
+    "defense": 113,
+    "speed": 70
+  },
+  "파르셀": {
+    "hp": 115,
+    "attack": 90,
+    "defense": 113,
+    "speed": 70
+  },
+  "94": {
+    "hp": 124,
+    "attack": 98,
+    "defense": 68,
+    "speed": 110
+  },
+  "gengar": {
+    "hp": 124,
+    "attack": 98,
+    "defense": 68,
+    "speed": 110
+  },
+  "팬텀": {
+    "hp": 124,
+    "attack": 98,
+    "defense": 68,
+    "speed": 110
+  },
+  "95": {
+    "hp": 102,
+    "attack": 38,
+    "defense": 103,
+    "speed": 70
+  },
+  "onix": {
+    "hp": 102,
+    "attack": 38,
+    "defense": 103,
+    "speed": 70
+  },
+  "롱스톤": {
+    "hp": 102,
+    "attack": 38,
+    "defense": 103,
+    "speed": 70
+  },
+  "97": {
+    "hp": 145,
+    "attack": 73,
+    "defense": 93,
+    "speed": 67
+  },
+  "hypno": {
+    "hp": 145,
+    "attack": 73,
+    "defense": 93,
+    "speed": 67
+  },
+  "슬리퍼": {
+    "hp": 145,
+    "attack": 73,
+    "defense": 93,
+    "speed": 67
+  },
+  "99": {
+    "hp": 119,
+    "attack": 90,
+    "defense": 83,
+    "speed": 75
+  },
+  "kingler": {
+    "hp": 119,
+    "attack": 90,
+    "defense": 83,
+    "speed": 75
+  },
+  "킹크랩": {
+    "hp": 119,
+    "attack": 90,
+    "defense": 83,
+    "speed": 75
+  },
+  "101": {
+    "hp": 124,
+    "attack": 65,
+    "defense": 75,
+    "speed": 150
+  },
+  "electrode": {
+    "hp": 124,
+    "attack": 65,
+    "defense": 75,
+    "speed": 150
+  },
+  "붐볼": {
+    "hp": 124,
+    "attack": 65,
+    "defense": 75,
+    "speed": 150
+  },
+  "103": {
+    "hp": 154,
+    "attack": 110,
+    "defense": 80,
+    "speed": 55
+  },
+  "exeggutor": {
+    "hp": 154,
+    "attack": 110,
+    "defense": 80,
+    "speed": 55
+  },
+  "나시": {
+    "hp": 154,
+    "attack": 110,
+    "defense": 80,
+    "speed": 55
+  },
+  "105": {
+    "hp": 124,
+    "attack": 65,
+    "defense": 95,
+    "speed": 45
+  },
+  "marowak": {
+    "hp": 124,
+    "attack": 65,
+    "defense": 95,
+    "speed": 45
+  },
+  "텅구리": {
+    "hp": 124,
+    "attack": 65,
+    "defense": 95,
+    "speed": 45
+  },
+  "106": {
+    "hp": 115,
+    "attack": 78,
+    "defense": 82,
+    "speed": 87
+  },
+  "hitmonlee": {
+    "hp": 115,
+    "attack": 78,
+    "defense": 82,
+    "speed": 87
+  },
+  "시라소몬": {
+    "hp": 115,
+    "attack": 78,
+    "defense": 82,
+    "speed": 87
+  },
+  "107": {
+    "hp": 115,
+    "attack": 70,
+    "defense": 95,
+    "speed": 76
+  },
+  "hitmonchan": {
+    "hp": 115,
+    "attack": 70,
+    "defense": 95,
+    "speed": 76
+  },
+  "홍수몬": {
+    "hp": 115,
+    "attack": 70,
+    "defense": 95,
+    "speed": 76
+  },
+  "108": {
+    "hp": 149,
+    "attack": 58,
+    "defense": 75,
+    "speed": 35
+  },
+  "lickitung": {
+    "hp": 149,
+    "attack": 58,
+    "defense": 75,
+    "speed": 35
+  },
+  "내루미": {
+    "hp": 149,
+    "attack": 58,
+    "defense": 75,
+    "speed": 35
+  },
+  "110": {
+    "hp": 128,
+    "attack": 88,
+    "defense": 95,
+    "speed": 60
+  },
+  "weezing": {
+    "hp": 128,
+    "attack": 88,
+    "defense": 95,
+    "speed": 60
+  },
+  "또도가스": {
+    "hp": 128,
+    "attack": 88,
+    "defense": 95,
+    "speed": 60
+  },
+  "112": {
+    "hp": 162,
+    "attack": 88,
+    "defense": 83,
+    "speed": 40
+  },
+  "rhydon": {
+    "hp": 162,
+    "attack": 88,
+    "defense": 83,
+    "speed": 40
+  },
+  "코뿌리": {
+    "hp": 162,
+    "attack": 88,
+    "defense": 83,
+    "speed": 40
+  },
+  "113": {
+    "hp": 287,
+    "attack": 35,
+    "defense": 55,
+    "speed": 50
+  },
+  "chansey": {
+    "hp": 287,
+    "attack": 35,
+    "defense": 55,
+    "speed": 50
+  },
+  "럭키": {
+    "hp": 287,
+    "attack": 35,
+    "defense": 55,
+    "speed": 50
+  },
+  "114": {
+    "hp": 128,
+    "attack": 78,
+    "defense": 78,
+    "speed": 60
+  },
+  "tangela": {
+    "hp": 128,
+    "attack": 78,
+    "defense": 78,
+    "speed": 60
+  },
+  "덩쿠리": {
+    "hp": 128,
+    "attack": 78,
+    "defense": 78,
+    "speed": 60
+  },
+  "115": {
+    "hp": 162,
+    "attack": 68,
+    "defense": 80,
+    "speed": 90
+  },
+  "kangaskhan": {
+    "hp": 162,
+    "attack": 68,
+    "defense": 80,
+    "speed": 90
+  },
+  "캥카": {
+    "hp": 162,
+    "attack": 68,
+    "defense": 80,
+    "speed": 90
+  },
+  "117": {
+    "hp": 119,
+    "attack": 80,
+    "defense": 70,
+    "speed": 85
+  },
+  "seadra": {
+    "hp": 119,
+    "attack": 80,
+    "defense": 70,
+    "speed": 85
+  },
+  "시드라": {
+    "hp": 119,
+    "attack": 80,
+    "defense": 70,
+    "speed": 85
+  },
+  "119": {
+    "hp": 141,
+    "attack": 79,
+    "defense": 73,
+    "speed": 68
+  },
+  "seaking": {
+    "hp": 141,
+    "attack": 79,
+    "defense": 73,
+    "speed": 68
+  },
+  "왕콘치": {
+    "hp": 141,
+    "attack": 79,
+    "defense": 73,
+    "speed": 68
+  },
+  "121": {
+    "hp": 124,
+    "attack": 88,
+    "defense": 85,
+    "speed": 115
+  },
+  "starmie": {
+    "hp": 124,
+    "attack": 88,
+    "defense": 85,
+    "speed": 115
+  },
+  "아쿠스타": {
+    "hp": 124,
+    "attack": 88,
+    "defense": 85,
+    "speed": 115
+  },
+  "122": {
+    "hp": 106,
+    "attack": 73,
+    "defense": 93,
+    "speed": 90
+  },
+  "mr-mime": {
+    "hp": 106,
+    "attack": 73,
+    "defense": 93,
+    "speed": 90
+  },
+  "마임맨": {
+    "hp": 106,
+    "attack": 73,
+    "defense": 93,
+    "speed": 90
+  },
+  "123": {
+    "hp": 132,
+    "attack": 83,
+    "defense": 80,
+    "speed": 105
+  },
+  "scyther": {
+    "hp": 132,
+    "attack": 83,
+    "defense": 80,
+    "speed": 105
+  },
+  "스라크": {
+    "hp": 132,
+    "attack": 83,
+    "defense": 80,
+    "speed": 105
+  },
+  "124": {
+    "hp": 128,
+    "attack": 83,
+    "defense": 65,
+    "speed": 95
+  },
+  "jynx": {
+    "hp": 128,
+    "attack": 83,
+    "defense": 65,
+    "speed": 95
+  },
+  "루주라": {
+    "hp": 128,
+    "attack": 83,
+    "defense": 65,
+    "speed": 95
+  },
+  "125": {
+    "hp": 128,
+    "attack": 89,
+    "defense": 71,
+    "speed": 105
+  },
+  "electabuzz": {
+    "hp": 128,
+    "attack": 89,
+    "defense": 71,
+    "speed": 105
+  },
+  "에레브": {
+    "hp": 128,
+    "attack": 89,
+    "defense": 71,
+    "speed": 105
+  },
+  "126": {
+    "hp": 128,
+    "attack": 98,
+    "defense": 71,
+    "speed": 93
+  },
+  "magmar": {
+    "hp": 128,
+    "attack": 98,
+    "defense": 71,
+    "speed": 93
+  },
+  "마그마": {
+    "hp": 128,
+    "attack": 98,
+    "defense": 71,
+    "speed": 93
+  },
+  "127": {
+    "hp": 128,
+    "attack": 90,
+    "defense": 85,
+    "speed": 85
+  },
+  "pinsir": {
+    "hp": 128,
+    "attack": 90,
+    "defense": 85,
+    "speed": 85
+  },
+  "쁘사이저": {
+    "hp": 128,
+    "attack": 90,
+    "defense": 85,
+    "speed": 85
+  },
+  "128": {
+    "hp": 137,
+    "attack": 70,
+    "defense": 83,
+    "speed": 110
+  },
+  "tauros": {
+    "hp": 137,
+    "attack": 70,
+    "defense": 83,
+    "speed": 110
+  },
+  "켄타로스": {
+    "hp": 137,
+    "attack": 70,
+    "defense": 83,
+    "speed": 110
+  },
+  "130": {
+    "hp": 154,
+    "attack": 93,
+    "defense": 90,
+    "speed": 81
+  },
+  "gyarados": {
+    "hp": 154,
+    "attack": 93,
+    "defense": 90,
+    "speed": 81
+  },
+  "갸라도스": {
+    "hp": 154,
+    "attack": 93,
+    "defense": 90,
+    "speed": 81
+  },
+  "131": {
+    "hp": 184,
+    "attack": 85,
+    "defense": 88,
+    "speed": 60
+  },
+  "lapras": {
+    "hp": 184,
+    "attack": 85,
+    "defense": 88,
+    "speed": 60
+  },
+  "라프라스": {
+    "hp": 184,
+    "attack": 85,
+    "defense": 88,
+    "speed": 60
+  },
+  "134": {
+    "hp": 184,
+    "attack": 88,
+    "defense": 78,
+    "speed": 65
+  },
+  "vaporeon": {
+    "hp": 184,
+    "attack": 88,
+    "defense": 78,
+    "speed": 65
+  },
+  "샤미드": {
+    "hp": 184,
+    "attack": 88,
+    "defense": 78,
+    "speed": 65
+  },
+  "135": {
+    "hp": 128,
+    "attack": 88,
+    "defense": 78,
+    "speed": 130
+  },
+  "jolteon": {
+    "hp": 128,
+    "attack": 88,
+    "defense": 78,
+    "speed": 130
+  },
+  "쥬피썬더": {
+    "hp": 128,
+    "attack": 88,
+    "defense": 78,
+    "speed": 130
+  },
+  "136": {
+    "hp": 128,
+    "attack": 113,
+    "defense": 85,
+    "speed": 65
+  },
+  "flareon": {
+    "hp": 128,
+    "attack": 113,
+    "defense": 85,
+    "speed": 65
+  },
+  "부스터": {
+    "hp": 128,
+    "attack": 113,
+    "defense": 85,
+    "speed": 65
+  },
+  "137": {
+    "hp": 128,
+    "attack": 73,
+    "defense": 73,
+    "speed": 40
+  },
+  "porygon": {
+    "hp": 128,
+    "attack": 73,
+    "defense": 73,
+    "speed": 40
+  },
+  "폴리곤": {
+    "hp": 128,
+    "attack": 73,
+    "defense": 73,
+    "speed": 40
+  },
+  "139": {
+    "hp": 132,
+    "attack": 88,
+    "defense": 98,
+    "speed": 55
+  },
+  "omastar": {
+    "hp": 132,
+    "attack": 88,
+    "defense": 98,
+    "speed": 55
+  },
+  "암스타": {
+    "hp": 132,
+    "attack": 88,
+    "defense": 98,
+    "speed": 55
+  },
+  "141": {
+    "hp": 124,
+    "attack": 90,
+    "defense": 88,
+    "speed": 80
+  },
+  "kabutops": {
+    "hp": 124,
+    "attack": 90,
+    "defense": 88,
+    "speed": 80
+  },
+  "투구푸스": {
+    "hp": 124,
+    "attack": 90,
+    "defense": 88,
+    "speed": 80
+  },
+  "142": {
+    "hp": 141,
+    "attack": 83,
+    "defense": 70,
+    "speed": 130
+  },
+  "aerodactyl": {
+    "hp": 141,
+    "attack": 83,
+    "defense": 70,
+    "speed": 130
+  },
+  "프테라": {
+    "hp": 141,
+    "attack": 83,
+    "defense": 70,
+    "speed": 130
+  },
+  "143": {
+    "hp": 210,
+    "attack": 88,
+    "defense": 88,
+    "speed": 35
+  },
+  "snorlax": {
+    "hp": 210,
+    "attack": 88,
+    "defense": 88,
+    "speed": 35
+  },
+  "잠만보": {
+    "hp": 210,
+    "attack": 88,
+    "defense": 88,
+    "speed": 35
+  },
+  "144": {
+    "hp": 149,
+    "attack": 90,
+    "defense": 113,
+    "speed": 85
+  },
+  "articuno": {
+    "hp": 149,
+    "attack": 90,
+    "defense": 113,
+    "speed": 85
+  },
+  "프리져": {
+    "hp": 149,
+    "attack": 90,
+    "defense": 113,
+    "speed": 85
+  },
+  "145": {
+    "hp": 149,
+    "attack": 108,
+    "defense": 88,
+    "speed": 100
+  },
+  "zapdos": {
+    "hp": 149,
+    "attack": 108,
+    "defense": 88,
+    "speed": 100
+  },
+  "썬더": {
+    "hp": 149,
+    "attack": 108,
+    "defense": 88,
+    "speed": 100
+  },
+  "146": {
+    "hp": 149,
+    "attack": 113,
+    "defense": 88,
+    "speed": 90
+  },
+  "moltres": {
+    "hp": 149,
+    "attack": 113,
+    "defense": 88,
+    "speed": 90
+  },
+  "파이어": {
+    "hp": 149,
+    "attack": 113,
+    "defense": 88,
+    "speed": 90
+  },
+  "149": {
+    "hp": 150,
+    "attack": 117,
+    "defense": 98,
+    "speed": 80
+  },
+  "dragonite": {
+    "hp": 150,
+    "attack": 117,
+    "defense": 98,
+    "speed": 80
+  },
+  "망나뇽": {
+    "hp": 150,
+    "attack": 117,
+    "defense": 98,
+    "speed": 80
+  },
+  "150": {
+    "hp": 163,
+    "attack": 132,
+    "defense": 90,
+    "speed": 130
+  },
+  "mewtwo": {
+    "hp": 163,
+    "attack": 132,
+    "defense": 90,
+    "speed": 130
+  },
+  "뮤츠": {
+    "hp": 163,
+    "attack": 132,
+    "defense": 90,
+    "speed": 130
+  },
+  "151": {
+    "hp": 158,
+    "attack": 100,
+    "defense": 100,
+    "speed": 100
+  },
+  "mew": {
+    "hp": 158,
+    "attack": 100,
+    "defense": 100,
+    "speed": 100
+  },
+  "뮤": {
+    "hp": 158,
+    "attack": 100,
+    "defense": 100,
+    "speed": 100
+  },
+  "154": {
+    "hp": 141,
+    "attack": 83,
+    "defense": 100,
+    "speed": 80
+  },
+  "meganium": {
+    "hp": 141,
+    "attack": 83,
+    "defense": 100,
+    "speed": 80
+  },
+  "메가니움": {
+    "hp": 141,
+    "attack": 83,
+    "defense": 100,
+    "speed": 80
+  },
+  "157": {
+    "hp": 139,
+    "attack": 97,
+    "defense": 82,
+    "speed": 100
+  },
+  "typhlosion": {
+    "hp": 139,
+    "attack": 97,
+    "defense": 82,
+    "speed": 100
+  },
+  "블레이범": {
+    "hp": 139,
+    "attack": 97,
+    "defense": 82,
+    "speed": 100
+  },
+  "160": {
+    "hp": 145,
+    "attack": 92,
+    "defense": 92,
+    "speed": 78
+  },
+  "feraligatr": {
+    "hp": 145,
+    "attack": 92,
+    "defense": 92,
+    "speed": 78
+  },
+  "장크로다일": {
+    "hp": 145,
+    "attack": 92,
+    "defense": 92,
+    "speed": 78
+  },
+  "162": {
+    "hp": 145,
+    "attack": 61,
+    "defense": 60,
+    "speed": 90
+  },
+  "furret": {
+    "hp": 145,
+    "attack": 61,
+    "defense": 60,
+    "speed": 90
+  },
+  "다꼬리": {
+    "hp": 145,
+    "attack": 61,
+    "defense": 60,
+    "speed": 90
+  },
+  "164": {
+    "hp": 158,
+    "attack": 68,
+    "defense": 73,
+    "speed": 70
+  },
+  "noctowl": {
+    "hp": 158,
+    "attack": 68,
+    "defense": 73,
+    "speed": 70
+  },
+  "야부엉": {
+    "hp": 158,
+    "attack": 68,
+    "defense": 73,
+    "speed": 70
+  },
+  "166": {
+    "hp": 119,
+    "attack": 45,
+    "defense": 80,
+    "speed": 85
+  },
+  "ledian": {
+    "hp": 119,
+    "attack": 45,
+    "defense": 80,
+    "speed": 85
+  },
+  "레디안": {
+    "hp": 119,
+    "attack": 45,
+    "defense": 80,
+    "speed": 85
+  },
+  "168": {
+    "hp": 132,
+    "attack": 75,
+    "defense": 70,
+    "speed": 40
+  },
+  "ariados": {
+    "hp": 132,
+    "attack": 75,
+    "defense": 70,
+    "speed": 40
+  },
+  "아리아도스": {
+    "hp": 132,
+    "attack": 75,
+    "defense": 70,
+    "speed": 40
+  },
+  "169": {
+    "hp": 145,
+    "attack": 80,
+    "defense": 80,
+    "speed": 130
+  },
+  "crobat": {
+    "hp": 145,
+    "attack": 80,
+    "defense": 80,
+    "speed": 130
+  },
+  "크로뱃": {
+    "hp": 145,
+    "attack": 80,
+    "defense": 80,
+    "speed": 130
+  },
+  "171": {
+    "hp": 180,
+    "attack": 67,
+    "defense": 67,
+    "speed": 67
+  },
+  "lanturn": {
+    "hp": 180,
+    "attack": 67,
+    "defense": 67,
+    "speed": 67
+  },
+  "랜턴": {
+    "hp": 180,
+    "attack": 67,
+    "defense": 67,
+    "speed": 67
+  },
+  "178": {
+    "hp": 128,
+    "attack": 85,
+    "defense": 70,
+    "speed": 95
+  },
+  "xatu": {
+    "hp": 128,
+    "attack": 85,
+    "defense": 70,
+    "speed": 95
+  },
+  "네이티오": {
+    "hp": 128,
+    "attack": 85,
+    "defense": 70,
+    "speed": 95
+  },
+  "181": {
+    "hp": 149,
+    "attack": 95,
+    "defense": 88,
+    "speed": 55
+  },
+  "ampharos": {
+    "hp": 149,
+    "attack": 95,
+    "defense": 88,
+    "speed": 55
+  },
+  "전룡": {
+    "hp": 149,
+    "attack": 95,
+    "defense": 88,
+    "speed": 55
+  },
+  "182": {
+    "hp": 137,
+    "attack": 85,
+    "defense": 98,
+    "speed": 50
+  },
+  "bellossom": {
+    "hp": 137,
+    "attack": 85,
+    "defense": 98,
+    "speed": 50
+  },
+  "아르코": {
+    "hp": 137,
+    "attack": 85,
+    "defense": 98,
+    "speed": 50
+  },
+  "184": {
+    "hp": 158,
+    "attack": 55,
+    "defense": 80,
+    "speed": 50
+  },
+  "azumarill": {
+    "hp": 158,
+    "attack": 55,
+    "defense": 80,
+    "speed": 50
+  },
+  "마릴리": {
+    "hp": 158,
+    "attack": 55,
+    "defense": 80,
+    "speed": 50
+  },
+  "185": {
+    "hp": 132,
+    "attack": 65,
+    "defense": 90,
+    "speed": 35
+  },
+  "sudowoodo": {
+    "hp": 132,
+    "attack": 65,
+    "defense": 90,
+    "speed": 35
+  },
+  "꼬지모": {
+    "hp": 132,
+    "attack": 65,
+    "defense": 90,
+    "speed": 35
+  },
+  "186": {
+    "hp": 149,
+    "attack": 83,
+    "defense": 88,
+    "speed": 70
+  },
+  "politoed": {
+    "hp": 149,
+    "attack": 83,
+    "defense": 88,
+    "speed": 70
+  },
+  "왕구리": {
+    "hp": 149,
+    "attack": 83,
+    "defense": 88,
+    "speed": 70
+  },
+  "189": {
+    "hp": 137,
+    "attack": 55,
+    "defense": 83,
+    "speed": 110
+  },
+  "jumpluff": {
+    "hp": 137,
+    "attack": 55,
+    "defense": 83,
+    "speed": 110
+  },
+  "솜솜코": {
+    "hp": 137,
+    "attack": 55,
+    "defense": 83,
+    "speed": 110
+  },
+  "192": {
+    "hp": 137,
+    "attack": 90,
+    "defense": 70,
+    "speed": 35
+  },
+  "sunflora": {
+    "hp": 137,
+    "attack": 90,
+    "defense": 70,
+    "speed": 35
+  },
+  "해루미": {
+    "hp": 137,
+    "attack": 90,
+    "defense": 70,
+    "speed": 35
+  },
+  "195": {
+    "hp": 154,
+    "attack": 75,
+    "defense": 75,
+    "speed": 35
+  },
+  "quagsire": {
+    "hp": 154,
+    "attack": 75,
+    "defense": 75,
+    "speed": 35
+  },
+  "누오": {
+    "hp": 154,
+    "attack": 75,
+    "defense": 75,
+    "speed": 35
+  },
+  "196": {
+    "hp": 128,
+    "attack": 98,
+    "defense": 78,
+    "speed": 110
+  },
+  "espeon": {
+    "hp": 128,
+    "attack": 98,
+    "defense": 78,
+    "speed": 110
+  },
+  "에브이": {
+    "hp": 128,
+    "attack": 98,
+    "defense": 78,
+    "speed": 110
+  },
+  "197": {
+    "hp": 154,
+    "attack": 63,
+    "defense": 120,
+    "speed": 65
+  },
+  "umbreon": {
+    "hp": 154,
+    "attack": 63,
+    "defense": 120,
+    "speed": 65
+  },
+  "블래키": {
+    "hp": 154,
+    "attack": 63,
+    "defense": 120,
+    "speed": 65
+  },
+  "198": {
+    "hp": 124,
+    "attack": 85,
+    "defense": 42,
+    "speed": 91
+  },
+  "murkrow": {
+    "hp": 124,
+    "attack": 85,
+    "defense": 42,
+    "speed": 91
+  },
+  "니로우": {
+    "hp": 124,
+    "attack": 85,
+    "defense": 42,
+    "speed": 91
+  },
+  "199": {
+    "hp": 154,
+    "attack": 88,
+    "defense": 95,
+    "speed": 35
+  },
+  "slowking": {
+    "hp": 154,
+    "attack": 88,
+    "defense": 95,
+    "speed": 35
+  },
+  "야도킹": {
+    "hp": 154,
+    "attack": 88,
+    "defense": 95,
+    "speed": 35
+  },
+  "200": {
+    "hp": 124,
+    "attack": 73,
+    "defense": 73,
+    "speed": 85
+  },
+  "misdreavus": {
+    "hp": 124,
+    "attack": 73,
+    "defense": 73,
+    "speed": 85
+  },
+  "무우마": {
+    "hp": 124,
+    "attack": 73,
+    "defense": 73,
+    "speed": 85
+  },
+  "203": {
+    "hp": 132,
+    "attack": 85,
+    "defense": 65,
+    "speed": 85
+  },
+  "girafarig": {
+    "hp": 132,
+    "attack": 85,
+    "defense": 65,
+    "speed": 85
+  },
+  "키링키": {
+    "hp": 132,
+    "attack": 85,
+    "defense": 65,
+    "speed": 85
+  },
+  "205": {
+    "hp": 137,
+    "attack": 75,
+    "defense": 100,
+    "speed": 40
+  },
+  "forretress": {
+    "hp": 137,
+    "attack": 75,
+    "defense": 100,
+    "speed": 40
+  },
+  "쏘콘": {
+    "hp": 137,
+    "attack": 75,
+    "defense": 100,
+    "speed": 40
+  },
+  "206": {
+    "hp": 158,
+    "attack": 68,
+    "defense": 68,
+    "speed": 45
+  },
+  "dunsparce": {
+    "hp": 158,
+    "attack": 68,
+    "defense": 68,
+    "speed": 45
+  },
+  "노고치": {
+    "hp": 158,
+    "attack": 68,
+    "defense": 68,
+    "speed": 45
+  },
+  "207": {
+    "hp": 128,
+    "attack": 55,
+    "defense": 85,
+    "speed": 85
+  },
+  "gligar": {
+    "hp": 128,
+    "attack": 55,
+    "defense": 85,
+    "speed": 85
+  },
+  "글라이거": {
+    "hp": 128,
+    "attack": 55,
+    "defense": 85,
+    "speed": 85
+  },
+  "208": {
+    "hp": 137,
+    "attack": 70,
+    "defense": 133,
+    "speed": 35
+  },
+  "steelix": {
+    "hp": 137,
+    "attack": 70,
+    "defense": 133,
+    "speed": 35
+  },
+  "강철톤": {
+    "hp": 137,
+    "attack": 70,
+    "defense": 133,
+    "speed": 35
+  },
+  "210": {
+    "hp": 149,
+    "attack": 90,
+    "defense": 68,
+    "speed": 45
+  },
+  "granbull": {
+    "hp": 149,
+    "attack": 90,
+    "defense": 68,
+    "speed": 45
+  },
+  "그랑블루": {
+    "hp": 149,
+    "attack": 90,
+    "defense": 68,
+    "speed": 45
+  },
+  "211": {
+    "hp": 128,
+    "attack": 75,
+    "defense": 70,
+    "speed": 85
+  },
+  "qwilfish": {
+    "hp": 128,
+    "attack": 75,
+    "defense": 70,
+    "speed": 85
+  },
+  "침바루": {
+    "hp": 128,
+    "attack": 75,
+    "defense": 70,
+    "speed": 85
+  },
+  "212": {
+    "hp": 132,
+    "attack": 93,
+    "defense": 90,
+    "speed": 65
+  },
+  "scizor": {
+    "hp": 132,
+    "attack": 93,
+    "defense": 90,
+    "speed": 65
+  },
+  "핫삼": {
+    "hp": 132,
+    "attack": 93,
+    "defense": 90,
+    "speed": 65
+  },
+  "213": {
+    "hp": 89,
+    "attack": 35,
+    "defense": 230,
+    "speed": 35
+  },
+  "shuckle": {
+    "hp": 89,
+    "attack": 35,
+    "defense": 230,
+    "speed": 35
+  },
+  "단단지": {
+    "hp": 89,
+    "attack": 35,
+    "defense": 230,
+    "speed": 35
+  },
+  "214": {
+    "hp": 141,
+    "attack": 83,
+    "defense": 85,
+    "speed": 85
+  },
+  "heracross": {
+    "hp": 141,
+    "attack": 83,
+    "defense": 85,
+    "speed": 85
+  },
+  "헤라크로스": {
+    "hp": 141,
+    "attack": 83,
+    "defense": 85,
+    "speed": 85
+  },
+  "215": {
+    "hp": 119,
+    "attack": 65,
+    "defense": 65,
+    "speed": 115
+  },
+  "sneasel": {
+    "hp": 119,
+    "attack": 65,
+    "defense": 65,
+    "speed": 115
+  },
+  "포푸니": {
+    "hp": 119,
+    "attack": 65,
+    "defense": 65,
+    "speed": 115
+  },
+  "217": {
+    "hp": 149,
+    "attack": 103,
+    "defense": 75,
+    "speed": 55
+  },
+  "ursaring": {
+    "hp": 149,
+    "attack": 103,
+    "defense": 75,
+    "speed": 55
+  },
+  "링곰": {
+    "hp": 149,
+    "attack": 103,
+    "defense": 75,
+    "speed": 55
+  },
+  "219": {
+    "hp": 124,
+    "attack": 70,
+    "defense": 100,
+    "speed": 35
+  },
+  "magcargo": {
+    "hp": 124,
+    "attack": 70,
+    "defense": 100,
+    "speed": 35
+  },
+  "마그카르고": {
+    "hp": 124,
+    "attack": 70,
+    "defense": 100,
+    "speed": 35
+  },
+  "221": {
+    "hp": 158,
+    "attack": 80,
+    "defense": 70,
+    "speed": 50
+  },
+  "piloswine": {
+    "hp": 158,
+    "attack": 80,
+    "defense": 70,
+    "speed": 50
+  },
+  "메꾸리": {
+    "hp": 158,
+    "attack": 80,
+    "defense": 70,
+    "speed": 50
+  },
+  "224": {
+    "hp": 137,
+    "attack": 105,
+    "defense": 75,
+    "speed": 45
+  },
+  "octillery": {
+    "hp": 137,
+    "attack": 105,
+    "defense": 75,
+    "speed": 45
+  },
+  "대포무노": {
+    "hp": 137,
+    "attack": 105,
+    "defense": 75,
+    "speed": 45
+  },
+  "225": {
+    "hp": 111,
+    "attack": 60,
+    "defense": 45,
+    "speed": 75
+  },
+  "delibird": {
+    "hp": 111,
+    "attack": 60,
+    "defense": 45,
+    "speed": 75
+  },
+  "딜리버드": {
+    "hp": 111,
+    "attack": 60,
+    "defense": 45,
+    "speed": 75
+  },
+  "226": {
+    "hp": 145,
+    "attack": 60,
+    "defense": 105,
+    "speed": 70
+  },
+  "mantine": {
+    "hp": 145,
+    "attack": 60,
+    "defense": 105,
+    "speed": 70
+  },
+  "만타인": {
+    "hp": 145,
+    "attack": 60,
+    "defense": 105,
+    "speed": 70
+  },
+  "227": {
+    "hp": 128,
+    "attack": 60,
+    "defense": 105,
+    "speed": 70
+  },
+  "skarmory": {
+    "hp": 128,
+    "attack": 60,
+    "defense": 105,
+    "speed": 70
+  },
+  "무장조": {
+    "hp": 128,
+    "attack": 60,
+    "defense": 105,
+    "speed": 70
+  },
+  "229": {
+    "hp": 137,
+    "attack": 100,
+    "defense": 65,
+    "speed": 95
+  },
+  "houndoom": {
+    "hp": 137,
+    "attack": 100,
+    "defense": 65,
+    "speed": 95
+  },
+  "헬가": {
+    "hp": 137,
+    "attack": 100,
+    "defense": 65,
+    "speed": 95
+  },
+  "230": {
+    "hp": 137,
+    "attack": 95,
+    "defense": 95,
+    "speed": 85
+  },
+  "kingdra": {
+    "hp": 137,
+    "attack": 95,
+    "defense": 95,
+    "speed": 85
+  },
+  "킹드라": {
+    "hp": 137,
+    "attack": 95,
+    "defense": 95,
+    "speed": 85
+  },
+  "232": {
+    "hp": 149,
+    "attack": 90,
+    "defense": 90,
+    "speed": 50
+  },
+  "donphan": {
+    "hp": 149,
+    "attack": 90,
+    "defense": 90,
+    "speed": 50
+  },
+  "코리갑": {
+    "hp": 149,
+    "attack": 90,
+    "defense": 90,
+    "speed": 50
+  },
+  "233": {
+    "hp": 145,
+    "attack": 93,
+    "defense": 93,
+    "speed": 60
+  },
+  "porygon2": {
+    "hp": 145,
+    "attack": 93,
+    "defense": 93,
+    "speed": 60
+  },
+  "폴리곤2": {
+    "hp": 145,
+    "attack": 93,
+    "defense": 93,
+    "speed": 60
+  },
+  "234": {
+    "hp": 135,
+    "attack": 90,
+    "defense": 64,
+    "speed": 85
+  },
+  "stantler": {
+    "hp": 135,
+    "attack": 90,
+    "defense": 64,
+    "speed": 85
+  },
+  "노라키": {
+    "hp": 135,
+    "attack": 90,
+    "defense": 64,
+    "speed": 85
+  },
+  "237": {
+    "hp": 115,
+    "attack": 65,
+    "defense": 103,
+    "speed": 70
+  },
+  "hitmontop": {
+    "hp": 115,
+    "attack": 65,
+    "defense": 103,
+    "speed": 70
+  },
+  "카포에라": {
+    "hp": 115,
+    "attack": 65,
+    "defense": 103,
+    "speed": 70
+  },
+  "241": {
+    "hp": 154,
+    "attack": 60,
+    "defense": 88,
+    "speed": 100
+  },
+  "miltank": {
+    "hp": 154,
+    "attack": 60,
+    "defense": 88,
+    "speed": 100
+  },
+  "밀탱크": {
+    "hp": 154,
+    "attack": 60,
+    "defense": 88,
+    "speed": 100
+  },
+  "242": {
+    "hp": 291,
+    "attack": 43,
+    "defense": 73,
+    "speed": 55
+  },
+  "blissey": {
+    "hp": 291,
+    "attack": 43,
+    "defense": 73,
+    "speed": 55
+  },
+  "해피너스": {
+    "hp": 291,
+    "attack": 43,
+    "defense": 73,
+    "speed": 55
+  },
+  "243": {
+    "hp": 149,
+    "attack": 100,
+    "defense": 88,
+    "speed": 115
+  },
+  "raikou": {
+    "hp": 149,
+    "attack": 100,
+    "defense": 88,
+    "speed": 115
+  },
+  "라이코": {
+    "hp": 149,
+    "attack": 100,
+    "defense": 88,
+    "speed": 115
+  },
+  "245": {
+    "hp": 158,
+    "attack": 83,
+    "defense": 115,
+    "speed": 85
+  },
+  "suicune": {
+    "hp": 158,
+    "attack": 83,
+    "defense": 115,
+    "speed": 85
+  },
+  "스이쿤": {
+    "hp": 158,
+    "attack": 83,
+    "defense": 115,
+    "speed": 85
+  },
+  "248": {
+    "hp": 158,
+    "attack": 115,
+    "defense": 105,
+    "speed": 61
+  },
+  "tyranitar": {
+    "hp": 158,
+    "attack": 115,
+    "defense": 105,
+    "speed": 61
+  },
+  "마기라스": {
+    "hp": 158,
+    "attack": 115,
+    "defense": 105,
+    "speed": 61
+  },
+  "249": {
+    "hp": 163,
+    "attack": 90,
+    "defense": 142,
+    "speed": 110
+  },
+  "lugia": {
+    "hp": 163,
+    "attack": 90,
+    "defense": 142,
+    "speed": 110
+  },
+  "루기아": {
+    "hp": 163,
+    "attack": 90,
+    "defense": 142,
+    "speed": 110
+  },
+  "250": {
+    "hp": 163,
+    "attack": 120,
+    "defense": 122,
+    "speed": 90
+  },
+  "ho-oh": {
+    "hp": 163,
+    "attack": 120,
+    "defense": 122,
+    "speed": 90
+  },
+  "칠색조": {
+    "hp": 163,
+    "attack": 120,
+    "defense": 122,
+    "speed": 90
+  },
+  "251": {
+    "hp": 158,
+    "attack": 100,
+    "defense": 100,
+    "speed": 100
+  },
+  "celebi": {
+    "hp": 158,
+    "attack": 100,
+    "defense": 100,
+    "speed": 100
+  },
+  "세레비": {
+    "hp": 158,
+    "attack": 100,
+    "defense": 100,
+    "speed": 100
+  }
+}

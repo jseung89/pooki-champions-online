@@ -1,0 +1,20 @@
+{
+  "maxStage": 100,
+  "startingLevel": 5,
+  "bossEvery": 10,
+  "startingBag": {
+    "pookiBall": 5,
+    "superPookiBall": 0,
+    "hyperPookiBall": 0,
+    "potion": 2,
+    "superPotion": 0,
+    "ether": 1,
+    "fullHeal": 0,
+    "protein": 0,
+    "iron": 0,
+    "speedUp": 0,
+    "saponin": 0
+  },
+  "localStorageKey": "pookiAdventureStateV618RealClone",
+  "expMultiplier": 3
+}

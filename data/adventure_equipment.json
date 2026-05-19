@@ -1,0 +1,197 @@
+{
+  "equipment": [
+    {
+      "id": "powerBand",
+      "name": "힘의머리띠",
+      "kind": "power",
+      "value": 0.1,
+      "maxStacks": 6,
+      "desc": "공격 기술 위력 +10%"
+    },
+    {
+      "id": "wiseGlasses",
+      "name": "박식안경",
+      "kind": "power",
+      "value": 0.1,
+      "maxStacks": 6,
+      "desc": "공격 기술 위력 +10%"
+    },
+    {
+      "id": "charcoal",
+      "name": "목탄",
+      "kind": "typeBoost",
+      "type": "fire",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "불꽃 타입 기술 위력 +15%"
+    },
+    {
+      "id": "mysticWater",
+      "name": "신비의물방울",
+      "kind": "typeBoost",
+      "type": "water",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "물 타입 기술 위력 +15%"
+    },
+    {
+      "id": "miracleSeed",
+      "name": "기적의씨",
+      "kind": "typeBoost",
+      "type": "grass",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "풀 타입 기술 위력 +15%"
+    },
+    {
+      "id": "magnet",
+      "name": "자석",
+      "kind": "typeBoost",
+      "type": "electric",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "전기 타입 기술 위력 +15%"
+    },
+    {
+      "id": "hardStone",
+      "name": "딱딱한돌",
+      "kind": "typeBoost",
+      "type": "rock",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "바위 타입 기술 위력 +15%"
+    },
+    {
+      "id": "blackBelt",
+      "name": "검은띠",
+      "kind": "typeBoost",
+      "type": "fighting",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "격투 타입 기술 위력 +15%"
+    },
+    {
+      "id": "poisonBarb",
+      "name": "독바늘",
+      "kind": "typeBoost",
+      "type": "poison",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "독 타입 기술 위력 +15%"
+    },
+    {
+      "id": "sharpBeak",
+      "name": "예리한부리",
+      "kind": "typeBoost",
+      "type": "flying",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "비행 타입 기술 위력 +15%"
+    },
+    {
+      "id": "softSand",
+      "name": "부드러운모래",
+      "kind": "typeBoost",
+      "type": "ground",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "땅 타입 기술 위력 +15%"
+    },
+    {
+      "id": "spellTag",
+      "name": "저주의부적",
+      "kind": "typeBoost",
+      "type": "ghost",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "고스트 타입 기술 위력 +15%"
+    },
+    {
+      "id": "blackGlasses",
+      "name": "검은안경",
+      "kind": "typeBoost",
+      "type": "dark",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "악 타입 기술 위력 +15%"
+    },
+    {
+      "id": "neverMeltIce",
+      "name": "녹지않는얼음",
+      "kind": "typeBoost",
+      "type": "ice",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "얼음 타입 기술 위력 +15%"
+    },
+    {
+      "id": "dragonFang",
+      "name": "용의이빨",
+      "kind": "typeBoost",
+      "type": "dragon",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "드래곤 타입 기술 위력 +15%"
+    },
+    {
+      "id": "metalCoat",
+      "name": "금속코트",
+      "kind": "typeBoost",
+      "type": "steel",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "강철 타입 기술 위력 +15%"
+    },
+    {
+      "id": "fairyFeather",
+      "name": "요정의깃털",
+      "kind": "typeBoost",
+      "type": "fairy",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "페어리 타입 기술 위력 +15%"
+    },
+    {
+      "id": "shellBell",
+      "name": "조개껍질방울",
+      "kind": "afterDamageHeal",
+      "value": 0.05,
+      "maxStacks": 6,
+      "desc": "준 피해의 5% 회복"
+    },
+    {
+      "id": "leftovers",
+      "name": "먹다남은음식",
+      "kind": "endTurnHeal",
+      "value": 0.125,
+      "maxStacks": 6,
+      "desc": "턴 종료 시 최대 HP의 1/8 회복 · 중첩당 추가 회복",
+      "healFractionPerStack": 0.125
+    },
+    {
+      "id": "silverPowder",
+      "name": "은빛가루",
+      "kind": "typeBoost",
+      "type": "bug",
+      "value": 0.15,
+      "maxStacks": 6,
+      "desc": "벌레 타입 기술 위력 +15%"
+    },
+    {
+      "id": "assaultVest",
+      "name": "튼튼조끼",
+      "kind": "damageReduce",
+      "value": 0.05,
+      "maxStacks": 6,
+      "desc": "받는 피해 5% 감소"
+    },
+    {
+      "id": "lifeCharm",
+      "name": "생명의부적",
+      "kind": "endure",
+      "value": 1,
+      "maxStacks": 6,
+      "desc": "전투당 1회 기절 피해를 버팀"
+    }
+  ]
+}

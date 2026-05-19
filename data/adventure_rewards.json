@@ -1,0 +1,83 @@
+{
+  "rewards": [
+    {
+      "id": "potion2",
+      "title": "상처약 x2",
+      "kind": "heal",
+      "item": "potion",
+      "amount": 2,
+      "desc": "상처약 x2"
+    },
+    {
+      "id": "superPotion1",
+      "title": "좋은상처약 x1",
+      "kind": "heal",
+      "item": "superPotion",
+      "amount": 1,
+      "desc": "좋은상처약 x1"
+    },
+    {
+      "id": "ball3",
+      "title": "푸끼볼 x3",
+      "kind": "capture",
+      "item": "pookiBall",
+      "amount": 3,
+      "desc": "푸끼볼 x3"
+    },
+    {
+      "id": "superBall2",
+      "title": "슈퍼푸끼볼 x2",
+      "kind": "capture",
+      "item": "superPookiBall",
+      "amount": 2,
+      "desc": "슈퍼푸끼볼 x2"
+    },
+    {
+      "id": "rareCandy1",
+      "title": "이상한사탕 x1",
+      "kind": "growth",
+      "item": "rareCandy",
+      "amount": 1,
+      "desc": "포켓몬 1마리 1레벨업"
+    },
+    {
+      "id": "expShare1",
+      "title": "학습장치 x1",
+      "kind": "growth",
+      "item": "expShare",
+      "amount": 1,
+      "desc": "대기 포켓몬 경험치 분배 강화"
+    },
+    {
+      "id": "reviveSeed1",
+      "title": "작은부활씨앗 x1",
+      "kind": "revive",
+      "item": "reviveSeed",
+      "amount": 1,
+      "desc": "기절 포켓몬 HP 25% 부활"
+    },
+    {
+      "id": "revive1",
+      "title": "기력의조각 x1",
+      "kind": "revive",
+      "item": "revive",
+      "amount": 1,
+      "desc": "기절 포켓몬 HP 50% 부활"
+    },
+    {
+      "id": "massRevive1",
+      "title": "대규모 부활 x1",
+      "kind": "revive",
+      "item": "massRevive",
+      "amount": 1,
+      "desc": "팀 전체 복구"
+    },
+    {
+      "id": "tm_waterGun",
+      "title": "기술머신: 물대포",
+      "kind": "tm",
+      "tm": "waterGun",
+      "desc": "물 타입 초급 기술"
+    }
+  ]
+}

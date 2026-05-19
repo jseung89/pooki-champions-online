@@ -1,0 +1,1108 @@
+{
+  "피카츄": {
+    "to": "라이츄",
+    "toApiName": "raichu",
+    "level": 20
+  },
+  "럭키": {
+    "to": "해피너스",
+    "toApiName": "blissey",
+    "level": 25
+  },
+  "스라크": {
+    "to": "핫삼",
+    "toApiName": "scizor",
+    "level": 30
+  },
+  "롱스톤": {
+    "to": "강철톤",
+    "toApiName": "steelix",
+    "level": 30
+  },
+  "니로우": {
+    "to": "돈크로우",
+    "toApiName": "honchkrow",
+    "level": 30
+  },
+  "무우마": {
+    "to": "무우마직",
+    "toApiName": "mismagius",
+    "level": 30
+  },
+  "글라이거": {
+    "to": "글라이온",
+    "toApiName": "gliscor",
+    "level": 30
+  },
+  "이상해씨": {
+    "to": "이상해풀",
+    "toName": "이상해풀",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "이상해꽃",
+    "toId": 2,
+    "toApiName": "ivysaur"
+  },
+  "bulbasaur": {
+    "to": "이상해풀",
+    "toName": "이상해풀",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "이상해꽃",
+    "toId": 2,
+    "toApiName": "ivysaur"
+  },
+  "1": {
+    "to": "이상해풀",
+    "toName": "이상해풀",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "이상해꽃",
+    "toId": 2,
+    "toApiName": "ivysaur"
+  },
+  "파이리": {
+    "to": "리자드",
+    "toName": "리자드",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "리자몽",
+    "toId": 5,
+    "toApiName": "charmeleon"
+  },
+  "charmander": {
+    "to": "리자드",
+    "toName": "리자드",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "리자몽",
+    "toId": 5,
+    "toApiName": "charmeleon"
+  },
+  "4": {
+    "to": "리자드",
+    "toName": "리자드",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "리자몽",
+    "toId": 5,
+    "toApiName": "charmeleon"
+  },
+  "꼬부기": {
+    "to": "어니부기",
+    "toName": "어니부기",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "거북왕",
+    "toId": 8,
+    "toApiName": "wartortle"
+  },
+  "squirtle": {
+    "to": "어니부기",
+    "toName": "어니부기",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "거북왕",
+    "toId": 8,
+    "toApiName": "wartortle"
+  },
+  "7": {
+    "to": "어니부기",
+    "toName": "어니부기",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "거북왕",
+    "toId": 8,
+    "toApiName": "wartortle"
+  },
+  "캐터피": {
+    "to": "단데기",
+    "toName": "단데기",
+    "level": 7,
+    "lineLength": 3,
+    "finalEvolution": "버터플",
+    "toId": 11,
+    "toApiName": "metapod"
+  },
+  "caterpie": {
+    "to": "단데기",
+    "toName": "단데기",
+    "level": 7,
+    "lineLength": 3,
+    "finalEvolution": "버터플",
+    "toId": 11,
+    "toApiName": "metapod"
+  },
+  "10": {
+    "to": "단데기",
+    "toName": "단데기",
+    "level": 7,
+    "lineLength": 3,
+    "finalEvolution": "버터플",
+    "toId": 11,
+    "toApiName": "metapod"
+  },
+  "뿔충이": {
+    "to": "딱충이",
+    "toName": "딱충이",
+    "level": 7,
+    "lineLength": 3,
+    "finalEvolution": "독침붕",
+    "toId": 14,
+    "toApiName": "kakuna"
+  },
+  "weedle": {
+    "to": "딱충이",
+    "toName": "딱충이",
+    "level": 7,
+    "lineLength": 3,
+    "finalEvolution": "독침붕",
+    "toId": 14,
+    "toApiName": "kakuna"
+  },
+  "13": {
+    "to": "딱충이",
+    "toName": "딱충이",
+    "level": 7,
+    "lineLength": 3,
+    "finalEvolution": "독침붕",
+    "toId": 14,
+    "toApiName": "kakuna"
+  },
+  "구구": {
+    "to": "피죤",
+    "toName": "피죤",
+    "level": 18,
+    "lineLength": 3,
+    "finalEvolution": "피죤투",
+    "toId": 17,
+    "toApiName": "pidgeotto"
+  },
+  "pidgey": {
+    "to": "피죤",
+    "toName": "피죤",
+    "level": 18,
+    "lineLength": 3,
+    "finalEvolution": "피죤투",
+    "toId": 17,
+    "toApiName": "pidgeotto"
+  },
+  "16": {
+    "to": "피죤",
+    "toName": "피죤",
+    "level": 18,
+    "lineLength": 3,
+    "finalEvolution": "피죤투",
+    "toId": 17,
+    "toApiName": "pidgeotto"
+  },
+  "니드런♀": {
+    "to": "니드리나",
+    "toName": "니드리나",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "니드퀸",
+    "toId": 30,
+    "toApiName": "nidorina"
+  },
+  "nidoran-f": {
+    "to": "니드리나",
+    "toName": "니드리나",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "니드퀸",
+    "toId": 30,
+    "toApiName": "nidorina"
+  },
+  "29": {
+    "to": "니드리나",
+    "toName": "니드리나",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "니드퀸",
+    "toId": 30,
+    "toApiName": "nidorina"
+  },
+  "니드런♂": {
+    "to": "니드리노",
+    "toName": "니드리노",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "니드킹",
+    "toId": 33,
+    "toApiName": "nidorino"
+  },
+  "nidoran-m": {
+    "to": "니드리노",
+    "toName": "니드리노",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "니드킹",
+    "toId": 33,
+    "toApiName": "nidorino"
+  },
+  "32": {
+    "to": "니드리노",
+    "toName": "니드리노",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "니드킹",
+    "toId": 33,
+    "toApiName": "nidorino"
+  },
+  "뚜벅쵸": {
+    "to": "냄새꼬",
+    "toName": "냄새꼬",
+    "level": 21,
+    "lineLength": 3,
+    "finalEvolution": "라플레시아",
+    "toId": 44,
+    "toApiName": "gloom"
+  },
+  "oddish": {
+    "to": "냄새꼬",
+    "toName": "냄새꼬",
+    "level": 21,
+    "lineLength": 3,
+    "finalEvolution": "라플레시아",
+    "toId": 44,
+    "toApiName": "gloom"
+  },
+  "43": {
+    "to": "냄새꼬",
+    "toName": "냄새꼬",
+    "level": 21,
+    "lineLength": 3,
+    "finalEvolution": "라플레시아",
+    "toId": 44,
+    "toApiName": "gloom"
+  },
+  "캐이시": {
+    "to": "윤겔라",
+    "toName": "윤겔라",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "후딘",
+    "toId": 64,
+    "toApiName": "kadabra"
+  },
+  "abra": {
+    "to": "윤겔라",
+    "toName": "윤겔라",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "후딘",
+    "toId": 64,
+    "toApiName": "kadabra"
+  },
+  "63": {
+    "to": "윤겔라",
+    "toName": "윤겔라",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "후딘",
+    "toId": 64,
+    "toApiName": "kadabra"
+  },
+  "알통몬": {
+    "to": "근육몬",
+    "toName": "근육몬",
+    "level": 28,
+    "lineLength": 3,
+    "finalEvolution": "괴력몬",
+    "toId": 67,
+    "toApiName": "machoke"
+  },
+  "machop": {
+    "to": "근육몬",
+    "toName": "근육몬",
+    "level": 28,
+    "lineLength": 3,
+    "finalEvolution": "괴력몬",
+    "toId": 67,
+    "toApiName": "machoke"
+  },
+  "66": {
+    "to": "근육몬",
+    "toName": "근육몬",
+    "level": 28,
+    "lineLength": 3,
+    "finalEvolution": "괴력몬",
+    "toId": 67,
+    "toApiName": "machoke"
+  },
+  "모다피": {
+    "to": "우츠동",
+    "toName": "우츠동",
+    "level": 21,
+    "lineLength": 3,
+    "finalEvolution": "우츠보트",
+    "toId": 70,
+    "toApiName": "weepinbell"
+  },
+  "bellsprout": {
+    "to": "우츠동",
+    "toName": "우츠동",
+    "level": 21,
+    "lineLength": 3,
+    "finalEvolution": "우츠보트",
+    "toId": 70,
+    "toApiName": "weepinbell"
+  },
+  "69": {
+    "to": "우츠동",
+    "toName": "우츠동",
+    "level": 21,
+    "lineLength": 3,
+    "finalEvolution": "우츠보트",
+    "toId": 70,
+    "toApiName": "weepinbell"
+  },
+  "꼬마돌": {
+    "to": "데구리",
+    "toName": "데구리",
+    "level": 25,
+    "lineLength": 3,
+    "finalEvolution": "딱구리",
+    "toId": 75,
+    "toApiName": "graveler"
+  },
+  "geodude": {
+    "to": "데구리",
+    "toName": "데구리",
+    "level": 25,
+    "lineLength": 3,
+    "finalEvolution": "딱구리",
+    "toId": 75,
+    "toApiName": "graveler"
+  },
+  "74": {
+    "to": "데구리",
+    "toName": "데구리",
+    "level": 25,
+    "lineLength": 3,
+    "finalEvolution": "딱구리",
+    "toId": 75,
+    "toApiName": "graveler"
+  },
+  "고오스": {
+    "to": "고우스트",
+    "toName": "고우스트",
+    "level": 25,
+    "lineLength": 3,
+    "finalEvolution": "팬텀",
+    "toId": 93,
+    "toApiName": "haunter"
+  },
+  "gastly": {
+    "to": "고우스트",
+    "toName": "고우스트",
+    "level": 25,
+    "lineLength": 3,
+    "finalEvolution": "팬텀",
+    "toId": 93,
+    "toApiName": "haunter"
+  },
+  "92": {
+    "to": "고우스트",
+    "toName": "고우스트",
+    "level": 25,
+    "lineLength": 3,
+    "finalEvolution": "팬텀",
+    "toId": 93,
+    "toApiName": "haunter"
+  },
+  "미뇽": {
+    "to": "신뇽",
+    "toName": "신뇽",
+    "level": 30,
+    "lineLength": 3,
+    "finalEvolution": "망나뇽",
+    "toId": 148,
+    "toApiName": "dragonair"
+  },
+  "dratini": {
+    "to": "신뇽",
+    "toName": "신뇽",
+    "level": 30,
+    "lineLength": 3,
+    "finalEvolution": "망나뇽",
+    "toId": 148,
+    "toApiName": "dragonair"
+  },
+  "147": {
+    "to": "신뇽",
+    "toName": "신뇽",
+    "level": 30,
+    "lineLength": 3,
+    "finalEvolution": "망나뇽",
+    "toId": 148,
+    "toApiName": "dragonair"
+  },
+  "치코리타": {
+    "to": "베이리프",
+    "toName": "베이리프",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "메가니움",
+    "toId": 153,
+    "toApiName": "bayleef"
+  },
+  "chikorita": {
+    "to": "베이리프",
+    "toName": "베이리프",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "메가니움",
+    "toId": 153,
+    "toApiName": "bayleef"
+  },
+  "152": {
+    "to": "베이리프",
+    "toName": "베이리프",
+    "level": 16,
+    "lineLength": 3,
+    "finalEvolution": "메가니움",
+    "toId": 153,
+    "toApiName": "bayleef"
+  },
+  "브케인": {
+    "to": "마그케인",
+    "toName": "마그케인",
+    "level": 14,
+    "lineLength": 3,
+    "finalEvolution": "블레이범",
+    "toId": 156,
+    "toApiName": "quilava"
+  },
+  "cyndaquil": {
+    "to": "마그케인",
+    "toName": "마그케인",
+    "level": 14,
+    "lineLength": 3,
+    "finalEvolution": "블레이범",
+    "toId": 156,
+    "toApiName": "quilava"
+  },
+  "155": {
+    "to": "마그케인",
+    "toName": "마그케인",
+    "level": 14,
+    "lineLength": 3,
+    "finalEvolution": "블레이범",
+    "toId": 156,
+    "toApiName": "quilava"
+  },
+  "리아코": {
+    "to": "엘리게이",
+    "toName": "엘리게이",
+    "level": 18,
+    "lineLength": 3,
+    "finalEvolution": "장크로다일",
+    "toId": 159,
+    "toApiName": "croconaw"
+  },
+  "totodile": {
+    "to": "엘리게이",
+    "toName": "엘리게이",
+    "level": 18,
+    "lineLength": 3,
+    "finalEvolution": "장크로다일",
+    "toId": 159,
+    "toApiName": "croconaw"
+  },
+  "158": {
+    "to": "엘리게이",
+    "toName": "엘리게이",
+    "level": 18,
+    "lineLength": 3,
+    "finalEvolution": "장크로다일",
+    "toId": 159,
+    "toApiName": "croconaw"
+  },
+  "메리프": {
+    "to": "보송송",
+    "toName": "보송송",
+    "level": 15,
+    "lineLength": 3,
+    "finalEvolution": "전룡",
+    "toId": 180,
+    "toApiName": "flaaffy"
+  },
+  "mareep": {
+    "to": "보송송",
+    "toName": "보송송",
+    "level": 15,
+    "lineLength": 3,
+    "finalEvolution": "전룡",
+    "toId": 180,
+    "toApiName": "flaaffy"
+  },
+  "179": {
+    "to": "보송송",
+    "toName": "보송송",
+    "level": 15,
+    "lineLength": 3,
+    "finalEvolution": "전룡",
+    "toId": 180,
+    "toApiName": "flaaffy"
+  },
+  "통통코": {
+    "to": "두코",
+    "toName": "두코",
+    "level": 18,
+    "lineLength": 3,
+    "finalEvolution": "솜솜코",
+    "toId": 188,
+    "toApiName": "skiploom"
+  },
+  "hoppip": {
+    "to": "두코",
+    "toName": "두코",
+    "level": 18,
+    "lineLength": 3,
+    "finalEvolution": "솜솜코",
+    "toId": 188,
+    "toApiName": "skiploom"
+  },
+  "187": {
+    "to": "두코",
+    "toName": "두코",
+    "level": 18,
+    "lineLength": 3,
+    "finalEvolution": "솜솜코",
+    "toId": 188,
+    "toApiName": "skiploom"
+  },
+  "애버라스": {
+    "to": "데기라스",
+    "toName": "데기라스",
+    "level": 30,
+    "lineLength": 3,
+    "finalEvolution": "마기라스",
+    "toId": 247,
+    "toApiName": "pupitar"
+  },
+  "larvitar": {
+    "to": "데기라스",
+    "toName": "데기라스",
+    "level": 30,
+    "lineLength": 3,
+    "finalEvolution": "마기라스",
+    "toId": 247,
+    "toApiName": "pupitar"
+  },
+  "246": {
+    "to": "데기라스",
+    "toName": "데기라스",
+    "level": 30,
+    "lineLength": 3,
+    "finalEvolution": "마기라스",
+    "toId": 247,
+    "toApiName": "pupitar"
+  },
+  "단데기": {
+    "to": "버터플",
+    "toName": "버터플",
+    "toId": 12,
+    "toApiName": "butterfree",
+    "level": 10,
+    "lineLength": 3
+  },
+  "metapod": {
+    "to": "버터플",
+    "toName": "버터플",
+    "toId": 12,
+    "toApiName": "butterfree",
+    "level": 10,
+    "lineLength": 3
+  },
+  "11": {
+    "to": "버터플",
+    "toName": "버터플",
+    "toId": 12,
+    "toApiName": "butterfree",
+    "level": 10,
+    "lineLength": 3
+  },
+  "딱충이": {
+    "to": "독침붕",
+    "toName": "독침붕",
+    "toId": 15,
+    "toApiName": "beedrill",
+    "level": 10,
+    "lineLength": 3
+  },
+  "kakuna": {
+    "to": "독침붕",
+    "toName": "독침붕",
+    "toId": 15,
+    "toApiName": "beedrill",
+    "level": 10,
+    "lineLength": 3
+  },
+  "14": {
+    "to": "독침붕",
+    "toName": "독침붕",
+    "toId": 15,
+    "toApiName": "beedrill",
+    "level": 10,
+    "lineLength": 3
+  },
+  "이상해풀": {
+    "to": "이상해꽃",
+    "toName": "이상해꽃",
+    "toId": 3,
+    "toApiName": "venusaur",
+    "level": 32,
+    "lineLength": 3
+  },
+  "ivysaur": {
+    "to": "이상해꽃",
+    "toName": "이상해꽃",
+    "toId": 3,
+    "toApiName": "venusaur",
+    "level": 32,
+    "lineLength": 3
+  },
+  "2": {
+    "to": "이상해꽃",
+    "toName": "이상해꽃",
+    "toId": 3,
+    "toApiName": "venusaur",
+    "level": 32,
+    "lineLength": 3
+  },
+  "리자드": {
+    "to": "리자몽",
+    "toName": "리자몽",
+    "toId": 6,
+    "toApiName": "charizard",
+    "level": 36,
+    "lineLength": 3
+  },
+  "charmeleon": {
+    "to": "리자몽",
+    "toName": "리자몽",
+    "toId": 6,
+    "toApiName": "charizard",
+    "level": 36,
+    "lineLength": 3
+  },
+  "5": {
+    "to": "리자몽",
+    "toName": "리자몽",
+    "toId": 6,
+    "toApiName": "charizard",
+    "level": 36,
+    "lineLength": 3
+  },
+  "어니부기": {
+    "to": "거북왕",
+    "toName": "거북왕",
+    "toId": 9,
+    "toApiName": "blastoise",
+    "level": 36,
+    "lineLength": 3
+  },
+  "wartortle": {
+    "to": "거북왕",
+    "toName": "거북왕",
+    "toId": 9,
+    "toApiName": "blastoise",
+    "level": 36,
+    "lineLength": 3
+  },
+  "8": {
+    "to": "거북왕",
+    "toName": "거북왕",
+    "toId": 9,
+    "toApiName": "blastoise",
+    "level": 36,
+    "lineLength": 3
+  },
+  "피죤": {
+    "to": "피죳",
+    "toName": "피죳",
+    "toId": 18,
+    "toApiName": "pidgeot",
+    "level": 36,
+    "lineLength": 3
+  },
+  "pidgeotto": {
+    "to": "피죳",
+    "toName": "피죳",
+    "toId": 18,
+    "toApiName": "pidgeot",
+    "level": 36,
+    "lineLength": 3
+  },
+  "17": {
+    "to": "피죳",
+    "toName": "피죳",
+    "toId": 18,
+    "toApiName": "pidgeot",
+    "level": 36,
+    "lineLength": 3
+  },
+  "니드리나": {
+    "to": "니드퀸",
+    "toName": "니드퀸",
+    "toId": 31,
+    "toApiName": "nidoqueen",
+    "level": 32,
+    "lineLength": 3
+  },
+  "nidorina": {
+    "to": "니드퀸",
+    "toName": "니드퀸",
+    "toId": 31,
+    "toApiName": "nidoqueen",
+    "level": 32,
+    "lineLength": 3
+  },
+  "30": {
+    "to": "니드퀸",
+    "toName": "니드퀸",
+    "toId": 31,
+    "toApiName": "nidoqueen",
+    "level": 32,
+    "lineLength": 3
+  },
+  "니드리노": {
+    "to": "니드킹",
+    "toName": "니드킹",
+    "toId": 34,
+    "toApiName": "nidoking",
+    "level": 32,
+    "lineLength": 3
+  },
+  "nidorino": {
+    "to": "니드킹",
+    "toName": "니드킹",
+    "toId": 34,
+    "toApiName": "nidoking",
+    "level": 32,
+    "lineLength": 3
+  },
+  "33": {
+    "to": "니드킹",
+    "toName": "니드킹",
+    "toId": 34,
+    "toApiName": "nidoking",
+    "level": 32,
+    "lineLength": 3
+  },
+  "냄새꼬": {
+    "to": "라플레시아",
+    "toName": "라플레시아",
+    "toId": 45,
+    "toApiName": "vileplume",
+    "level": 30,
+    "lineLength": 3
+  },
+  "gloom": {
+    "to": "라플레시아",
+    "toName": "라플레시아",
+    "toId": 45,
+    "toApiName": "vileplume",
+    "level": 30,
+    "lineLength": 3
+  },
+  "44": {
+    "to": "라플레시아",
+    "toName": "라플레시아",
+    "toId": 45,
+    "toApiName": "vileplume",
+    "level": 30,
+    "lineLength": 3
+  },
+  "윤겔라": {
+    "to": "후딘",
+    "toName": "후딘",
+    "toId": 65,
+    "toApiName": "alakazam",
+    "level": 32,
+    "lineLength": 3
+  },
+  "kadabra": {
+    "to": "후딘",
+    "toName": "후딘",
+    "toId": 65,
+    "toApiName": "alakazam",
+    "level": 32,
+    "lineLength": 3
+  },
+  "64": {
+    "to": "후딘",
+    "toName": "후딘",
+    "toId": 65,
+    "toApiName": "alakazam",
+    "level": 32,
+    "lineLength": 3
+  },
+  "근육몬": {
+    "to": "괴력몬",
+    "toName": "괴력몬",
+    "toId": 68,
+    "toApiName": "machamp",
+    "level": 32,
+    "lineLength": 3
+  },
+  "machoke": {
+    "to": "괴력몬",
+    "toName": "괴력몬",
+    "toId": 68,
+    "toApiName": "machamp",
+    "level": 32,
+    "lineLength": 3
+  },
+  "67": {
+    "to": "괴력몬",
+    "toName": "괴력몬",
+    "toId": 68,
+    "toApiName": "machamp",
+    "level": 32,
+    "lineLength": 3
+  },
+  "우츠동": {
+    "to": "우츠보트",
+    "toName": "우츠보트",
+    "toId": 71,
+    "toApiName": "victreebel",
+    "level": 30,
+    "lineLength": 3
+  },
+  "weepinbell": {
+    "to": "우츠보트",
+    "toName": "우츠보트",
+    "toId": 71,
+    "toApiName": "victreebel",
+    "level": 30,
+    "lineLength": 3
+  },
+  "70": {
+    "to": "우츠보트",
+    "toName": "우츠보트",
+    "toId": 71,
+    "toApiName": "victreebel",
+    "level": 30,
+    "lineLength": 3
+  },
+  "데구리": {
+    "to": "딱구리",
+    "toName": "딱구리",
+    "toId": 76,
+    "toApiName": "golem",
+    "level": 32,
+    "lineLength": 3
+  },
+  "graveler": {
+    "to": "딱구리",
+    "toName": "딱구리",
+    "toId": 76,
+    "toApiName": "golem",
+    "level": 32,
+    "lineLength": 3
+  },
+  "75": {
+    "to": "딱구리",
+    "toName": "딱구리",
+    "toId": 76,
+    "toApiName": "golem",
+    "level": 32,
+    "lineLength": 3
+  },
+  "고우스트": {
+    "to": "팬텀",
+    "toName": "팬텀",
+    "toId": 94,
+    "toApiName": "gengar",
+    "level": 32,
+    "lineLength": 3
+  },
+  "haunter": {
+    "to": "팬텀",
+    "toName": "팬텀",
+    "toId": 94,
+    "toApiName": "gengar",
+    "level": 32,
+    "lineLength": 3
+  },
+  "93": {
+    "to": "팬텀",
+    "toName": "팬텀",
+    "toId": 94,
+    "toApiName": "gengar",
+    "level": 32,
+    "lineLength": 3
+  },
+  "신뇽": {
+    "to": "망나뇽",
+    "toName": "망나뇽",
+    "toId": 149,
+    "toApiName": "dragonite",
+    "level": 55,
+    "lineLength": 3
+  },
+  "dragonair": {
+    "to": "망나뇽",
+    "toName": "망나뇽",
+    "toId": 149,
+    "toApiName": "dragonite",
+    "level": 55,
+    "lineLength": 3
+  },
+  "148": {
+    "to": "망나뇽",
+    "toName": "망나뇽",
+    "toId": 149,
+    "toApiName": "dragonite",
+    "level": 55,
+    "lineLength": 3
+  },
+  "베이리프": {
+    "to": "메가니움",
+    "toName": "메가니움",
+    "toId": 154,
+    "toApiName": "meganium",
+    "level": 32,
+    "lineLength": 3
+  },
+  "bayleef": {
+    "to": "메가니움",
+    "toName": "메가니움",
+    "toId": 154,
+    "toApiName": "meganium",
+    "level": 32,
+    "lineLength": 3
+  },
+  "153": {
+    "to": "메가니움",
+    "toName": "메가니움",
+    "toId": 154,
+    "toApiName": "meganium",
+    "level": 32,
+    "lineLength": 3
+  },
+  "마그케인": {
+    "to": "블레이범",
+    "toName": "블레이범",
+    "toId": 157,
+    "toApiName": "typhlosion",
+    "level": 36,
+    "lineLength": 3
+  },
+  "quilava": {
+    "to": "블레이범",
+    "toName": "블레이범",
+    "toId": 157,
+    "toApiName": "typhlosion",
+    "level": 36,
+    "lineLength": 3
+  },
+  "156": {
+    "to": "블레이범",
+    "toName": "블레이범",
+    "toId": 157,
+    "toApiName": "typhlosion",
+    "level": 36,
+    "lineLength": 3
+  },
+  "엘리게이": {
+    "to": "장크로다일",
+    "toName": "장크로다일",
+    "toId": 160,
+    "toApiName": "feraligatr",
+    "level": 30,
+    "lineLength": 3
+  },
+  "croconaw": {
+    "to": "장크로다일",
+    "toName": "장크로다일",
+    "toId": 160,
+    "toApiName": "feraligatr",
+    "level": 30,
+    "lineLength": 3
+  },
+  "159": {
+    "to": "장크로다일",
+    "toName": "장크로다일",
+    "toId": 160,
+    "toApiName": "feraligatr",
+    "level": 30,
+    "lineLength": 3
+  },
+  "보송송": {
+    "to": "전룡",
+    "toName": "전룡",
+    "toId": 181,
+    "toApiName": "ampharos",
+    "level": 30,
+    "lineLength": 3
+  },
+  "flaaffy": {
+    "to": "전룡",
+    "toName": "전룡",
+    "toId": 181,
+    "toApiName": "ampharos",
+    "level": 30,
+    "lineLength": 3
+  },
+  "180": {
+    "to": "전룡",
+    "toName": "전룡",
+    "toId": 181,
+    "toApiName": "ampharos",
+    "level": 30,
+    "lineLength": 3
+  },
+  "두코": {
+    "to": "솜솜코",
+    "toName": "솜솜코",
+    "toId": 189,
+    "toApiName": "jumpluff",
+    "level": 27,
+    "lineLength": 3
+  },
+  "skiploom": {
+    "to": "솜솜코",
+    "toName": "솜솜코",
+    "toId": 189,
+    "toApiName": "jumpluff",
+    "level": 27,
+    "lineLength": 3
+  },
+  "188": {
+    "to": "솜솜코",
+    "toName": "솜솜코",
+    "toId": 189,
+    "toApiName": "jumpluff",
+    "level": 27,
+    "lineLength": 3
+  },
+  "데기라스": {
+    "to": "마기라스",
+    "toName": "마기라스",
+    "toId": 248,
+    "toApiName": "tyranitar",
+    "level": 55,
+    "lineLength": 3
+  },
+  "pupitar": {
+    "to": "마기라스",
+    "toName": "마기라스",
+    "toId": 248,
+    "toApiName": "tyranitar",
+    "level": 55,
+    "lineLength": 3
+  },
+  "247": {
+    "to": "마기라스",
+    "toName": "마기라스",
+    "toId": 248,
+    "toApiName": "tyranitar",
+    "level": 55,
+    "lineLength": 3
+  }
+}

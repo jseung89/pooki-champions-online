@@ -1,0 +1,25 @@
+{
+  "blocked": [
+    "rest",
+    "잠자기",
+    "rainDance",
+    "sunnyDay",
+    "sandstorm",
+    "hail",
+    "trickRoom",
+    "magicRoom",
+    "wonderRoom",
+    "electricTerrain",
+    "grassyTerrain",
+    "mistyTerrain",
+    "psychicTerrain",
+    "perishSong",
+    "destinyBond",
+    "substitute",
+    "transform",
+    "sketch",
+    "batonPass",
+    "roar",
+    "whirlwind"
+  ]
+}

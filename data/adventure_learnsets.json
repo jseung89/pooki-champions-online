@@ -1,0 +1,173 @@
+{
+  "weakMovePool": [
+    "tackle",
+    "scratch",
+    "quickAttack",
+    "growl",
+    "scaryFace",
+    "ember",
+    "smallFlame",
+    "waterGun",
+    "bubble",
+    "vineWhip",
+    "absorb",
+    "thunderShock",
+    "thunderWave",
+    "poisonSting",
+    "poisonPowder",
+    "acid",
+    "leechLife",
+    "furyCutter",
+    "stringShot",
+    "gust",
+    "peck",
+    "wingAttack",
+    "rockThrow",
+    "mudSlap",
+    "doubleKick",
+    "lowKick",
+    "confusion",
+    "hypnosis",
+    "lick",
+    "astonish",
+    "bite",
+    "pursuit",
+    "powderSnow",
+    "iceShard",
+    "twister",
+    "dragonBreathLite",
+    "metalClaw",
+    "fairyWind",
+    "charm",
+    "rockBlast",
+    "bulletSeed"
+  ],
+  "bannedStarterMoves": [
+    "thunderbolt",
+    "flamethrower",
+    "hydroPump",
+    "overheat",
+    "braveBird",
+    "flareBlitz",
+    "explosion",
+    "earthquake",
+    "stoneEdge",
+    "hyperBeam"
+  ],
+  "starterFallbackByType": {
+    "normal": [
+      "tackle",
+      "scratch",
+      "quickAttack",
+      "growl"
+    ],
+    "fire": [
+      "ember",
+      "smallFlame",
+      "quickAttack",
+      "growl"
+    ],
+    "water": [
+      "waterGun",
+      "bubble",
+      "tackle",
+      "growl"
+    ],
+    "grass": [
+      "vineWhip",
+      "absorb",
+      "bulletSeed",
+      "poisonPowder"
+    ],
+    "electric": [
+      "thunderShock",
+      "thunderWave",
+      "quickAttack",
+      "growl"
+    ],
+    "poison": [
+      "poisonSting",
+      "poisonPowder",
+      "acid",
+      "tackle"
+    ],
+    "bug": [
+      "leechLife",
+      "furyCutter",
+      "stringShot",
+      "tackle"
+    ],
+    "flying": [
+      "gust",
+      "peck",
+      "wingAttack",
+      "quickAttack"
+    ],
+    "rock": [
+      "rockThrow",
+      "rockBlast",
+      "tackle",
+      "harden"
+    ],
+    "ground": [
+      "mudSlap",
+      "rockThrow",
+      "tackle",
+      "scaryFace"
+    ],
+    "fighting": [
+      "doubleKick",
+      "lowKick",
+      "quickAttack",
+      "tackle"
+    ],
+    "psychic": [
+      "confusion",
+      "hypnosis",
+      "tackle",
+      "growl"
+    ],
+    "ghost": [
+      "lick",
+      "astonish",
+      "confusion",
+      "hypnosis"
+    ],
+    "dark": [
+      "bite",
+      "pursuit",
+      "quickAttack",
+      "scaryFace"
+    ],
+    "ice": [
+      "powderSnow",
+      "iceShard",
+      "waterGun",
+      "growl"
+    ],
+    "dragon": [
+      "twister",
+      "dragonBreathLite",
+      "tackle",
+      "scaryFace"
+    ],
+    "steel": [
+      "metalClaw",
+      "tackle",
+      "harden",
+      "quickAttack"
+    ],
+    "fairy": [
+      "fairyWind",
+      "charm",
+      "tackle",
+      "growl"
+    ],
+    "default": [
+      "tackle",
+      "quickAttack",
+      "growl",
+      "scaryFace"
+    ]
+  }
+}

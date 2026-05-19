@@ -1,0 +1,120 @@
+{
+  "pookiBall": {
+    "name": "푸끼볼",
+    "kind": "ball",
+    "captureBonus": 1
+  },
+  "superPookiBall": {
+    "name": "슈퍼푸끼볼",
+    "kind": "ball",
+    "captureBonus": 1.5
+  },
+  "hyperPookiBall": {
+    "name": "하이퍼푸끼볼",
+    "kind": "ball",
+    "captureBonus": 2
+  },
+  "potion": {
+    "name": "상처약",
+    "kind": "heal",
+    "amount": 20
+  },
+  "superPotion": {
+    "name": "좋은상처약",
+    "kind": "heal",
+    "amount": 50
+  },
+  "ether": {
+    "name": "에테르",
+    "kind": "pp",
+    "amount": 10
+  },
+  "fullHeal": {
+    "name": "만능치료제",
+    "kind": "status"
+  },
+  "paralyzeHeal": {
+    "name": "마비치료제",
+    "kind": "status",
+    "cures": [
+      "paralyze",
+      "paralysis"
+    ]
+  },
+  "antidote": {
+    "name": "해독제",
+    "kind": "status",
+    "cures": [
+      "poison"
+    ]
+  },
+  "burnHeal": {
+    "name": "화상치료제",
+    "kind": "status",
+    "cures": [
+      "burn"
+    ]
+  },
+  "awakening": {
+    "name": "잠깨는약",
+    "kind": "status",
+    "cures": [
+      "sleep"
+    ]
+  },
+  "rareCandy": {
+    "name": "이상한사탕",
+    "kind": "rareCandy",
+    "amount": 1
+  },
+  "hyperPotion": {
+    "name": "고급상처약",
+    "kind": "heal",
+    "amount": 120
+  },
+  "captureCharm": {
+    "name": "포획부적",
+    "kind": "captureCharm",
+    "amount": 1
+  },
+  "expShare": {
+    "name": "학습장치",
+    "kind": "expShare",
+    "amount": 1
+  },
+  "reviveSeed": {
+    "name": "작은부활씨앗",
+    "kind": "revive",
+    "reviveRatio": 0.25
+  },
+  "revive": {
+    "name": "기력의조각",
+    "kind": "revive",
+    "reviveRatio": 0.5
+  },
+  "maxRevive": {
+    "name": "기력의덩어리",
+    "kind": "revive",
+    "reviveRatio": 1.0
+  },
+  "massRevive": {
+    "name": "대규모 부활",
+    "kind": "teamRecovery",
+    "reviveRatio": 0.3,
+    "healRatio": 0.3
+  },
+  "lifeSpring": {
+    "name": "생명의샘",
+    "kind": "teamRecovery",
+    "reviveRatio": 0.25,
+    "healRatio": 0.5
+  },
+  "pokeCenterPass": {
+    "name": "포켓몬센터 이용권",
+    "kind": "teamRecovery",
+    "reviveRatio": 0.5,
+    "healRatio": 1.0,
+    "cureStatus": true,
+    "ppRatio": 0.5
+  }
+}

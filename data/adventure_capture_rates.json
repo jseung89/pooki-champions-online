@@ -1,0 +1,1634 @@
+{
+  "3": {
+    "captureRate": 57,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "venusaur": {
+    "captureRate": 57,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "이상해꽃": {
+    "captureRate": 57,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "6": {
+    "captureRate": 50,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "charizard": {
+    "captureRate": 50,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "리자몽": {
+    "captureRate": 50,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "9": {
+    "captureRate": 57,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "blastoise": {
+    "captureRate": 57,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "거북왕": {
+    "captureRate": 57,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "12": {
+    "captureRate": 100,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "butterfree": {
+    "captureRate": 100,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "버터플": {
+    "captureRate": 100,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "15": {
+    "captureRate": 97,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "beedrill": {
+    "captureRate": 97,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "독침붕": {
+    "captureRate": 97,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "18": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "pidgeot": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "피죤투": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "20": {
+    "captureRate": 89,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "raticate": {
+    "captureRate": 89,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "레트라": {
+    "captureRate": 89,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "22": {
+    "captureRate": 78,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "fearow": {
+    "captureRate": 78,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "깨비드릴조": {
+    "captureRate": 78,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "24": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "arbok": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "아보크": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "25": {
+    "captureRate": 190,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "pikachu": {
+    "captureRate": 190,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "피카츄": {
+    "captureRate": 190,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "26": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "raichu": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "라이츄": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "28": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "sandslash": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "고지": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "31": {
+    "captureRate": 62,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "nidoqueen": {
+    "captureRate": 62,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "니드퀸": {
+    "captureRate": 62,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "34": {
+    "captureRate": 61,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "nidoking": {
+    "captureRate": 61,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "니드킹": {
+    "captureRate": 61,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "36": {
+    "captureRate": 71,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "clefable": {
+    "captureRate": 71,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "픽시": {
+    "captureRate": 71,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "38": {
+    "captureRate": 58,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "ninetales": {
+    "captureRate": 58,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "나인테일": {
+    "captureRate": 58,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "40": {
+    "captureRate": 80,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "wigglytuff": {
+    "captureRate": 80,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "푸크린": {
+    "captureRate": 80,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "42": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "golbat": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "골뱃": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "45": {
+    "captureRate": 76,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "vileplume": {
+    "captureRate": 76,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "라플레시아": {
+    "captureRate": 76,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "47": {
+    "captureRate": 105,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "parasect": {
+    "captureRate": 105,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "파라섹트": {
+    "captureRate": 105,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "49": {
+    "captureRate": 77,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "venomoth": {
+    "captureRate": 77,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "도나리": {
+    "captureRate": 77,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "51": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "dugtrio": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "닥트리오": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "53": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "persian": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "페르시온": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "55": {
+    "captureRate": 63,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "golduck": {
+    "captureRate": 63,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "골덕": {
+    "captureRate": 63,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "57": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "primeape": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "성원숭": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "59": {
+    "captureRate": 44,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "arcanine": {
+    "captureRate": 44,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "윈디": {
+    "captureRate": 44,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "62": {
+    "captureRate": 62,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "poliwrath": {
+    "captureRate": 62,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "강챙이": {
+    "captureRate": 62,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "65": {
+    "captureRate": 58,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "alakazam": {
+    "captureRate": 58,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "후딘": {
+    "captureRate": 58,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "68": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "machamp": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "괴력몬": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "71": {
+    "captureRate": 69,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "victreebel": {
+    "captureRate": 69,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "우츠보트": {
+    "captureRate": 69,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "73": {
+    "captureRate": 55,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "tentacruel": {
+    "captureRate": 55,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "독파리": {
+    "captureRate": 55,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "76": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "golem": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "딱구리": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "78": {
+    "captureRate": 61,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "rapidash": {
+    "captureRate": 61,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "날쌩마": {
+    "captureRate": 61,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "80": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "slowbro": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "야도란": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "82": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "magneton": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "레어코일": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "83": {
+    "captureRate": 109,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "farfetchd": {
+    "captureRate": 109,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "파오리": {
+    "captureRate": 109,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "85": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "dodrio": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "두트리오": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "87": {
+    "captureRate": 72,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "dewgong": {
+    "captureRate": 72,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "쥬레곤": {
+    "captureRate": 72,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "89": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "muk": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "질뻐기": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "91": {
+    "captureRate": 66,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "cloyster": {
+    "captureRate": 66,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "파르셀": {
+    "captureRate": 66,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "94": {
+    "captureRate": 59,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "gengar": {
+    "captureRate": 59,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "팬텀": {
+    "captureRate": 59,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "95": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "onix": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "롱스톤": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "97": {
+    "captureRate": 72,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "hypno": {
+    "captureRate": 72,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "슬리퍼": {
+    "captureRate": 72,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "99": {
+    "captureRate": 78,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "kingler": {
+    "captureRate": 78,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "킹크랩": {
+    "captureRate": 78,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "101": {
+    "captureRate": 52,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "electrode": {
+    "captureRate": 52,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "붐볼": {
+    "captureRate": 52,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "103": {
+    "captureRate": 60,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "exeggutor": {
+    "captureRate": 60,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "나시": {
+    "captureRate": 60,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "105": {
+    "captureRate": 99,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "marowak": {
+    "captureRate": 99,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "텅구리": {
+    "captureRate": 99,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "106": {
+    "captureRate": 80,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "hitmonlee": {
+    "captureRate": 80,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "시라소몬": {
+    "captureRate": 80,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "107": {
+    "captureRate": 84,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "hitmonchan": {
+    "captureRate": 84,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "홍수몬": {
+    "captureRate": 84,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "108": {
+    "captureRate": 105,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "lickitung": {
+    "captureRate": 105,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "내루미": {
+    "captureRate": 105,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "110": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "weezing": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "또도가스": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "112": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "rhydon": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "코뿌리": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "113": {
+    "captureRate": 30,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "chansey": {
+    "captureRate": 30,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "럭키": {
+    "captureRate": 30,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "114": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "tangela": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "덩쿠리": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "115": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "kangaskhan": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "캥카": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "117": {
+    "captureRate": 85,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "seadra": {
+    "captureRate": 85,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "시드라": {
+    "captureRate": 85,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "119": {
+    "captureRate": 81,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "seaking": {
+    "captureRate": 81,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "왕콘치": {
+    "captureRate": 81,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "121": {
+    "captureRate": 53,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "starmie": {
+    "captureRate": 53,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "아쿠스타": {
+    "captureRate": 53,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "122": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "mr-mime": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "마임맨": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "123": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "scyther": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "스라크": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "124": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "jynx": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "루주라": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "125": {
+    "captureRate": 63,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "electabuzz": {
+    "captureRate": 63,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "에레브": {
+    "captureRate": 63,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "126": {
+    "captureRate": 65,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "magmar": {
+    "captureRate": 65,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "마그마": {
+    "captureRate": 65,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "127": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "pinsir": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "쁘사이저": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "128": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "tauros": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "켄타로스": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "130": {
+    "captureRate": 50,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "gyarados": {
+    "captureRate": 50,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "갸라도스": {
+    "captureRate": 50,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "131": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "lapras": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "라프라스": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "134": {
+    "captureRate": 51,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "vaporeon": {
+    "captureRate": 51,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "샤미드": {
+    "captureRate": 51,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "135": {
+    "captureRate": 46,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "jolteon": {
+    "captureRate": 46,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "쥬피썬더": {
+    "captureRate": 46,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "136": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "flareon": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "부스터": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "137": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "porygon": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "폴리곤": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "139": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "omastar": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "암스타": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "141": {
+    "captureRate": 69,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "kabutops": {
+    "captureRate": 69,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "투구푸스": {
+    "captureRate": 69,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "142": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "aerodactyl": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "프테라": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "143": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "snorlax": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "잠만보": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "144": {
+    "captureRate": 39,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "articuno": {
+    "captureRate": 39,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "프리져": {
+    "captureRate": 39,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "145": {
+    "captureRate": 35,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "zapdos": {
+    "captureRate": 35,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "썬더": {
+    "captureRate": 35,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "146": {
+    "captureRate": 37,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "moltres": {
+    "captureRate": 37,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "파이어": {
+    "captureRate": 37,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "149": {
+    "captureRate": 35,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "dragonite": {
+    "captureRate": 35,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "망나뇽": {
+    "captureRate": 35,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "150": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "mewtwo": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "뮤츠": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "151": {
+    "captureRate": 28,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "mew": {
+    "captureRate": 28,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "뮤": {
+    "captureRate": 28,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "154": {
+    "captureRate": 57,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "meganium": {
+    "captureRate": 57,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "메가니움": {
+    "captureRate": 57,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "157": {
+    "captureRate": 50,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "typhlosion": {
+    "captureRate": 50,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "블레이범": {
+    "captureRate": 50,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "160": {
+    "captureRate": 56,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "feraligatr": {
+    "captureRate": 56,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "장크로다일": {
+    "captureRate": 56,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "162": {
+    "captureRate": 84,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "furret": {
+    "captureRate": 84,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "다꼬리": {
+    "captureRate": 84,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "164": {
+    "captureRate": 77,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "noctowl": {
+    "captureRate": 77,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "야부엉": {
+    "captureRate": 77,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "166": {
+    "captureRate": 99,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "ledian": {
+    "captureRate": 99,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "레디안": {
+    "captureRate": 99,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "168": {
+    "captureRate": 105,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "ariados": {
+    "captureRate": 105,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "아리아도스": {
+    "captureRate": 105,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "169": {
+    "captureRate": 40,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "crobat": {
+    "captureRate": 40,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "크로뱃": {
+    "captureRate": 40,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "171": {
+    "captureRate": 70,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "lanturn": {
+    "captureRate": 70,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "랜턴": {
+    "captureRate": 70,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "178": {
+    "captureRate": 72,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "xatu": {
+    "captureRate": 72,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "네이티오": {
+    "captureRate": 72,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "181": {
+    "captureRate": 67,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "ampharos": {
+    "captureRate": 67,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "전룡": {
+    "captureRate": 67,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "182": {
+    "captureRate": 76,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "bellossom": {
+    "captureRate": 76,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "아르코": {
+    "captureRate": 76,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "184": {
+    "captureRate": 91,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "azumarill": {
+    "captureRate": 91,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "마릴리": {
+    "captureRate": 91,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "185": {
+    "captureRate": 102,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "sudowoodo": {
+    "captureRate": 102,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "꼬지모": {
+    "captureRate": 102,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "186": {
+    "captureRate": 65,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "politoed": {
+    "captureRate": 65,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "왕구리": {
+    "captureRate": 65,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "189": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "jumpluff": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "솜솜코": {
+    "captureRate": 68,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "192": {
+    "captureRate": 97,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "sunflora": {
+    "captureRate": 97,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "해루미": {
+    "captureRate": 97,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "195": {
+    "captureRate": 93,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "quagsire": {
+    "captureRate": 93,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "누오": {
+    "captureRate": 93,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "196": {
+    "captureRate": 52,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "espeon": {
+    "captureRate": 52,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "에브이": {
+    "captureRate": 52,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "197": {
+    "captureRate": 58,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "umbreon": {
+    "captureRate": 58,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "블래키": {
+    "captureRate": 58,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "198": {
+    "captureRate": 91,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "murkrow": {
+    "captureRate": 91,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "니로우": {
+    "captureRate": 91,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "199": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "slowking": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "야도킹": {
+    "captureRate": 75,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "200": {
+    "captureRate": 84,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "misdreavus": {
+    "captureRate": 84,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "무우마": {
+    "captureRate": 84,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "203": {
+    "captureRate": 78,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "girafarig": {
+    "captureRate": 78,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "키링키": {
+    "captureRate": 78,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "205": {
+    "captureRate": 86,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "forretress": {
+    "captureRate": 86,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "쏘콘": {
+    "captureRate": 86,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "206": {
+    "captureRate": 93,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "dunsparce": {
+    "captureRate": 93,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "노고치": {
+    "captureRate": 93,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "207": {
+    "captureRate": 85,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "gligar": {
+    "captureRate": 85,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "글라이거": {
+    "captureRate": 85,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "208": {
+    "captureRate": 73,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "steelix": {
+    "captureRate": 73,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "강철톤": {
+    "captureRate": 73,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "210": {
+    "captureRate": 86,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "granbull": {
+    "captureRate": 86,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "그랑블루": {
+    "captureRate": 86,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "211": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "qwilfish": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "침바루": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "212": {
+    "captureRate": 70,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "scizor": {
+    "captureRate": 70,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "핫삼": {
+    "captureRate": 70,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "213": {
+    "captureRate": 66,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "shuckle": {
+    "captureRate": 66,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "단단지": {
+    "captureRate": 66,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "214": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "heracross": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "헤라크로스": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "215": {
+    "captureRate": 79,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "sneasel": {
+    "captureRate": 79,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "포푸니": {
+    "captureRate": 79,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "217": {
+    "captureRate": 69,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "ursaring": {
+    "captureRate": 69,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "링곰": {
+    "captureRate": 69,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "219": {
+    "captureRate": 99,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "magcargo": {
+    "captureRate": 99,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "마그카르고": {
+    "captureRate": 99,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "221": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "piloswine": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "메꾸리": {
+    "captureRate": 83,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "224": {
+    "captureRate": 80,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "octillery": {
+    "captureRate": 80,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "대포무노": {
+    "captureRate": 80,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "225": {
+    "captureRate": 119,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "delibird": {
+    "captureRate": 119,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "딜리버드": {
+    "captureRate": 119,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "226": {
+    "captureRate": 70,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "mantine": {
+    "captureRate": 70,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "만타인": {
+    "captureRate": 70,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "227": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "skarmory": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "무장조": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "229": {
+    "captureRate": 61,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "houndoom": {
+    "captureRate": 61,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "헬가": {
+    "captureRate": 61,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "230": {
+    "captureRate": 53,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "kingdra": {
+    "captureRate": 53,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "킹드라": {
+    "captureRate": 53,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "232": {
+    "captureRate": 71,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "donphan": {
+    "captureRate": 71,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "코리갑": {
+    "captureRate": 71,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "233": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "porygon2": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "폴리곤2": {
+    "captureRate": 64,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "234": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "stantler": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "노라키": {
+    "captureRate": 74,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "237": {
+    "captureRate": 85,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "hitmontop": {
+    "captureRate": 85,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "카포에라": {
+    "captureRate": 85,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "241": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "miltank": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "밀탱크": {
+    "captureRate": 45,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "242": {
+    "captureRate": 30,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "blissey": {
+    "captureRate": 30,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "해피너스": {
+    "captureRate": 30,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "243": {
+    "captureRate": 31,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "raikou": {
+    "captureRate": 31,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "라이코": {
+    "captureRate": 31,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "245": {
+    "captureRate": 37,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "suicune": {
+    "captureRate": 37,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "스이쿤": {
+    "captureRate": 37,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "248": {
+    "captureRate": 38,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "tyranitar": {
+    "captureRate": 38,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "마기라스": {
+    "captureRate": 38,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "249": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "lugia": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "루기아": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "250": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "ho-oh": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "칠색조": {
+    "captureRate": 25,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "251": {
+    "captureRate": 28,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "celebi": {
+    "captureRate": 28,
+    "source": "pokeapi-known-or-heuristic"
+  },
+  "세레비": {
+    "captureRate": 28,
+    "source": "pokeapi-known-or-heuristic"
+  }
+}

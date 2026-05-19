@@ -1,0 +1,4 @@
+{
+  "note": "PokeAPI raw move cache placeholder. Use scripts/fetch_adventure_pokeapi_data.js and scripts/build_adventure_moves.js to populate.",
+  "moves": []
+}
