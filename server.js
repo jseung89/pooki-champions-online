@@ -705,12 +705,245 @@ app.post("/api/test-arena/reset", (req, res) => {
   res.json({ ok: true, attacker: arenaPublicState(attacker), defender: arenaPublicState(defender) });
 });
 
+
+
+// -----------------------------------------------------------------------------
+// Adventure Admin Center APIs (v6.18.10)
+// -----------------------------------------------------------------------------
+const ADVENTURE_ADMIN_JSON_FILES = new Set([
+  "adventure_rewards.json",
+  "adventure_reward_balance.json",
+  "adventure_reward_effects.json",
+  "adventure_equipment.json",
+  "adventure_capture_balance.json",
+  "adventure_tm_rewards.json",
+  "adventure_levelup_learnsets.json",
+  "adventure_pokemon_movesets.json",
+  "adventure_pokemon_size_overrides.json",
+  "adventure_move_tiers.json",
+  "adventure_evolutions.json",
+]);
+
+function adventureAdminDataPath(file) {
+  const safe = String(file || "").replace(/[^a-zA-Z0-9_.-]/g, "");
+  if (!ADVENTURE_ADMIN_JSON_FILES.has(safe)) throw new Error("허용되지 않은 모험모드 JSON 파일입니다.");
+  return path.join(__dirname, "data", safe);
+}
+
+function readAdventureAdminJson(file, fallback = {}) {
+  const p = adventureAdminDataPath(file);
+  if (!fs.existsSync(p)) return fallback;
+  return JSON.parse(fs.readFileSync(p, "utf8") || "{}");
+}
+
+function writeAdventureAdminJson(file, data) {
+  const p = adventureAdminDataPath(file);
+  fs.mkdirSync(path.dirname(p), { recursive: true });
+  if (fs.existsSync(p)) {
+    const backup = `${p}.bak.${Date.now()}`;
+    try { fs.copyFileSync(p, backup); } catch (err) { console.warn("[AdventureAdmin] backup failed", err.message); }
+  }
+  fs.writeFileSync(p, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+  return data;
+}
+
+function validateAdventureAdminJson(file, data) {
+  const errors = [];
+  const warnings = [];
+  if (data === null || typeof data !== "object" || Array.isArray(data)) errors.push("JSON 루트는 객체여야 합니다.");
+  const raw = JSON.stringify(data || {}).toLowerCase();
+  if (file.includes("reward")) {
+    if (/exp\s*\+|경험치\s*\+/.test(raw) || raw.includes('"kind":"exp"') || raw.includes('"type":"exp"')) warnings.push("직접 EXP 보상은 금지 대상입니다.");
+    for (const banned of ["단백질", "철분", "사포닌", "스피드업", "protein", "iron", "saponin", "speedup", "carbos"]) {
+      if (raw.includes(String(banned).toLowerCase())) warnings.push(`금지/비권장 보상 포함: ${banned}`);
+    }
+  }
+  function checkRate(obj, key, min, max, label) {
+    if (obj && obj[key] !== undefined) {
+      const n = Number(obj[key]);
+      if (!Number.isFinite(n) || n < min || n > max) errors.push(`${label || key} 값은 ${min}~${max} 사이여야 합니다.`);
+    }
+  }
+  if (file === "adventure_reward_effects.json") {
+    const expShare = data?.expShare || {};
+    checkRate(expShare, "baseBenchRate", 0, 1, "학습장치 기본 비율");
+    checkRate(expShare, "ratePerStack", 0, 0.3, "학습장치 중첩당 증가율");
+    checkRate(expShare, "faintedRateMultiplier", 0, 1, "기절 포켓몬 EXP 보정");
+    checkRate(expShare, "reviveOnLevelUpHpRate", 0.01, 1, "레벨업 부활 HP 비율");
+    const capture = data?.capture || {};
+    checkRate(capture, "minChance", 0, 0.5, "최소 포획률");
+    checkRate(capture, "maxChance", 0.1, 1, "최대 포획률");
+    if (capture.minChance !== undefined && capture.maxChance !== undefined && Number(capture.minChance) >= Number(capture.maxChance)) errors.push("최소 포획률은 최대 포획률보다 작아야 합니다.");
+  }
+  if (file === "adventure_equipment.json") {
+    const list = Array.isArray(data?.equipment) ? data.equipment : Object.values(data || {});
+    for (const eq of list) {
+      if (!eq || typeof eq !== "object") continue;
+      if (eq.maxStacks !== undefined) checkRate(eq, "maxStacks", 1, 10, `${eq.name || eq.id || "장비"} 최대 중첩`);
+      if (eq.value !== undefined) checkRate(eq, "value", 0, eq.kind === "damageReduce" ? 0.3 : 0.5, `${eq.name || eq.id || "장비"} 효과값`);
+      if (eq.valuePerStack !== undefined) checkRate(eq, "valuePerStack", 0, eq.effectType === "damage_reduce" ? 0.3 : 0.5, `${eq.name || eq.id || "장비"} 중첩당 효과`);
+    }
+  }
+  return { ok: errors.length === 0, errors, warnings };
+}
+
+function adventureAdminSummary() {
+  return {
+    ok: true,
+    files: [...ADVENTURE_ADMIN_JSON_FILES].sort(),
+    rewards: readAdventureAdminJson("adventure_rewards.json", { rewards: [] }),
+    rewardEffects: readAdventureAdminJson("adventure_reward_effects.json", {}),
+    rewardBalance: readAdventureAdminJson("adventure_reward_balance.json", {}),
+    equipment: readAdventureAdminJson("adventure_equipment.json", {}),
+    captureBalance: readAdventureAdminJson("adventure_capture_balance.json", {}),
+    pokemonMovesets: readAdventureAdminJson("adventure_pokemon_movesets.json", {}),
+    levelupLearnsets: readAdventureAdminJson("adventure_levelup_learnsets.json", {}),
+    tmRewards: readAdventureAdminJson("adventure_tm_rewards.json", {}),
+    sizeOverrides: readAdventureAdminJson("adventure_pokemon_size_overrides.json", {}),
+    evolutions: readAdventureAdminJson("adventure_evolutions.json", {}),
+    pokemon: pokemonPool.map(publicPokemonLite),
+    moves: MOVE_LIST.map((m) => ({ ...publicMoveLite(m), category: moveCategory(m) })),
+  };
+}
+
+app.get("/api/admin/adventure/summary", requireAdminForWrite, (req, res) => {
+  try { res.json(adventureAdminSummary()); }
+  catch (err) { res.status(500).json({ ok: false, message: err.message }); }
+});
+
+app.get("/api/admin/adventure/json/:file", requireAdminForWrite, (req, res) => {
+  try {
+    const file = String(req.params.file || "");
+    const data = readAdventureAdminJson(file, {});
+    res.json({ ok: true, file, data, validation: validateAdventureAdminJson(file, data) });
+  } catch (err) { res.status(400).json({ ok: false, message: err.message }); }
+});
+
+app.post("/api/admin/adventure/json/:file", requireAdminForWrite, (req, res) => {
+  try {
+    const file = String(req.params.file || "");
+    const data = req.body?.data !== undefined ? req.body.data : req.body;
+    const validation = validateAdventureAdminJson(file, data);
+    if (!validation.ok) return res.status(400).json({ ok: false, message: "JSON 검증 실패", validation });
+    writeAdventureAdminJson(file, data);
+    res.json({ ok: true, file, data, validation });
+  } catch (err) { res.status(400).json({ ok: false, message: err.message }); }
+});
+
+function pickWeightedAdventureAdmin(list) {
+  const arr = (list || []).filter(Boolean);
+  if (!arr.length) return null;
+  const total = arr.reduce((sum, item) => sum + Math.max(1, Number(item.weight || 1)), 0);
+  let roll = Math.random() * total;
+  for (const item of arr) { roll -= Math.max(1, Number(item.weight || 1)); if (roll <= 0) return item; }
+  return arr[0];
+}
+
+app.post("/api/admin/adventure/test-rewards", requireAdminForWrite, (req, res) => {
+  try {
+    const rewards = readAdventureAdminJson("adventure_rewards.json", { rewards: [] }).rewards || [];
+    const stage = Number(req.body?.stage || 1);
+    const filtered = rewards.filter((r) => {
+      const text = `${r.id || ""} ${r.title || ""} ${r.desc || ""}`.toLowerCase();
+      if (/exp\s*\+|경험치\s*\+/.test(text) || r.kind === "exp" || r.type === "exp") return false;
+      if (["protein", "iron", "saponin", "speedUp", "speedup", "carbos"].includes(String(r.item || ""))) return false;
+      if (["단백질", "철분", "사포닌", "스피드업"].some((k) => String(r.title || "").includes(k) || String(r.desc || "").includes(k))) return false;
+      if (r.minStage && stage < Number(r.minStage)) return false;
+      if (r.maxStage && stage > Number(r.maxStage)) return false;
+      return true;
+    });
+    const picks = [];
+    const used = new Set();
+    while (picks.length < 4 && filtered.length) {
+      const candidate = pickWeightedAdventureAdmin(filtered.filter((r) => !used.has(r.id)));
+      if (!candidate) break;
+      picks.push(candidate);
+      used.add(candidate.id);
+    }
+    res.json({ ok: true, stage, rewards: picks });
+  } catch (err) { res.status(500).json({ ok: false, message: err.message }); }
+});
+
+function statTotalForAdminPokemon(p) {
+  const s = p?.stats || {};
+  return Object.values(s).reduce((sum, v) => sum + Number(v || 0), 0);
+}
+
+app.post("/api/admin/adventure/test-wild", requireAdminForWrite, (req, res) => {
+  try {
+    const stage = Number(req.body?.stage || 1);
+    const playerLevel = Number(req.body?.playerLevel || 5);
+    const candidates = pokemonPool.filter((p) => {
+      const bst = statTotalForAdminPokemon(p);
+      if (stage <= 10) return [172,173,174,175,236,238,239,240,10,13,46,48,165,167,193,204].includes(Number(p.id));
+      if (stage <= 30) return bst <= 430;
+      if (stage <= 60) return bst <= 520;
+      return true;
+    });
+    const picks = [];
+    for (let i = 0; i < 10 && candidates.length; i++) {
+      const p = candidates[Math.floor(Math.random() * candidates.length)];
+      const level = Math.max(2, playerLevel + (stage <= 10 ? -1 - Math.floor(Math.random()*2) : stage < 40 ? -2 + Math.floor(Math.random()*4) : -1 + Math.floor(Math.random()*5)));
+      picks.push({ id: p.id, name: p.name, apiName: p.apiName, level, types: p.types, bst: statTotalForAdminPokemon(p), sprite: p.frontSprite });
+    }
+    res.json({ ok: true, stage, playerLevel, wild: picks });
+  } catch (err) { res.status(500).json({ ok: false, message: err.message }); }
+});
+
+function adventureEvolutionLookup(monKey) {
+  const evolutions = readAdventureAdminJson("adventure_evolutions.json", {});
+  const key = String(monKey || "").trim();
+  const p = findAdminPokemonByKey(key) || pokemonPool.find((x) => String(x.name) === key || String(x.apiName) === key);
+  const keys = [key, p?.name, p?.apiName, String(p?.id || "")].filter(Boolean);
+  for (const k of keys) if (evolutions[k]) return { pokemon: p, evolution: evolutions[k], key: k };
+  return { pokemon: p, evolution: null, key };
+}
+
+app.post("/api/admin/adventure/test-evolution", requireAdminForWrite, (req, res) => {
+  try {
+    const level = Number(req.body?.level || 5);
+    const lookup = adventureEvolutionLookup(req.body?.pokemon || req.body?.pokemonKey || req.body?.id);
+    const evo = lookup.evolution;
+    const canEvolve = !!(evo && Number(evo.level || evo.minLevel || 0) <= level);
+    const targetKey = evo ? (evo.toName || evo.toApiName || evo.to || evo.toId) : null;
+    const target = targetKey ? (findAdminPokemonByKey(targetKey) || pokemonPool.find((p) => String(p.name) === String(targetKey) || String(p.apiName) === String(targetKey) || Number(p.id) === Number(targetKey))) : null;
+    res.json({ ok: true, pokemon: lookup.pokemon ? publicPokemonLite(lookup.pokemon) : null, level, evolution: evo, canEvolve, target: target ? publicPokemonLite(target) : null, missingTarget: !!(evo && !target) });
+  } catch (err) { res.status(500).json({ ok: false, message: err.message }); }
+});
+
+app.post("/api/admin/adventure/test-levelup", requireAdminForWrite, (req, res) => {
+  try {
+    const level = Number(req.body?.level || 5);
+    const lookup = adventureEvolutionLookup(req.body?.pokemon || req.body?.pokemonKey || req.body?.id);
+    const nextLevel = level + 1;
+    const evo = lookup.evolution;
+    const canEvolve = !!(evo && Number(evo.level || evo.minLevel || 0) <= nextLevel);
+    res.json({ ok: true, pokemon: lookup.pokemon ? publicPokemonLite(lookup.pokemon) : null, beforeLevel: level, afterLevel: nextLevel, expToNext: Math.max(20, Math.floor(nextLevel * nextLevel * 6)), evolution: evo, canEvolve });
+  } catch (err) { res.status(500).json({ ok: false, message: err.message }); }
+});
+
+app.post("/api/admin/adventure/test-moveset", requireAdminForWrite, (req, res) => {
+  try {
+    const pokemonKey = String(req.body?.pokemon || req.body?.pokemonKey || "").trim();
+    const stage = Number(req.body?.stage || 1);
+    const mon = findAdminPokemonByKey(pokemonKey) || pokemonPool.find((p) => String(p.name) === pokemonKey || String(p.apiName) === pokemonKey);
+    if (!mon) return res.status(404).json({ ok: false, message: "포켓몬을 찾을 수 없습니다." });
+    const movesets = readAdventureAdminJson("adventure_pokemon_movesets.json", {});
+    const learnsets = readAdventureAdminJson("adventure_levelup_learnsets.json", {});
+    const stageKey = stage <= 10 ? "early" : stage <= 30 ? "mid" : stage <= 60 ? "high" : "late";
+    const custom = movesets[mon.name] || movesets[mon.apiName] || movesets[String(mon.id)] || {};
+    const names = [...new Set([...(custom?.wildMovesByStage?.[stageKey] || []), ...(learnsets[mon.name] || []).filter((x) => Number(x.level || 0) <= Number(req.body?.level || 5)).map((x) => x.move)])].slice(0, 4);
+    res.json({ ok: true, pokemon: publicPokemonLite(mon), stage, stageKey, moves: names });
+  } catch (err) { res.status(500).json({ ok: false, message: err.message }); }
+});
+
 const ADMIN_PROTECTED_PAGES = new Set([
   "/move-admin.html",
   "/size-admin.html",
   "/size-check.html",
   "/test-arena.html",
   "/admin-balance.html",
+  "/adventure-admin.html",
 ]);
 
 app.use((req, res, next) => {
@@ -739,6 +972,7 @@ const ADVENTURE_DATA_FILES = new Set([
   "adventure_move_tiers.json",
   "adventure_blocked_moves.json",
   "adventure_equipment.json",
+  "adventure_reward_effects.json",
 ]);
 app.get("/data/:file", (req, res, next) => {
   const file = String(req.params.file || "");

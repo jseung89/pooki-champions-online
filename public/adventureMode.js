@@ -108,6 +108,13 @@
     config:null,
     items:null,
     rewards:null,
+    rewardEffects:null,
+    rewardBalance:null,
+    captureBalance:null,
+    pokemonMovesets:null,
+    levelupLearnsets:null,
+    tmRewards:null,
+    sizeOverrides:null,
     capture:null,
     captureRates:null,
     learnsets:null,
@@ -213,11 +220,18 @@
 
   async function loadAdventureData(){
     if(adventure.dataReady) return;
-    const [arena, config, items, rewards, capture, captureRates, learnsets, adventureMoves, expTable, baseStats, evolutions, equipmentConfig, effectMap, blockedMoves, moveTiers, basicConfig, starterPool] = await Promise.all([
+    const [arena, config, items, rewards, rewardEffects, rewardBalance, captureBalance, pokemonMovesets, levelupLearnsets, tmRewards, sizeOverrides, capture, captureRates, learnsets, adventureMoves, expTable, baseStats, evolutions, equipmentConfig, effectMap, blockedMoves, moveTiers, basicConfig, starterPool] = await Promise.all([
       fetch("/api/test-arena/data").then(r=>r.json()),
       fetch("/data/adventure_config.json").then(r=>r.json()).catch(()=>({})),
       fetch(`/data/adventure_items.json?v=6189-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_rewards.json?v=6189-${Date.now()}`).then(r=>r.json()).catch(()=>({rewards:[]})),
+      fetch(`/data/adventure_rewards.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({rewards:[]})),
+      fetch(`/data/adventure_reward_effects.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
+      fetch(`/data/adventure_reward_balance.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
+      fetch(`/data/adventure_capture_balance.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
+      fetch(`/data/adventure_pokemon_movesets.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
+      fetch(`/data/adventure_levelup_learnsets.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
+      fetch(`/data/adventure_tm_rewards.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
+      fetch(`/data/adventure_pokemon_size_overrides.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
       fetch("/data/adventure_capture.json").then(r=>r.json()).catch(()=>({})),
       fetch("/data/adventure_capture_rates.json").then(r=>r.json()).catch(()=>({})),
       fetch("/data/adventure_learnsets.json").then(r=>r.json()).catch(()=>({})),
@@ -246,6 +260,13 @@
     adventure.config = config || {};
     adventure.items = items || {};
     adventure.rewards = rewards || { rewards:[] };
+    adventure.rewardEffects = rewardEffects || {};
+    adventure.rewardBalance = rewardBalance || {};
+    adventure.captureBalance = captureBalance || {};
+    adventure.pokemonMovesets = pokemonMovesets || {};
+    adventure.levelupLearnsets = levelupLearnsets || {};
+    adventure.tmRewards = tmRewards || {};
+    adventure.sizeOverrides = sizeOverrides || {};
     adventure.capture = capture || {};
     adventure.captureRates = captureRates || {};
     adventure.learnsets = learnsets || {};
@@ -668,6 +689,41 @@
     if(move.heal || move.rest) return true;
     return Number(move.power||0)>50;
   }
+
+  function adventureMoveConfigFor(base){
+    if(!base) return null;
+    const keys=[base.name, base.apiName, String(base.id||"")].filter(Boolean);
+    for(const key of keys){ if(adventure.pokemonMovesets?.[key]) return adventure.pokemonMovesets[key]; }
+    return null;
+  }
+  function uniqueAdventureMoves(moves){
+    const out=[]; const seen=new Set();
+    for(const m of moves||[]){
+      const mv=typeof m==="string" ? resolveMoveByName(m) : (adventure.moveMap?.[m?.id] || m);
+      if(!mv || isBlockedAdventureMove(mv)) continue;
+      const key=mv.id || mv.name || mv.apiName;
+      if(!key || seen.has(key)) continue;
+      seen.add(key); out.push(normalizeMove(mv));
+      if(out.length>=4) break;
+    }
+    return out;
+  }
+  function levelupMovesFor(base, level){
+    const keys=[base?.name, base?.apiName, String(base?.id||"")].filter(Boolean);
+    let rows=[];
+    for(const key of keys){ if(Array.isArray(adventure.levelupLearnsets?.[key])){ rows=adventure.levelupLearnsets[key]; break; } }
+    return uniqueAdventureMoves(rows.filter(r=>Number(r.level||0)<=Number(level||5)).sort((a,b)=>Number(a.level||0)-Number(b.level||0)).map(r=>r.move));
+  }
+  function stageMoveKey(stage){ const s=Number(stage||1); if(s<=10) return "early"; if(s<=30) return "mid"; if(s<=60) return "high"; return "late"; }
+  function configuredMovesFor(base, level, stage, mode){
+    const cfg=adventureMoveConfigFor(base);
+    if(!cfg) return [];
+    if(mode==="starter") return uniqueAdventureMoves(cfg.starterMoves || []);
+    const key=stageMoveKey(stage);
+    const byStage=cfg.wildMovesByStage?.[key] || cfg.wildMovesByStage?.mid || [];
+    return uniqueAdventureMoves(byStage);
+  }
+
   function candidateWeakMoves(base, level=5){
     const banned = new Set([...(adventure.learnsets?.bannedStarterMoves || []), "rest", "sleep", "잠자기"]);
     const existingSource = [
@@ -726,7 +782,8 @@
 
   function createAdventurePokemon(base, level=5, side="player"){
     const stats = calculateAdventureStatsFromBase(baseStatsForPokemon(base), level);
-    const moves = side==="starter" ? candidateWeakMoves(base, level) : enemyMovesFor(base, level);
+    const configured = side==="starter" ? configuredMovesFor(base, level, adventure.stage||1, "starter") : configuredMovesFor(base, level, adventure.stage||1, "wild");
+    const moves = configured.length ? configured : (side==="starter" ? candidateWeakMoves(base, level) : enemyMovesFor(base, level));
     const normalizedStats = applyAdventureEarlyHpToStats(stats, adventure.stage || 1, side);
     return {
       id:base.id, apiName:base.apiName, name:base.name, level,
@@ -765,6 +822,8 @@
   }
   function enemyMovesFor(base, level){ return enemyMovesForStage(base, level, adventure.stage||1); }
   function enemyMovesForStage(base, level, stage){
+    const configured = configuredMovesFor(base, level, stage, "wild");
+    if(configured.length>=4) return configured.slice(0,4).map(m=>({...normalizeMove(m), pp:m.maxPp, maxPp:m.maxPp}));
     const tiers=moveTierIdsForStage(stage);
     const existing=(base.moves||[]).map(m=>adventure.moveMap[m.id]||m).filter(Boolean).filter(m=>!m.selfDestruct && !m.recharge && !isBlockedAdventureMove(m));
     const byType=Object.values(adventure.moveMap||{}).filter(m=>moveFitsPokemon(m,base) && !isBlockedAdventureMove(m));
@@ -772,8 +831,9 @@
     const mid=movesFromIds(tiers.mid).filter(m=>moveFitsPokemon(m,base));
     const high=movesFromIds(tiers.high).filter(m=>moveFitsPokemon(m,base));
     const rare=movesFromIds(tiers.rare).filter(m=>moveFitsPokemon(m,base));
-    let desired=[];
+    let desired=[...configured];
     const pick=(arr,n)=>{ for(const m of shuffle(arr)){ if(!m || desired.some(x=>x.id===m.id)) continue; desired.push(normalizeMove(m)); if(desired.length>=n) break; } };
+    pick(levelupMovesFor(base, level), 4);
     const s=Number(stage||1);
     if(s<=10){ pick(early,4); }
     else if(s<=20){ pick(mid,2); pick(early,4); }
@@ -1156,11 +1216,11 @@
     const panel=document.getElementById("battleChatPanel");
     if(!panel || !adventure.active) return;
     panel.classList.add("adventure-bag-panel");
-    const rows = Object.entries(adventure.items||{}).map(([key,item])=>{
-      const count = Number(adventure.bag[key] || 0);
-      const disabled = count<=0 || animationBusy || adventure.pendingReward || currentState?.phase==="GAME_OVER";
-      return `<div class="adventure-bag-row"><span>${escapeHtml(item.name)} x${count}</span><button ${disabled?"disabled":""} onclick="adventureUseItem('${key}')">사용</button></div>`;
-    }).join("");
+    const entries = Object.entries(adventure.items||{}).sort((a,b)=>Number(adventure.bag[b[0]]||0)-Number(adventure.bag[a[0]]||0));
+    const owned = entries.filter(([key])=>Number(adventure.bag[key]||0)>0);
+    const empty = entries.filter(([key])=>Number(adventure.bag[key]||0)<=0);
+    const makeRow=([key,item],emptyRow=false)=>{ const count=Number(adventure.bag[key]||0); const disabled=emptyRow || animationBusy || adventure.pendingReward || currentState?.phase==="GAME_OVER"; return `<div class="adventure-bag-row ${emptyRow?"empty":""}"><span>${escapeHtml(item.name)} x${count}</span><button ${disabled?"disabled":""} onclick="adventureUseItem('${key}')">사용</button></div>`; };
+    const rows = [...owned.map(e=>makeRow(e,false)), ...(owned.length?[]:[`<div class="muted">보유 아이템이 없습니다.</div>`]), `<div class="muted" style="font-size:11px;margin-top:6px;">보유하지 않음</div>`, ...empty.map(e=>makeRow(e,true))].join("");
     panel.innerHTML = `<div class="chat-title">가방</div><div class="adventure-bag-list">${rows}</div>`;
   }
   function rewardDisplayTitle(r){
@@ -1271,8 +1331,31 @@
     buttons.classList.add("adventure-reward-mode");
     const captured=adventure.pendingCaptured;
     const team=adventure.team||[];
-    buttons.innerHTML=`<div class="control-title">${escapeHtml(captured?.name||"포획 포켓몬")}을 팀에 넣으려면 한 마리를 선택해 교체하세요</div><div class="adventure-choice-grid">${team.map((p,idx)=>`<button class="move-btn eff-neutral" onclick="adventureReplaceCaptured(${idx})"><b>${escapeHtml(p?.name||"빈 슬롯")}</b><span class="meta">Lv.${p?.level||"-"} / HP ${p?`${p.hp}/${p.maxHp}`:"-"}<br/>이 포켓몬과 교체</span></button>`).join("")}</div>`;
+    buttons.innerHTML=`<div class="control-title">팀이 가득 찼습니다 · ${escapeHtml(captured?.name||"포획 포켓몬")}을 팀에 넣으려면 한 마리를 선택해 교체하세요</div><div class="adventure-choice-grid">${team.map((p,idx)=>`<button class="move-btn eff-neutral" onclick="adventureReplaceCaptured(${idx})"><b>${escapeHtml(p?.name||"빈 슬롯")}</b><span class="meta">Lv.${p?.level||"-"} / HP ${p?`${p.hp}/${p.maxHp}`:"-"}<br/>이 포켓몬과 교체</span></button>`).join("")}<button class="move-btn eff-immune" onclick="adventureDiscardCaptured()"><b>포획한 포켓몬 포기</b><span class="meta">팀 변경 없이 보상 선택으로 이동</span></button></div>`;
     renderAdventureBag();
+  }
+
+  function adventureDiscardCaptured(){
+    const captured=adventure.pendingCaptured;
+    adventure.log.push(`${captured?.name||"포획 포켓몬"}을/를 팀에 넣지 않았다.`);
+    adventure.pendingCaptured=null;
+    enterAdventureReward("포획 처리 완료! 보상을 선택하세요.");
+  }
+
+  function adventureReplaceCaptured(idx){
+    const captured=adventure.pendingCaptured;
+    const i=Number(idx);
+    if(!captured || !Array.isArray(adventure.team) || !adventure.team[i]){ adventure.log.push("교체할 수 없습니다."); renderAdventureButtons(); renderAdventureLogs(); return; }
+    const removed=adventure.team[i];
+    adventure.team[i]=captured;
+    if(currentState?.players?.p1){
+      currentState.players.p1.team=clone(adventure.team);
+      if(Number(adventure.activeIndex||0)===i){ currentState.players.p1.activeIndex=i; }
+      currentState.logs=[...adventure.log];
+    }
+    adventure.log.push(`${removed.name}을/를 보내고 ${captured.name}을/를 팀에 넣었다!`);
+    adventure.pendingCaptured=null;
+    enterAdventureReward("포획 처리 완료! 보상을 선택하세요.");
   }
 
   function renderAdventureSummary(){
@@ -1672,7 +1755,7 @@
       mon.level = oldLevel + 1;
       mon.expToNext = getAdventureExpToNext(mon.level);
       const gain = applyAdventureLevelStats(mon, oldStats);
-      const levelHeal=Math.max(1, Math.floor(Number(mon.maxHp||1)*0.25));
+      const levelHeal=Math.max(1, Math.floor(Number(mon.maxHp||1)*Number(adventureExpShareConfig().reviveOnLevelUpHpRate ?? 0.25)));
       if(wasFainted || mon.fainted || Number(mon.hp||0)<=0){ mon.hp=levelHeal; mon.fainted=false; logs.push(`${mon.name}이/가 힘을 내어 다시 일어났다!`); }
       else mon.hp=Math.min(mon.maxHp, Number(mon.hp||0)+levelHeal);
       logs.push(`${mon.name}이/가 Lv.${mon.level}이 되었다! HP +${gain.hpGain} / 공격 ${gain.attackGain>=0?"+":""}${gain.attackGain} / 방어 ${gain.defenseGain>=0?"+":""}${gain.defenseGain} / 스피드 ${gain.speedGain>=0?"+":""}${gain.speedGain}`);
@@ -1688,14 +1771,14 @@
     mon.expToNext=getAdventureExpToNext(mon.level);
     const wasFainted=mon.fainted || getAdventurePokemonHp(mon)<=0;
     const gain=applyAdventureLevelStats(mon, oldStats);
-    const levelHeal=Math.max(1, Math.floor(Number(mon.maxHp||1)*0.25));
+    const levelHeal=Math.max(1, Math.floor(Number(mon.maxHp||1)*Number(adventureExpShareConfig().reviveOnLevelUpHpRate ?? 0.25)));
     if(wasFainted){ mon.hp=levelHeal; mon.fainted=false; logs.push(`${mon.name}이/가 힘을 내어 다시 일어났다!`); }
     else mon.hp=Math.min(mon.maxHp, Number(mon.hp||0)+levelHeal);
     logs.push(`${mon.name}이/가 이상한사탕을 먹고 Lv.${mon.level}이 되었다! HP +${gain.hpGain} / 공격 ${gain.attackGain>=0?"+":""}${gain.attackGain} / 방어 ${gain.defenseGain>=0?"+":""}${gain.defenseGain} / 스피드 ${gain.speedGain>=0?"+":""}${gain.speedGain}`);
     logs.push(`${mon.name}이/가 레벨업하며 HP를 ${levelHeal} 회복했다!`);
     checkAdventureEvolution(mon, logs);
   }
-  function getAdventureExpShareRate(){ return Math.min(0.8, 0.3 + Number(adventure.expShareLevel||0)*0.1); }
+  function getAdventureExpShareRate(){ const c=adventureExpShareConfig(); const base=Number(c.baseBenchRate ?? 0.3); const per=Number(c.ratePerStack ?? 0.1); return Math.min(0.95, base + Number(adventure.expShareLevel||0)*per); }
   function awardAdventureExp(resultType, defeatedEnemy){
     const amount=calculateAdventureExp(defeatedEnemy || adventure.enemy, resultType);
     const activeIdx=Number(adventure.activeIndex||0);
@@ -1817,6 +1900,15 @@
     currentState.logs=[...adventure.log];
     renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); showAdventureFailOverlay();
   }
+
+  function showAdventureFailOverlay(title="모험 실패", desc){
+    const overlay=document.getElementById("overlay");
+    if(!overlay) return;
+    const equips=Object.entries(adventure.adventureEquipment||{}).filter(([,v])=>Number(v)>0).map(([k,v])=>`${equipmentDef(k).name||k} x${v}`).join(", ") || "없음";
+    overlay.innerHTML=`<div class="modal adventure-fail-box"><h2>${escapeHtml(title)}</h2><p>${escapeHtml(desc||`도달 층: ${adventure.stage}층`)}</p><div class="result" style="text-align:left;white-space:pre-wrap;">포획/보유 포켓몬: ${(adventure.team||[]).length}마리\n획득 장비: ${escapeHtml(equips)}</div><div class="adventure-fail-actions"><button onclick="startAdventureMode()">다시하기</button><button onclick="startAdventureMode()">새 모험 시작</button><button onclick="adventureReturnLobby()">로비로 돌아가기</button></div></div>`;
+    overlay.classList.add("show");
+  }
+
   function applyAdventureRewardEffect(reward){
     if(!reward) return;
     if(reward.equipment){
@@ -1917,10 +2009,11 @@
   }
   function allAdventureTmIdsForStage(stage=adventure.stage){
     const s=Number(stage||1);
-    const early=["tackle","scratch","quickAttack","waterGun","bubble","ember","smallFlame","vineWhip","absorb","thunderShock","poisonSting","peck","gust","rockThrow","mudSlap","confusion","lick","leechLife","stringShot","growl","tailWhip","smokescreen"];
-    const mid=["doubleKick","bulletSeed","pinMissile","icicleSpear","rockBlast","metalClaw","bite","flameCharge","shockWave","megaDrain","swift","rockTomb","mudBomb","hypnosis","poisonPowder","thunderWave","scaryFace","screech","agility"];
-    const high=["swordsDance","ironDefense","bulkUp","powerUpPunch","crunch","flameWheel","waterPulse","aerialAce","shadowPunch","drainPunch","rockSlide"];
-    const rare=["flamethrower","thunderbolt","iceBeam","surf","earthquake","stoneEdge","shadowBall","psychic","dragonPulse"];
+    const tr=adventure.tmRewards || {};
+    const early=tr.early || ["tackle","scratch","quickAttack","waterGun","bubble","ember","smallFlame","vineWhip","absorb","thunderShock","poisonSting","peck","gust","rockThrow","mudSlap","confusion","lick","leechLife","stringShot","growl","tailWhip","smokescreen"];
+    const mid=tr.mid || ["doubleKick","bulletSeed","pinMissile","icicleSpear","rockBlast","metalClaw","bite","flameCharge","shockWave","megaDrain","swift","rockTomb","mudBomb","hypnosis","poisonPowder","thunderWave","scaryFace","screech","agility"];
+    const high=tr.high || ["swordsDance","ironDefense","bulkUp","powerUpPunch","crunch","flameWheel","waterPulse","aerialAce","shadowPunch","drainPunch","rockSlide"];
+    const rare=tr.rare || ["flamethrower","thunderbolt","iceBeam","surf","earthquake","stoneEdge","shadowBall","psychic","dragonPulse"];
     if(s<=10) return early;
     if(s<=30) return [...early,...mid];
     if(s<=60) return [...mid,...high];
@@ -1928,6 +2021,10 @@
   }
   function canPokemonLearnAdventureTm(mon, move){
     if(!mon || !move) return false;
+    if((mon.moves||[]).some(m=>m.id===move.id || m.name===move.name)) return false;
+    const cfg=adventureMoveConfigFor(mon);
+    if(Array.isArray(cfg?.blockedMoves) && cfg.blockedMoves.some(x=>String(x)===move.id || String(x)===move.name)) return false;
+    if(Array.isArray(cfg?.tmAllowed) && cfg.tmAllowed.some(x=>String(x)===move.id || String(x)===move.name)) return true;
     const types=(mon.types||[]).map(t=>String(t).toLowerCase());
     const mt=String(move.type||"").toLowerCase();
     if(types.includes(mt)) return true;
@@ -1972,6 +2069,9 @@
   function cancelAdventureTmReward(){
     adventure.pendingTmReward=null; adventure.pendingTmTargetIndex=null; adventure.pendingReward=true; adventure.rewardApplying=false; adventure.phase="reward"; renderAdventureButtons(); renderAdventureLogs();
   }
+  function adventureItemEffectConfig(key){ return adventure.rewardEffects?.items?.[key] || null; }
+  function adventureExpShareConfig(){ return adventure.rewardEffects?.expShare || {}; }
+
   function reviveAdventurePokemon(mon, ratio, logs){
     if(!mon) return 0;
     const amount=Math.max(1, Math.floor(Number(mon.maxHp||1)*Number(ratio||0.25)));
@@ -2098,11 +2198,12 @@
     const hpRatio=Math.max(0,Math.min(1, Number(enemy?.hp||0)/Math.max(1,Number(enemy?.maxHp||1))));
     const hpFactor=1 + (1 - hpRatio) * 1.2;
     const status=normalizeAdventureStatus(enemy?.status);
-    const statusFactor=status==="sleep" ? 1.8 : (status ? 1.3 : 1.0);
-    const ballFactor=Number(item.captureBonus||1);
-    const stagePenalty=Math.max(0.6, 1 - Number(adventure.stage||1) * 0.003);
-    const maxRate=(status==="sleep" && hpRatio<=0.25 && ballKey==="hyperPookiBall") ? 0.85 : 0.75;
-    const finalChance=clampNumber(baseChance * hpFactor * statusFactor * ballFactor * stagePenalty, 0.05, maxRate);
+    const capCfg=adventure.captureBalance || adventure.rewardEffects?.capture || {};
+    const statusFactor=status==="sleep" ? Number(capCfg.status?.sleep ?? capCfg.sleepFactor ?? 1.8) : (status ? Number(capCfg.status?.[status] ?? capCfg.statusFactor ?? 1.3) : 1.0);
+    const ballFactor=Number(capCfg.balls?.[ballKey] ?? item.captureBonus ?? 1);
+    const stagePenalty=Math.max(0.6, 1 - Number(adventure.stage||1) * Number(capCfg.stagePenaltyPerFloor ?? 0.003));
+    const maxRate=Number(capCfg.maxChance ?? ((status==="sleep" && hpRatio<=0.25 && ballKey==="hyperPookiBall") ? 0.85 : 0.75));
+    const finalChance=clampNumber(baseChance * hpFactor * statusFactor * ballFactor * stagePenalty, Number(capCfg.minChance ?? 0.05), maxRate);
     return {captureRate, baseChance, hpFactor, status, statusFactor, ballFactor, stagePenalty, finalChance};
   }
   function calculateAdventureCaptureChance(enemy, ballKey){
@@ -2311,6 +2412,7 @@
   window.adventureSwitch=adventureSwitch;
   window.performAdventureSwitch=performAdventureSwitch;
   window.adventureReplaceCaptured=adventureReplaceCaptured;
+  window.adventureDiscardCaptured=adventureDiscardCaptured;
   window.adventureReturnLobby=adventureReturnLobby;
   window.adventureConfirmReturnLobby=adventureConfirmReturnLobby;
 

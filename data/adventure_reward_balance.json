@@ -1,0 +1,55 @@
+{
+  "bands": {
+    "early": {
+      "stageMax": 10,
+      "weights": {
+        "heal": 30,
+        "capture": 25,
+        "equipment": 20,
+        "revive": 10,
+        "growth": 10,
+        "tm": 5
+      }
+    },
+    "mid": {
+      "stageMax": 30,
+      "weights": {
+        "heal": 22,
+        "capture": 18,
+        "equipment": 22,
+        "revive": 13,
+        "growth": 15,
+        "tm": 10
+      }
+    },
+    "late": {
+      "stageMax": 60,
+      "weights": {
+        "heal": 18,
+        "capture": 12,
+        "equipment": 28,
+        "revive": 17,
+        "growth": 10,
+        "tm": 15
+      }
+    },
+    "end": {
+      "stageMax": 100,
+      "weights": {
+        "heal": 15,
+        "capture": 8,
+        "equipment": 30,
+        "revive": 22,
+        "growth": 8,
+        "tm": 17
+      }
+    }
+  },
+  "blockedRewards": [
+    "EXP +n",
+    "단백질",
+    "철분",
+    "사포닌",
+    "스피드업"
+  ]
+}

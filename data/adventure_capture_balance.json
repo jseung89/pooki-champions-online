@@ -1,0 +1,16 @@
+{
+  "balls": {
+    "pookiBall": 1.0,
+    "superPookiBall": 1.5,
+    "hyperPookiBall": 2.0
+  },
+  "status": {
+    "sleep": 1.8,
+    "paralyze": 1.3,
+    "poison": 1.3,
+    "burn": 1.3
+  },
+  "stagePenaltyPerFloor": 0.003,
+  "minChance": 0.05,
+  "maxChance": 0.85
+}
