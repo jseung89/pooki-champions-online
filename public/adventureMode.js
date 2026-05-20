@@ -4,6 +4,28 @@
   "use strict";
 
   const ADVENTURE_KEY = "pookiAdventureStateV618RealClone";
+  const ADVENTURE_EFFECT_SHEET = "/assets/effects/capture-and-levelup-effects-sheet.png";
+  const DEFAULT_ADVENTURE_EFFECT_SETTINGS = {
+    capture:{
+      ballDisplaySize:56,
+      ballScale:0.45,
+      throwDurationMs:1400,
+      arcHeight:80,
+      impactDelayMs:150,
+      shakeFrameMs:90,
+      successFrameMs:85,
+      breakoutFrameMs:90,
+      enableThrowArc:true,
+      enableBallSpin:true,
+      spinDegree:320
+    },
+    levelUp:{
+      displaySize:128,
+      frameMs:85,
+      pulseScale:1.08,
+      glowDurationMs:900
+    }
+  };
   const BASIC_LIKE_IDS = new Set([
     25,83,95,106,107,108,113,114,115,122,123,127,128,131,137,142,143,
     185,198,200,203,206,207,211,213,214,215,225,226,227,234,241
@@ -148,7 +170,10 @@
     switchMode:null,
     expShareLevel:0,
     log:[],
-    renderToken:0
+    renderToken:0,
+    captureAnimationToken:0,
+    captureAnimationTimers:[],
+    effectSettings:clone(DEFAULT_ADVENTURE_EFFECT_SETTINGS)
   };
 
   const original = {};
@@ -195,7 +220,11 @@
       body.adventure-mode .adventure-choice-grid .move-btn{min-height:86px;}
       body.adventure-mode .adventure-choice-grid .move-btn[disabled]{opacity:.45;filter:grayscale(.5);cursor:not-allowed;}
       .sprite.adventure-capture-out{animation:adventureCaptureOut 720ms ease-in forwards!important;transform-origin:50% 70%;}
-      @keyframes adventureCaptureOut{0%{transform:translate(0,0) scale(1);opacity:1;filter:brightness(1) drop-shadow(0 18px 14px rgba(15,23,42,.28));}35%{transform:translate(-8px,-8px) scale(1.08);opacity:1;filter:brightness(1.5) drop-shadow(0 0 18px rgba(96,165,250,.75));}70%{transform:translate(-25px,18px) scale(.45);opacity:.65;filter:brightness(1.8) drop-shadow(0 0 22px rgba(191,219,254,.8));}100%{transform:translate(-45px,35px) scale(.05);opacity:0;filter:brightness(2);}}
+      @keyframes adventureCaptureOut{0%{transform:translate(0,0) scale(1);opacity:1;filter:brightness(1) drop-shadow(0 18px 14px rgba(15,23,42,.28));}35%{transform:translate(-8px,-8px) scale(1.04);opacity:1;filter:brightness(1.25) drop-shadow(0 0 12px rgba(96,165,250,.55));}70%{transform:translate(-18px,12px) scale(.55);opacity:.65;filter:brightness(1.45) drop-shadow(0 0 16px rgba(191,219,254,.65));}100%{transform:translate(-32px,26px) scale(.08);opacity:0;filter:brightness(1.6);}}
+      .adventure-capture-fx{position:fixed;z-index:9999;pointer-events:none;width:56px;height:56px;background-image:url("/assets/effects/capture-and-levelup-effects-sheet.png");background-repeat:no-repeat;background-size:600% 500%;will-change:left,top,transform,background-position,opacity;filter:drop-shadow(0 8px 10px rgba(15,23,42,.35));}
+      .adventure-capture-fx.soft-impact{filter:drop-shadow(0 4px 8px rgba(15,23,42,.26));}
+      .sprite.adventure-level-up-pulse{animation:adventureLevelUpPulse 900ms ease-out 1;}
+      @keyframes adventureLevelUpPulse{0%{filter:brightness(1);transform:scale(1);}35%{filter:brightness(1.45) drop-shadow(0 0 18px rgba(250,204,21,.75));transform:scale(1.08);}100%{filter:brightness(1);transform:scale(1);}}
       body.adventure-mode .adventure-fail-box{display:grid;gap:12px;}
       body.adventure-mode .adventure-fail-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
       body.adventure-mode .adventure-exp-row{margin-top:8px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:12px;color:#dbeafe;font-weight:800;}
@@ -220,7 +249,7 @@
 
   async function loadAdventureData(){
     if(adventure.dataReady) return;
-    const [arena, config, items, rewards, rewardEffects, rewardBalance, captureBalance, pokemonMovesets, levelupLearnsets, tmRewards, sizeOverrides, capture, captureRates, learnsets, adventureMoves, expTable, baseStats, evolutions, equipmentConfig, effectMap, blockedMoves, moveTiers, basicConfig, starterPool] = await Promise.all([
+    const [arena, config, items, rewards, rewardEffects, rewardBalance, captureBalance, effectSettings, pokemonMovesets, levelupLearnsets, tmRewards, sizeOverrides, capture, captureRates, learnsets, adventureMoves, expTable, baseStats, evolutions, equipmentConfig, effectMap, blockedMoves, moveTiers, basicConfig, starterPool] = await Promise.all([
       fetch("/api/test-arena/data").then(r=>r.json()),
       fetch("/data/adventure_config.json").then(r=>r.json()).catch(()=>({})),
       fetch(`/data/adventure_items.json?v=6189-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
@@ -228,6 +257,7 @@
       fetch(`/data/adventure_reward_effects.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
       fetch(`/data/adventure_reward_balance.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
       fetch(`/data/adventure_capture_balance.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
+      fetch(`/data/adventure_effect_settings.json?v=61811a-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
       fetch(`/data/adventure_pokemon_movesets.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
       fetch(`/data/adventure_levelup_learnsets.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
       fetch(`/data/adventure_tm_rewards.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
@@ -263,6 +293,7 @@
     adventure.rewardEffects = rewardEffects || {};
     adventure.rewardBalance = rewardBalance || {};
     adventure.captureBalance = captureBalance || {};
+    adventure.effectSettings = normalizeAdventureEffectSettings(effectSettings);
     adventure.pokemonMovesets = pokemonMovesets || {};
     adventure.levelupLearnsets = levelupLearnsets || {};
     adventure.tmRewards = tmRewards || {};
@@ -309,6 +340,31 @@
     return 25;
   }
   function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
+  function clampAdventureSetting(value, min, max, fallback){
+    const n=Number(value);
+    if(!Number.isFinite(n)) return fallback;
+    return Math.max(min, Math.min(max, n));
+  }
+  function normalizeAdventureEffectSettings(input){
+    const src=input && typeof input === "object" ? input : {};
+    const merged=clone(DEFAULT_ADVENTURE_EFFECT_SETTINGS);
+    merged.capture={...merged.capture, ...(src.capture||{})};
+    merged.levelUp={...merged.levelUp, ...(src.levelUp||{})};
+    merged.capture.ballDisplaySize=clampAdventureSetting(merged.capture.ballDisplaySize,32,96,56);
+    merged.capture.ballScale=clampAdventureSetting(merged.capture.ballScale,0.25,0.8,0.45);
+    merged.capture.throwDurationMs=clampAdventureSetting(merged.capture.throwDurationMs,600,2500,1400);
+    merged.capture.arcHeight=clampAdventureSetting(merged.capture.arcHeight,20,180,80);
+    merged.capture.impactDelayMs=clampAdventureSetting(merged.capture.impactDelayMs,0,600,150);
+    merged.capture.shakeFrameMs=clampAdventureSetting(merged.capture.shakeFrameMs,40,160,90);
+    merged.capture.successFrameMs=clampAdventureSetting(merged.capture.successFrameMs,40,160,85);
+    merged.capture.breakoutFrameMs=clampAdventureSetting(merged.capture.breakoutFrameMs,40,160,90);
+    merged.capture.spinDegree=clampAdventureSetting(merged.capture.spinDegree,0,720,320);
+    merged.levelUp.displaySize=clampAdventureSetting(merged.levelUp.displaySize,64,220,128);
+    merged.levelUp.frameMs=clampAdventureSetting(merged.levelUp.frameMs,40,160,85);
+    merged.levelUp.pulseScale=clampAdventureSetting(merged.levelUp.pulseScale,1,1.35,1.08);
+    merged.levelUp.glowDurationMs=clampAdventureSetting(merged.levelUp.glowDurationMs,300,2000,900);
+    return merged;
+  }
   function shuffle(arr){
     const a=[...arr];
     for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
@@ -1035,6 +1091,9 @@
 
   function startAdventureFloor(){
     try{
+      nextAdventureCaptureToken("start-floor");
+      clearAdventureCaptureEffects();
+      resetAdventureEnemyVisualState("start-floor-before");
       adventure.pendingReward = false;
       adventure.rewardApplying = false;
       adventure.pendingCaptured = null;
@@ -1067,6 +1126,8 @@
       setAdventureBattleBackground(adventure.stage);
       renderBattleView();
       resetAdventureBattleSprites();
+      resetAdventureEnemyVisualState("start-floor-after-render");
+      clearAdventureCaptureEffects();
       renderAdventureButtons();
       renderAdventureLogs();
       renderAdventureBag();
@@ -1692,12 +1753,195 @@
   }
 
   function advEventId(){ return `adv_${Date.now()}_${Math.random().toString(36).slice(2,9)}`; }
+  function captureEffectRowForBall(ballKey){
+    if(ballKey === "superPookiBall") return 1;
+    if(ballKey === "hyperPookiBall") return 2;
+    return 0;
+  }
+  function nextAdventureCaptureToken(reason="capture"){
+    adventure.captureAnimationToken = Number(adventure.captureAnimationToken || 0) + 1;
+    clearAdventureCaptureTimers();
+    console.debug?.("[Adventure Capture FX] token", {reason, token:adventure.captureAnimationToken});
+    return adventure.captureAnimationToken;
+  }
+  function clearAdventureCaptureTimers(){
+    const timers=Array.isArray(adventure.captureAnimationTimers) ? adventure.captureAnimationTimers : [];
+    timers.forEach(id=>{ try{ clearTimeout(id); }catch(_){} });
+    adventure.captureAnimationTimers=[];
+  }
+  function adventureDelay(ms, token){
+    return new Promise(resolve=>{
+      const id=setTimeout(()=>{
+        adventure.captureAnimationTimers=(adventure.captureAnimationTimers||[]).filter(x=>x!==id);
+        resolve(token == null || token === adventure.captureAnimationToken);
+      }, Math.max(0, Number(ms)||0));
+      adventure.captureAnimationTimers=(adventure.captureAnimationTimers||[]).concat(id);
+    });
+  }
+  function clearAdventureCaptureEffects(){
+    clearAdventureCaptureTimers();
+    document.querySelectorAll(".capture-effect-overlay,.capture-ball-effect,.adventure-capture-fx").forEach(el=>el.remove());
+  }
+  function resetAdventureEnemyVisualState(reason="enemy-reset"){
+    const enemyEl=document.getElementById("opponentSprite") || document.querySelector(".adventure-enemy-sprite");
+    if(!enemyEl) return;
+    enemyEl.classList.remove("adventure-capture-out","captured","capture-out","capture-hidden","fainted","faint-dead","enemy-dead","defeated","hidden","fade-out","shrink-out","switching-out","switch-out","switch-in","hit","shake","attack","faint","fainting","attack-up","attack-down");
+    enemyEl.style.opacity="";
+    enemyEl.style.visibility="";
+    enemyEl.style.transform="";
+    enemyEl.style.filter="";
+    enemyEl.style.animation="";
+    enemyEl.style.display="";
+    enemyEl.style.pointerEvents="";
+    console.debug?.("[Adventure Enemy Visual] reset", {reason, enemy:enemyMon()?.name});
+  }
+  function resetAdventureEnemyAfterCaptureFailure(){
+    resetAdventureEnemyVisualState("capture-failure");
+    const enemyEl=document.getElementById("opponentSprite");
+    if(enemyEl){
+      enemyEl.style.opacity="1";
+      enemyEl.style.visibility="visible";
+    }
+  }
+  function adventureElementCenter(el, fallback){
+    if(!el) return fallback;
+    const rect=el.getBoundingClientRect();
+    if(!rect.width && !rect.height) return fallback;
+    return {x:rect.left+rect.width/2, y:rect.top+rect.height/2, rect};
+  }
+  function setAdventureSheetFrame(el,row,frame){
+    const safeRow=Math.max(0, Math.min(4, Number(row)||0));
+    const safeFrame=Math.max(0, Math.min(5, Number(frame)||0));
+    el.style.backgroundImage=`url("${ADVENTURE_EFFECT_SHEET}")`;
+    el.style.backgroundSize="600% 500%";
+    el.style.backgroundPosition=`${safeFrame*20}% ${safeRow*25}%`;
+  }
+  async function animateAdventureSheetAt(row, center, options={}){
+    const settings=adventure.effectSettings || DEFAULT_ADVENTURE_EFFECT_SETTINGS;
+    const size=Number(options.size || settings.capture?.ballDisplaySize || 56);
+    const frameMs=Number(options.frameMs || settings.capture?.successFrameMs || 85);
+    const token=options.token ?? adventure.captureAnimationToken;
+    const el=document.createElement("div");
+    el.className=`adventure-capture-fx ${options.className||"soft-impact"}`;
+    el.style.width=`${size}px`;
+    el.style.height=`${size}px`;
+    el.style.left=`${center.x-size/2}px`;
+    el.style.top=`${center.y-size/2}px`;
+    el.style.opacity="1";
+    setAdventureSheetFrame(el,row,0);
+    document.body.appendChild(el);
+    for(let i=0;i<6;i++){
+      if(token !== adventure.captureAnimationToken){ el.remove(); return false; }
+      setAdventureSheetFrame(el,row,i);
+      await adventureDelay(frameMs, token);
+    }
+    el.style.opacity="0";
+    await adventureDelay(80, token);
+    el.remove();
+    return token === adventure.captureAnimationToken;
+  }
+  async function animateAdventureCaptureThrow(ballKey, token){
+    const settings=adventure.effectSettings || DEFAULT_ADVENTURE_EFFECT_SETTINGS;
+    const cfg=settings.capture || DEFAULT_ADVENTURE_EFFECT_SETTINGS.capture;
+    const size=Number(cfg.ballDisplaySize || 56);
+    const row=captureEffectRowForBall(ballKey);
+    const player=document.getElementById("mySprite");
+    const enemy=document.getElementById("opponentSprite");
+    const fallbackStart={x:window.innerWidth*0.36, y:window.innerHeight*0.54};
+    const fallbackEnd={x:window.innerWidth*0.66, y:window.innerHeight*0.42};
+    const startC=adventureElementCenter(player, fallbackStart);
+    const endC=adventureElementCenter(enemy, fallbackEnd);
+    const start={x:(startC.rect?startC.rect.right:startC.x)+12, y:(startC.rect?startC.rect.top+startC.rect.height*0.35:startC.y)};
+    const end={x:endC.x, y:(endC.rect?endC.rect.top+endC.rect.height*0.52:endC.y)};
+    const arc=Number(cfg.enableThrowArc===false ? 0 : cfg.arcHeight || 80);
+    const duration=Number(cfg.throwDurationMs || 1400);
+    const spin=Number(cfg.enableBallSpin===false ? 0 : cfg.spinDegree || 320);
+    const el=document.createElement("div");
+    el.className="adventure-capture-fx capture-ball-effect";
+    el.style.width=`${size}px`;
+    el.style.height=`${size}px`;
+    el.style.left=`${start.x-size/2}px`;
+    el.style.top=`${start.y-size/2}px`;
+    setAdventureSheetFrame(el,row,0);
+    document.body.appendChild(el);
+    const t0=performance.now();
+    await new Promise(resolve=>{
+      const step=(now)=>{
+        if(token !== adventure.captureAnimationToken){ el.remove(); resolve(false); return; }
+        const t=Math.min(1,(now-t0)/duration);
+        const ease=t<0.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+        const x=start.x+(end.x-start.x)*ease;
+        const y=start.y+(end.y-start.y)*ease - Math.sin(Math.PI*ease)*arc;
+        const frame=Math.min(2, Math.floor(t*3));
+        setAdventureSheetFrame(el,row,frame);
+        el.style.left=`${x-size/2}px`;
+        el.style.top=`${y-size/2}px`;
+        el.style.transform=`rotate(${spin*ease}deg) scale(${Number(cfg.ballScale||0.45)})`;
+        if(t<1) requestAnimationFrame(step);
+        else resolve(true);
+      };
+      requestAnimationFrame(step);
+    });
+    if(token !== adventure.captureAnimationToken){ el.remove(); return null; }
+    await adventureDelay(Number(cfg.impactDelayMs||150), token);
+    const finalCenter={x:end.x,y:end.y};
+    el.remove();
+    return finalCenter;
+  }
+  async function playAdventureCaptureSequence(ballKey, success, enemyName){
+    const token=nextAdventureCaptureToken("capture-sequence");
+    try{
+      const cfg=adventure.effectSettings?.capture || DEFAULT_ADVENTURE_EFFECT_SETTINGS.capture;
+      const enemyEl=document.getElementById("opponentSprite");
+      resetAdventureEnemyVisualState("capture-start");
+      const impactCenter=await animateAdventureCaptureThrow(ballKey, token);
+      if(token !== adventure.captureAnimationToken) return false;
+      if(success){
+        if(enemyEl){
+          enemyEl.classList.remove("fainted","faint-dead","enemy-dead","hit","attack-up","attack-down");
+          void enemyEl.offsetWidth;
+          enemyEl.classList.add("adventure-capture-out");
+        }
+        await animateAdventureSheetAt(captureEffectRowForBall(ballKey), impactCenter || adventureElementCenter(enemyEl,{x:window.innerWidth*.66,y:window.innerHeight*.42}), {token, frameMs:cfg.successFrameMs, size:cfg.ballDisplaySize, className:"soft-impact"});
+      }else{
+        await animateAdventureSheetAt(3, impactCenter || adventureElementCenter(enemyEl,{x:window.innerWidth*.66,y:window.innerHeight*.42}), {token, frameMs:cfg.breakoutFrameMs, size:cfg.ballDisplaySize, className:"soft-impact"});
+        resetAdventureEnemyAfterCaptureFailure();
+      }
+      return token === adventure.captureAnimationToken;
+    }catch(err){
+      console.warn("[Adventure Capture FX] fallback", err);
+      return true;
+    }finally{
+      if(!success) resetAdventureEnemyAfterCaptureFailure();
+      clearAdventureCaptureEffects();
+      if(!success) resetAdventureEnemyAfterCaptureFailure();
+    }
+  }
+  async function playAdventureLevelUpEffect(mon){
+    try{
+      const settings=adventure.effectSettings || DEFAULT_ADVENTURE_EFFECT_SETTINGS;
+      const cfg=settings.levelUp || DEFAULT_ADVENTURE_EFFECT_SETTINGS.levelUp;
+      const sprite=document.getElementById("mySprite");
+      const center=adventureElementCenter(sprite, {x:window.innerWidth*.38, y:window.innerHeight*.48});
+      if(sprite){
+        sprite.style.setProperty("--adventure-level-pulse-scale", String(cfg.pulseScale || 1.08));
+        sprite.classList.remove("adventure-level-up-pulse");
+        void sprite.offsetWidth;
+        sprite.classList.add("adventure-level-up-pulse");
+      }
+      const token=adventure.captureAnimationToken;
+      await animateAdventureSheetAt(4, center, {token, frameMs:cfg.frameMs, size:cfg.displaySize, className:"level-up-fx"});
+      if(sprite) setTimeout(()=>sprite.classList.remove("adventure-level-up-pulse"), Number(cfg.glowDurationMs||900));
+    }catch(err){
+      console.warn("[Adventure LevelUp FX] skipped", err);
+    }
+  }
   function resetAdventureBattleSprites(){
     for(const id of ["mySprite","opponentSprite"]){
       const sprite=document.getElementById(id);
       if(!sprite) continue;
-      sprite.classList.remove("adventure-capture-out","fainted","faint-dead","enemy-dead","mine-dead","switching-out","hit","shake","attack","faint","fainting","switch-out","switch-in");
-      sprite.style.visibility=""; sprite.style.opacity=""; sprite.style.pointerEvents=""; sprite.style.filter=""; sprite.style.transform="";
+      sprite.classList.remove("adventure-capture-out","captured","capture-out","capture-hidden","fainted","faint-dead","enemy-dead","mine-dead","defeated","hidden","fade-out","shrink-out","switching-out","hit","shake","attack","faint","fainting","switch-out","switch-in","attack-up","attack-down");
+      sprite.style.visibility=""; sprite.style.opacity=""; sprite.style.pointerEvents=""; sprite.style.filter=""; sprite.style.transform=""; sprite.style.animation=""; sprite.style.display="";
     }
     document.querySelectorAll(".ghost-clone").forEach(el=>el.remove());
   }
@@ -1760,6 +2004,7 @@
       else mon.hp=Math.min(mon.maxHp, Number(mon.hp||0)+levelHeal);
       logs.push(`${mon.name}이/가 Lv.${mon.level}이 되었다! HP +${gain.hpGain} / 공격 ${gain.attackGain>=0?"+":""}${gain.attackGain} / 방어 ${gain.defenseGain>=0?"+":""}${gain.defenseGain} / 스피드 ${gain.speedGain>=0?"+":""}${gain.speedGain}`);
       logs.push(`${mon.name}이/가 레벨업하며 HP를 ${levelHeal} 회복했다!`);
+      if(!options.shared) playAdventureLevelUpEffect(mon);
       checkAdventureEvolution(mon, logs);
     }
   }
@@ -1776,6 +2021,7 @@
     else mon.hp=Math.min(mon.maxHp, Number(mon.hp||0)+levelHeal);
     logs.push(`${mon.name}이/가 이상한사탕을 먹고 Lv.${mon.level}이 되었다! HP +${gain.hpGain} / 공격 ${gain.attackGain>=0?"+":""}${gain.attackGain} / 방어 ${gain.defenseGain>=0?"+":""}${gain.defenseGain} / 스피드 ${gain.speedGain>=0?"+":""}${gain.speedGain}`);
     logs.push(`${mon.name}이/가 레벨업하며 HP를 ${levelHeal} 회복했다!`);
+    if(mon === adventure.team?.[adventure.activeIndex||0] || currentState?.players?.p1?.activeIndex === adventure.activeIndex) playAdventureLevelUpEffect(mon);
     checkAdventureEvolution(mon, logs);
   }
   function getAdventureExpShareRate(){ const c=adventureExpShareConfig(); const base=Number(c.baseBenchRate ?? 0.3); const per=Number(c.ratePerStack ?? 0.1); return Math.min(0.95, base + Number(adventure.expShareLevel||0)*per); }
@@ -1977,6 +2223,8 @@
     adventure.pendingCaptured=null;
     adventure.pendingTmReward=null;
     adventure.pendingTmTargetIndex=null;
+    nextAdventureCaptureToken("advance-stage");
+    clearAdventureCaptureEffects();
     adventure.enemy=null;
     adventure.phase="loadingNext";
     if(adventure.stage>adventure.maxStage){ showAdventureFailOverlay("모험 성공", "100층을 돌파했습니다!"); return; }
@@ -2215,67 +2463,84 @@
     const item=adventure.items?.[ballKey];
     const enemy=enemyMon();
     if(!item || item.kind!=="ball" || !enemy || (adventure.bag[ballKey]||0)<=0) return;
+    animationBusy=true;
     adventure.bag[ballKey]-=1;
     const captureInfo = calculateAdventureCaptureInfo(enemy, ballKey);
     const rate = captureInfo.finalChance;
     const roll = Math.random();
-    console.debug?.('[Adventure Capture]', {...captureInfo, ballKey, roll, success:roll <= rate});
+    const success = roll <= rate;
+    console.debug?.('[Adventure Capture]', {...captureInfo, ballKey, roll, success});
     adventure.log.push(`${item.name}을/를 던졌다! 포획 확률 ${Math.round(rate*100)}%`);
-    if(roll <= rate){
-      const captured=clone(enemy);
-      captured.hp=Math.max(1,captured.hp); captured.fainted=false;
-      adventure.log.push(`${item.name} 성공! ${enemy.name}을/를 포획했다.`);
-      awardAdventureExp("capture", enemy);
-      currentState.logs=[...adventure.log];
-      setMessage(`${enemy.name}이/가 볼 안으로 빨려 들어간다!`, true);
-      const sprite=document.getElementById("opponentSprite");
-      if(sprite){
-        sprite.classList.remove("fainted","faint-dead","enemy-dead","hit","attack-up","attack-down");
-        void sprite.offsetWidth;
-        sprite.classList.add("adventure-capture-out");
-      }
-      playGameSfx?.("select");
-      await sleep(760);
-      adventure.enemy=null;
-      const removedEnemy={...clone(enemy), name:"", hp:0, maxHp:1, fainted:true, frontSprite:"", backSprite:"", types:[], statStages:{attack:0,defense:0,speed:0}, moves:[]};
-      if(adventure.team.length<3){
-        adventure.team.push(captured);
-        currentState.players.p1.team=clone(adventure.team);
-        currentState.players.p1.activeIndex=adventure.activeIndex||0;
-        currentState.players.p2.team=[removedEnemy];
+    currentState.logs=[...adventure.log];
+    setMessage(`${item.name}을/를 던졌다!`, true);
+    renderAdventureButtons();
+    renderAdventureLogs();
+    renderAdventureBag();
+    try{
+      await playAdventureCaptureSequence(ballKey, success, enemy.name);
+      if(success){
+        const captured=clone(enemy);
+        captured.hp=Math.max(1,captured.hp); captured.fainted=false;
+        adventure.log.push(`${item.name} 성공! ${enemy.name}을/를 포획했다.`);
+        awardAdventureExp("capture", enemy);
         currentState.logs=[...adventure.log];
-        visualState=null;
-        faintPending={p1:false,p2:true};
-        enterAdventureReward(`${enemy.name} 포획 성공! 보상을 선택하세요.`);
+        setMessage(`${enemy.name} 포획 성공!`, true);
+        playGameSfx?.("select");
+        adventure.enemy=null;
+        const removedEnemy={...clone(enemy), name:"", hp:0, maxHp:1, fainted:true, frontSprite:"", backSprite:"", types:[], statStages:{attack:0,defense:0,speed:0}, moves:[]};
+        if(adventure.team.length<3){
+          adventure.team.push(captured);
+          currentState.players.p1.team=clone(adventure.team);
+          currentState.players.p1.activeIndex=adventure.activeIndex||0;
+          currentState.players.p2.team=[removedEnemy];
+          currentState.logs=[...adventure.log];
+          visualState=null;
+          faintPending={p1:false,p2:true};
+          animationBusy=false;
+          enterAdventureReward(`${enemy.name} 포획 성공! 보상을 선택하세요.`);
+        }else{
+          adventure.pendingCaptured=captured;
+          adventure.phase="teamReplace";
+          adventure.pendingReward=false;
+          currentState.players.p1.team=clone(adventure.team);
+          currentState.players.p1.activeIndex=adventure.activeIndex||0;
+          currentState.players.p2.team=[removedEnemy];
+          currentState.logs=[...adventure.log];
+          visualState=null;
+          faintPending={p1:false,p2:true};
+          animationBusy=false;
+          setMessage(`${enemy.name} 포획 성공! 팀에 넣을 포켓몬을 선택하세요.`, false);
+          renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
+        }
       }else{
-        adventure.pendingCaptured=captured;
-        adventure.phase="teamReplace";
-        adventure.pendingReward=false;
-        currentState.players.p1.team=clone(adventure.team);
-        currentState.players.p1.activeIndex=adventure.activeIndex||0;
-        currentState.players.p2.team=[removedEnemy];
+        adventure.log.push(`${item.name} 실패! ${enemy.name}이/가 볼에서 튀어나왔다.`);
         currentState.logs=[...adventure.log];
-        visualState=null;
-        faintPending={p1:false,p2:true};
-        setMessage(`${enemy.name} 포획 성공! 팀에 넣을 포켓몬을 선택하세요.`, false);
-        renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
+        setMessage("포획 실패! 상대 턴이 진행됩니다.", true);
+        resetAdventureEnemyAfterCaptureFailure();
+        renderBattleView(); resetAdventureEnemyAfterCaptureFailure(); renderAdventureBag(); renderAdventureLogs();
+        const eMove=chooseEnemyMove(enemy, playerMon());
+        const old=clone(currentState);
+        const working=clone(currentState);
+        const e=working.players.p2.team[0], mine=working.players.p1.team[working.players.p1.activeIndex];
+        const events=[]; const logs=[...adventure.log];
+        animationBusy=false;
+        applyAdventureMove({key:"p2", mon:e, target:mine, move:eMove, idx:0}, events, logs);
+        applyAdventureEndTurnStatus(working, events, logs);
+        applyAdventureEndTurnEquipment(working, events, logs);
+        working.logs=logs; working.turn+=1; working.phase=mine.fainted?"TURN_RESOLVE":"ACTION_SELECT";
+        prepareVisualState(old); currentState=working; adventure.log=logs; enqueueEvents(events);
+        eventQueue.then(()=>{commitFromCurrentState(); if(playerMon()?.fainted) handleAdventurePlayerFainted(); else {resetAdventureEnemyAfterCaptureFailure(); renderBattleView(); resetAdventureEnemyAfterCaptureFailure(); renderAdventureButtons(); renderAdventureLogs();}});
       }
-    }else{
-      adventure.log.push(`${item.name} 실패! ${enemy.name}이/가 볼에서 나왔다.`);
+    }catch(err){
+      console.error("[Adventure Capture] failed", err);
+      adventure.log.push(`포획 처리 오류: ${err.message || err}`);
       currentState.logs=[...adventure.log];
-      setMessage("포획 실패! 상대 턴이 진행됩니다.", true);
-      renderAdventureBag();
-      const eMove=chooseEnemyMove(enemy, playerMon());
-      const old=clone(currentState);
-      const working=clone(currentState);
-      const e=working.players.p2.team[0], mine=working.players.p1.team[working.players.p1.activeIndex];
-      const events=[]; const logs=[...adventure.log];
-      applyAdventureMove({key:"p2", mon:e, target:mine, move:eMove, idx:0}, events, logs);
-      applyAdventureEndTurnStatus(working, events, logs);
-      applyAdventureEndTurnEquipment(working, events, logs);
-      working.logs=logs; working.turn+=1; working.phase=mine.fainted?"TURN_RESOLVE":"ACTION_SELECT";
-      prepareVisualState(old); currentState=working; adventure.log=logs; enqueueEvents(events);
-      eventQueue.then(()=>{commitFromCurrentState(); if(playerMon()?.fainted) handleAdventurePlayerFainted(); else {renderBattleView(); renderAdventureButtons(); renderAdventureLogs();}});
+      resetAdventureEnemyAfterCaptureFailure();
+      setMessage("포획 처리 중 오류가 발생했습니다. 다시 행동을 선택하세요.", true);
+      renderBattleView(); resetAdventureEnemyAfterCaptureFailure(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
+    }finally{
+      animationBusy=false;
+      clearAdventureCaptureEffects();
     }
   }
   function restoreAdventureActionSelect(message){

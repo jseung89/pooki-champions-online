@@ -1,0 +1,42 @@
+{
+  "pukkiball_capture_success": {
+    "sheet": "/assets/effects/capture-and-levelup-effects-sheet.png",
+    "row": 0,
+    "frames": 6,
+    "frameWidth": 192,
+    "frameHeight": 192,
+    "fps": 12
+  },
+  "super_pukkiball_capture_success": {
+    "sheet": "/assets/effects/capture-and-levelup-effects-sheet.png",
+    "row": 1,
+    "frames": 6,
+    "frameWidth": 192,
+    "frameHeight": 192,
+    "fps": 12
+  },
+  "hyper_pukkiball_capture_success": {
+    "sheet": "/assets/effects/capture-and-levelup-effects-sheet.png",
+    "row": 2,
+    "frames": 6,
+    "frameWidth": 192,
+    "frameHeight": 192,
+    "fps": 12
+  },
+  "capture_breakout": {
+    "sheet": "/assets/effects/capture-and-levelup-effects-sheet.png",
+    "row": 3,
+    "frames": 6,
+    "frameWidth": 192,
+    "frameHeight": 192,
+    "fps": 12
+  },
+  "level_up_burst": {
+    "sheet": "/assets/effects/capture-and-levelup-effects-sheet.png",
+    "row": 4,
+    "frames": 6,
+    "frameWidth": 192,
+    "frameHeight": 192,
+    "fps": 12
+  }
+}

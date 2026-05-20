@@ -969,3 +969,19 @@ TODO:
 - 모험모드센터 장비 효과 테스트
 - 모험모드센터 100층 시뮬레이터
 - PokeAPI learnset 전체 수집 및 한글 기술명 매핑 보강
+
+## v6.18.11a Adventure Capture Throw Tuning + Enemy Reappear Hotfix
+
+- 포획볼 투척 연출 크기를 축소했습니다.
+- 포획볼이 직선 탄환처럼 날아가지 않고 포물선을 그리며 날아가도록 수정했습니다.
+- 포획볼 투척 속도를 완화했습니다.
+- 포획 연출 수치를 `public/data/adventure_effect_settings.json`에서 조정할 수 있도록 추가했습니다.
+- 포획 성공 후 다음 상대 포켓몬이 필드에 보이지 않던 문제를 수정했습니다.
+- 포획 성공/실패 후 enemy sprite visual state 초기화를 보강했습니다.
+- capture effect overlay 정리 및 지연 callback 방어를 추가했습니다.
+- 기존 일반 대전 / AI 대전 / 관전 / 관리자 / 모바일 기능을 유지했습니다.
+
+### TODO
+- 관리자 모험모드센터에서 포획 이펙트 수치 편집 기능 추가
+- 볼 종류별 궤적 차별화
+- 포획 성공 시 카메라 흔들림/줌 연출 고도화

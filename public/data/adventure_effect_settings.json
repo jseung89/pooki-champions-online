@@ -1,0 +1,21 @@
+{
+  "capture": {
+    "ballDisplaySize": 128,
+    "ballScale": 0.45,
+    "throwDurationMs": 1400,
+    "arcHeight": 80,
+    "impactDelayMs": 150,
+    "shakeFrameMs": 90,
+    "successFrameMs": 85,
+    "breakoutFrameMs": 90,
+    "enableThrowArc": true,
+    "enableBallSpin": true,
+    "spinDegree": 320
+  },
+  "levelUp": {
+    "displaySize": 128,
+    "frameMs": 85,
+    "pulseScale": 1.08,
+    "glowDurationMs": 900
+  }
+}
