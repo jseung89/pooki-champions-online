@@ -152,6 +152,8 @@
     encounterRules:null,
     enemyMovesetRules:null,
     pokemonAllowedMoves:null,
+    fullLearnsets:null,
+    specialEvolutions:null,
     bosses:null,
     adventureEquipment:{},
     basicConfig:null,
@@ -278,7 +280,7 @@
 
   async function loadAdventureData(){
     if(adventure.dataReady) return;
-    const [arena, config, items, rewards, rewardEffects, rewardBalance, expBalance, captureBalance, effectSettings, pokemonMovesets, levelupLearnsets, tmRewards, sizeOverrides, capture, captureRates, learnsets, adventureMoves, expTable, baseStats, evolutions, equipmentConfig, effectMap, blockedMoves, moveTiers, basicConfig, starterPool, encounterRules, enemyMovesetRules, pokemonAllowedMoves, bosses] = await Promise.all([
+    const [arena, config, items, rewards, rewardEffects, rewardBalance, expBalance, captureBalance, effectSettings, pokemonMovesets, levelupLearnsets, tmRewards, sizeOverrides, capture, captureRates, learnsets, adventureMoves, expTable, baseStats, evolutions, equipmentConfig, effectMap, blockedMoves, moveTiers, basicConfig, starterPool, encounterRules, enemyMovesetRules, pokemonAllowedMoves, fullLearnsets, specialEvolutions, bosses] = await Promise.all([
       fetch("/api/test-arena/data").then(r=>r.json()),
       fetch("/data/adventure_config.json").then(r=>r.json()).catch(()=>({})),
       fetch(`/data/adventure_items.json?v=6189-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
@@ -307,7 +309,9 @@
       fetch(`/data/adventure_starter_pool.json?v=6188e-${Date.now()}`).then(r=>r.json()).catch((err)=>{ console.warn("[Adventure Starter] starter pool json load failed", err); return {starters:[], __loadFailed:true}; }),
       fetch(`/data/adventure_encounter_rules.json?v=61814-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
       fetch(`/data/adventure_enemy_moveset_rules.json?v=61814-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_pokemon_allowed_moves.json?v=61814-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
+      fetch(`/data/adventure_pokemon_allowed_moves.json?v=61816-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
+      fetch(`/data/adventure_pokemon_full_learnsets.json?v=61816-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
+      fetch(`/data/adventure_special_evolutions.json?v=61816-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
       fetch(`/data/adventure_bosses.json?v=61814-${Date.now()}`).then(r=>r.json()).catch(()=>({}))
     ]);
     adventure.pokemon = Array.isArray(arena?.pokemon) ? arena.pokemon : [];
@@ -345,6 +349,8 @@
     adventure.encounterRules = encounterRules || {};
     adventure.enemyMovesetRules = enemyMovesetRules || {};
     adventure.pokemonAllowedMoves = pokemonAllowedMoves || {};
+    adventure.fullLearnsets = fullLearnsets || {};
+    adventure.specialEvolutions = specialEvolutions || {};
     adventure.bosses = bosses || {};
     adventure.maxStage = Number(config?.maxStage || 100);
     adventure.bossEvery = Number(config?.bossEvery || 10);
@@ -523,12 +529,7 @@
     return null;
   }
   function isBlockedStarterPokemon(p){
-    const id=Number(p?.id);
-    if(!p || !Number.isFinite(id)) return true;
-    if(LEGENDARY_MYTHICAL_IDS.has(id)) return true;
-    if(STARTER_BLOCKED_IDS.has(id)) return true;
-    if(isEarlyBannedStrongPokemon(p)) return true;
-    return false;
+    return !isAllowedStarterPokemon(p);
   }
   function uniqueStarterList(list){
     const seen=new Set();
@@ -551,7 +552,7 @@
       const base = byName.get(name) || adventure.pokemon.find(p=>pokemonNames(p).includes(String(name).trim().toLowerCase()));
       if(!base) continue;
       const p=normalizeAdventureBasePokemon(base);
-      if(Number(p.evolutionStage||0)!==0) continue;
+      if(!isAllowedStarterPokemon(p)) continue;
       const len=Number(info.evolutionLineLength || p.evolutionLineLength || (info.finalEvolution || p.finalEvolution ? 3 : 2));
       if(lineLength===3 && len>=3) out.push(p);
       if(lineLength===2 && len===2) out.push(p);
@@ -578,19 +579,19 @@
     starterPoolArray("blockedStarterIds").forEach(id=>STARTER_BLOCKED_IDS.add(id));
 
     const legacy = starterPoolLegacyEntries().map(e=>normalizeAdventureBasePokemon(e)).filter(Boolean);
-    const legacyThree = legacy.filter(p=>Number(p.evolutionStage||0)===0 && Number(p.evolutionLineLength||0)>=3);
-    const legacyTwo = legacy.filter(p=>Number(p.evolutionStage||0)===0 && Number(p.evolutionLineLength||0)===2);
+    const legacyThree = legacy.filter(p=>isAllowedStarterPokemon(p) && Number(p.evolutionLineLength||0)>=3);
+    const legacyTwo = legacy.filter(p=>isAllowedStarterPokemon(p) && Number(p.evolutionLineLength||0)===2);
     const evThree = starterIdsFromEvolutions(3);
     const evTwo = starterIdsFromEvolutions(2);
 
     const threeStageFirst = uniqueStarterList([...legacyThree, ...evThree, ...threeIds.map(createStarterCandidateFromId)]);
     const twoStageFirst = uniqueStarterList([...legacyTwo, ...evTwo, ...twoIds.map(createStarterCandidateFromId)]).filter(p=>!threeStageFirst.some(x=>Number(x.id)===Number(p.id)));
-    const evolvableBasic = uniqueStarterList([...evolvableIds.map(createStarterCandidateFromId), ...adventure.pokemon.filter(p=>Number(p.evolutionStage||0)===0 && (p.evolvesTo || p.finalEvolutionAvailable || Number(p.evolutionLineLength||0)>=2))])
+    const evolvableBasic = uniqueStarterList([...evolvableIds.map(createStarterCandidateFromId), ...adventure.pokemon.filter(p=>isAllowedStarterPokemon(p) && (p.evolvesTo || p.finalEvolutionAvailable || Number(p.evolutionLineLength||0)>=2))])
       .filter(p=>!threeStageFirst.some(x=>Number(x.id)===Number(p.id)) && !twoStageFirst.some(x=>Number(x.id)===Number(p.id)));
     const safeFallback = uniqueStarterList([...fallbackIds.map(createStarterCandidateFromId), ...basicPokemonPool().filter(p=>statTotal(p)<=340)])
       .filter(p=>!threeStageFirst.some(x=>Number(x.id)===Number(p.id)) && !twoStageFirst.some(x=>Number(x.id)===Number(p.id)) && !evolvableBasic.some(x=>Number(x.id)===Number(p.id)));
 
-    const final = uniqueStarterList([...threeStageFirst, ...twoStageFirst, ...evolvableBasic, ...safeFallback]);
+    const final = uniqueStarterList([...threeStageFirst, ...twoStageFirst, ...evolvableBasic, ...safeFallback]).filter(isAllowedStarterPokemon);
     STARTER_BLOCKED_IDS.clear();
     [83,95,106,107,108,113,115,122,124,125,126,127,128,131,132,137,142,143,185,200,203,206,213,214,225,226,227,234,235,241].forEach(id=>STARTER_BLOCKED_IDS.add(id));
     for(const id of blockedIds) STARTER_BLOCKED_IDS.add(id);
@@ -632,7 +633,7 @@
     const fallbackBefore=picked.length;
     if(picked.length<12) picked.push(...takeRandomByQuota(groups.safeFallback, Math.min(2,12-picked.length), used, recentSet));
     if(picked.length<12) picked.push(...takeRandomByQuota(groups.final, 12-picked.length, used, new Set()));
-    picked=shuffle(picked).slice(0,12).map(normalizeAdventureBasePokemon);
+    picked=shuffle(picked).map(normalizeAdventureBasePokemon).filter(isAllowedStarterPokemon).slice(0,12);
     const fallbackCount=picked.filter(p=>groups.safeFallback.some(f=>Number(f.id)===Number(p.id))).length;
     if(fallbackCount>=4) console.warn('[Adventure Starter] fallback ratio is high.', fallbackCount, picked.map(p=>`${p.id}:${p.name}`));
     console.info('[Adventure Starter] recent excluded count:', [...recentSet].length);
@@ -666,6 +667,121 @@
     }
     return out;
   }
+
+  function adventureMoveKey(value){
+    return String(value||"").trim().toLowerCase().replace(/[_\s-]+/g,"");
+  }
+  function adventurePokemonNameKeys(p){
+    return new Set([String(p?.id||""), String(p?.name||""), String(p?.apiName||"")].map(x=>x.trim()).filter(Boolean));
+  }
+  function adventureEvolutionEntries(){
+    return adventure.evolutions && typeof adventure.evolutions === "object" ? adventure.evolutions : {};
+  }
+  function adventureEvolutionStageOfFallbackId(id){
+    if([12,15,18,31,34,45,65,68,71,76,94,149,154,157,160,181,189,248].includes(Number(id))) return 2;
+    if([2,5,8,11,14,17,30,33,44,64,67,70,75,93,148,153,156,159,180,188,247].includes(Number(id))) return 1;
+    if(EVOLUTION_FALLBACK_SPECIES[Number(id)]) return 1;
+    return null;
+  }
+  function getEvolutionStageFromEvolutionData(p){
+    if(!p) return null;
+    const id=Number(p.id||0);
+    if(Number.isFinite(Number(p.evolutionStage)) && p.evolutionStage!==null && p.evolutionStage!==undefined) return Number(p.evolutionStage);
+    const explicit=adventureEvolutionStageOfFallbackId(id);
+    if(explicit!==null) return explicit;
+    const keys=adventurePokemonNameKeys(p);
+    const ev=adventureEvolutionEntries();
+    const resultIds=new Set();
+    const resultNames=new Set();
+    const sourceIds=new Set();
+    const sourceNames=new Set();
+    for(const [from, info] of Object.entries(ev)){
+      if(info && typeof info === "object"){
+        if(/^\d+$/.test(String(from))) sourceIds.add(Number(from));
+        sourceNames.add(String(from));
+        if(info.toId!=null) resultIds.add(Number(info.toId));
+        [info.to, info.toName, info.toApiName].filter(Boolean).forEach(v=>resultNames.add(String(v)));
+      }
+    }
+    if(resultIds.has(id) || [...keys].some(k=>resultNames.has(k))) return 1;
+    if(sourceIds.has(id) || [...keys].some(k=>sourceNames.has(k))) return 0;
+    if(ADVENTURE_BASIC_IDS.has(id) || STARTER_THREE_STAGE_IDS.includes(id) || STARTER_TWO_STAGE_IDS.includes(id)) return 0;
+    return null;
+  }
+  function isEvolvedSpecies(p){ return Number(getEvolutionStageFromEvolutionData(p)||0) >= 1; }
+  function isBasicSpecies(p){ return Number(getEvolutionStageFromEvolutionData(p)) === 0; }
+  function hasReliableAdventureTypes(p){
+    const id=Number(p?.id||0);
+    const raw=Array.isArray(p?.types) ? p.types.filter(Boolean) : [];
+    if(raw.length && !(raw.length===1 && String(raw[0]).toLowerCase()==="normal" && !TYPE_BY_ID[id] && !EVOLUTION_FALLBACK_SPECIES[id]?.types)) return true;
+    if(TYPE_BY_ID[id]?.length) return true;
+    if(EVOLUTION_FALLBACK_SPECIES[id]?.types?.length) return true;
+    return false;
+  }
+  function hasReliableAdventureStats(p){
+    const id=Number(p?.id||0);
+    const raw=p?.baseStats || p?.stats || {};
+    if(raw && Number(raw.hp||raw.baseHp)>0 && Number(raw.attack||raw.baseAttack)>0 && Number(raw.defense||raw.baseDefense)>0) return true;
+    if(STARTER_DEFAULT_STATS_BY_ID[id]) return true;
+    if(EVOLUTION_FALLBACK_SPECIES[id]?.stats) return true;
+    return false;
+  }
+  function hasAdventureSpriteData(p){ return !!(p?.frontSprite || Number.isFinite(Number(p?.id))); }
+  function starterBlockReason(p){
+    const id=Number(p?.id||0);
+    if(!p || !Number.isFinite(id)) return "invalid-id";
+    if(LEGENDARY_MYTHICAL_IDS.has(id)) return "legendary-or-mythical";
+    if(STARTER_BLOCKED_IDS.has(id)) return "blocked-starter-id";
+    if(isEarlyBannedStrongPokemon(p)) return "early-strong-single";
+    const stage=getEvolutionStageFromEvolutionData(p);
+    if(stage === null || stage === undefined) return "unknown-evolution-stage";
+    if(Number(stage)!==0) return "evolved-species";
+    if(!hasReliableAdventureTypes(p)) return "missing-types";
+    if(!hasReliableAdventureStats(p)) return "missing-stats";
+    if(!hasAdventureSpriteData(p)) return "missing-sprite";
+    return "allowed";
+  }
+  function isAllowedStarterPokemon(p){ return starterBlockReason(p) === "allowed"; }
+  function isAllowedEarlyWildPokemon(p){
+    const id=Number(p?.id||0);
+    if(!p || !Number.isFinite(id)) return false;
+    if(LEGENDARY_MYTHICAL_IDS.has(id) || ADVENTURE_EARLY_EXCLUDED_IDS.has(id) || isEarlyBannedStrongPokemon(p)) return false;
+    if(!isBasicSpecies(p)) return false;
+    if(!hasReliableAdventureTypes(p) || !hasReliableAdventureStats(p)) return false;
+    return true;
+  }
+  function isSafeFallbackMoveForPokemon(move, mon){
+    if(!move || !mon) return false;
+    const id=adventureMoveKey(move.id || move.apiName || move.name);
+    if(["aquajet","quickattack"].includes(id)) return false;
+    if(isBlockedAdventureMove(move) || isEarlyExcludedAdventureMove(move)) return false;
+    const type=String(move.type||"").toLowerCase();
+    const types=(mon.types||[]).map(t=>String(t).toLowerCase());
+    const power=Number(move.power||0);
+    if(type && types.includes(type) && power<=60) return true;
+    if(type==="normal" && power<=45) return true;
+    if(power===0 && ["growl","tailwhip","scaryface","smokescreen","screech","withdraw","harden","defensecurl"].includes(id)) return true;
+    return false;
+  }
+  function safeFallbackMoveIdsForPokemon(mon){
+    const types=(mon?.types||[]).map(t=>String(t).toLowerCase());
+    const ids=[];
+    const add=(arr)=>arr.forEach(x=>{ if(!ids.includes(x)) ids.push(x); });
+    if(types.includes("fire")) add(["ember","smokescreen","scratch","growl"]);
+    if(types.includes("water")) add(["waterGun","bubble","withdraw","tackle"]);
+    if(types.includes("grass")) add(["vineWhip","absorb","growl","tackle"]);
+    if(types.includes("electric")) add(["thunderShock","thunderWave","tackle","growl"]);
+    if(types.includes("bug")) add(["tackle","stringShot","poisonSting","absorb"]);
+    if(types.includes("poison")) add(["poisonSting","poisonPowder","tackle","screech"]);
+    if(types.includes("flying")) add(["gust","peck","tackle","growl"]);
+    if(types.includes("rock") || types.includes("ground")) add(["mudSlap","rockThrow","tackle","defenseCurl"]);
+    if(types.includes("psychic")) add(["confusion","teleport","disable","tackle"]);
+    if(types.includes("fighting")) add(["karateChop","lowKick","tackle","leer"]);
+    if(types.includes("ice")) add(["powderSnow","icyWind","tackle","mist"]);
+    add(["tackle","growl","tailWhip"]);
+    return ids;
+  }
+
   function adventureStageRangeKey(stage=1){
     const s=Number(stage||1);
     if(s<=10) return "1-10";
@@ -689,10 +805,8 @@
     return (names||[]).some(n=>keys.has(String(n||"").trim()));
   }
   function adventureEvolutionStageOf(p){
-    const id=Number(p?.id||0);
-    if([12,15,18,31,34,45,65,68,71,76,94,149,154,157,160,181,189,248].includes(id)) return 2;
-    if([2,5,8,11,14,17,30,33,44,64,67,70,75,93,148,153,156,159,180,188,247].includes(id)) return 1;
-    return Number(p?.evolutionStage||0);
+    const stage=getEvolutionStageFromEvolutionData(p);
+    return Number.isFinite(Number(stage)) ? Number(stage) : 0;
   }
   function adventureManualPoolRule(stage=1){
     return adventure.encounterRules?.manualPools?.[adventureStageRangeKey(stage)] || null;
@@ -723,11 +837,13 @@
     const {band}=adventureEncounterBand(stage);
     const manual=adventureManualPoolRule(stage)||{};
     let out=uniquePokemonById(pool||[]);
+    if(Number(stage||1)<=10) out=out.filter(isAllowedEarlyWildPokemon);
     if(Array.isArray(manual.include) && manual.include.length){
       const included=adventure.pokemon.map(normalizeAdventureBasePokemon).filter(p=>adventurePokemonMatchesName(p, manual.include));
       if(included.length>=3) out=uniquePokemonById([...included, ...out]);
     }
     if(Array.isArray(manual.exclude) && manual.exclude.length) out=out.filter(p=>!adventurePokemonMatchesName(p, manual.exclude));
+    if(Number(stage||1)<=10) out=out.filter(isAllowedEarlyWildPokemon);
     const min=Number(band.minBST||0), max=Number(band.maxBST||9999);
     if(min || max<9999) out=out.filter(p=>{ const bst=statTotal(p); return bst>=min && bst<=max; });
     const stages=Array.isArray(band.allowedEvolutionStages) ? band.allowedEvolutionStages.map(Number) : null;
@@ -755,7 +871,8 @@
     const all=adventure.pokemon
       .map(normalizeAdventureBasePokemon)
       .filter(p=>p?.frontSprite&&p?.backSprite&&!LEGENDARY_MYTHICAL_IDS.has(Number(p.id)))
-      .filter(p=>!(s<=20 && isEarlyBannedStrongPokemon(p)));
+      .filter(p=>!(s<=20 && isEarlyBannedStrongPokemon(p)))
+      .filter(p=>s>10 || isAllowedEarlyWildPokemon(p));
     const starterGroups=getAdventureStarterPool();
     const starterLike=uniquePokemonById([...(starterGroups.threeStageFirst||[]),...(starterGroups.twoStageFirst||[]),...(starterGroups.evolvableBasic||[]),...(starterGroups.safeFallback||[])]);
     let pool=all.filter(p=>{ const bst=statTotal(p); return bst>=bounds.min && bst<=bounds.max; });
@@ -778,10 +895,10 @@
   }
   function buildAdventureEarlyWildPool(){
     const explicit=ADVENTURE_EARLY_STAGE_1_TO_10_POOL.map(createStarterCandidateFromId)
-      .filter(p=>p && !ADVENTURE_EARLY_EXCLUDED_IDS.has(Number(p.id)) && !LEGENDARY_MYTHICAL_IDS.has(Number(p.id)));
+      .filter(isAllowedEarlyWildPokemon);
     const fallback=adventure.pokemon
       .map(normalizeAdventureBasePokemon)
-      .filter(p=>p?.frontSprite && !LEGENDARY_MYTHICAL_IDS.has(Number(p.id)) && !ADVENTURE_EARLY_EXCLUDED_IDS.has(Number(p.id)) && !isEarlyBannedStrongPokemon(p) && statTotal(p)<=300);
+      .filter(p=>p?.frontSprite && isAllowedEarlyWildPokemon(p) && statTotal(p)<=300);
     return uniquePokemonById([...explicit, ...fallback]);
   }
   function pickAdventureEarlyWildPokemon(stage=1, playerLevel=getAdventurePlayerReferenceLevel()){
@@ -912,29 +1029,22 @@
 
   function candidateWeakMoves(base, level=5){
     const banned = new Set([...(adventure.learnsets?.bannedStarterMoves || []), "rest", "sleep", "잠자기"]);
-    const existingSource = [
-      ...(base.baseMoves || []),
-      ...(base.currentMoves || []),
-      ...(base.learnableMoves || []),
-      ...((base.moves||[]).map(m=>adventure.moveMap[m.id] || m).filter(Boolean))
-    ];
-    const fromExisting = existingSource.map(m=>adventure.moveMap[m.id] || m).filter(Boolean)
-      .filter(m=>!banned.has(m.id) && !banned.has(m.name) && !isBlockedAdventureMove(m) && (m.power||0) <= (Number(adventure.stage||1)<=10?45:65) && !m.selfDestruct && !m.recharge && !isEarlyExcludedAdventureMove(m));
-    const byType = [];
-    for(const t of (base.types||[])) byType.push(...(adventure.learnsets?.starterFallbackByType?.[t] || []));
-    byType.push(...(adventure.learnsets?.starterFallbackByType?.default || []));
-    const fallback = byType.map(id=>adventure.moveMap[id]).filter(Boolean).filter(m=>!banned.has(m.id) && !banned.has(m.name) && !isBlockedAdventureMove(m) && !isEarlyExcludedAdventureMove(m));
-    const merged = [];
-    for(const m of [...fromExisting, ...fallback]){
-      if(!m || merged.some(x=>x.id===m.id)) continue;
+    const merged=[];
+    const pushMove=(move, strict=false)=>{
+      const m=resolveMoveByName(move?.id||move?.name||move?.apiName||move) || move;
+      if(!m || merged.some(x=>x.id===m.id)) return;
+      if(banned.has(m.id) || banned.has(m.name) || isBlockedAdventureMove(m) || isEarlyExcludedAdventureMove(m)) return;
+      const ok = strict ? validateMoveForPokemon(base, m, level, {allowFallback:false}) : validateMoveForPokemon(base, m, level, {allowFallback:true});
+      if(!ok) return;
       merged.push(normalizeMove(m));
-      if(merged.length>=4) break;
-    }
-    while(merged.length<4){
-      const m=adventure.moveMap[["tackle","quickAttack","growl","scaryFace"][merged.length]];
-      if(m && !merged.some(x=>x.id===m.id)) merged.push(normalizeMove(m)); else break;
-    }
-    return merged.map(m=>({...m, pp:m.maxPp, maxPp:m.maxPp}));
+    };
+    adventureAllowedMovesForPokemon(base, level)
+      .filter(m=>Number(m.power||0)<= (Number(adventure.stage||1)<=10?55:70) || Number(m.power||0)===0)
+      .forEach(m=>pushMove(m, true));
+    const existingSource=[...(base.baseMoves||[]),...(base.currentMoves||[]),...(base.learnableMoves||[]),...((base.moves||[]).map(m=>adventure.moveMap[m.id]||m).filter(Boolean))];
+    existingSource.forEach(m=>pushMove(m, false));
+    safeFallbackMoveIdsForPokemon(base).map(id=>adventure.moveMap[id]).filter(Boolean).forEach(m=>pushMove(m, false));
+    return merged.slice(0,4).map(m=>({...m, pp:m.maxPp, maxPp:m.maxPp}));
   }
   function baseStatsForPokemon(baseOrMon){
     const keys=[baseOrMon?.apiName, baseOrMon?.name, String(baseOrMon?.id||"")].filter(Boolean);
@@ -992,7 +1102,9 @@
   function createAdventurePokemon(base, level=5, side="player"){
     const stats = calculateAdventureStatsFromBase(baseStatsForPokemon(base), level);
     const configured = side==="starter" ? configuredMovesFor(base, level, adventure.stage||1, "starter") : configuredMovesFor(base, level, adventure.stage||1, "wild");
-    const moves = configured.length ? configured : (side==="starter" ? candidateWeakMoves(base, level) : enemyMovesFor(base, level));
+    let moves = configured.length ? configured : (side==="starter" ? candidateWeakMoves(base, level) : enemyMovesFor(base, level));
+    moves = sanitizeIllegalMovesForPokemon(base, moves, level);
+    if(!moves.length) moves = safeFallbackMoveIdsForPokemon(base).map(id=>adventure.moveMap[id]).filter(Boolean).filter(m=>validateMoveForPokemon(base,m,level,{allowFallback:true})).slice(0,4);
     const normalizedStats = applyAdventureEarlyHpToStats(stats, adventure.stage || 1, side);
     return {
       id:base.id, apiName:base.apiName, name:base.name, level,
@@ -1061,29 +1173,79 @@
     return Object.values(adventure.moveMap||{}).find(m=>String(m.id||"").toLowerCase()===raw || String(m.name||"").toLowerCase()===raw || String(m.apiName||"").toLowerCase()===raw) || null;
   }
   function movesFromIds(ids){ return (ids||[]).map(resolveMoveByName).filter(Boolean).filter(m=>!isBlockedAdventureMove(m)); }
+  function adventureLearnsetRecordForPokemon(mon){
+    const keys=[mon?.name, mon?.apiName, String(mon?.id||"")].filter(Boolean);
+    for(const k of keys){
+      if(adventure.fullLearnsets?.[k]) return adventure.fullLearnsets[k];
+    }
+    return null;
+  }
+  function adventureAllowedRuleForPokemon(mon){
+    const keys=[mon?.name, mon?.apiName, String(mon?.id||"")].filter(Boolean);
+    for(const k of keys){
+      if(adventure.pokemonAllowedMoves?.[k]) return adventure.pokemonAllowedMoves[k];
+    }
+    return {};
+  }
   function adventureAllowedMoveNamesForPokemon(mon, level=100){
-    const rule=adventure.pokemonAllowedMoves?.[mon?.name] || adventure.pokemonAllowedMoves?.[mon?.apiName] || adventure.pokemonAllowedMoves?.[String(mon?.id||"")] || {};
+    const rule=adventureAllowedRuleForPokemon(mon);
+    const full=adventureLearnsetRecordForPokemon(mon) || {};
     const learn=(adventure.levelupLearnsets?.[mon?.name] || adventure.levelupLearnsets?.[mon?.apiName] || adventure.levelupLearnsets?.[String(mon?.id||"")] || [])
       .filter(x=>Number(x.level||0)<=Number(level||100)).map(x=>x.move);
+    const fullLevel=(full.levelUp||[]).map(x=>typeof x==="string"?x:x.move).filter(Boolean).filter((_,i)=>true);
+    const fullMachine=(full.machine||[]).map(x=>typeof x==="string"?x:x.move).filter(Boolean);
+    const fullTutor=(full.tutor||[]).map(x=>typeof x==="string"?x:x.move).filter(Boolean);
+    const fullAllowed=(full.allowedAll||[]).map(x=>typeof x==="string"?x:x.move).filter(Boolean);
     const apiLearn=(mon?.availableMoveNames||[]);
     const current=(mon?.moves||[]).map(m=>m.name||m.id||m.apiName);
-    return [...new Set([...(rule.levelUp||[]), ...(rule.tm||[]), ...(rule.coverage||[]), ...learn, ...apiLearn, ...current].filter(Boolean))];
+    return [...new Set([...(rule.levelUp||[]), ...(rule.tm||[]), ...(rule.coverage||[]), ...learn, ...fullLevel, ...fullMachine, ...fullTutor, ...fullAllowed, ...apiLearn, ...current].filter(Boolean))];
   }
   function adventureAllowedMovesForPokemon(mon, level=100){
     return movesFromIds(adventureAllowedMoveNamesForPokemon(mon, level));
+  }
+  function validateMoveForPokemon(mon, move, level=100, {allowFallback=false}={}){
+    if(!move || !mon) return false;
+    const allowedRaw=adventureAllowedMoveNamesForPokemon(mon, level);
+    const names=allowedRaw.map(adventureMoveKey).filter(Boolean);
+    const keys=[move.name, move.id, move.apiName].filter(Boolean).map(adventureMoveKey).filter(Boolean);
+    if(keys.some(k=>names.includes(k))) return true;
+    const full=adventureLearnsetRecordForPokemon(mon);
+    const rule=adventureAllowedRuleForPokemon(mon);
+    if(full || Object.keys(rule||{}).length) return false;
+    return allowFallback ? isSafeFallbackMoveForPokemon(move, mon) : false;
+  }
+  function sanitizeIllegalMovesForPokemon(mon, moves, level=100){
+    const valid=[];
+    for(const m of (moves||[])){
+      const move=resolveMoveByName(m?.id||m?.name||m?.apiName) || m;
+      if(move && validateMoveForPokemon(mon, move, level, {allowFallback:true}) && !valid.some(x=>x.id===move.id)) valid.push(normalizeMove(move));
+    }
+    if(valid.length>=4) return valid.slice(0,4);
+    const allowed=adventureAllowedMovesForPokemon(mon, level).filter(m=>!isBlockedAdventureMove(m));
+    for(const m of shuffle(allowed)){
+      if(valid.length>=4) break;
+      if(m && !valid.some(x=>x.id===m.id)) valid.push(normalizeMove(m));
+    }
+    if(valid.length<4){
+      for(const m of candidateWeakMoves(mon, level)){
+        if(valid.length>=4) break;
+        if(m && !valid.some(x=>x.id===m.id) && moveFitsPokemon(m,mon)) valid.push(normalizeMove(m));
+      }
+    }
+    return valid.slice(0,4);
   }
   function moveFitsPokemon(move, mon){
     if(!move || !mon) return false;
     const types=(mon.types||[]).map(t=>String(t).toLowerCase());
     if(types.includes(String(move.type||"").toLowerCase())) return true;
     if(["normal","status"].includes(String(move.type||"").toLowerCase())) return true;
-    if(move.power===0 && ["growl","tailWhip","scaryFace","smokescreen","agility","screech"].includes(move.id)) return true;
+    if(move.power===0 && ["growl","tailWhip","scaryFace","smokescreen","agility","screech","ironDefense","swordsDance","bulkUp"].includes(move.id)) return true;
     return false;
   }
   function enemyMovesFor(base, level){ return enemyMovesForStage(base, level, adventure.stage||1); }
   function enemyMovesForStage(base, level, stage){
     const configured = configuredMovesFor(base, level, stage, "wild");
-    if(configured.length>=4) return configured.slice(0,4).map(m=>({...normalizeMove(m), pp:m.maxPp, maxPp:m.maxPp}));
+    if(configured.length>=4) return sanitizeIllegalMovesForPokemon(base, configured, level).slice(0,4).map(m=>({...normalizeMove(m), pp:m.maxPp, maxPp:m.maxPp}));
     const tiers=moveTierIdsForStage(stage);
     const existing=(base.moves||[]).map(m=>adventure.moveMap[m.id]||m).filter(Boolean).filter(m=>!m.selfDestruct && !m.recharge && !isBlockedAdventureMove(m));
     const byType=Object.values(adventure.moveMap||{}).filter(m=>moveFitsPokemon(m,base) && !isBlockedAdventureMove(m));
@@ -1106,7 +1268,7 @@
     pick(existing.filter(m=>moveFitsPokemon(m,base)),4);
     pick(byType,4);
     pick(candidateWeakMoves(base, level),4);
-    return desired.slice(0,4).map(m=>({...normalizeMove(m), pp:m.maxPp, maxPp:m.maxPp}));
+    return sanitizeIllegalMovesForPokemon(base, desired, level).slice(0,4).map(m=>({...normalizeMove(m), pp:m.maxPp, maxPp:m.maxPp}));
   }
   function stageMod(stage){ const s=Math.max(-6,Math.min(6,Number(stage||0))); return s>=0 ? (2+s)/2 : 2/(2+Math.abs(s)); }
   function effectiveSpeed(mon){ return (mon.stats?.speed||1) * stageMod(mon.statStages?.speed||0); }
@@ -1451,6 +1613,8 @@
     const enemy = enemyMon();
     if(adventure.phase === "switch"){ renderAdventureSwitchPrompt(); return; }
     if(adventure.phase === "teamReplace"){ renderAdventureTeamReplacePrompt(); return; }
+    if(adventure.phase === "itemTarget"){ renderAdventureItemTargetSelect(); return; }
+    if(adventure.phase === "specialEvolutionChoice"){ renderAdventureSpecialEvolutionChoice(); return; }
     if(adventure.phase === "learnMove"){ renderAdventureLevelMovePrompt(); return; }
     if(adventure.phase === "learnForget"){ renderAdventureLevelMoveForgetPrompt(); return; }
     if(adventure.phase === "evolving"){ buttons.innerHTML=`<div class="control-title">진화가 진행 중입니다...</div>`; return; }
@@ -1570,6 +1734,10 @@
     if(s>=30) add({id:"maxRevive1", title:"기력의덩어리 x1", kind:"revive", item:"maxRevive", amount:1, desc:"기절 포켓몬 완전 부활"}, 3);
     if(s%10===0 || s>=25) add({id:"massRevive1", title:"대규모 부활 x1", kind:"revive", item:"massRevive", amount:1, desc:"팀 전체 복구"}, s%10===0?5:1);
     if(s%10===0 || s>=40) add({id:"pokeCenterPass1", title:"포켓몬센터 이용권 x1", kind:"revive", item:"pokeCenterPass", amount:1, desc:"팀 전체 HP/상태/PP 복구"}, s%10===0?3:1);
+    const canSpecial=(itemKey)=>(adventure.team||[]).some(p=>getAdventureSpecialEvolutionOptions(p,itemKey).length);
+    if(s>=11 && canSpecial("evolutionStone")) add({id:"evolutionStone1", title:"진화의돌 x1", kind:"specialEvolution", item:"evolutionStone", amount:1, desc:"돌 진화 포켓몬을 진화시킵니다"}, s%10===0?6:4);
+    if(s>=31 && canSpecial("linkCable")) add({id:"linkCable1", title:"연결의끈 x1", kind:"specialEvolution", item:"linkCable", amount:1, desc:"통신교환 진화 포켓몬을 진화시킵니다"}, s%10===0?5:3);
+    if(s>=41 && canSpecial("evolutionLight")) add({id:"evolutionLight1", title:"진화의빛 x1", kind:"specialEvolution", item:"evolutionLight", amount:1, desc:"특수진화 포켓몬을 진화시킵니다"}, s%10===0?4:2);
     const eqWeights=s<=10?3:s<=30?5:s<=60?7:9;
     for(const eq of ["powerBand","wiseGlasses","charcoal","mysticWater","miracleSeed","magnet","silverPowder","sharpBeak","hardStone","blackBelt","leftovers","shellBell","assaultVest","lifeCharm"]){
       const def=equipmentDef(eq); const max=Number(def.maxStacks||6), now=Number(adventure.adventureEquipment?.[eq]||0);
@@ -1821,6 +1989,45 @@
     if(ap!==bp) return ap-bp;
     return effectiveSpeed(a)-effectiveSpeed(b);
   }
+  function isAdventureDamagingMove(move){
+    if(!move) return false;
+    const id=String(move.id || move.apiName || move.name || "").toLowerCase();
+    const power=Number(move.power ?? 0);
+    const statusClass = String(move.damage_class || move.damageClass || move.category || "").toLowerCase() === "status";
+    const explicitStatus = !!move.statusMove || !!move.statChange || !!move.selfStat || !!move.statChanges || !!move.selfStatChanges || !!move.targetStatChanges || !!move.heal || !!move.rest;
+    const damagingEffectIds = new Set(["absorb","megaDrain","gigaDrain","powerUpPunch","flameCharge","waterPulse","shockWave","crunch","fireFang","iceFang","thunderFang"]);
+    if(damagingEffectIds.has(id) && power>0) return true;
+    if(statusClass) return false;
+    if(power<=0) return false;
+    if(explicitStatus && power<=0) return false;
+    return true;
+  }
+  function sanitizeAdventureHp(mon){
+    if(!mon) return;
+    const max=Math.max(1, Number(mon.maxHp || mon.stats?.hp || 1));
+    let hp=Number(mon.hp ?? mon.currentHp ?? max);
+    if(!Number.isFinite(hp)) hp=max;
+    mon.maxHp=max;
+    mon.hp=Math.max(0, Math.min(max, Math.round(hp)));
+    mon.fainted = mon.hp<=0 || !!mon.fainted;
+  }
+  function applyAdventureNonDamagingMove(attacker, defender, attackerKey, defenderKey, move, events, logs){
+    const statChanges = collectAdventureStatChanges(move);
+    if(statChanges.length){
+      applyAdventureStatChanges(attacker, defender, attackerKey, defenderKey, statChanges, events, logs);
+    }
+    const statusInfo = move.statusMove || move.effect?.statusOnly || null;
+    const status = normalizeAdventureStatus(statusInfo?.status || move.status || move.effect?.status || null);
+    const statusChance = Number(statusInfo?.chance ?? move.effect?.chance ?? 100);
+    if(status && status!=="normal"){
+      if(!defender.status && Math.random()*100 < statusChance) setAdventureStatus(defender, status, logs, events, defenderKey);
+      else if(defender.status) logs.push(`${defender.name}은/는 이미 상태이상이다!`);
+    }
+    if(!statChanges.length && (!status || status==="normal")){
+      logs.push(`${move.name}의 효과가 발동했다!`);
+    }
+    sanitizeAdventureHp(attacker); sanitizeAdventureHp(defender);
+  }
   function adventureDamageRoll(attacker, defender, move, attackerKey){
     const attack=(effectiveBattleStat(attacker,"attack")||30)*stageMod(attacker.statStages?.attack||0);
     const defense=Math.max(1,(effectiveBattleStat(defender,"defense")||30)*stageMod(defender.statStages?.defense||0));
@@ -1834,8 +2041,10 @@
     const reduceMul = attackerKey === "p2" ? adventureEquipmentDefenseMultiplier() : 1;
     if(typeMul===0) return {amount:0, typeMul, critical:false, equipMul};
     const priorityMul = getAdventurePriorityMoveMultiplier(move);
-    const raw=((((move.power||40)*priorityMul*attack)/defense)/3.35 + 10) * burnPenalty * stab * typeMul * randomMul * criticalMul * equipMul * reduceMul;
-    return {amount:Math.max(1,Math.floor(raw)), typeMul, critical, equipMul};
+    if(!isAdventureDamagingMove(move)) return {amount:0, typeMul, critical:false, equipMul};
+    const raw=(((Number(move.power||0)*priorityMul*attack)/defense)/3.35 + 10) * burnPenalty * stab * typeMul * randomMul * criticalMul * equipMul * reduceMul;
+    const amount=Math.floor(raw);
+    return {amount:Number.isFinite(amount) ? Math.max(1, amount) : 0, typeMul, critical, equipMul};
   }
   function getAdventurePriorityMoveMultiplier(move){
     if(Number(move?.priority||0)<=0) return 1;
@@ -1893,7 +2102,7 @@
     if(Number.isFinite(move.pp)) move.pp=Math.max(0,move.pp-1);
     logs.push(`${attacker.name}의 ${move.name}!`);
     const plannedHitTotal = rollMultiHit(move);
-    events.push({id:advEventId(), type:"move", attacker:attackerKey, defender:defenderKey, attackerName:attacker.name, defenderName:defender.name, moveName:move.name, moveType:move.type, isStatusMove:move.power===0, isMultiHit:plannedHitTotal>1, hitTotal:plannedHitTotal, outcome:"hit"});
+    events.push({id:advEventId(), type:"move", attacker:attackerKey, defender:defenderKey, attackerName:attacker.name, defenderName:defender.name, moveName:move.name, moveType:move.type, isStatusMove:!isAdventureDamagingMove(move), isMultiHit:plannedHitTotal>1, hitTotal:plannedHitTotal, outcome:"hit"});
     if(Math.random()*100 > (move.accuracy ?? 100)){
       logs.push("하지만 공격은 빗나갔다!");
       events.push({id:advEventId(), type:"miss", attacker:attackerKey, defender:defenderKey, moveName:move.name});
@@ -1918,18 +2127,11 @@
       events.push({id:advEventId(), type:"heal", target:attackerKey, name:attacker.name, amount, hp:attacker.hp});
       return;
     }
-    const statusOnly = move.statusMove || (move.power===0 && move.id==="poisonPowder");
-    const statChanges = collectAdventureStatChanges(move);
-    if(move.power===0 && statChanges.length){
-      applyAdventureStatChanges(attacker, defender, attackerKey, defenderKey, statChanges, events, logs);
+    if(!isAdventureDamagingMove(move)){
+      applyAdventureNonDamagingMove(attacker, defender, attackerKey, defenderKey, move, events, logs);
       return;
     }
-    if(statusOnly && move.power===0){
-      const status = normalizeAdventureStatus(move.statusMove?.status || "poison");
-      setAdventureStatus(defender, status, logs, events, defenderKey);
-      return;
-    }
-    const mult = move.power>0 ? battleEffectiveness(move.type,defender.types||[]) : 1;
+    const mult = battleEffectiveness(move.type,defender.types||[]);
     if(mult===0){ logs.push(`${defender.name}에게는 효과가 없다...`); events.push({id:advEventId(), type:"message", text:"효과가 없다..."}); return; }
     const hitTotal=plannedHitTotal;
     let totalDamage=0;
@@ -1937,10 +2139,12 @@
     for(let hit=1; hit<=hitTotal; hit++){
       if(defender.hp<=0) break;
       const roll=adventureDamageRoll(attacker, defender, move, attackerKey);
-      const amount=roll.amount;
+      const amount=Number.isFinite(Number(roll.amount)) ? Math.max(0, Number(roll.amount)) : 0;
+      if(amount<=0) continue;
       totalDamage += amount;
       lastCritical = lastCritical || roll.critical;
-      defender.hp=Math.max(0,defender.hp-amount);
+      sanitizeAdventureHp(defender);
+      defender.hp=Math.max(0,Number(defender.hp||0)-amount);
       if(defenderKey==="p1" && defender.hp<=0){
         const charmCount=Math.min(Number(equipmentDef("lifeCharm").maxStacks||6), Number(adventure.adventureEquipment?.lifeCharm||0));
         defender.volatile=defender.volatile||{};
@@ -1969,6 +2173,7 @@
     if(totalDamage>0 && afterHit.length){
       applyAdventureStatChanges(attacker, defender, attackerKey, defenderKey, afterHit, events, logs, true);
     }
+    sanitizeAdventureHp(defender);
     if(defender.hp<=0){ defender.fainted=true; logs.push(`${defender.name}이 쓰러졌다!`); events.push({id:advEventId(), type:"faint", target:defenderKey, name:defender.name}); }
   }
   function collectAdventureStatChanges(move){
@@ -2510,7 +2715,8 @@
     mon.id=target.id; mon.apiName=target.apiName; mon.name=target.name;
     mon.types=[...(target.types||["normal"])];
     mon.frontSprite=target.frontSprite; mon.backSprite=target.backSprite || target.frontSprite;
-    mon.spriteScale=target.spriteScale || mon.spriteScale || 1;
+    mon.spriteScale=target.spriteScale || 1;
+    mon.renderProfileKey=target.apiName || target.name || String(target.id||"");
     mon.baseStats=baseStatsForPokemon(target);
     mon.adventureBonusStats=bonus;
     const oldStats={...(mon.stats||{}), hp:oldMax};
@@ -2719,15 +2925,7 @@
     const cfg=adventureMoveConfigFor(mon);
     if(Array.isArray(cfg?.blockedMoves) && cfg.blockedMoves.some(x=>String(x)===move.id || String(x)===move.name)) return false;
     if(Array.isArray(cfg?.tmAllowed) && cfg.tmAllowed.some(x=>String(x)===move.id || String(x)===move.name)) return true;
-    const types=(mon.types||[]).map(t=>String(t).toLowerCase());
-    const mt=String(move.type||"").toLowerCase();
-    if(types.includes(mt)) return true;
-    if(mt==="normal" && Number(move.power||0)<=60) return true;
-    if(Number(move.power||0)===0 && ["normal","bug","poison","electric","psychic"].includes(mt)) return true;
-    const common=new Set(["quickAttack","tackle","scratch","growl","tailWhip","scaryFace","smokescreen","swift"]);
-    if(common.has(move.id)) return true;
-    if(move.id==="bulletSeed" && (types.includes("grass")||types.includes("bug"))) return true;
-    return false;
+    return validateMoveForPokemon(mon, move, mon.level || 100, {allowFallback:false});
   }
   function generateAdventureTmReward(){
     const team=adventure.team||[];
@@ -2762,6 +2960,120 @@
   function forgetMoveForAdventureTm(idx){ learnAdventureTmMove(adventure.pendingTmTargetIndex, Number(idx)); }
   function cancelAdventureTmReward(){
     adventure.pendingTmReward=null; adventure.pendingTmTargetIndex=null; adventure.pendingReward=true; adventure.rewardApplying=false; adventure.phase="reward"; renderAdventureButtons(); renderAdventureLogs();
+  }
+
+  function itemTargetModeForAdventureItem(item){
+    if(!item) return null;
+    if(item.kind==="heal") return "singleAlivePokemon";
+    if(item.kind==="revive") return "singleFaintedPokemon";
+    if(item.kind==="specialEvolution") return "singleSpecialEvolution";
+    return null;
+  }
+  function itemTargetUsability(mon, itemKey){
+    const item=adventure.items?.[itemKey];
+    const hp=getAdventurePokemonHp(mon);
+    if(!mon) return {can:false, reason:"빈 슬롯"};
+    if(item?.kind==="heal"){
+      if(mon.fainted || hp<=0) return {can:false, reason:"기절 상태"};
+      if(hp>=Number(mon.maxHp||0)) return {can:false, reason:"HP 가득 참"};
+      return {can:true, reason:"사용 가능"};
+    }
+    if(item?.kind==="revive"){
+      if(mon.fainted || hp<=0) return {can:true, reason:"사용 가능"};
+      return {can:false, reason:"기절하지 않음"};
+    }
+    if(item?.kind==="specialEvolution"){
+      const opts=getAdventureSpecialEvolutionOptions(mon,itemKey);
+      return opts.length ? {can:true, reason:`${opts.map(o=>o.to).join(" / ")} 가능`} : {can:false, reason:"특수진화 불가"};
+    }
+    return {can:false, reason:"대상 선택 불필요"};
+  }
+  function renderAdventureItemTargetSelect(){
+    const buttons=document.getElementById("buttons"); if(!buttons) return;
+    buttons.classList.add("adventure-reward-mode");
+    const key=adventure.pendingItemTarget?.key; const item=adventure.items?.[key] || {};
+    const team=adventure.team||[];
+    buttons.innerHTML=`<div class="control-title">${escapeHtml(item.name||key)}을/를 누구에게 사용할까요?</div><div class="adventure-choice-grid">${team.map((p,idx)=>{
+      const u=itemTargetUsability(p,key); const hp=p?`${getAdventurePokemonHp(p)}/${p.maxHp}`:"-";
+      return `<button type="button" class="move-btn ${u.can?"eff-neutral":"eff-immune"}" ${u.can?"":"disabled"} onclick="adventureUseItemOnTarget(${idx})"><b>${escapeHtml(p?.name||"빈 슬롯")}</b><span class="meta">Lv.${p?.level||"-"} / HP ${hp}${p?.fainted?" / 기절":""}<br/>${escapeHtml(u.reason)}</span></button>`;
+    }).join("")}</div><button type="button" class="move-btn eff-neutral" onclick="adventureCancelItemTarget()">취소<span class="meta">아이템을 사용하지 않습니다</span></button>`;
+  }
+  function adventureCancelItemTarget(){
+    adventure.pendingItemTarget=null; adventure.phase="battle"; renderAdventureButtons(); renderAdventureLogs(); renderBattleView();
+  }
+  function getSpecialEvolutionRule(mon){
+    if(!mon) return null;
+    const keys=[mon.name, mon.apiName, String(mon.id||"")].filter(Boolean);
+    for(const k of keys){ if(adventure.specialEvolutions?.[k]) return adventure.specialEvolutions[k]; }
+    return null;
+  }
+  function specialEvolutionTargetExists(opt){
+    return !!resolveAdventureEvolutionTarget({to:opt?.to, toApiName:opt?.toApiName, toId:opt?.toId});
+  }
+  function getAdventureSpecialEvolutionOptions(mon,itemKey){
+    const item=adventure.items?.[itemKey]; const itemName=item?.name || itemKey;
+    const rule=getSpecialEvolutionRule(mon);
+    if(!rule) return [];
+    if(rule.method==="branching"){
+      return (rule.options||[]).filter(o=>(o.requiredItems||[]).includes(itemName) || (o.requiredItems||[]).includes(itemKey)).filter(specialEvolutionTargetExists);
+    }
+    const allowed = rule.item===itemName || rule.item===itemKey || rule.universalItem===itemName || rule.universalItem===itemKey || (itemKey==="evolutionLight" && rule.universalItem==="진화의빛");
+    if(!allowed) return [];
+    return specialEvolutionTargetExists(rule) ? [rule] : [];
+  }
+  function renderAdventureSpecialEvolutionChoice(){
+    const buttons=document.getElementById("buttons"); if(!buttons) return;
+    buttons.classList.add("adventure-reward-mode");
+    const pending=adventure.pendingSpecialEvolutionChoice || {}; const mon=adventure.team?.[pending.monIndex];
+    const opts=pending.options||[];
+    buttons.innerHTML=`<div class="control-title">${escapeHtml(mon?.name||"포켓몬")}은/는 어떤 모습으로 진화할까요?</div><div class="adventure-choice-grid">${opts.map((o,idx)=>`<button type="button" class="move-btn eff-super" onclick="adventureChooseSpecialEvolution(${idx})"><b>${escapeHtml(o.to||o.toName||"진화체")}</b><span class="meta">${escapeHtml(o.typeHint||"")} 타입</span></button>`).join("")}</div><button type="button" class="move-btn eff-neutral" onclick="adventureCancelItemTarget()">취소<span class="meta">아이템을 사용하지 않습니다</span></button>`;
+  }
+  async function applyAdventureSpecialEvolution(monIndex, option){
+    const pending=adventure.pendingItemTarget; const key=pending?.key; const item=adventure.items?.[key];
+    const mon=adventure.team?.[monIndex];
+    if(!mon || !option || !item || (adventure.bag[key]||0)<=0){ adventureCancelItemTarget(); return; }
+    const old=clone(pending.oldState || currentState); const events=[];
+    adventure.bag[key]-=1;
+    adventure.phase="evolving";
+    adventure.log.push(`${item.name}이/가 ${mon.name}을/를 감쌌다!`);
+    await playAdventureEvolution(mon, option);
+    if(currentState?.players?.p1){ currentState.players.p1.team=clone(adventure.team); currentState.players.p1.activeIndex=adventure.activeIndex||0; }
+    adventure.pendingItemTarget=null; adventure.pendingSpecialEvolutionChoice=null;
+    events.push({id:advEventId(), type:"message", text:`${mon.name}이/가 진화했다!`});
+    finishAdventureItemTurn(old, events);
+  }
+  function adventureUseItemOnTarget(idx){
+    const pending=adventure.pendingItemTarget; const key=pending?.key; const item=adventure.items?.[key];
+    const mon=adventure.team?.[Number(idx)]; if(!pending || !item || !mon) return;
+    const u=itemTargetUsability(mon,key); if(!u.can) return;
+    const old=clone(pending.oldState || currentState); const events=[];
+    if(item.kind==="heal"){
+      adventure.bag[key]-=1;
+      const before=getAdventurePokemonHp(mon); mon.hp=Math.min(Number(mon.maxHp||before), before+Number(item.amount||20)); mon.fainted=false;
+      const amount=mon.hp-before; adventure.log.push(`${item.name} 사용 · ${mon.name} HP ${amount} 회복`);
+      events.push({id:advEventId(), type:"heal", target:"p1", name:mon.name, amount, hp:mon.hp});
+      adventure.pendingItemTarget=null; adventure.phase="battle";
+      if(currentState?.players?.p1){ currentState.players.p1.team=clone(adventure.team); currentState.players.p1.activeIndex=adventure.activeIndex||0; }
+      return finishAdventureItemTurn(old, events);
+    }
+    if(item.kind==="revive"){
+      adventure.bag[key]-=1; const amount=reviveAdventurePokemon(mon, Number(item.reviveRatio||0.5), adventure.log);
+      events.push({id:advEventId(), type:"heal", target:"p1", name:mon.name, amount, hp:mon.hp});
+      adventure.pendingItemTarget=null; adventure.phase="battle";
+      if(currentState?.players?.p1){ currentState.players.p1.team=clone(adventure.team); currentState.players.p1.activeIndex=adventure.activeIndex||0; }
+      return finishAdventureItemTurn(old, events);
+    }
+    if(item.kind==="specialEvolution"){
+      const opts=getAdventureSpecialEvolutionOptions(mon,key);
+      if(opts.length>1){ adventure.pendingSpecialEvolutionChoice={monIndex:Number(idx), options:opts}; adventure.phase="specialEvolutionChoice"; renderAdventureButtons(); return; }
+      if(opts.length===1) return applyAdventureSpecialEvolution(Number(idx), opts[0]);
+    }
+  }
+  function adventureChooseSpecialEvolution(optionIndex){
+    const pending=adventure.pendingSpecialEvolutionChoice || {};
+    const option=(pending.options||[])[Number(optionIndex)];
+    if(!option) return;
+    applyAdventureSpecialEvolution(Number(pending.monIndex), option);
   }
   function adventureItemEffectConfig(key){ return adventure.rewardEffects?.items?.[key] || null; }
   function adventureExpShareConfig(){ return adventure.rewardEffects?.expShare || {}; }
@@ -2817,7 +3129,14 @@
     if(item.kind==="ball") return adventureTryCapture(key);
     const old=clone(currentState);
     const events=[];
-    if(item.kind==="revive" || item.kind==="teamRecovery"){
+    const targetMode=itemTargetModeForAdventureItem(item);
+    if(targetMode){
+      adventure.pendingItemTarget={key, oldState:old, mode:targetMode};
+      adventure.phase="itemTarget";
+      renderAdventureButtons(); renderAdventureLogs(); renderBattleView();
+      return;
+    }
+    if(item.kind==="teamRecovery"){
       if(applyAdventureTeamRecoveryItem(key, item, events)) return finishAdventureItemTurn(old, events);
       renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); return;
     }
@@ -3109,7 +3428,7 @@
     const panel=document.getElementById("battleChatPanel");
     if(panel){ panel.classList.remove("adventure-bag-panel"); panel.innerHTML=`<div class="chat-title">채팅</div><button type="button" class="mobile-collapse-toggle" onclick="toggleMobilePanel('chat')">채팅 보기</button><div class="chat-messages" id="chatMessages"></div><form class="chat-form" onsubmit="sendChat(event)"><input id="chatInput" maxlength="120" autocomplete="off" placeholder="메시지 입력..." /><button type="submit">전송</button></form>`; }
     myRole=null; window.currentRoomId=null; currentState=null; visualState=null; faintPending={p1:false,p2:false};
-    adventure.activeIndex=0; adventure.hallOfFameRoster=[]; adventure.pendingCaptured=null; adventure.rewardApplying=false; adventure.pendingReward=false; adventure.switchMode=null; adventure.pendingLevelMove=null; adventure.growthQueue=[]; adventure.growthProcessing=false; adventure.learnMoveResolving=false; adventure.afterGrowthCallback=null;
+    adventure.activeIndex=0; adventure.hallOfFameRoster=[]; adventure.pendingCaptured=null; adventure.rewardApplying=false; adventure.pendingReward=false; adventure.switchMode=null; adventure.pendingLevelMove=null; adventure.pendingItemTarget=null; adventure.pendingSpecialEvolutionChoice=null; adventure.growthQueue=[]; adventure.growthProcessing=false; adventure.learnMoveResolving=false; adventure.afterGrowthCallback=null;
     try{ requestLobby(); }catch(e){}
   }
 
@@ -3125,6 +3444,9 @@
   window.adventureSkipLevelMove=adventureSkipLevelMove;
   window.adventureForgetLevelMove=adventureForgetLevelMove;
   window.adventureUseItem=adventureUseItem;
+  window.adventureUseItemOnTarget=adventureUseItemOnTarget;
+  window.adventureCancelItemTarget=adventureCancelItemTarget;
+  window.adventureChooseSpecialEvolution=adventureChooseSpecialEvolution;
   window.adventureQuickCapture=adventureQuickCapture;
   window.adventureOpenSwitch=adventureOpenSwitch;
   window.adventureSwitch=adventureSwitch;

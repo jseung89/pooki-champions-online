@@ -32,7 +32,7 @@
   <div class="sub">포켓몬 크기를 <b>scale 중심</b>으로 실시간 조정합니다. 저장하면 <b>data/render_profiles_custom.json</b>에 저장되고, 게임 새로고침 시 로컬에 바로 반영됩니다.</div>
   <div class="bar">
     <input id="search" placeholder="검색: 리자몽, charizard" />
-    <select id="filter"><option value="all">전체</option><option value="changed">이번 변경</option><option value="custom">관리자 저장값</option><option value="large">큰 포켓몬</option><option value="small">작은 포켓몬</option><option value="flying">날개형</option></select>
+    <select id="filter"><option value="all">전체</option><option value="changed">이번 변경</option><option value="custom">관리자 저장값</option><option value="large">큰 포켓몬</option><option value="small">작은 포켓몬</option><option value="flying">날개형</option><option value="adventure">모험모드 사용</option><option value="unset">크기 미설정</option><option value="evo-issue">진화 크기 이상</option><option value="incomplete">데이터 불완전</option></select>
     <select id="sort"><option value="id">번호순</option><option value="name">이름순</option><option value="scale-desc">큰 scale순</option><option value="scale-asc">작은 scale순</option><option value="height-desc">큰 px순</option><option value="height-asc">작은 px순</option></select>
     <span class="seg" id="viewMode"><button data-value="player" class="active">내 편</button><button data-value="opponent">상대</button><button data-value="both">둘 다</button></span>
     <span class="seg" id="bgMode"><button data-value="measure" class="active">신체검사</button><button data-value="battle">배틀</button></span>
@@ -112,6 +112,13 @@
   function adjustScale(api,mul,rerender=true){ const p=data.find(x=>apiName(x)===api); if(!p)return; setScale(api,currentScale(p)*mul,rerender); }
   function adjustField(api,key,delta){ const p=data.find(x=>apiName(x)===api); if(!p)return; const cur=editableProfile(p)[key] ?? profileOf(p)[key] ?? 0; setField(api,key,Number(cur)+delta); }
   function resetCard(api){ delete customProfiles[api]; markDirty(api); applyCustom(); render(); }
+  function isAdventureUsed(p){ return true; }
+  function hasSizeProfile(p){ return !!customProfiles[apiName(p)] || !!baseSystem.OVERRIDES?.[apiName(p)] || p.spriteScale != null; }
+  function evolutionSizeIssue(p){
+    const api=apiName(p);
+    const prev = data.filter(x=>Number(x.id||0)<Number(p.id||0) && String(x.finalEvolution||'')===String(p.finalEvolution||'') && Number(x.evolutionStage||0)<Number(p.evolutionStage||0)).sort((a,b)=>Number(b.evolutionStage||0)-Number(a.evolutionStage||0))[0];
+    return !!(prev && Number(p.evolutionStage||0)>0 && currentScale(p)+0.02 < currentScale(prev));
+  }
   function activeList(){ return applyFilter(data); }
   function scopedList(){ const scope=bulkScope.value; if(scope==='all') return data.slice(); if(scope==='selected') return data.filter(p=>selected.has(apiName(p))); return activeList(); }
   function bulkScale(mul){ const list=scopedList(); if(!list.length){ alert('적용할 포켓몬이 없습니다.'); return; } if(!confirm(`${list.length}마리 scale을 ${Math.round((mul-1)*100)}% 조정할까요?`)) return; list.forEach(p=>adjustScale(apiName(p),mul,false)); applyCustom(); render(); }
@@ -143,7 +150,7 @@
   }
   function applyFilter(list){
     const q=search.value.trim().toLowerCase(); let arr=list.filter(p=>!q || p.name.includes(q) || apiName(p).includes(q));
-    const f=filter.value; if(f==='changed') arr=arr.filter(p=>dirty.has(apiName(p))); if(f==='custom') arr=arr.filter(p=>customProfiles[apiName(p)]); if(f==='large') arr=arr.filter(p=>currentScale(p)>1.15); if(f==='small') arr=arr.filter(p=>currentScale(p)<.9); if(f==='flying') arr=arr.filter(p=>['wideFlying','legendaryWide'].includes(groups[apiName(p)]) || (p.types||[]).includes('flying'));
+    const f=filter.value; if(f==='changed') arr=arr.filter(p=>dirty.has(apiName(p))); if(f==='custom') arr=arr.filter(p=>customProfiles[apiName(p)]); if(f==='large') arr=arr.filter(p=>currentScale(p)>1.15); if(f==='small') arr=arr.filter(p=>currentScale(p)<.9); if(f==='flying') arr=arr.filter(p=>['wideFlying','legendaryWide'].includes(groups[apiName(p)]) || (p.types||[]).includes('flying')); if(f==='adventure') arr=arr.filter(isAdventureUsed); if(f==='unset') arr=arr.filter(p=>!hasSizeProfile(p)); if(f==='evo-issue') arr=arr.filter(evolutionSizeIssue); if(f==='incomplete') arr=arr.filter(p=>p.dataIncomplete || !(p.types||[]).length || !p.stats || !Object.keys(p.stats||{}).length || p.evolutionStage==null);
     if(sort.value==='name') arr.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
     else if(sort.value==='scale-desc') arr.sort((a,b)=>currentScale(b)-currentScale(a));
     else if(sort.value==='scale-asc') arr.sort((a,b)=>currentScale(a)-currentScale(b));
