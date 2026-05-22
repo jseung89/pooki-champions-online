@@ -1410,3 +1410,23 @@ TODO:
 - 보스층 전용 배경/연출 추가 검토
 - 배경 프리로드 최적화 검토
 
+
+## v6.18.26 Adventure Startup Asset Lazy Load + Data Load Timing Hotfix
+
+- 모험모드 입장 시 dataLoadMs가 크게 증가하던 문제를 줄이기 위해 시작 critical path를 정리
+- 모험모드 시작 시 로비/도시 카드/배너/엠블럼 이미지 로딩이 입장을 막지 않도록 `lobby-assets-ready` / `adventure-starting` 기반 lazy/deferred 처리 추가
+- 모험모드 입장에 필요한 JSON 로딩은 고정 버전 쿼리로 정리해 브라우저 캐시 재사용 가능성을 높임
+- 현재 층 배틀 배경 1장만 우선 확인하고, 인접 배경은 idle 시점에 지연 preload하도록 보강
+- 이미 로드 중인 adventure data는 메모리 loadingPromise로 재사용하여 중복 fetch를 방지
+- startup timing 로그를 `requiredJsonLoadMs`, `currentBattleBackgroundLoadMs`, `optionalAssetPreloadMs`, `cacheHit`, `deferredAssetCount` 중심으로 세분화
+- `window.ADVENTURE_DEBUG_STARTUP = true`일 때 세부 startup 로그 확인 가능
+- 기존 HGSS level-up 런셋 / 연출 안정화 / 배경 비주얼 업데이트 / reward guard / player faint guard 유지
+- 전투 로직, 데미지 공식, 기술 데이터, 런셋 데이터는 변경하지 않음
+
+TODO:
+
+- 로비 asset manifest 분리
+- 배경 이미지 progressive preload 고도화
+- sprite lazy loading 최적화
+- Render 배포 환경 cold start 대응
+- 관리자용 성능 디버거 UI 추가

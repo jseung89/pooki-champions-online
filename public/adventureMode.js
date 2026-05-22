@@ -5,7 +5,39 @@
 
   const ADVENTURE_KEY = "pookiAdventureStateV618RealClone";
   const ADVENTURE_EFFECT_SHEET = "/assets/effects/capture-and-levelup-effects-sheet.png";
+  const ADVENTURE_DATA_VERSION = "61826";
   const adventureLevelGateCache = new Map();
+  window.__POOKI_ADVENTURE_DATA_CACHE__ = window.__POOKI_ADVENTURE_DATA_CACHE__ || { loaded:false, loadingPromise:null, loadedAt:null, lastTimings:null };
+  function adventureStaticUrl(path, version=ADVENTURE_DATA_VERSION){
+    return `${path}?v=${version}`;
+  }
+  function nowMs(){ return Math.round(performance.now()); }
+  function scheduleAdventureDeferredTask(task, timeout=3000){
+    try{
+      if(typeof window.requestIdleCallback === "function") return window.requestIdleCallback(task, { timeout });
+    }catch(_){ /* ignore */ }
+    return window.setTimeout(task, Math.min(timeout, 1200));
+  }
+  function preloadImageQuietly(url){
+    if(!url) return Promise.resolve(false);
+    return new Promise(resolve=>{
+      try{
+        const img=new Image();
+        img.onload=()=>resolve(true);
+        img.onerror=()=>resolve(false);
+        img.src=url;
+      }catch(_){ resolve(false); }
+    });
+  }
+  function scheduleAdventureNearbyBackgroundPreload(stage=1){
+    scheduleAdventureDeferredTask(()=>{
+      try{
+        const current=adventureBattleBackgroundForStage(stage);
+        const next=adventureBattleBackgroundForStage(Number(stage||1)+10);
+        [...new Set([current,next].filter(Boolean))].forEach(url=>{ preloadImageQuietly(url); });
+      }catch(_){ /* non-critical */ }
+    }, 2500);
+  }
   function isAdventureDebugEnabled(scope){
     try{
       if(window.ADVENTURE_DEBUG === true) return true;
@@ -329,43 +361,65 @@
   }
 
   async function loadAdventureData(){
-    if(adventure.dataReady) return;
+    const cache = window.__POOKI_ADVENTURE_DATA_CACHE__ || (window.__POOKI_ADVENTURE_DATA_CACHE__ = { loaded:false, loadingPromise:null, loadedAt:null, lastTimings:null });
+    if(adventure.dataReady){
+      adventure.__lastDataCacheHit = true;
+      adventure.__lastRequiredJsonLoadMs = 0;
+      adventure.__lastDataLoadMs = 0;
+      adventure.__lastOptionalAssetPreloadMs = 0;
+      adventure.__lastDeferredAssetCount = 0;
+      return;
+    }
+    if(cache.loadingPromise){
+      adventure.__lastDataCacheHit = true;
+      await cache.loadingPromise;
+      return;
+    }
+    adventure.__lastDataCacheHit = false;
+    cache.loadingPromise = (async()=>{
     const loadStartedAt = performance.now();
+    const requiredJsonStartedAt = performance.now();
     adventureLevelGateCache.clear();
+    const jsonFetch = (url, fallback, opts={}) => fetchJsonSafely(url).catch((err)=>{
+      if(opts.warn) console.warn(opts.warn, err);
+      adventureDebugWarn("startup", "[Adventure/Startup] optional json failed", { url, message:err?.message, status:err?.status, preview:err?.preview });
+      return fallback;
+    });
     const [arena, config, items, rewards, rewardEffects, rewardBalance, expBalance, captureBalance, effectSettings, pokemonMovesets, levelupLearnsets, tmRewards, sizeOverrides, capture, captureRates, learnsets, adventureMoves, expTable, baseStats, evolutions, equipmentConfig, effectMap, blockedMoves, moveTiers, basicConfig, starterPool, encounterRules, enemyMovesetRules, pokemonAllowedMoves, fullLearnsets, specialEvolutions, bosses] = await Promise.all([
-      fetch("/api/test-arena/data").then(r=>r.json()),
-      fetch("/data/adventure_config.json").then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_items.json?v=6189-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_rewards.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({rewards:[]})),
-      fetch(`/data/adventure_reward_effects.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_reward_balance.json?v=61813-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_exp_balance.json?v=61813-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_capture_balance.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_effect_settings.json?v=61811a-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_pokemon_movesets.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_levelup_learnsets.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_tm_rewards.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_pokemon_size_overrides.json?v=61810-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch("/data/adventure_capture.json").then(r=>r.json()).catch(()=>({})),
-      fetch("/data/adventure_capture_rates.json").then(r=>r.json()).catch(()=>({})),
-      fetch("/data/adventure_learnsets.json").then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_moves.json?v=6189-${Date.now()}`).then(r=>r.json()).catch(()=>({moves:[]})),
-      fetch("/data/adventure_exp_table.json").then(r=>r.json()).catch(()=>({})),
-      fetch("/data/adventure_base_stats.json").then(r=>r.json()).catch(()=>({})),
-      fetch("/data/adventure_evolutions.json").then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_equipment.json?v=6189-${Date.now()}`).then(r=>r.json()).catch(()=>({equipment:[]})),
-      fetch("/data/adventure_move_effect_map.json").then(r=>r.json()).catch(()=>({})),
-      fetch("/data/adventure_blocked_moves.json").then(r=>r.json()).catch(()=>({blocked:[]})),
-      fetch(`/data/adventure_move_tiers.json?v=6189-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch("/data/adventure_basic_pokemon.json").then(r=>r.json()).catch(()=>({basicIds:[]})),
-      fetch(`/data/adventure_starter_pool.json?v=6188e-${Date.now()}`).then(r=>r.json()).catch((err)=>{ console.warn("[Adventure Starter] starter pool json load failed", err); return {starters:[], __loadFailed:true}; }),
-      fetch(`/data/adventure_encounter_rules.json?v=61814-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_enemy_moveset_rules.json?v=61814-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_pokemon_allowed_moves.json?v=61816-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_pokemon_full_learnsets.json?v=61816-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_special_evolutions.json?v=61816-${Date.now()}`).then(r=>r.json()).catch(()=>({})),
-      fetch(`/data/adventure_bosses.json?v=61814-${Date.now()}`).then(r=>r.json()).catch(()=>({}))
+      jsonFetch("/api/test-arena/data", {pokemon:[], moves:[]}),
+      jsonFetch(adventureStaticUrl("/data/adventure_config.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_items.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_rewards.json"), {rewards:[]}),
+      jsonFetch(adventureStaticUrl("/data/adventure_reward_effects.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_reward_balance.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_exp_balance.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_capture_balance.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_effect_settings.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_pokemon_movesets.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_levelup_learnsets.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_tm_rewards.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_pokemon_size_overrides.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_capture.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_capture_rates.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_learnsets.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_moves.json"), {moves:[]}),
+      jsonFetch(adventureStaticUrl("/data/adventure_exp_table.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_base_stats.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_evolutions.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_equipment.json"), {equipment:[]}),
+      jsonFetch(adventureStaticUrl("/data/adventure_move_effect_map.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_blocked_moves.json"), {blocked:[]}),
+      jsonFetch(adventureStaticUrl("/data/adventure_move_tiers.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_basic_pokemon.json"), {basicIds:[]}),
+      jsonFetch(adventureStaticUrl("/data/adventure_starter_pool.json"), {starters:[], __loadFailed:true}, {warn:"[Adventure Starter] starter pool json load failed"}),
+      jsonFetch(adventureStaticUrl("/data/adventure_encounter_rules.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_enemy_moveset_rules.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_pokemon_allowed_moves.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_pokemon_full_learnsets.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_special_evolutions.json"), {}),
+      jsonFetch(adventureStaticUrl("/data/adventure_bosses.json"), {})
     ]);
+    adventure.__lastRequiredJsonLoadMs = Math.round(performance.now() - requiredJsonStartedAt);
     adventure.pokemon = Array.isArray(arena?.pokemon) ? arena.pokemon : [];
     adventure.moves = Array.isArray(arena?.moves) ? arena.moves : [];
     adventure.effectMap = effectMap || {};
@@ -406,7 +460,7 @@
     adventure.bosses = bosses || {};
     const rosterLoadStartedAt = performance.now();
     try{
-      const master = await fetchJsonSafely(`/data/pokemon_master_gen1_2.json?v=61823-${Date.now()}`);
+      const master = await fetchJsonSafely(adventureStaticUrl("/data/pokemon_master_gen1_2.json"));
       adventure.masterPokemon = Array.isArray(master) ? master : [];
       adventure.pokemon = mergeAdventureMasterPokemon(adventure.pokemon, adventure.masterPokemon);
     }catch(err){
@@ -415,9 +469,20 @@
     }
     adventure.__lastRosterLoadMs = Math.round(performance.now() - rosterLoadStartedAt);
     adventure.__lastDataLoadMs = Math.round(performance.now() - loadStartedAt);
+    adventure.__lastOptionalAssetPreloadMs = 0;
+    adventure.__lastDeferredAssetCount = 0;
     adventure.maxStage = Number(config?.maxStage || 100);
     adventure.bossEvery = Number(config?.bossEvery || 10);
     adventure.dataReady = true;
+    cache.loaded = true;
+    cache.loadedAt = Date.now();
+    cache.lastTimings = { requiredJsonLoadMs: adventure.__lastRequiredJsonLoadMs, rosterLoadMs: adventure.__lastRosterLoadMs, totalMs: adventure.__lastDataLoadMs };
+    })();
+    try{
+      await cache.loadingPromise;
+    }finally{
+      cache.loadingPromise = null;
+    }
   }
 
   function normalizeMove(move){
@@ -1515,9 +1580,13 @@
     try{
       installOverrides();
       injectAdventureStyle();
+      document.body.classList.add("adventure-starting");
       const roleTextLoading=document.getElementById("roleText");
       if(roleTextLoading) roleTextLoading.textContent="모험 준비 중...";
       await loadAdventureData();
+      const bgStartedAt = performance.now();
+      await preloadImageQuietly(adventureBattleBackgroundForStage(1));
+      adventure.__lastCurrentBattleBackgroundLoadMs = Math.round(performance.now() - bgStartedAt);
       afterLoadAt = performance.now();
       adventure.active = true;
       adventure.stage = 1;
@@ -1540,6 +1609,8 @@
       adventure.starterCandidates = pickStarterCandidates();
       afterStarterAt = performance.now();
       document.body.classList.add("adventure-mode");
+      document.body.classList.remove("adventure-starting");
+      scheduleAdventureNearbyBackgroundPreload(1);
       document.getElementById("lobbyScreen").style.display = "none";
       document.getElementById("gameScreen").classList.remove("hidden");
       myRole = "p1";
@@ -1549,14 +1620,21 @@
       const doneAt = performance.now();
       console.info?.("[Adventure/Startup] timing", {
         rosterLoadMs: adventure.__lastRosterLoadMs || 0,
+        requiredJsonLoadMs: adventure.__lastRequiredJsonLoadMs ?? Math.round(afterLoadAt - startupStartedAt),
+        currentBattleBackgroundLoadMs: adventure.__lastCurrentBattleBackgroundLoadMs || 0,
+        optionalAssetPreloadMs: adventure.__lastOptionalAssetPreloadMs || 0,
         dataLoadMs: Math.round(afterLoadAt - startupStartedAt),
         starterBuildMs: Math.round(afterStarterAt - afterLoadAt),
         renderMs: Math.round(doneAt - afterStarterAt),
         totalMs: Math.round(doneAt - startupStartedAt),
+        cacheHit: !!adventure.__lastDataCacheHit,
+        requiredJsonFiles: 33,
+        deferredAssetCount: adventure.__lastDeferredAssetCount || 2,
         rosterCount: adventure.pokemon?.length || 0,
         finalStarterCount: adventure.starterCandidates?.length || 0
       });
     }catch(err){
+      document.body.classList.remove("adventure-starting");
       console.error("adventure start failed", err);
       alert("모험모드 시작 중 오류가 발생했습니다. 콘솔을 확인해주세요.");
     }
@@ -1675,7 +1753,8 @@
     if(!arena) return;
     const url=adventureBattleBackgroundForStage(stage);
     arena.style.setProperty("--adventure-battle-bg", `url("${url}")`);
-    console.debug?.("[Adventure Field] background", {stage, url});
+    adventureDebugLog("startup", "[Adventure Field] background", {stage, url});
+    scheduleAdventureNearbyBackgroundPreload(Number(stage||1));
   }
 
   function startAdventureFloor(){
@@ -4182,6 +4261,8 @@
     adventure.active=false;
     const advReturn=document.querySelector(".top-actions .adventure-return-btn"); if(advReturn) advReturn.remove();
     document.body.classList.remove("adventure-mode");
+    document.body.classList.remove("adventure-starting");
+    document.body.classList.add("lobby-assets-ready");
     const overlay=document.getElementById("overlay"); if(overlay) overlay.classList.remove("show");
     document.getElementById("gameScreen").classList.add("hidden");
     document.getElementById("lobbyScreen").style.display="grid";

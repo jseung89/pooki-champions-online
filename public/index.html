@@ -821,11 +821,11 @@
     .room-art{position:relative;height:116px;overflow:hidden;border-radius:25px 25px 0 0;background:linear-gradient(135deg,#93c5fd,#dbeafe);}
     .room-art::before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.38),transparent 45%,rgba(7,25,70,.34));}
     .room-art::after{content:"";position:absolute;left:14px;right:14px;bottom:10px;height:18px;border-radius:999px;background:rgba(255,255,255,.28);filter:blur(.2px);}
-    .room-card[data-theme="pallet"] .room-art{background:radial-gradient(circle at 72% 28%,#fef9c3 0 10%,transparent 11%),linear-gradient(180deg,#93c5fd 0 43%,#86efac 44% 100%);} 
-    .room-card[data-theme="gray"] .room-art{background:radial-gradient(circle at 24% 86%,#78716c 0 16%,transparent 17%),radial-gradient(circle at 72% 75%,#a8a29e 0 18%,transparent 19%),linear-gradient(180deg,#bfdbfe 0 42%,#94a3b8 43% 100%);} 
-    .room-card[data-theme="blue"] .room-art{background:radial-gradient(circle at 50% 58%,rgba(255,255,255,.8) 0 10%,transparent 11%),repeating-radial-gradient(ellipse at 50% 115%,rgba(255,255,255,.28) 0 8px,transparent 9px 20px),linear-gradient(180deg,#7dd3fc 0 45%,#2563eb 46% 100%);} 
-    .room-card[data-theme="rainbow"] .room-art{background:linear-gradient(135deg,#111827 0%,#312e81 55%,#7c3aed 100%);} 
-    .room-card[data-theme="rainbow"] .room-art::before{background:linear-gradient(90deg,#f43f5e,#f59e0b,#22c55e,#06b6d4,#8b5cf6);opacity:.58;top:26px;bottom:auto;height:18px;filter:blur(.2px);}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="pallet"] .room-art{background:radial-gradient(circle at 72% 28%,#fef9c3 0 10%,transparent 11%),linear-gradient(180deg,#93c5fd 0 43%,#86efac 44% 100%);} 
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="gray"] .room-art{background:radial-gradient(circle at 24% 86%,#78716c 0 16%,transparent 17%),radial-gradient(circle at 72% 75%,#a8a29e 0 18%,transparent 19%),linear-gradient(180deg,#bfdbfe 0 42%,#94a3b8 43% 100%);} 
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="blue"] .room-art{background:radial-gradient(circle at 50% 58%,rgba(255,255,255,.8) 0 10%,transparent 11%),repeating-radial-gradient(ellipse at 50% 115%,rgba(255,255,255,.28) 0 8px,transparent 9px 20px),linear-gradient(180deg,#7dd3fc 0 45%,#2563eb 46% 100%);} 
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="rainbow"] .room-art{background:linear-gradient(135deg,#111827 0%,#312e81 55%,#7c3aed 100%);} 
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="rainbow"] .room-art::before{background:linear-gradient(90deg,#f43f5e,#f59e0b,#22c55e,#06b6d4,#8b5cf6);opacity:.58;top:26px;bottom:auto;height:18px;filter:blur(.2px);}
     .room-icon{position:absolute;right:18px;top:18px;font-size:52px!important;filter:drop-shadow(0 12px 12px rgba(15,23,42,.22));animation:roomIconFloat 2.8s ease-in-out infinite alternate;}
     @keyframes roomIconFloat{from{transform:translateY(0)}to{transform:translateY(-6px)}}
     .room-body{padding:18px 18px 16px;display:grid;gap:12px;}
@@ -961,25 +961,25 @@
       color:#eaf2ff;background:rgba(3,7,18,.34);border:1px solid rgba(255,255,255,.18);
       font-size:10px;font-weight:1000;letter-spacing:.08em;text-shadow:0 1px 5px rgba(0,0,0,.4);
     }
-    .room-card[data-theme="pallet"] .room-art{
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="pallet"] .room-art{
       background:
         radial-gradient(circle at 73% 28%,#fef9c3 0 9%,transparent 10%),
         radial-gradient(ellipse at 18% 80%,rgba(21,128,61,.55) 0 17%,transparent 18%),
         linear-gradient(180deg,#7dd3fc 0 43%,#16a34a 44% 100%)!important;
     }
-    .room-card[data-theme="gray"] .room-art{
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="gray"] .room-art{
       background:
         radial-gradient(ellipse at 28% 84%,#57534e 0 18%,transparent 19%),
         radial-gradient(ellipse at 73% 77%,#a8a29e 0 20%,transparent 21%),
         linear-gradient(180deg,#64748b 0 44%,#292524 45% 100%)!important;
     }
-    .room-card[data-theme="blue"] .room-art{
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="blue"] .room-art{
       background:
         radial-gradient(circle at 50% 52%,rgba(255,255,255,.82) 0 8%,transparent 9%),
         repeating-radial-gradient(ellipse at 50% 112%,rgba(255,255,255,.26) 0 7px,transparent 8px 19px),
         linear-gradient(180deg,#38bdf8 0 42%,#1d4ed8 43% 100%)!important;
     }
-    .room-card[data-theme="rainbow"] .room-art{
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="rainbow"] .room-art{
       background:
         radial-gradient(circle at 88% 24%,rgba(244,114,182,.36),transparent 18%),
         linear-gradient(135deg,#0f172a 0%,#312e81 50%,#6d28d9 100%)!important;
@@ -1129,9 +1129,14 @@
     body{
       background:
         linear-gradient(180deg,rgba(3,7,18,.12),rgba(3,7,18,.36)),
+        radial-gradient(circle at 12% 12%,rgba(37,99,235,.28),transparent 30%)!important;
+      background-color:#071737!important;
+    }
+    body.lobby-assets-ready:not(.adventure-starting){
+      background:
+        linear-gradient(180deg,rgba(3,7,18,.12),rgba(3,7,18,.36)),
         radial-gradient(circle at 12% 12%,rgba(37,99,235,.28),transparent 30%),
         url('/assets/lobby/lobby-main-bg-v2.png') center center / cover no-repeat fixed!important;
-      background-color:#071737!important;
     }
     body::before{
       background:
@@ -1191,26 +1196,26 @@
       z-index:4!important;
       animation:roomIconFloat 2.8s ease-in-out infinite alternate;
     }
-    .room-card[data-theme="pallet"] .room-art{background-image:url('/assets/lobby/city-taecho-banner.png')!important;}
-    .room-card[data-theme="gray"] .room-art{background-image:url('/assets/lobby/city-gray-banner.png')!important;}
-    .room-card[data-theme="blue"] .room-art{background-image:url('/assets/lobby/city-blue-banner.png')!important;}
-    .room-card[data-theme="rainbow"] .room-art{background-image:url('/assets/lobby/city-rainbow-banner.png')!important;}
-    .room-card[data-theme="rainbow"] .room-art::before{
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="pallet"] .room-art{background-image:url('/assets/lobby/city-taecho-banner.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="gray"] .room-art{background-image:url('/assets/lobby/city-gray-banner.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="blue"] .room-art{background-image:url('/assets/lobby/city-blue-banner.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="rainbow"] .room-art{background-image:url('/assets/lobby/city-rainbow-banner.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="rainbow"] .room-art::before{
       background:linear-gradient(180deg,rgba(7,18,44,.08),rgba(7,18,44,.20) 42%,rgba(7,18,44,.74))!important;
       opacity:1!important;height:auto!important;top:0!important;bottom:0!important;filter:none!important;
     }
-    .room-card[data-theme="pallet"] .room-icon{background-image:url('/assets/lobby/city-taecho-emblem.png')!important;}
-    .room-card[data-theme="gray"] .room-icon{background-image:url('/assets/lobby/city-gray-emblem.png')!important;}
-    .room-card[data-theme="blue"] .room-icon{background-image:url('/assets/lobby/city-blue-emblem.png')!important;}
-    .room-card[data-theme="rainbow"] .room-icon{background-image:url('/assets/lobby/city-rainbow-emblem.png')!important;}
-    .room-card[data-theme="adventure"] .room-art{background-image:url('/assets/lobby/adventure-card.png')!important;}
-    .room-card[data-theme="viridian"] .room-art{background-image:url('/assets/lobby/evergreen-city-card.png')!important;}
-    .room-card[data-theme="fuchsia"] .room-art{background-image:url('/assets/lobby/fuchsia-city-card.png')!important;}
-    .room-card[data-theme="lavender"] .room-art{background-image:url('/assets/lobby/lavender-town-card.png')!important;}
-    .room-card[data-theme="adventure"] .room-icon{background-image:url('/assets/lobby/adventure-emblem.png')!important;}
-    .room-card[data-theme="viridian"] .room-icon{background-image:url('/assets/lobby/evergreen-city-emblem.png')!important;}
-    .room-card[data-theme="fuchsia"] .room-icon{background-image:url('/assets/lobby/fuchsia-city-emblem.png')!important;}
-    .room-card[data-theme="lavender"] .room-icon{background-image:url('/assets/lobby/lavender-town-emblem.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="pallet"] .room-icon{background-image:url('/assets/lobby/city-taecho-emblem.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="gray"] .room-icon{background-image:url('/assets/lobby/city-gray-emblem.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="blue"] .room-icon{background-image:url('/assets/lobby/city-blue-emblem.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="rainbow"] .room-icon{background-image:url('/assets/lobby/city-rainbow-emblem.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="adventure"] .room-art{background-image:url('/assets/lobby/adventure-card.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="viridian"] .room-art{background-image:url('/assets/lobby/evergreen-city-card.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="fuchsia"] .room-art{background-image:url('/assets/lobby/fuchsia-city-card.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="lavender"] .room-art{background-image:url('/assets/lobby/lavender-town-card.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="adventure"] .room-icon{background-image:url('/assets/lobby/adventure-emblem.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="viridian"] .room-icon{background-image:url('/assets/lobby/evergreen-city-emblem.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="fuchsia"] .room-icon{background-image:url('/assets/lobby/fuchsia-city-emblem.png')!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-card[data-theme="lavender"] .room-icon{background-image:url('/assets/lobby/lavender-town-emblem.png')!important;}
     .room-body{padding-top:16px!important;}
     .room-name{color:#f8fbff!important;}
     .room-meta{font-size:13px!important;}
@@ -1228,9 +1233,14 @@
     body{
       background:
         linear-gradient(90deg,rgba(2,6,23,.58) 0%,rgba(2,6,23,.38) 34%,rgba(2,6,23,.50) 100%),
+        linear-gradient(180deg,rgba(2,6,23,.34),rgba(2,6,23,.72))!important;
+      background-color:#050f2a!important;
+    }
+    body.lobby-assets-ready:not(.adventure-starting){
+      background:
+        linear-gradient(90deg,rgba(2,6,23,.58) 0%,rgba(2,6,23,.38) 34%,rgba(2,6,23,.50) 100%),
         linear-gradient(180deg,rgba(2,6,23,.34),rgba(2,6,23,.72)),
         url('/assets/lobby/lobby-main-bg-v2.png') center center / cover no-repeat fixed!important;
-      background-color:#050f2a!important;
     }
     body::before{
       background:
@@ -1251,6 +1261,15 @@
       box-shadow:0 18px 44px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.06)!important;
     }
     .lobby-emblem{
+      background:
+        radial-gradient(circle at 50% 42%,rgba(255,255,255,.16),transparent 42%),
+        linear-gradient(145deg,rgba(15,23,42,.72),rgba(29,78,216,.72) 58%,rgba(124,58,237,.62))!important;
+      font-size:0!important;
+      color:transparent!important;
+      overflow:hidden!important;
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 24px rgba(0,0,0,.28),0 0 24px rgba(37,99,235,.20)!important;
+    }
+    body.lobby-assets-ready:not(.adventure-starting) .lobby-emblem{
       background:
         radial-gradient(circle at 50% 42%,rgba(255,255,255,.16),transparent 42%),
         url('/assets/lobby/lobby-main-emblem-v2.png') center center / 84% 84% no-repeat,
@@ -1560,14 +1579,14 @@
       z-index:5!important;
       filter:drop-shadow(0 12px 15px rgba(0,0,0,.36)) drop-shadow(0 0 12px rgba(255,255,255,.14))!important;
     }
-    .room-grid .room-card[data-theme="pallet"] .room-art{background-position:center 48%!important;}
-    .room-grid .room-card[data-theme="gray"] .room-art{background-position:center 50%!important;}
-    .room-grid .room-card[data-theme="blue"] .room-art{background-position:center 48%!important;}
-    .room-grid .room-card[data-theme="rainbow"] .room-art{background-position:center 50%!important;}
-    .room-grid .room-card[data-theme="adventure"] .room-art,
-    .room-grid .room-card[data-theme="viridian"] .room-art,
-    .room-grid .room-card[data-theme="fuchsia"] .room-art,
-    .room-grid .room-card[data-theme="lavender"] .room-art{
+    body.lobby-assets-ready:not(.adventure-starting) .room-grid .room-card[data-theme="pallet"] .room-art{background-position:center 48%!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-grid .room-card[data-theme="gray"] .room-art{background-position:center 50%!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-grid .room-card[data-theme="blue"] .room-art{background-position:center 48%!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-grid .room-card[data-theme="rainbow"] .room-art{background-position:center 50%!important;}
+    body.lobby-assets-ready:not(.adventure-starting) .room-grid .room-card[data-theme="adventure"] .room-art,
+    body.lobby-assets-ready:not(.adventure-starting) .room-grid .room-card[data-theme="viridian"] .room-art,
+    body.lobby-assets-ready:not(.adventure-starting) .room-grid .room-card[data-theme="fuchsia"] .room-art,
+    body.lobby-assets-ready:not(.adventure-starting) .room-grid .room-card[data-theme="lavender"] .room-art{
       background-position:center center!important;
     }
     .room-grid .room-card .room-body{
@@ -3621,5 +3640,26 @@ body.adventure-mode .opponent-sprite {
     function escapeHtml(text){ return String(text).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
   </script>
   <script src="/adventureMode.js"></script>
+
+<script>
+(function(){
+  function enableLobbyAssets(){
+    try{
+      if(document.body && !document.body.classList.contains('adventure-starting')){
+        document.body.classList.add('lobby-assets-ready');
+      }
+    }catch(_){}
+  }
+  window.enableLobbyAssets = enableLobbyAssets;
+  window.addEventListener('load', function(){
+    var run=function(){
+      if(document.body && document.body.classList.contains('adventure-starting')) return;
+      enableLobbyAssets();
+    };
+    if('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 5000 });
+    else setTimeout(run, 1800);
+  });
+})();
+</script>
 </body>
 </html>
