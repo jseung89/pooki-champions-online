@@ -1,0 +1,36 @@
+Validation Summary
+Generated at: 2026-05-22T03:33:24.389Z
+Target version group: heartgold-soulsilver
+Pokemon processed: 251
+Total level-up rows: 3398
+Method mismatch rows: 0
+Level <= 0 rows: 0
+Version group mismatch rows: 0
+Unmapped Pokemon names: 0
+Unmapped move names: 290
+Pokemon without level-up moves: 0
+Errors: 0
+
+Sample Pokemon move counts:
+- abra: 1
+- bulbasaur: 14
+- charmander: 10
+- corsola: 14
+- dratini: 13
+- larvitar: 13
+- marill: 11
+- omanyte: 13
+- pikachu: 13
+- sandshrew: 13
+- squirtle: 14
+- swinub: 14
+
+Suspicious checks:
+- dratini Lv8 dragon-pulse: NOT FOUND
+- dratini Lv12 tackle: NOT FOUND
+- abra low-level psychic: NOT FOUND
+- pikachu low-level thunder: NOT FOUND
+- sandshrew Lv8 earthquake: NOT FOUND
+- pikachu surf level-up: NOT FOUND
+- pikachu dig level-up: NOT FOUND
+- pikachu brick-break level-up: NOT FOUND

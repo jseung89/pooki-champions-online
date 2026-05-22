@@ -1,0 +1,48 @@
+{
+  "bossEvery": 10,
+  "stageBosses": {
+    "10": {
+      "name": "피죤",
+      "levelBonus": 1,
+      "moves": [
+        "전광석화",
+        "바람일으키기",
+        "날개치기",
+        "고속이동"
+      ]
+    },
+    "50": {
+      "name": "잠만보",
+      "levelBonus": 3,
+      "moves": [
+        "누르기",
+        "잠자기",
+        "깨물어부수기",
+        "망각술"
+      ]
+    },
+    "90": {
+      "name": "망나뇽",
+      "levelBonus": 4,
+      "moves": [
+        "용의파동",
+        "날개치기",
+        "고속이동",
+        "화염방사"
+      ]
+    }
+  },
+  "finalBoss": {
+    "stage": 100,
+    "name": "뮤츠",
+    "levelMode": "playerAveragePlus",
+    "levelBonus": 5,
+    "moves": [
+      "사이코키네시스",
+      "섀도볼",
+      "회복",
+      "고속이동"
+    ],
+    "introMessage": "최종층에 도달했다... 강대한 기운이 느껴진다!"
+  }
+}

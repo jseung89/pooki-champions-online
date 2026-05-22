@@ -1,0 +1,1454 @@
+{
+  "version": "v6.18.22",
+  "targetVersionGroup": "heartgold-soulsilver",
+  "pokemonRecords": 251,
+  "uniqueHgssMoves": 402,
+  "implementedMovesInFinalCoverage": 284,
+  "addedEarlyUtilityFixes": [
+    "wrap",
+    "constrict",
+    "bind",
+    "rapid-spin",
+    "smokescreen",
+    "sand-attack",
+    "double-team",
+    "leech-seed",
+    "sweet-scent",
+    "focus-energy",
+    "roar",
+    "whirlwind",
+    "splash",
+    "teleport"
+  ],
+  "deferredOrExcludedMoves": 118,
+  "koreanNameGaps": 116,
+  "finalAdventureLevelupKeys": 753,
+  "finalAdventureLevelupRows": 2634,
+  "excludedLevelupRows": 764,
+  "excludedLevelupRowsSample": [
+    {
+      "pokemon": "bulbasaur",
+      "move": "worry-seed",
+      "level": 31,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "ivysaur",
+      "move": "worry-seed",
+      "level": 36,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "venusaur",
+      "move": "worry-seed",
+      "level": 39,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "squirtle",
+      "move": "protect",
+      "level": 22,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "squirtle",
+      "move": "rain-dance",
+      "level": 37,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "wartortle",
+      "move": "protect",
+      "level": 24,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "wartortle",
+      "move": "rain-dance",
+      "level": 44,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "blastoise",
+      "move": "protect",
+      "level": 24,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "blastoise",
+      "move": "rain-dance",
+      "level": 53,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "butterfree",
+      "move": "supersonic",
+      "level": 18,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "butterfree",
+      "move": "tailwind",
+      "level": 30,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "butterfree",
+      "move": "safeguard",
+      "level": 34,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "butterfree",
+      "move": "captivate",
+      "level": 36,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "beedrill",
+      "move": "rage",
+      "level": 19,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "beedrill",
+      "move": "toxic-spikes",
+      "level": 25,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "beedrill",
+      "move": "endeavor",
+      "level": 40,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "pidgey",
+      "move": "tailwind",
+      "level": 41,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "pidgey",
+      "move": "mirror-move",
+      "level": 45,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "pidgeotto",
+      "move": "tailwind",
+      "level": 47,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "pidgeotto",
+      "move": "mirror-move",
+      "level": 52,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "pidgeot",
+      "move": "tailwind",
+      "level": 50,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "pidgeot",
+      "move": "mirror-move",
+      "level": 56,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "rattata",
+      "move": "endeavor",
+      "level": 34,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "raticate",
+      "move": "endeavor",
+      "level": 44,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "spearow",
+      "move": "mirror-move",
+      "level": 21,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "fearow",
+      "move": "mirror-move",
+      "level": 23,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "ekans",
+      "move": "spit-up",
+      "level": 25,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "ekans",
+      "move": "stockpile",
+      "level": 25,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "ekans",
+      "move": "swallow",
+      "level": 25,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "ekans",
+      "move": "gastro-acid",
+      "level": 33,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "ekans",
+      "move": "haze",
+      "level": 36,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "arbok",
+      "move": "spit-up",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "arbok",
+      "move": "stockpile",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "arbok",
+      "move": "swallow",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "arbok",
+      "move": "gastro-acid",
+      "level": 42,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "arbok",
+      "move": "haze",
+      "level": 48,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "pikachu",
+      "move": "light-screen",
+      "level": 42,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "sandshrew",
+      "move": "sandstorm",
+      "level": 37,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "sandslash",
+      "move": "crush-claw",
+      "level": 22,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "sandslash",
+      "move": "sandstorm",
+      "level": 52,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidoran-f",
+      "move": "helping-hand",
+      "level": 25,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidoran-f",
+      "move": "toxic-spikes",
+      "level": 31,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidoran-f",
+      "move": "flatter",
+      "level": 33,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidoran-f",
+      "move": "captivate",
+      "level": 43,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidorina",
+      "move": "helping-hand",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidorina",
+      "move": "toxic-spikes",
+      "level": 35,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidorina",
+      "move": "flatter",
+      "level": 38,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidorina",
+      "move": "captivate",
+      "level": 50,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidoran-m",
+      "move": "helping-hand",
+      "level": 25,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidoran-m",
+      "move": "toxic-spikes",
+      "level": 31,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidoran-m",
+      "move": "flatter",
+      "level": 33,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidoran-m",
+      "move": "captivate",
+      "level": 43,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidoran-m",
+      "move": "horn-drill",
+      "level": 45,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidorino",
+      "move": "helping-hand",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidorino",
+      "move": "toxic-spikes",
+      "level": 35,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidorino",
+      "move": "flatter",
+      "level": 38,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidorino",
+      "move": "captivate",
+      "level": 50,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "nidorino",
+      "move": "horn-drill",
+      "level": 58,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefairy",
+      "move": "encore",
+      "level": 4,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefairy",
+      "move": "follow-me",
+      "level": 16,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefairy",
+      "move": "minimize",
+      "level": 19,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefairy",
+      "move": "lucky-chant",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefairy",
+      "move": "metronome",
+      "level": 31,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefairy",
+      "move": "gravity",
+      "level": 34,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefairy",
+      "move": "light-screen",
+      "level": 40,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefairy",
+      "move": "meteor-mash",
+      "level": 43,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefairy",
+      "move": "healing-wish",
+      "level": 46,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefable",
+      "move": "metronome",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "clefable",
+      "move": "minimize",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "vulpix",
+      "move": "confuse-ray",
+      "level": 17,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "vulpix",
+      "move": "imprison",
+      "level": 21,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "vulpix",
+      "move": "safeguard",
+      "level": 27,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "vulpix",
+      "move": "payback",
+      "level": 31,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "vulpix",
+      "move": "captivate",
+      "level": 37,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "vulpix",
+      "move": "grudge",
+      "level": 41,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "ninetales",
+      "move": "confuse-ray",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "ninetales",
+      "move": "safeguard",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "jigglypuff",
+      "move": "disable",
+      "level": 13,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "jigglypuff",
+      "move": "mimic",
+      "level": 41,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "jigglypuff",
+      "move": "hyper-voice",
+      "level": 45,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "wigglytuff",
+      "move": "disable",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "zubat",
+      "move": "supersonic",
+      "level": 5,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "zubat",
+      "move": "confuse-ray",
+      "level": 21,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "zubat",
+      "move": "mean-look",
+      "level": 29,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "zubat",
+      "move": "haze",
+      "level": 37,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golbat",
+      "move": "supersonic",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golbat",
+      "move": "supersonic",
+      "level": 5,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golbat",
+      "move": "confuse-ray",
+      "level": 21,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golbat",
+      "move": "mean-look",
+      "level": 33,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golbat",
+      "move": "haze",
+      "level": 45,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "oddish",
+      "move": "lucky-chant",
+      "level": 25,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "gloom",
+      "move": "lucky-chant",
+      "level": 29,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "vileplume",
+      "move": "aromatherapy",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "paras",
+      "move": "aromatherapy",
+      "level": 38,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "parasect",
+      "move": "aromatherapy",
+      "level": 47,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "venonat",
+      "move": "disable",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "venonat",
+      "move": "foresight",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "venonat",
+      "move": "supersonic",
+      "level": 5,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "venomoth",
+      "move": "disable",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "venomoth",
+      "move": "foresight",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "venomoth",
+      "move": "supersonic",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "venomoth",
+      "move": "supersonic",
+      "level": 5,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "diglett",
+      "move": "fissure",
+      "level": 40,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "dugtrio",
+      "move": "fissure",
+      "level": 50,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "meowth",
+      "move": "taunt",
+      "level": 25,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "meowth",
+      "move": "captivate",
+      "level": 46,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "persian",
+      "move": "switcheroo",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "persian",
+      "move": "taunt",
+      "level": 25,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "persian",
+      "move": "captivate",
+      "level": 56,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "psyduck",
+      "move": "water-sport",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "psyduck",
+      "move": "disable",
+      "level": 14,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "psyduck",
+      "move": "psych-up",
+      "level": 35,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golduck",
+      "move": "water-sport",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golduck",
+      "move": "disable",
+      "level": 14,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golduck",
+      "move": "psych-up",
+      "level": 37,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "mankey",
+      "move": "covet",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "mankey",
+      "move": "swagger",
+      "level": 33,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "primeape",
+      "move": "fling",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "primeape",
+      "move": "rage",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "primeape",
+      "move": "swagger",
+      "level": 35,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "growlithe",
+      "move": "odor-sleuth",
+      "level": 14,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "growlithe",
+      "move": "helping-hand",
+      "level": 17,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "growlithe",
+      "move": "reversal",
+      "level": 25,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "arcanine",
+      "move": "odor-sleuth",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "poliwag",
+      "move": "water-sport",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "poliwag",
+      "move": "rain-dance",
+      "level": 18,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "poliwag",
+      "move": "belly-drum",
+      "level": 31,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "poliwhirl",
+      "move": "water-sport",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "poliwhirl",
+      "move": "rain-dance",
+      "level": 18,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "poliwhirl",
+      "move": "belly-drum",
+      "level": 37,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "poliwrath",
+      "move": "mind-reader",
+      "level": 53,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "kadabra",
+      "move": "kinesis",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "kadabra",
+      "move": "disable",
+      "level": 18,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "kadabra",
+      "move": "miracle-eye",
+      "level": 22,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "kadabra",
+      "move": "reflect",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "kadabra",
+      "move": "role-play",
+      "level": 36,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "kadabra",
+      "move": "trick",
+      "level": 46,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "alakazam",
+      "move": "kinesis",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "alakazam",
+      "move": "disable",
+      "level": 18,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "alakazam",
+      "move": "miracle-eye",
+      "level": 22,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "alakazam",
+      "move": "reflect",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "alakazam",
+      "move": "trick",
+      "level": 46,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "machop",
+      "move": "foresight",
+      "level": 13,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "machoke",
+      "move": "foresight",
+      "level": 13,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "machamp",
+      "move": "foresight",
+      "level": 13,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "bellsprout",
+      "move": "gastro-acid",
+      "level": 35,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "bellsprout",
+      "move": "wring-out",
+      "level": 47,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "weepinbell",
+      "move": "gastro-acid",
+      "level": 35,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "weepinbell",
+      "move": "wring-out",
+      "level": 47,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "victreebel",
+      "move": "spit-up",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "victreebel",
+      "move": "stockpile",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "victreebel",
+      "move": "swallow",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "tentacool",
+      "move": "supersonic",
+      "level": 5,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "tentacool",
+      "move": "toxic-spikes",
+      "level": 15,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "tentacool",
+      "move": "wring-out",
+      "level": 43,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "tentacruel",
+      "move": "supersonic",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "tentacruel",
+      "move": "supersonic",
+      "level": 5,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "tentacruel",
+      "move": "toxic-spikes",
+      "level": 15,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "tentacruel",
+      "move": "wring-out",
+      "level": 55,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "geodude",
+      "move": "mud-sport",
+      "level": 4,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "geodude",
+      "move": "self-destruct",
+      "level": 18,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "graveler",
+      "move": "mud-sport",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "graveler",
+      "move": "mud-sport",
+      "level": 4,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "graveler",
+      "move": "self-destruct",
+      "level": 18,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golem",
+      "move": "mud-sport",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golem",
+      "move": "mud-sport",
+      "level": 4,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "golem",
+      "move": "self-destruct",
+      "level": 18,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "slowpoke",
+      "move": "curse",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "slowpoke",
+      "move": "yawn",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "slowpoke",
+      "move": "disable",
+      "level": 20,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "slowpoke",
+      "move": "rain-dance",
+      "level": 53,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "slowpoke",
+      "move": "psych-up",
+      "level": 57,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "slowbro",
+      "move": "curse",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "slowbro",
+      "move": "yawn",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "slowbro",
+      "move": "disable",
+      "level": 20,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "slowbro",
+      "move": "rain-dance",
+      "level": 61,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "slowbro",
+      "move": "psych-up",
+      "level": 67,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "magnemite",
+      "move": "supersonic",
+      "level": 11,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "magnemite",
+      "move": "sonic-boom",
+      "level": 14,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "magnemite",
+      "move": "lock-on",
+      "level": 27,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "magnemite",
+      "move": "magnet-rise",
+      "level": 46,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "magneton",
+      "move": "supersonic",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "magneton",
+      "move": "supersonic",
+      "level": 11,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "magneton",
+      "move": "sonic-boom",
+      "level": 14,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "magneton",
+      "move": "lock-on",
+      "level": 27,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "magneton",
+      "move": "magnet-rise",
+      "level": 50,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "farfetchd",
+      "move": "false-swipe",
+      "level": 45,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "doduo",
+      "move": "rage",
+      "level": 10,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "doduo",
+      "move": "acupressure",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "doduo",
+      "move": "double-hit",
+      "level": 32,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "doduo",
+      "move": "endeavor",
+      "level": 46,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "dodrio",
+      "move": "rage",
+      "level": 1,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "dodrio",
+      "move": "rage",
+      "level": 10,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "dodrio",
+      "move": "acupressure",
+      "level": 28,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "dodrio",
+      "move": "endeavor",
+      "level": 54,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "seel",
+      "move": "water-sport",
+      "level": 7,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "seel",
+      "move": "encore",
+      "level": 13,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "seel",
+      "move": "aqua-ring",
+      "level": 23,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "seel",
+      "move": "safeguard",
+      "level": 51,
+      "reason": "deferred-or-unimplemented"
+    },
+    {
+      "pokemon": "dewgong",
+      "move": "encore",
+      "level": 13,
+      "reason": "deferred-or-unimplemented"
+    }
+  ],
+  "addedMoveDefinitions": 221,
+  "addedMoveApiNames": [
+    "absorb",
+    "acid",
+    "acid-armor",
+    "aeroblast",
+    "air-cutter",
+    "air-slash",
+    "amnesia",
+    "ancient-power",
+    "aqua-jet",
+    "aqua-tail",
+    "assurance",
+    "astonish",
+    "aura-sphere",
+    "aurora-beam",
+    "avalanche",
+    "barrage",
+    "barrier",
+    "blaze-kick",
+    "blizzard",
+    "bone-club",
+    "bonemerang",
+    "bounce",
+    "brine",
+    "bubble",
+    "bubble-beam",
+    "bug-buzz",
+    "bullet-punch",
+    "calm-mind",
+    "charge-beam",
+    "charm",
+    "clamp",
+    "comet-punch",
+    "confusion",
+    "cosmic-power",
+    "cotton-spore",
+    "cross-chop",
+    "cross-poison",
+    "dark-pulse",
+    "defense-curl",
+    "dig",
+    "discharge",
+    "dive",
+    "dizzy-punch",
+    "double-edge",
+    "double-slap",
+    "dragon-claw",
+    "dragon-dance",
+    "dragon-rage",
+    "dragon-rush",
+    "dream-eater",
+    "drill-peck",
+    "dynamic-punch",
+    "earth-power",
+    "egg-bomb",
+    "ember",
+    "eruption",
+    "extrasensory",
+    "fake-out",
+    "fake-tears",
+    "feint",
+    "feint-attack",
+    "fire-blast",
+    "fire-fang",
+    "fire-punch",
+    "fire-spin",
+    "flame-wheel",
+    "fury-attack",
+    "fury-cutter",
+    "fury-swipes",
+    "future-sight",
+    "giga-drain",
+    "giga-impact",
+    "glare",
+    "grass-whistle",
+    "growl",
+    "growth",
+    "gunk-shot",
+    "gust",
+    "gyro-ball",
+    "hammer-arm",
+    "harden",
+    "headbutt",
+    "heat-wave",
+    "hidden-power",
+    "high-jump-kick",
+    "horn-attack",
+    "howl",
+    "hydro-pump",
+    "hyper-fang",
+    "ice-fang",
+    "ice-punch",
+    "ice-shard",
+    "icy-wind",
+    "iron-head",
+    "iron-tail",
+    "jump-kick",
+    "karate-chop",
+    "knock-off",
+    "last-resort",
+    "lava-plume",
+    "leaf-blade",
+    "leaf-storm",
+    "leer",
+    "lick",
+    "lovely-kiss",
+    "low-kick",
+    "mach-punch",
+    "magical-leaf",
+    "magnet-bomb",
+    "magnitude",
+    "meditate",
+    "mega-drain",
+    "mega-kick",
+    "mega-punch",
+    "megahorn",
+    "metal-claw",
+    "milk-drink",
+    "mirror-shot",
+    "moonlight",
+    "morning-sun",
+    "mud-bomb",
+    "mud-shot",
+    "mud-slap",
+    "muddy-water",
+    "natural-gift",
+    "night-slash",
+    "octazooka",
+    "ominous-wind",
+    "outrage",
+    "pay-day",
+    "peck",
+    "petal-dance",
+    "pin-missile",
+    "pluck",
+    "poison-fang",
+    "poison-gas",
+    "poison-jab",
+    "poison-sting",
+    "pound",
+    "powder-snow",
+    "power-gem",
+    "power-whip",
+    "psybeam",
+    "psycho-cut",
+    "psywave",
+    "punishment",
+    "pursuit",
+    "recover",
+    "rest",
+    "revenge",
+    "rock-polish",
+    "rock-throw",
+    "rolling-kick",
+    "rollout",
+    "roost",
+    "sacred-fire",
+    "sand-tomb",
+    "scratch",
+    "seed-bomb",
+    "seismic-toss",
+    "shadow-punch",
+    "shadow-sneak",
+    "sharpen",
+    "signal-beam",
+    "silver-wind",
+    "sing",
+    "skull-bash",
+    "sky-attack",
+    "sky-uppercut",
+    "slack-off",
+    "slam",
+    "slash",
+    "sleep-powder",
+    "sludge",
+    "sludge-bomb",
+    "smog",
+    "snore",
+    "soft-boiled",
+    "solar-beam",
+    "spark",
+    "spike-cannon",
+    "spore",
+    "steel-wing",
+    "stomp",
+    "stun-spore",
+    "submission",
+    "sucker-punch",
+    "super-fang",
+    "superpower",
+    "sweet-kiss",
+    "swift",
+    "synthesis",
+    "tackle",
+    "tail-whip",
+    "take-down",
+    "thrash",
+    "thunder",
+    "thunder-fang",
+    "thunder-punch",
+    "thunder-shock",
+    "tri-attack",
+    "triple-kick",
+    "twineedle",
+    "twister",
+    "u-turn",
+    "uproar",
+    "vacuum-wave",
+    "vice-grip",
+    "vine-whip",
+    "vital-throw",
+    "wake-up-slap",
+    "water-gun",
+    "water-pulse",
+    "waterfall",
+    "weather-ball",
+    "whirlpool",
+    "withdraw",
+    "x-scissor",
+    "yawn",
+    "zap-cannon",
+    "zen-headbutt"
+  ]
+}

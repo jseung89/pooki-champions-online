@@ -1,0 +1,18 @@
+﻿apiName,koreanName,appearsInPokemonCount,minLevel,maxLevel,reason
+covet,,3,1,1,not implemented safely in this patch
+crabhammer,,2,41,56,not implemented safely in this patch
+double-hit,,7,32,49,not implemented safely in this patch
+endure,,9,1,45,not implemented safely in this patch
+false-swipe,,5,13,45,not implemented safely in this patch
+gastro-acid,,5,33,42,not implemented safely in this patch
+hyper-voice,,4,45,56,not implemented safely in this patch
+meteor-mash,,1,43,43,not implemented safely in this patch
+mirror-move,,5,21,56,not implemented safely in this patch
+night-shade,,8,6,21,not implemented safely in this patch
+payback,,13,24,51,not implemented safely in this patch
+rage,,16,1,35,not implemented safely in this patch
+razor-wind,,2,33,33,not implemented safely in this patch
+self-destruct,,9,1,29,not implemented safely in this patch
+sleep-talk,,1,28,28,not implemented safely in this patch
+sonic-boom,,5,1,14,not implemented safely in this patch
+spite,,5,1,21,not implemented safely in this patch

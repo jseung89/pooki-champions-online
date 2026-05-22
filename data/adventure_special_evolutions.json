@@ -1,0 +1,192 @@
+{
+  "근육몬": {
+    "method": "trade",
+    "to": "괴력몬",
+    "toApiName": "machamp",
+    "item": "연결의끈",
+    "universalItem": "진화의빛"
+  },
+  "machoke": {
+    "method": "trade",
+    "to": "괴력몬",
+    "toApiName": "machamp",
+    "item": "연결의끈",
+    "universalItem": "진화의빛"
+  },
+  "윤겔라": {
+    "method": "trade",
+    "to": "후딘",
+    "toApiName": "alakazam",
+    "item": "연결의끈",
+    "universalItem": "진화의빛"
+  },
+  "kadabra": {
+    "method": "trade",
+    "to": "후딘",
+    "toApiName": "alakazam",
+    "item": "연결의끈",
+    "universalItem": "진화의빛"
+  },
+  "고우스트": {
+    "method": "trade",
+    "to": "팬텀",
+    "toApiName": "gengar",
+    "item": "연결의끈",
+    "universalItem": "진화의빛"
+  },
+  "haunter": {
+    "method": "trade",
+    "to": "팬텀",
+    "toApiName": "gengar",
+    "item": "연결의끈",
+    "universalItem": "진화의빛"
+  },
+  "데구리": {
+    "method": "trade",
+    "to": "딱구리",
+    "toApiName": "golem",
+    "item": "연결의끈",
+    "universalItem": "진화의빛"
+  },
+  "graveler": {
+    "method": "trade",
+    "to": "딱구리",
+    "toApiName": "golem",
+    "item": "연결의끈",
+    "universalItem": "진화의빛"
+  },
+  "피카츄": {
+    "method": "stone",
+    "to": "라이츄",
+    "toApiName": "raichu",
+    "item": "진화의돌"
+  },
+  "pikachu": {
+    "method": "stone",
+    "to": "라이츄",
+    "toApiName": "raichu",
+    "item": "진화의돌"
+  },
+  "식스테일": {
+    "method": "stone",
+    "to": "나인테일",
+    "toApiName": "ninetales",
+    "item": "진화의돌"
+  },
+  "vulpix": {
+    "method": "stone",
+    "to": "나인테일",
+    "toApiName": "ninetales",
+    "item": "진화의돌"
+  },
+  "별가사리": {
+    "method": "stone",
+    "to": "아쿠스타",
+    "toApiName": "starmie",
+    "item": "진화의돌"
+  },
+  "staryu": {
+    "method": "stone",
+    "to": "아쿠스타",
+    "toApiName": "starmie",
+    "item": "진화의돌"
+  },
+  "이브이": {
+    "method": "branching",
+    "items": [
+      "진화의돌",
+      "진화의빛"
+    ],
+    "options": [
+      {
+        "to": "샤미드",
+        "toApiName": "vaporeon",
+        "requiredItems": [
+          "진화의돌"
+        ],
+        "typeHint": "물"
+      },
+      {
+        "to": "쥬피썬더",
+        "toApiName": "jolteon",
+        "requiredItems": [
+          "진화의돌"
+        ],
+        "typeHint": "전기"
+      },
+      {
+        "to": "부스터",
+        "toApiName": "flareon",
+        "requiredItems": [
+          "진화의돌"
+        ],
+        "typeHint": "불꽃"
+      },
+      {
+        "to": "에브이",
+        "toApiName": "espeon",
+        "requiredItems": [
+          "진화의빛"
+        ],
+        "typeHint": "에스퍼"
+      },
+      {
+        "to": "블래키",
+        "toApiName": "umbreon",
+        "requiredItems": [
+          "진화의빛"
+        ],
+        "typeHint": "악"
+      }
+    ]
+  },
+  "eevee": {
+    "method": "branching",
+    "items": [
+      "진화의돌",
+      "진화의빛"
+    ],
+    "options": [
+      {
+        "to": "샤미드",
+        "toApiName": "vaporeon",
+        "requiredItems": [
+          "진화의돌"
+        ],
+        "typeHint": "물"
+      },
+      {
+        "to": "쥬피썬더",
+        "toApiName": "jolteon",
+        "requiredItems": [
+          "진화의돌"
+        ],
+        "typeHint": "전기"
+      },
+      {
+        "to": "부스터",
+        "toApiName": "flareon",
+        "requiredItems": [
+          "진화의돌"
+        ],
+        "typeHint": "불꽃"
+      },
+      {
+        "to": "에브이",
+        "toApiName": "espeon",
+        "requiredItems": [
+          "진화의빛"
+        ],
+        "typeHint": "에스퍼"
+      },
+      {
+        "to": "블래키",
+        "toApiName": "umbreon",
+        "requiredItems": [
+          "진화의빛"
+        ],
+        "typeHint": "악"
+      }
+    ]
+  }
+}

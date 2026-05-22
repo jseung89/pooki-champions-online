@@ -1,7 +1,7 @@
 {
   "capture": {
-    "ballDisplaySize": 128,
-    "ballScale": 0.45,
+    "ballDisplaySize": 140,
+    "ballScale": 0.75,
     "throwDurationMs": 1400,
     "arcHeight": 80,
     "impactDelayMs": 150,
@@ -10,7 +10,7 @@
     "breakoutFrameMs": 90,
     "enableThrowArc": true,
     "enableBallSpin": true,
-    "spinDegree": 320
+    "spinDegree": 280
   },
   "levelUp": {
     "displaySize": 128,

@@ -1,0 +1,186 @@
+{
+  "stageBands": {
+    "early": {
+      "stageRange": [
+        1,
+        10
+      ],
+      "minBST": 120,
+      "maxBST": 300,
+      "allowedEvolutionStages": [
+        0
+      ],
+      "allowLegendary": false,
+      "allowMythical": false,
+      "recentPenalty": true,
+      "minCandidateCount": 20
+    },
+    "earlyMid": {
+      "stageRange": [
+        11,
+        30
+      ],
+      "minBST": 220,
+      "maxBST": 430,
+      "allowedEvolutionStages": [
+        0,
+        1
+      ],
+      "allowLegendary": false,
+      "allowMythical": false,
+      "recentPenalty": true,
+      "minCandidateCount": 24
+    },
+    "mid": {
+      "stageRange": [
+        31,
+        60
+      ],
+      "minBST": 300,
+      "maxBST": 540,
+      "allowedEvolutionStages": [
+        1,
+        2
+      ],
+      "allowLegendary": false,
+      "allowMythical": false,
+      "recentPenalty": true,
+      "minCandidateCount": 26
+    },
+    "high": {
+      "stageRange": [
+        61,
+        80
+      ],
+      "minBST": 380,
+      "maxBST": 590,
+      "allowedEvolutionStages": [
+        1,
+        2
+      ],
+      "allowLegendary": false,
+      "allowMythical": false,
+      "recentPenalty": true,
+      "minCandidateCount": 28
+    },
+    "late": {
+      "stageRange": [
+        81,
+        90
+      ],
+      "minBST": 420,
+      "maxBST": 620,
+      "allowedEvolutionStages": [
+        1,
+        2
+      ],
+      "allowLegendary": false,
+      "allowMythical": false,
+      "recentPenalty": true,
+      "minCandidateCount": 30
+    },
+    "finalApproach": {
+      "stageRange": [
+        91,
+        99
+      ],
+      "minBST": 460,
+      "maxBST": 650,
+      "allowedEvolutionStages": [
+        1,
+        2
+      ],
+      "allowLegendary": false,
+      "allowMythical": false,
+      "recentPenalty": true,
+      "minCandidateCount": 30
+    },
+    "finalBoss": {
+      "stageRange": [
+        100,
+        100
+      ],
+      "minBST": 520,
+      "maxBST": 700,
+      "allowedEvolutionStages": [
+        2
+      ],
+      "allowLegendary": true,
+      "allowMythical": false,
+      "recentPenalty": false,
+      "minCandidateCount": 1
+    }
+  },
+  "manualPools": {
+    "81-90": {
+      "include": [
+        "망나뇽",
+        "마기라스",
+        "메타그로스",
+        "한카리아스",
+        "갸라도스",
+        "리자몽",
+        "이상해꽃",
+        "거북왕",
+        "윈디",
+        "괴력몬",
+        "팬텀",
+        "캥카",
+        "라프라스",
+        "잠만보",
+        "해피너스"
+      ],
+      "exclude": [],
+      "weights": {
+        "망나뇽": 8,
+        "마기라스": 8,
+        "메타그로스": 8,
+        "한카리아스": 8,
+        "갸라도스": 7,
+        "리자몽": 6,
+        "이상해꽃": 6,
+        "거북왕": 6,
+        "해피너스": 2
+      }
+    },
+    "91-99": {
+      "include": [
+        "망나뇽",
+        "마기라스",
+        "메타그로스",
+        "한카리아스",
+        "갸라도스",
+        "리자몽",
+        "이상해꽃",
+        "거북왕",
+        "팬텀",
+        "괴력몬",
+        "잠만보",
+        "라프라스"
+      ],
+      "exclude": [],
+      "weights": {
+        "망나뇽": 8,
+        "마기라스": 8,
+        "메타그로스": 8,
+        "한카리아스": 8,
+        "해피너스": 1
+      }
+    }
+  },
+  "fallback": {
+    "bstRelaxStep": 50,
+    "maxRelaxAttempts": 4,
+    "allowEvolutionStageRelax": true,
+    "allowRecentPenaltyIgnore": true
+  },
+  "recentPenalty": {
+    "recentPenaltyEnabled": true,
+    "recentWindowSize": 5,
+    "penalty": {
+      "last": 0.1,
+      "recent3": 0.35,
+      "recent5": 0.6
+    }
+  }
+}

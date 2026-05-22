@@ -1,0 +1,19 @@
+{
+  "nextLevelExpFactor": 4.0,
+  "battleExpMultiplierByStage": {
+    "early": 2.2,
+    "mid": 1.9,
+    "high": 1.5,
+    "late": 1.25
+  },
+  "captureExpMultiplierByStage": {
+    "early": 2.0,
+    "mid": 1.7,
+    "high": 1.35,
+    "late": 1.15
+  },
+  "bossExpMultiplier": 1.35,
+  "minBattleExp": 35,
+  "minCaptureExp": 30,
+  "expShareBaseBenchRate": 0.45
+}

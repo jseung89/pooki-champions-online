@@ -1,0 +1,71 @@
+{
+  "stageBands": {
+    "early": {
+      "stageRange": [
+        1,
+        10
+      ],
+      "tierOrder": [
+        "early"
+      ],
+      "requiredStab": 1,
+      "allowCoverage": false,
+      "maxStatusMoves": 1
+    },
+    "mid": {
+      "stageRange": [
+        11,
+        30
+      ],
+      "tierOrder": [
+        "mid",
+        "early"
+      ],
+      "requiredStab": 1,
+      "allowCoverage": false,
+      "maxStatusMoves": 1
+    },
+    "high": {
+      "stageRange": [
+        31,
+        60
+      ],
+      "tierOrder": [
+        "high",
+        "mid",
+        "early"
+      ],
+      "requiredStab": 1,
+      "allowCoverage": true,
+      "maxStatusMoves": 1
+    },
+    "late": {
+      "stageRange": [
+        61,
+        90
+      ],
+      "tierOrder": [
+        "rare",
+        "high",
+        "mid"
+      ],
+      "requiredStab": 1,
+      "allowCoverage": true,
+      "maxStatusMoves": 1
+    },
+    "final": {
+      "stageRange": [
+        91,
+        100
+      ],
+      "tierOrder": [
+        "rare",
+        "high",
+        "mid"
+      ],
+      "requiredStab": 1,
+      "allowCoverage": true,
+      "maxStatusMoves": 2
+    }
+  }
+}

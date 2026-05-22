@@ -1,0 +1,403 @@
+﻿apiName,koreanName,appearsInPokemonCount,minLevel,maxLevel,implemented,hasKoreanName,implementationStatus,action,reason
+absorb,흡수,7,1,8,true,true,implemented,keep,implemented in move library/adventure moves
+acid,용해액,8,1,23,true,true,implemented,keep,implemented in move library/adventure moves
+acid-armor,녹기,3,39,64,true,true,implemented,keep,implemented in move library/adventure moves
+acupressure,,2,28,28,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+aerial-ace,제비반환,4,13,17,true,true,implemented,keep,implemented in move library/adventure moves
+aeroblast,에어로블라스트,1,43,43,true,true,implemented,keep,implemented in move library/adventure moves
+agility,고속이동,42,6,64,true,true,implemented,keep,implemented in move library/adventure moves
+air-cutter,에어컷터,5,21,27,true,true,implemented,keep,implemented in move library/adventure moves
+air-slash,에어슬래시,14,1,62,true,true,implemented,keep,implemented in move library/adventure moves
+amnesia,망각술,15,9,65,true,true,implemented,keep,implemented in move library/adventure moves
+ancient-power,원시의힘,21,1,57,true,true,implemented,keep,implemented in move library/adventure moves
+aqua-jet,아쿠아제트,5,1,31,true,true,implemented,keep,implemented in move library/adventure moves
+aqua-ring,,11,23,47,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+aqua-tail,아쿠아테일,15,28,58,true,true,implemented,keep,implemented in move library/adventure moves
+aromatherapy,,6,1,60,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+assurance,승부굳히기,15,15,49,true,true,implemented,keep,implemented in move library/adventure moves
+astonish,놀래키기,10,1,10,true,true,implemented,keep,implemented in move library/adventure moves
+aura-sphere,파동탄,2,100,100,true,true,implemented,keep,implemented in move library/adventure moves
+aurora-beam,오로라빔,8,1,36,true,true,implemented,keep,implemented in move library/adventure moves
+avalanche,눈사태,2,31,33,true,true,implemented,keep,implemented in move library/adventure moves
+barrage,구슬던지기,2,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+barrier,배리어,5,1,40,true,true,implemented,keep,implemented in move library/adventure moves
+baton-pass,,12,11,80,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+beat-up,,3,27,38,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+belly-drum,,3,17,37,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+bide,,4,1,20,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+bind,조이기,4,1,22,true,true,implemented,keep,implemented in move library/adventure moves
+bite,물기,37,1,29,true,true,implemented,keep,implemented in move library/adventure moves
+blaze-kick,블레이즈킥,1,41,41,true,true,implemented,keep,implemented in move library/adventure moves
+blizzard,눈보라,6,44,85,true,true,implemented,keep,implemented in move library/adventure moves
+block,,2,22,36,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+body-slam,누르기,13,18,52,true,true,implemented,keep,implemented in move library/adventure moves
+bone-club,뼈다귀치기,2,1,7,true,true,implemented,keep,implemented in move library/adventure moves
+bone-rush,본러시,2,37,43,true,true,implemented,keep,implemented in move library/adventure moves
+bonemerang,뼈다귀부메랑,2,21,21,true,true,implemented,keep,implemented in move library/adventure moves
+bounce,bounce,7,37,48,true,true,implemented,keep,implemented in move library/adventure moves
+brave-bird,브레이브버드,1,15,15,true,true,implemented,keep,implemented in move library/adventure moves
+brick-break,깨트리기,3,17,21,true,true,implemented,keep,implemented in move library/adventure moves
+brine,소금물,12,28,51,true,true,implemented,keep,implemented in move library/adventure moves
+bubble,거품,14,1,8,true,true,implemented,keep,implemented in move library/adventure moves
+bubble-beam,거품광선,21,1,30,true,true,implemented,keep,implemented in move library/adventure moves
+bug-bite,벌레먹음,6,1,40,true,true,implemented,keep,implemented in move library/adventure moves
+bug-buzz,벌레의야단법석,5,40,59,true,true,implemented,keep,implemented in move library/adventure moves
+bullet-punch,불릿펀치,2,1,16,true,true,implemented,keep,implemented in move library/adventure moves
+bullet-seed,씨기관총,8,1,29,true,true,implemented,keep,implemented in move library/adventure moves
+calm-mind,명상,7,27,93,true,true,implemented,keep,implemented in move library/adventure moves
+camouflage,,1,19,19,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+captivate,,10,35,56,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+charge,,8,1,57,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+charge-beam,차지빔,2,26,26,true,true,implemented,keep,implemented in move library/adventure moves
+charm,애교부리기,9,1,36,true,true,implemented,keep,implemented in move library/adventure moves
+clamp,조이기,1,25,25,true,true,implemented,keep,implemented in move library/adventure moves
+close-combat,인파이트,6,37,59,true,true,implemented,keep,implemented in move library/adventure moves
+comet-punch,연속펀치,4,1,9,true,true,implemented,keep,implemented in move library/adventure moves
+confuse-ray,,20,1,37,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+confusion,염동력,22,1,27,true,true,implemented,keep,implemented in move library/adventure moves
+constrict,휘감기,9,1,8,true,true,implemented,keep,implemented in move library/adventure moves
+conversion,,2,1,1,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+conversion-2,,2,1,1,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+copycat,,5,1,38,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+cosmic-power,코스믹파워,2,25,51,true,true,implemented,keep,implemented in move library/adventure moves
+cotton-spore,목화포자,6,19,32,true,true,implemented,keep,implemented in move library/adventure moves
+counter,,4,1,51,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+covet,,3,1,1,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+crabhammer,,2,41,56,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+cross-chop,크로스촙,5,37,41,true,true,implemented,keep,implemented in move library/adventure moves
+cross-poison,크로스포이즌,2,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+crunch,깨물어부수기,22,22,59,true,true,implemented,keep,implemented in move library/adventure moves
+crush-claw,,1,22,22,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+curse,,8,1,38,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+dark-pulse,악의파동,6,28,44,true,true,implemented,keep,implemented in move library/adventure moves
+defense-curl,웅크리기,25,1,31,true,true,implemented,keep,implemented in move library/adventure moves
+destiny-bond,,7,1,55,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+detect,,4,15,46,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+dig,구멍파기,3,18,45,true,true,implemented,keep,implemented in move library/adventure moves
+disable,,17,1,25,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+discharge,방전,15,28,78,true,true,implemented,keep,implemented in move library/adventure moves
+dive,다이빙,2,41,41,true,true,implemented,keep,implemented in move library/adventure moves
+dizzy-punch,잼잼펀치,1,25,25,true,true,implemented,keep,implemented in move library/adventure moves
+double-edge,이판사판태클,28,27,55,true,true,implemented,keep,implemented in move library/adventure moves
+double-hit,,7,32,49,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+double-kick,두번차기,8,1,29,true,true,implemented,keep,implemented in move library/adventure moves
+double-slap,연속뺨치기,12,1,21,true,true,implemented,keep,implemented in move library/adventure moves
+double-team,그림자분신,3,11,37,true,true,implemented,keep,implemented in move library/adventure moves
+dragon-breath,용의숨결,2,33,33,true,true,implemented,keep,implemented in move library/adventure moves
+dragon-claw,드래곤클로,1,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+dragon-dance,용의춤,7,38,53,true,true,implemented,keep,implemented in move library/adventure moves
+dragon-pulse,용의파동,3,42,57,true,true,implemented,keep,implemented in move library/adventure moves
+dragon-rage,용의분노,7,15,23,true,true,implemented,keep,implemented in move library/adventure moves
+dragon-rush,드래곤다이브,4,15,39,true,true,implemented,keep,implemented in move library/adventure moves
+dream-eater,꿈먹기,5,33,57,true,true,implemented,keep,implemented in move library/adventure moves
+drill-peck,회전부리,5,37,71,true,true,implemented,keep,implemented in move library/adventure moves
+dynamic-punch,폭발펀치,4,43,51,true,true,implemented,keep,implemented in move library/adventure moves
+earth-power,대지의힘,7,26,66,true,true,implemented,keep,implemented in move library/adventure moves
+earthquake,지진,15,29,49,true,true,implemented,keep,implemented in move library/adventure moves
+egg-bomb,알폭탄,3,27,38,true,true,implemented,keep,implemented in move library/adventure moves
+embargo,,2,40,44,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+ember,작은불꽃,20,1,15,true,true,implemented,keep,implemented in move library/adventure moves
+encore,,8,4,19,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+endeavor,,10,21,55,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+endure,,9,1,45,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+eruption,분화,4,49,85,true,true,implemented,keep,implemented in move library/adventure moves
+explosion,대폭발,9,32,51,true,true,implemented,keep,implemented in move library/adventure moves
+extrasensory,신통력,8,23,64,true,true,implemented,keep,implemented in move library/adventure moves
+extreme-speed,신속,1,39,39,true,true,implemented,keep,implemented in move library/adventure moves
+fake-out,속이다,4,1,9,true,true,implemented,keep,implemented in move library/adventure moves
+fake-tears,거짓울음,4,1,25,true,true,implemented,keep,implemented in move library/adventure moves
+false-swipe,,5,13,45,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+feather-dance,깃털댄스,3,25,27,true,true,implemented,keep,implemented in move library/adventure moves
+feint,페인트,12,1,68,true,true,implemented,keep,implemented in move library/adventure moves
+feint-attack,속여때리기,13,14,38,true,true,implemented,keep,implemented in move library/adventure moves
+fire-blast,불대문자,8,37,71,true,true,implemented,keep,implemented in move library/adventure moves
+fire-fang,불꽃엄니,16,1,50,true,true,implemented,keep,implemented in move library/adventure moves
+fire-punch,불꽃펀치,5,1,31,true,true,implemented,keep,implemented in move library/adventure moves
+fire-spin,회오리불꽃,11,8,49,true,true,implemented,keep,implemented in move library/adventure moves
+fissure,,2,40,50,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+flail,,14,1,63,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+flame-wheel,화염자동차,6,15,20,true,true,implemented,keep,implemented in move library/adventure moves
+flamethrower,화염방사,16,24,61,true,true,implemented,keep,implemented in move library/adventure moves
+flare-blitz,플레어드라이브,4,46,66,true,true,implemented,keep,implemented in move library/adventure moves
+flash-cannon,플래시캐논,1,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+flatter,,4,33,38,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+fling,,9,1,57,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+focus-energy,기충전,23,1,23,true,true,implemented,keep,implemented in move library/adventure moves
+follow-me,,5,16,24,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+foresight,,12,1,37,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+fury-attack,마구찌르기,17,1,40,true,true,implemented,keep,implemented in move library/adventure moves
+fury-cutter,연속자르기,6,1,28,true,true,implemented,keep,implemented in move library/adventure moves
+fury-swipes,마구할퀴기,18,8,27,true,true,implemented,keep,implemented in move library/adventure moves
+future-sight,미래예지,11,22,79,true,true,implemented,keep,implemented in move library/adventure moves
+gastro-acid,,5,33,42,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+giga-drain,기가드레인,8,33,47,true,true,implemented,keep,implemented in move library/adventure moves
+giga-impact,기가임팩트,4,49,73,true,true,implemented,keep,implemented in move library/adventure moves
+glare,뱀눈초리,3,12,13,true,true,implemented,keep,implemented in move library/adventure moves
+grass-whistle,풀피리,2,13,13,true,true,implemented,keep,implemented in move library/adventure moves
+gravity,,1,34,34,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+growl,울음소리,46,1,15,true,true,implemented,keep,implemented in move library/adventure moves
+growth,성장,10,1,30,true,true,implemented,keep,implemented in move library/adventure moves
+grudge,,2,41,46,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+guard-swap,,6,1,78,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+guillotine,,4,31,47,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+gunk-shot,더스트슈트,5,1,56,true,true,implemented,keep,implemented in move library/adventure moves
+gust,바람일으키기,9,1,31,true,true,implemented,keep,implemented in move library/adventure moves
+gyro-ball,자이로볼,14,1,54,true,true,implemented,keep,implemented in move library/adventure moves
+hail,,1,85,85,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+hammer-arm,암해머,3,42,67,true,true,implemented,keep,implemented in move library/adventure moves
+harden,방어태세,17,1,16,true,true,implemented,keep,implemented in move library/adventure moves
+haze,,11,11,57,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+headbutt,박치기,12,1,38,true,true,implemented,keep,implemented in move library/adventure moves
+heal-bell,,2,1,48,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+heal-block,,1,55,55,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+healing-wish,,4,42,73,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+heat-wave,열풍,3,45,64,true,true,implemented,keep,implemented in move library/adventure moves
+helping-hand,,14,1,28,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+hidden-power,잠재파워,2,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+high-jump-kick,high-jump-kick,1,29,29,true,true,implemented,keep,implemented in move library/adventure moves
+horn-attack,뿔찌르기,9,1,23,true,true,implemented,keep,implemented in move library/adventure moves
+horn-drill,,6,37,58,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+howl,멀리짖기,2,1,4,true,true,implemented,keep,implemented in move library/adventure moves
+hydro-pump,하이드로펌프,29,35,71,true,true,implemented,keep,implemented in move library/adventure moves
+hyper-beam,파괴광선,11,45,73,true,true,implemented,keep,implemented in move library/adventure moves
+hyper-fang,필살앞니,2,16,16,true,true,implemented,keep,implemented in move library/adventure moves
+hyper-voice,,4,45,56,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+hypnosis,최면술,15,1,38,true,true,implemented,keep,implemented in move library/adventure moves
+ice-beam,냉동빔,7,32,49,true,true,implemented,keep,implemented in move library/adventure moves
+ice-fang,얼음엄니,12,1,50,true,true,implemented,keep,implemented in move library/adventure moves
+ice-punch,냉동펀치,2,18,31,true,true,implemented,keep,implemented in move library/adventure moves
+ice-shard,얼음뭉치,7,10,49,true,true,implemented,keep,implemented in move library/adventure moves
+icicle-spear,고드름침,1,13,13,true,true,implemented,keep,implemented in move library/adventure moves
+icy-wind,얼다바람,5,1,28,true,true,implemented,keep,implemented in move library/adventure moves
+imprison,,2,21,43,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+ingrain,,3,1,9,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+iron-defense,철벽,7,34,46,true,true,implemented,keep,implemented in move library/adventure moves
+iron-head,아이언헤드,2,49,53,true,true,implemented,keep,implemented in move library/adventure moves
+iron-tail,아이언테일,2,41,41,true,true,implemented,keep,implemented in move library/adventure moves
+jump-kick,점프킥,1,13,13,true,true,implemented,keep,implemented in move library/adventure moves
+karate-chop,태권당수,5,10,13,true,true,implemented,keep,implemented in move library/adventure moves
+kinesis,,2,1,1,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+knock-off,탁쳐서떨구기,7,9,36,true,true,implemented,keep,implemented in move library/adventure moves
+last-resort,뒀다쓰기,10,37,51,true,true,implemented,keep,implemented in move library/adventure moves
+lava-plume,분연,9,31,78,true,true,implemented,keep,implemented in move library/adventure moves
+leaf-blade,리프블레이드,2,1,47,true,true,implemented,keep,implemented in move library/adventure moves
+leaf-storm,리프스톰,5,43,82,true,true,implemented,keep,implemented in move library/adventure moves
+leech-life,흡혈,9,1,17,true,true,implemented,keep,implemented in move library/adventure moves
+leech-seed,씨뿌리기,10,1,24,true,true,implemented,keep,implemented in move library/adventure moves
+leer,째려보기,58,1,26,true,true,implemented,keep,implemented in move library/adventure moves
+lick,핥기,11,1,13,true,true,implemented,keep,implemented in move library/adventure moves
+light-screen,,19,14,64,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+lock-on,,5,6,45,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+lovely-kiss,악마의키스,1,1,8,true,true,implemented,keep,implemented in move library/adventure moves
+low-kick,안다리걸기,8,1,10,true,true,implemented,keep,implemented in move library/adventure moves
+lucky-chant,,7,12,29,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+mach-punch,마하펀치,3,16,17,true,true,implemented,keep,implemented in move library/adventure moves
+magic-coat,,2,56,56,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+magical-leaf,메지컬리프,8,1,23,true,true,implemented,keep,implemented in move library/adventure moves
+magnet-bomb,마그넷봄,2,30,30,true,true,implemented,keep,implemented in move library/adventure moves
+magnet-rise,,7,23,62,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+magnitude,매그니튜드,6,12,19,true,true,implemented,keep,implemented in move library/adventure moves
+me-first,,8,20,79,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+mean-look,,11,8,57,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+meditate,명상,4,5,21,true,true,implemented,keep,implemented in move library/adventure moves
+mega-drain,메가드레인,12,1,36,true,true,implemented,keep,implemented in move library/adventure moves
+mega-kick,메가톤킥,1,49,49,true,true,implemented,keep,implemented in move library/adventure moves
+mega-punch,메가톤펀치,3,10,41,true,true,implemented,keep,implemented in move library/adventure moves
+megahorn,메가혼,7,1,63,true,true,implemented,keep,implemented in move library/adventure moves
+memento,,7,43,65,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+metal-claw,메탈클로,4,21,42,true,true,implemented,keep,implemented in move library/adventure moves
+metal-sound,금속음,5,1,45,true,true,implemented,keep,implemented in move library/adventure moves
+meteor-mash,,1,43,43,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+metronome,,5,1,31,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+milk-drink,우유마시기,1,11,11,true,true,implemented,keep,implemented in move library/adventure moves
+mimic,,3,17,41,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+mind-reader,,3,22,53,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+minimize,,8,1,33,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+miracle-eye,,5,17,36,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+mirror-coat,,5,1,57,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+mirror-move,,5,21,56,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+mirror-shot,미러숏,3,31,46,true,true,implemented,keep,implemented in move library/adventure moves
+mist,,8,4,48,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+moonlight,moonlight,4,33,71,true,true,implemented,keep,implemented in move library/adventure moves
+morning-sun,morning-sun,1,71,71,true,true,implemented,keep,implemented in move library/adventure moves
+mud-bomb,진흙폭탄,12,19,53,true,true,implemented,keep,implemented in move library/adventure moves
+mud-shot,머드숏,10,9,32,true,true,implemented,keep,implemented in move library/adventure moves
+mud-slap,진흙뿌리기,6,1,15,true,true,implemented,keep,implemented in move library/adventure moves
+mud-sport,,11,1,5,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+muddy-water,탁류,3,47,78,true,true,implemented,keep,implemented in move library/adventure moves
+nasty-plot,나쁜음모,11,1,90,true,true,implemented,keep,implemented in move library/adventure moves
+natural-gift,자연의은혜,13,19,85,true,true,implemented,keep,implemented in move library/adventure moves
+night-shade,,8,6,21,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+night-slash,깜짝베기,9,1,72,true,true,implemented,keep,implemented in move library/adventure moves
+nightmare,,4,1,55,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+octazooka,대포무노포,1,25,25,true,true,implemented,keep,implemented in move library/adventure moves
+odor-sleuth,,8,1,22,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+ominous-wind,괴상한바람,2,39,47,true,true,implemented,keep,implemented in move library/adventure moves
+outrage,역린,4,37,64,true,true,implemented,keep,implemented in move library/adventure moves
+pain-split,,1,28,28,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+pay-day,고양이돈받기,1,30,30,true,true,implemented,keep,implemented in move library/adventure moves
+payback,,13,24,51,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+peck,쪼기,18,1,9,true,true,implemented,keep,implemented in move library/adventure moves
+perish-song,멸망의노래,6,1,91,false,true,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+petal-dance,꽃잎댄스,6,32,53,true,true,implemented,keep,implemented in move library/adventure moves
+pin-missile,바늘미사일,5,28,41,true,true,implemented,keep,implemented in move library/adventure moves
+pluck,쪼아대기,3,1,22,true,true,implemented,keep,implemented in move library/adventure moves
+poison-fang,독엄니,7,33,58,true,true,implemented,keep,implemented in move library/adventure moves
+poison-gas,독가스,6,1,18,true,true,implemented,keep,implemented in move library/adventure moves
+poison-jab,독찌르기,11,1,50,true,true,implemented,keep,implemented in move library/adventure moves
+poison-powder,독가루,21,1,21,true,true,implemented,keep,implemented in move library/adventure moves
+poison-sting,독침,17,1,13,true,true,implemented,keep,implemented in move library/adventure moves
+pound,막치기,14,1,9,true,true,implemented,keep,implemented in move library/adventure moves
+powder-snow,눈싸라기,5,1,11,true,true,implemented,keep,implemented in move library/adventure moves
+power-gem,파워젬,8,1,59,true,true,implemented,keep,implemented in move library/adventure moves
+power-swap,,6,1,78,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+power-trick,,1,48,48,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+power-whip,파워휩,2,49,54,true,true,implemented,keep,implemented in move library/adventure moves
+present,,1,1,1,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+protect,,11,1,34,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+psybeam,환상빔,16,1,36,true,true,implemented,keep,implemented in move library/adventure moves
+psych-up,,9,29,67,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+psychic,사이코키네시스,20,30,71,true,true,implemented,keep,implemented in move library/adventure moves
+psycho-cut,사이코커터,3,34,50,true,true,implemented,keep,implemented in move library/adventure moves
+psycho-shift,,4,33,47,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+psywave,사이코웨이브,1,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+punishment,혼내기,4,45,53,true,true,implemented,keep,implemented in move library/adventure moves
+pursuit,따라가때리기,16,5,30,true,true,implemented,keep,implemented in move library/adventure moves
+quick-attack,전광석화,32,1,22,true,true,implemented,keep,implemented in move library/adventure moves
+rage,,16,1,35,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+rain-dance,,17,15,85,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+rapid-spin,고속스핀,11,1,24,true,true,implemented,keep,implemented in move library/adventure moves
+razor-leaf,잎날가르기,11,1,39,true,true,implemented,keep,implemented in move library/adventure moves
+razor-wind,,2,33,33,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+recover,HP회복,13,1,86,true,true,implemented,keep,implemented in move library/adventure moves
+recycle,,3,32,34,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+reflect,,13,7,50,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+refresh,,4,9,41,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+rest,잠자기,10,19,47,true,true,implemented,keep,implemented in move library/adventure moves
+revenge,리벤지,8,1,29,true,true,implemented,keep,implemented in move library/adventure moves
+reversal,,4,25,57,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+roar,울부짖기,10,1,27,true,true,implemented,keep,implemented in move library/adventure moves
+rock-blast,락블라스트,9,1,56,true,true,implemented,keep,implemented in move library/adventure moves
+rock-polish,록커트,5,1,30,true,true,implemented,keep,implemented in move library/adventure moves
+rock-slide,록슬라이드,7,14,65,true,true,implemented,keep,implemented in move library/adventure moves
+rock-throw,rock-throw,8,1,14,true,true,implemented,keep,implemented in move library/adventure moves
+rock-tomb,암석봉인,3,17,30,true,true,implemented,keep,implemented in move library/adventure moves
+role-play,,3,33,43,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+rolling-kick,돌려차기,2,1,9,true,true,implemented,keep,implemented in move library/adventure moves
+rollout,구르기,22,15,46,true,true,implemented,keep,implemented in move library/adventure moves
+roost,날개쉬기,12,1,57,true,true,implemented,keep,implemented in move library/adventure moves
+sacred-fire,성스러운불꽃,1,43,43,true,true,implemented,keep,implemented in move library/adventure moves
+safeguard,,24,1,93,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+sand-attack,모래뿌리기,20,1,21,true,true,implemented,keep,implemented in move library/adventure moves
+sand-tomb,sand-tomb,4,26,46,true,true,implemented,keep,implemented in move library/adventure moves
+sandstorm,,7,1,52,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+scary-face,겁나는얼굴,24,1,64,true,true,implemented,keep,implemented in move library/adventure moves
+scratch,할퀴기,29,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+screech,싫은소리,35,1,64,true,true,implemented,keep,implemented in move library/adventure moves
+seed-bomb,씨폭탄,3,1,45,true,true,implemented,keep,implemented in move library/adventure moves
+seismic-toss,지구던지기,6,8,19,true,true,implemented,keep,implemented in move library/adventure moves
+self-destruct,,9,1,29,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+shadow-ball,섀도볼,4,29,37,true,true,implemented,keep,implemented in move library/adventure moves
+shadow-claw,섀도크루,1,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+shadow-punch,섀도펀치,2,25,25,true,true,implemented,keep,implemented in move library/adventure moves
+shadow-sneak,야습,2,19,19,true,true,implemented,keep,implemented in move library/adventure moves
+sharpen,각지기,1,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+sheer-cold,,3,34,78,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+shock-wave,전격파,2,19,19,true,true,implemented,keep,implemented in move library/adventure moves
+signal-beam,시그널빔,13,1,42,true,true,implemented,keep,implemented in move library/adventure moves
+silver-wind,은빛바람,4,1,29,true,true,implemented,keep,implemented in move library/adventure moves
+sing,노래하기,10,1,23,true,true,implemented,keep,implemented in move library/adventure moves
+sketch,,1,1,91,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+skull-bash,로케트박치기,3,31,39,true,true,implemented,keep,implemented in move library/adventure moves
+sky-attack,불새,4,1,99,true,true,implemented,keep,implemented in move library/adventure moves
+sky-uppercut,sky-uppercut,1,36,36,true,true,implemented,keep,implemented in move library/adventure moves
+slack-off,slack-off,2,39,41,true,true,implemented,keep,implemented in move library/adventure moves
+slam,힘껏치기,19,15,44,true,true,implemented,keep,implemented in move library/adventure moves
+slash,베어가르기,23,19,42,true,true,implemented,keep,implemented in move library/adventure moves
+sleep-powder,수면가루,16,1,29,true,true,implemented,keep,implemented in move library/adventure moves
+sleep-talk,,1,28,28,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+sludge,오물공격,4,20,24,true,true,implemented,keep,implemented in move library/adventure moves
+sludge-bomb,오물폭탄,4,36,48,true,true,implemented,keep,implemented in move library/adventure moves
+smog,스모그,9,1,57,true,true,implemented,keep,implemented in move library/adventure moves
+smokescreen,연막,13,1,10,true,true,implemented,keep,implemented in move library/adventure moves
+snore,코골기,3,28,49,true,true,implemented,keep,implemented in move library/adventure moves
+soft-boiled,알낳기,2,12,12,true,true,implemented,keep,implemented in move library/adventure moves
+solar-beam,솔라빔,9,41,71,true,true,implemented,keep,implemented in move library/adventure moves
+sonic-boom,,5,1,14,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+spark,스파크,7,1,29,true,true,implemented,keep,implemented in move library/adventure moves
+spider-web,,2,29,32,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+spike-cannon,가시대포,3,40,40,true,true,implemented,keep,implemented in move library/adventure moves
+spikes,,5,1,28,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+spit-up,,5,1,28,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+spite,,5,1,21,false,false,excluded-unsafe,exclude,not implemented safely in this patch
+splash,튀어오르기,4,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+spore,버섯포자,2,17,17,true,true,implemented,keep,implemented in move library/adventure moves
+steel-wing,강철날개,1,34,34,true,true,implemented,keep,implemented in move library/adventure moves
+stockpile,,5,1,28,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+stomp,짓밟기,12,1,29,true,true,implemented,keep,implemented in move library/adventure moves
+stone-edge,스톤샤워,10,39,54,true,true,implemented,keep,implemented in move library/adventure moves
+string-shot,실뿜기,4,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+stun-spore,저리가루,16,1,29,true,true,implemented,keep,implemented in move library/adventure moves
+submission,지옥의바퀴,5,1,42,true,true,implemented,keep,implemented in move library/adventure moves
+substitute,,1,29,29,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+sucker-punch,기습,14,19,46,true,true,implemented,keep,implemented in move library/adventure moves
+sunny-day,,7,1,85,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+super-fang,분노의앞니,2,28,34,true,true,implemented,keep,implemented in move library/adventure moves
+superpower,엄청난힘,5,43,63,true,true,implemented,keep,implemented in move library/adventure moves
+supersonic,,22,1,22,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+swagger,,8,27,45,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+swallow,,4,1,28,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+sweet-kiss,sweet-kiss,6,1,13,true,true,implemented,keep,implemented in move library/adventure moves
+sweet-scent,달콤한향기,14,1,34,true,true,implemented,keep,implemented in move library/adventure moves
+swift,스피드스타,17,1,41,true,true,implemented,keep,implemented in move library/adventure moves
+switcheroo,,2,1,1,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+swords-dance,칼춤,6,1,57,true,true,implemented,keep,implemented in move library/adventure moves
+synthesis,광합성,10,1,45,true,true,implemented,keep,implemented in move library/adventure moves
+tackle,몸통박치기,75,1,15,true,true,implemented,keep,implemented in move library/adventure moves
+tail-whip,꼬리흔들기,42,1,10,true,true,implemented,keep,implemented in move library/adventure moves
+tailwind,,7,27,64,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+take-down,돌진,29,10,43,true,true,implemented,keep,implemented in move library/adventure moves
+taunt,,4,1,31,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+teleport,순간이동,5,1,9,true,true,implemented,keep,implemented in move library/adventure moves
+thrash,난동부리기,16,1,58,true,true,implemented,keep,implemented in move library/adventure moves
+thunder,번개,9,45,85,true,true,implemented,keep,implemented in move library/adventure moves
+thunder-fang,번개엄니,11,1,50,true,true,implemented,keep,implemented in move library/adventure moves
+thunder-punch,번개펀치,5,1,31,true,true,implemented,keep,implemented in move library/adventure moves
+thunder-shock,전기쇼크,13,1,15,true,true,implemented,keep,implemented in move library/adventure moves
+thunder-wave,전기자석파,14,1,57,true,true,implemented,keep,implemented in move library/adventure moves
+thunderbolt,10만볼트,4,1,43,true,true,implemented,keep,implemented in move library/adventure moves
+tickle,간지르기,4,15,48,true,true,implemented,keep,implemented in move library/adventure moves
+toxic-spikes,,10,1,35,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+transform,,2,1,1,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+tri-attack,트라이어택,5,1,51,true,true,implemented,keep,implemented in move library/adventure moves
+trick,,3,36,46,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+triple-kick,트리플킥,1,19,19,true,true,implemented,keep,implemented in move library/adventure moves
+trump-card,,2,53,57,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+twineedle,더블니들,1,16,16,true,true,implemented,keep,implemented in move library/adventure moves
+twister,회오리,10,1,29,true,true,implemented,keep,implemented in move library/adventure moves
+u-turn,유턴,5,31,49,true,true,implemented,keep,implemented in move library/adventure moves
+uproar,소란피기,6,1,27,true,true,implemented,keep,implemented in move library/adventure moves
+vacuum-wave,진공파,2,1,26,true,true,implemented,keep,implemented in move library/adventure moves
+vice-grip,찝기,3,1,5,true,true,implemented,keep,implemented in move library/adventure moves
+vine-whip,덩굴채찍,7,1,19,true,true,implemented,keep,implemented in move library/adventure moves
+vital-throw,받아던지기,4,25,25,true,true,implemented,keep,implemented in move library/adventure moves
+wake-up-slap,잠깨움뺨치기,9,22,55,true,true,implemented,keep,implemented in move library/adventure moves
+water-gun,물대포,31,1,15,true,true,implemented,keep,implemented in move library/adventure moves
+water-pulse,물의파동,15,14,32,true,true,implemented,keep,implemented in move library/adventure moves
+water-sport,,7,1,7,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+waterfall,폭포오르기,2,37,40,true,true,implemented,keep,implemented in move library/adventure moves
+weather-ball,웨더볼,2,1,1,true,true,implemented,keep,implemented in move library/adventure moves
+whirlpool,바다회오리,1,37,37,true,true,implemented,keep,implemented in move library/adventure moves
+whirlwind,날려버리기,6,1,22,true,true,implemented,keep,implemented in move library/adventure moves
+will-o-wisp,도깨비불,1,14,14,true,true,implemented,keep,implemented in move library/adventure moves
+wing-attack,날개치기,14,1,55,true,true,implemented,keep,implemented in move library/adventure moves
+wish,,4,28,30,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+withdraw,웅크리기,9,1,37,true,true,implemented,keep,implemented in move library/adventure moves
+wood-hammer,우드해머,2,1,37,true,true,implemented,keep,implemented in move library/adventure moves
+worry-seed,,9,25,40,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+wrap,김밥말이,11,1,22,true,true,implemented,keep,implemented in move library/adventure moves
+wring-out,,10,36,63,false,false,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+x-scissor,시저크로스,6,30,55,true,true,implemented,keep,implemented in move library/adventure moves
+yawn,하품,12,1,31,false,true,deferred-special-effect,defer,unsupported or state-machine-heavy effect
+zap-cannon,전자포,5,54,67,true,true,implemented,keep,implemented in move library/adventure moves
+zen-headbutt,사념의박치기,15,29,64,true,true,implemented,keep,implemented in move library/adventure moves

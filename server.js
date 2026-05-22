@@ -163,10 +163,60 @@ function pokemonAdminKeys(pokemon) {
     .filter(Boolean);
 }
 
+function adventureAdminPokemonPool() {
+  try {
+    const masterPath = path.join(__dirname, "data", "pokemon_master_gen1_2.json");
+    const master = fs.existsSync(masterPath) ? JSON.parse(fs.readFileSync(masterPath, "utf8") || "[]") : [];
+    const cachePath = path.join(__dirname, "data", "pokemon_cache_gen2_v590_move_rework.json");
+    const cached = fs.existsSync(cachePath) ? JSON.parse(fs.readFileSync(cachePath, "utf8") || "[]") : [];
+    const starterPath = path.join(__dirname, "data", "adventure_starter_pool.json");
+    const starterData = fs.existsSync(starterPath) ? JSON.parse(fs.readFileSync(starterPath, "utf8") || "{}") : {};
+    const starterMons = Array.isArray(starterData.starters) ? starterData.starters : [];
+    const byId = new Map();
+    const normalize = (p) => {
+      const id = Number(p?.id || 0);
+      if (!id) return null;
+      return {
+        id,
+        apiName: p.apiName || p.nameEn || p.species || String(id),
+        name: p.name || p.nameKo || p.koreanName || p.speciesName || p.apiName || String(id),
+        types: p.types || [],
+        stats: p.stats || p.baseStats || {},
+        baseStats: p.baseStats || p.stats || {},
+        frontSprite: p.frontSprite || p.spriteFront || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${id}.gif`,
+        backSprite: p.backSprite || p.spriteBack || `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/${id}.gif`,
+        evolutionStage: p.evolutionStage,
+        dataIncomplete: !!p.dataIncomplete,
+        implemented: p.implemented !== false,
+        availableInAdventure: p.availableInAdventure !== false,
+        availableInBattle: p.availableInBattle !== false,
+      };
+    };
+    for (const raw of [...master, ...cached, ...starterMons, ...pokemonPool]) {
+      const p = normalize(raw);
+      if (!p) continue;
+      const existing = byId.get(p.id) || {};
+      byId.set(p.id, {
+        ...existing,
+        ...p,
+        name: p.name || existing.name,
+        apiName: p.apiName || existing.apiName,
+        types: (p.types && p.types.length) ? p.types : (existing.types || []),
+        stats: (p.stats && Object.keys(p.stats).length) ? p.stats : (existing.stats || existing.baseStats || {}),
+        baseStats: (p.baseStats && Object.keys(p.baseStats).length) ? p.baseStats : (existing.baseStats || existing.stats || {}),
+        frontSprite: existing.frontSprite || p.frontSprite,
+        backSprite: existing.backSprite || p.backSprite,
+      });
+    }
+    return [...byId.values()].sort((a,b)=>Number(a.id||0)-Number(b.id||0));
+  } catch (err) {
+    return pokemonPool;
+  }
+}
 function findAdminPokemonByKey(rawKey) {
   const key = normalizeAdminKey(rawKey);
   if (!key) return null;
-  return pokemonPool.find((pokemon) => pokemonAdminKeys(pokemon).includes(key)) || null;
+  return adventureAdminPokemonPool().find((pokemon) => pokemonAdminKeys(pokemon).includes(key)) || null;
 }
 
 function learnableImplementedMoveIdsForPokemon(pokemon) {
@@ -260,6 +310,16 @@ function requireBalanceAdmin(req, res, next) {
   }
   return next();
 }
+
+app.get("/api/pokemon-master", (req, res) => {
+  try {
+    const masterPath = path.join(__dirname, "data", "pokemon_master_gen1_2.json");
+    const rows = fs.existsSync(masterPath) ? JSON.parse(fs.readFileSync(masterPath, "utf8") || "[]") : adventureAdminPokemonPool();
+    res.json({ ok: true, pokemon: rows });
+  } catch (err) {
+    res.status(500).json({ ok: false, message: err.message });
+  }
+});
 
 app.get("/api/render-profiles/custom", (req, res) => {
   res.json({ ok: true, profiles: readCustomRenderProfiles() });
@@ -650,7 +710,7 @@ app.get("/api/admin/move-data", (req, res) => {
   res.json({
     ok: true,
     moves: MOVE_LIST.map((m) => ({ ...publicMoveLite(m), category: moveCategory(m) })),
-    pokemon: pokemonPool.map(publicPokemonLite),
+    pokemon: adventureAdminPokemonPool().map(publicPokemonLite),
     customMoves: readCustomPokemonMoves(),
   });
 });
@@ -675,7 +735,7 @@ app.get("/api/test-arena/data", (req, res) => {
   res.json({
     ok: true,
     moves: MOVE_LIST.map((m) => ({ ...publicMoveLite(m), category: moveCategory(m) })),
-    pokemon: pokemonPool.map(publicPokemonLite),
+    pokemon: adventureAdminPokemonPool().map(publicPokemonLite),
   });
 });
 
@@ -722,6 +782,14 @@ const ADVENTURE_ADMIN_JSON_FILES = new Set([
   "adventure_pokemon_size_overrides.json",
   "adventure_move_tiers.json",
   "adventure_evolutions.json",
+  "adventure_encounter_rules.json",
+  "adventure_enemy_moveset_rules.json",
+  "adventure_pokemon_allowed_moves.json",
+  "adventure_bosses.json",
+  "adventure_levelup_learnsets_raw.json",
+  "adventure_move_name_map.json",
+  "adventure_pokemon_full_learnsets.json",
+  "adventure_special_evolutions.json",
 ]);
 
 function adventureAdminDataPath(file) {
@@ -801,7 +869,15 @@ function adventureAdminSummary() {
     tmRewards: readAdventureAdminJson("adventure_tm_rewards.json", {}),
     sizeOverrides: readAdventureAdminJson("adventure_pokemon_size_overrides.json", {}),
     evolutions: readAdventureAdminJson("adventure_evolutions.json", {}),
-    pokemon: pokemonPool.map(publicPokemonLite),
+    encounterRules: readAdventureAdminJson("adventure_encounter_rules.json", {}),
+    enemyMovesetRules: readAdventureAdminJson("adventure_enemy_moveset_rules.json", {}),
+    pokemonAllowedMoves: readAdventureAdminJson("adventure_pokemon_allowed_moves.json", {}),
+    bosses: readAdventureAdminJson("adventure_bosses.json", {}),
+    levelupLearnsetsRaw: readAdventureAdminJson("adventure_levelup_learnsets_raw.json", {}),
+    moveNameMap: readAdventureAdminJson("adventure_move_name_map.json", {}),
+    fullLearnsets: readAdventureAdminJson("adventure_pokemon_full_learnsets.json", {}),
+    specialEvolutions: readAdventureAdminJson("adventure_special_evolutions.json", {}),
+    pokemon: adventureAdminPokemonPool().map(publicPokemonLite),
     moves: MOVE_LIST.map((m) => ({ ...publicMoveLite(m), category: moveCategory(m) })),
   };
 }
@@ -810,6 +886,61 @@ app.get("/api/admin/adventure/summary", requireAdminForWrite, (req, res) => {
   try { res.json(adventureAdminSummary()); }
   catch (err) { res.status(500).json({ ok: false, message: err.message }); }
 });
+
+app.get("/api/admin/adventure/learnset-audit", requireAdminForWrite, (req, res) => {
+  try {
+    const learnsets = readAdventureAdminJson("adventure_levelup_learnsets.json", {});
+    const evolutions = readAdventureAdminJson("adventure_evolutions.json", {});
+    const sizeOverrides = readAdventureAdminJson("adventure_pokemon_size_overrides.json", {});
+    const rows = adventureAdminPokemonPool().map((p) => {
+      const keys = [p.name, p.apiName, String(p.id || "")].filter(Boolean);
+      const learnset = keys.map(k=>learnsets[k]).find(Array.isArray) || [];
+      const evo = keys.some(k=>!!evolutions[k]);
+      const size = keys.some(k=>!!sizeOverrides[k] || !!sizeOverrides[normalizeAdminKey(k)]);
+      const sprite = !!(p.frontSprite || p.backSprite);
+      const errors = [];
+      if (!learnset.length) errors.push("learnset 없음");
+      if (!sprite) errors.push("sprite 없음");
+      return { id:p.id, name:p.name, apiName:p.apiName, learnset: !!learnset.length, learnsetCount: learnset.length, evolution: evo, sprite, sizeOverride: size, status: errors.length ? errors.join(", ") : "정상" };
+    });
+    res.json({ ok:true, count:rows.length, rows, missingLearnset: rows.filter(r=>!r.learnset).length });
+  } catch (err) { res.status(500).json({ ok:false, message:err.message }); }
+});
+
+app.post("/api/admin/adventure/stage-candidates", requireAdminForWrite, (req, res) => {
+  try {
+    const stage = Number(req.body?.stage || 1);
+    const recentIds = Array.isArray(req.body?.recentIds) ? req.body.recentIds : [];
+    const built = adminBuildEncounterCandidates(stage, { recentIds });
+    const all = adventureAdminPokemonPool().map(publicPokemonLite).filter((p) => p.frontSprite || p.backSprite);
+    const candidateIds = new Set((built.candidates || []).map(p=>Number(p.id)));
+    const excluded = all.filter(p=>!candidateIds.has(Number(p.id))).slice(0, 200).map((p)=>{
+      let reason = "조건 불일치";
+      const bst = statTotalForAdminPokemon(p);
+      const band = built.band || {};
+      if (band.allowLegendary === false && adminLegendaryBlocked(p, band)) reason = "전설/환상 제외";
+      else if (Number(band.minBST || 0) && bst < Number(band.minBST)) reason = "BST 부족";
+      else if (Number(band.maxBST || 9999) && bst > Number(band.maxBST)) reason = "BST 상한 초과";
+      return { ...p, bst, reason };
+    });
+    res.json({ ok:true, stage, bandKey:built.bandKey, rangeKey:built.rangeKey, debug:built.debug, candidates:built.candidates, excluded });
+  } catch (err) { res.status(500).json({ ok:false, message:err.message }); }
+});
+
+app.post("/api/admin/adventure/size-preview", requireAdminForWrite, (req, res) => {
+  try {
+    const mon = findAdminPokemonByKey(req.body?.pokemon || req.body?.pokemonKey || req.body?.id);
+    if (!mon) return res.status(404).json({ ok:false, message:"포켓몬을 찾을 수 없습니다." });
+    const custom = readCustomRenderProfiles();
+    const adventureSize = readAdventureAdminJson("adventure_pokemon_size_overrides.json", {});
+    const keys = pokemonAdminKeys(mon);
+    const battleProfile = keys.map(k=>custom[k]).find(Boolean) || {};
+    const legacyAdventureProfile = keys.map(k=>adventureSize[k] || adventureSize[mon.name] || adventureSize[mon.apiName] || adventureSize[String(mon.id)]).find(Boolean) || {};
+    const adventureProfile = Object.keys(battleProfile).length ? battleProfile : legacyAdventureProfile;
+    res.json({ ok:true, pokemon:publicPokemonLite(mon), battleProfile, adventureProfile, sharedProfile:battleProfile, suggested:{ scale: mon.spriteScale || 1, offsetX: 0, offsetY: 0 } });
+  } catch (err) { res.status(500).json({ ok:false, message:err.message }); }
+});
+
 
 app.get("/api/admin/adventure/json/:file", requireAdminForWrite, (req, res) => {
   try {
@@ -869,24 +1000,184 @@ function statTotalForAdminPokemon(p) {
   return Object.values(s).reduce((sum, v) => sum + Number(v || 0), 0);
 }
 
+function adminStageBandKey(stage, rules = {}) {
+  const s = Number(stage || 1);
+  const bands = rules.stageBands || {};
+  for (const [key, band] of Object.entries(bands)) {
+    const [min, max] = band.stageRange || [];
+    if (s >= Number(min || 1) && s <= Number(max || min || 999)) return key;
+  }
+  if (s <= 10) return "early";
+  if (s <= 30) return "earlyMid";
+  if (s <= 60) return "mid";
+  if (s <= 80) return "high";
+  if (s <= 90) return "late";
+  if (s <= 99) return "finalApproach";
+  return "finalBoss";
+}
+function adminStageRangeKey(stage) {
+  const s = Number(stage || 1);
+  if (s <= 10) return "1-10";
+  if (s <= 30) return "11-30";
+  if (s <= 60) return "31-60";
+  if (s <= 80) return "61-80";
+  if (s <= 90) return "81-90";
+  if (s <= 99) return "91-99";
+  return "100";
+}
+function adminPokemonKeySet(p) {
+  return new Set([String(p?.id || ""), String(p?.name || ""), String(p?.apiName || "")].map((x) => x.trim()).filter(Boolean));
+}
+function adminPokemonMatchesName(p, names = []) {
+  const keys = adminPokemonKeySet(p);
+  return (names || []).some((name) => keys.has(String(name || "").trim()));
+}
+function adminEvolutionStage(p) {
+  const id = Number(p?.id || 0);
+  // 충분한 진화 데이터가 없을 때도 후반 후보가 1마리로 수렴하지 않도록 보수적 추정한다.
+  if ([12,15,18,31,34,45,65,68,71,76,94,149,154,157,160,181,189,248].includes(id)) return 2;
+  if ([2,5,8,11,14,17,30,33,44,64,67,70,75,93,148,153,156,159,180,188,247].includes(id)) return 1;
+  return Number(p?.evolutionStage || 0);
+}
+function adminLegendaryBlocked(p, band = {}) {
+  const id = Number(p?.id || 0);
+  const legendary = new Set([144,145,146,150,151,243,244,245,249,250,251]);
+  if (legendary.has(id) && !band.allowLegendary && !band.allowMythical) return true;
+  return false;
+}
+function adminBuildEncounterCandidates(stage, options = {}) {
+  const rules = readAdventureAdminJson("adventure_encounter_rules.json", {});
+  const bandKey = adminStageBandKey(stage, rules);
+  const rangeKey = adminStageRangeKey(stage);
+  const band = (rules.stageBands || {})[bandKey] || {};
+  const manual = (rules.manualPools || {})[rangeKey] || {};
+  const debug = [];
+  let pool = pokemonPool.map(publicPokemonLite).filter((p) => p.frontSprite || p.backSprite);
+  debug.push({ step: "전체 포켓몬", count: pool.length });
+  pool = pool.filter((p) => !adminLegendaryBlocked(p, band));
+  debug.push({ step: "전설/환상 제외 후", count: pool.length });
+  if (Array.isArray(manual.include) && manual.include.length) {
+    const included = pool.filter((p) => adminPokemonMatchesName(p, manual.include));
+    if (included.length >= 3) pool = included;
+    debug.push({ step: "관리자 include 적용 후", count: pool.length });
+  }
+  if (Array.isArray(manual.exclude) && manual.exclude.length) {
+    pool = pool.filter((p) => !adminPokemonMatchesName(p, manual.exclude));
+    debug.push({ step: "관리자 exclude 적용 후", count: pool.length });
+  }
+  const minBST = Number(band.minBST || 0);
+  const maxBST = Number(band.maxBST || 9999);
+  pool = pool.filter((p) => {
+    const bst = statTotalForAdminPokemon(p);
+    return bst >= minBST && bst <= maxBST;
+  });
+  debug.push({ step: `BST ${minBST}-${maxBST} 필터 후`, count: pool.length });
+  const stages = Array.isArray(band.allowedEvolutionStages) ? band.allowedEvolutionStages.map(Number) : null;
+  if (stages && stages.length) {
+    pool = pool.filter((p) => stages.includes(adminEvolutionStage(p)) || Number(stage || 1) >= 61);
+    debug.push({ step: "진화단계 필터 후", count: pool.length });
+  }
+  const fallback = rules.fallback || {};
+  const minNeed = Number(band.minCandidateCount || 20);
+  let relax = 0;
+  while (pool.length < Math.max(5, minNeed) && relax < Number(fallback.maxRelaxAttempts || 4)) {
+    relax += 1;
+    const step = Number(fallback.bstRelaxStep || 50) * relax;
+    let relaxed = pokemonPool.map(publicPokemonLite).filter((p) => p.frontSprite || p.backSprite).filter((p) => !adminLegendaryBlocked(p, band));
+    if (manual.exclude?.length) relaxed = relaxed.filter((p) => !adminPokemonMatchesName(p, manual.exclude));
+    relaxed = relaxed.filter((p) => {
+      const bst = statTotalForAdminPokemon(p);
+      return bst >= Math.max(1, minBST - step) && bst <= maxBST + step;
+    });
+    if (stages && stages.length && !fallback.allowEvolutionStageRelax) relaxed = relaxed.filter((p) => stages.includes(adminEvolutionStage(p)));
+    pool = [...new Map([...pool, ...relaxed].map((p) => [p.id, p])).values()];
+    debug.push({ step: `fallback BST 완화 ${relax}회`, count: pool.length });
+  }
+  if (!pool.length) {
+    pool = pokemonPool.map(publicPokemonLite).filter((p) => p.frontSprite || p.backSprite).slice(0, 30);
+    debug.push({ step: "안전 fallback pool", count: pool.length });
+  }
+  const recent = Array.isArray(options.recentIds) ? options.recentIds.map(Number) : [];
+  const recentCfg = rules.recentPenalty || {};
+  const weights = manual.weights || {};
+  const weighted = pool.map((p) => {
+    let weight = Number(weights[p.name] ?? weights[p.apiName] ?? weights[String(p.id)] ?? 5);
+    if (recentCfg.recentPenaltyEnabled !== false && recent.length) {
+      const idx = recent.lastIndexOf(Number(p.id));
+      if (idx >= 0) {
+        const fromEnd = recent.length - 1 - idx;
+        if (fromEnd === 0) weight *= Number(recentCfg.penalty?.last || 0.1);
+        else if (fromEnd < 3) weight *= Number(recentCfg.penalty?.recent3 || 0.35);
+        else if (fromEnd < 5) weight *= Number(recentCfg.penalty?.recent5 || 0.6);
+      }
+    }
+    return { ...p, bst: statTotalForAdminPokemon(p), evolutionStage: adminEvolutionStage(p), weight: Math.max(0.01, weight) };
+  });
+  debug.push({ step: "최종 후보", count: weighted.length });
+  return { rules, bandKey, rangeKey, band, debug, candidates: weighted };
+}
+function adminPickWeighted(candidates) {
+  const list = (candidates || []).filter(Boolean);
+  const total = list.reduce((sum, p) => sum + Math.max(0.01, Number(p.weight || 1)), 0);
+  let roll = Math.random() * total;
+  for (const p of list) { roll -= Math.max(0.01, Number(p.weight || 1)); if (roll <= 0) return p; }
+  return list[0] || null;
+}
+function adminMoveByName(name) {
+  const key = normalizeAdminKey(name);
+  return MOVE_LIST.find((m) => normalizeAdminKey(m.name) === key || normalizeAdminKey(m.id) === key || normalizeAdminKey(m.apiName) === key) || null;
+}
+function adminAllowedMoveNamesForPokemon(mon) {
+  const allowed = readAdventureAdminJson("adventure_pokemon_allowed_moves.json", {});
+  const rule = allowed[mon.name] || allowed[mon.apiName] || allowed[String(mon.id)] || {};
+  const learnsets = readAdventureAdminJson("adventure_levelup_learnsets.json", {});
+  const levelMoves = (learnsets[mon.name] || learnsets[mon.apiName] || learnsets[String(mon.id)] || []).map((x) => x.move);
+  const apiLearnable = (mon.learnableMoves || []).map((m) => m.name || m.id || m.apiName);
+  const base = (mon.currentMoves || []).map((m) => m.name || m.id || m.apiName);
+  return [...new Set([...(rule.levelUp || []), ...(rule.tm || []), ...(rule.coverage || []), ...levelMoves, ...apiLearnable, ...base].filter(Boolean))];
+}
+function adminGenerateMoveset(mon, stage, level) {
+  const allowedNames = adminAllowedMoveNamesForPokemon(mon);
+  const allowedMoves = allowedNames.map(adminMoveByName).filter(Boolean);
+  const stageKey = Number(stage) <= 10 ? "early" : Number(stage) <= 30 ? "mid" : Number(stage) <= 60 ? "high" : Number(stage) <= 90 ? "late" : "final";
+  const typeSet = new Set((mon.types || []).map(String));
+  const damaging = allowedMoves.filter((m) => Number(m.power || 0) > 0);
+  const stab = damaging.filter((m) => typeSet.has(String(m.type)));
+  const coverage = damaging.filter((m) => !typeSet.has(String(m.type)) && String(m.type) !== "normal");
+  const status = allowedMoves.filter((m) => Number(m.power || 0) <= 0);
+  const result = [];
+  const add = (arr) => { for (const m of arr) if (m && !result.some((x) => x.id === m.id)) { result.push(m); return true; } return false; };
+  add(stab.sort((a,b)=>Number(b.power||0)-Number(a.power||0)));
+  if (["high","late","final"].includes(stageKey)) add(coverage.sort((a,b)=>Number(b.power||0)-Number(a.power||0)));
+  add(damaging.sort((a,b)=>Number(b.power||0)-Number(a.power||0)));
+  add(status);
+  for (const m of MOVE_LIST) { if (result.length >= 4) break; if (["tackle","quickAttack","bodySlam","swift"].includes(m.id)) add([m]); }
+  return result.slice(0, 4).map((m) => ({ ...publicMoveLite(m), tier: stageKey, isStab: typeSet.has(String(m.type)), isCoverage: !typeSet.has(String(m.type)) && String(m.type) !== "normal" && Number(m.power || 0) > 0 }));
+}
+
 app.post("/api/admin/adventure/test-wild", requireAdminForWrite, (req, res) => {
   try {
     const stage = Number(req.body?.stage || 1);
     const playerLevel = Number(req.body?.playerLevel || 5);
-    const candidates = pokemonPool.filter((p) => {
-      const bst = statTotalForAdminPokemon(p);
-      if (stage <= 10) return [172,173,174,175,236,238,239,240,10,13,46,48,165,167,193,204].includes(Number(p.id));
-      if (stage <= 30) return bst <= 430;
-      if (stage <= 60) return bst <= 520;
-      return true;
-    });
+    const count = Math.max(1, Math.min(500, Number(req.body?.count || 100)));
+    const useRecent = req.body?.useRecent !== false;
+    const recentIds = useRecent ? (req.body?.recentIds || []) : [];
+    const built = adminBuildEncounterCandidates(stage, { recentIds });
     const picks = [];
-    for (let i = 0; i < 10 && candidates.length; i++) {
-      const p = candidates[Math.floor(Math.random() * candidates.length)];
-      const level = Math.max(2, playerLevel + (stage <= 10 ? -1 - Math.floor(Math.random()*2) : stage < 40 ? -2 + Math.floor(Math.random()*4) : -1 + Math.floor(Math.random()*5)));
-      picks.push({ id: p.id, name: p.name, apiName: p.apiName, level, types: p.types, bst: statTotalForAdminPokemon(p), sprite: p.frontSprite });
+    const stat = new Map();
+    for (let i = 0; i < count && built.candidates.length; i += 1) {
+      const p = adminPickWeighted(built.candidates);
+      if (!p) break;
+      const level = Math.max(2, Math.round(playerLevel + (stage <= 10 ? -1 : stage < 40 ? 0 : stage < 90 ? 2 : 4)));
+      picks.push({ id: p.id, name: p.name, apiName: p.apiName, level, types: p.types, bst: p.bst, evolutionStage: p.evolutionStage, sprite: p.frontSprite, weight: p.weight });
+      stat.set(p.name, (stat.get(p.name) || 0) + 1);
     }
-    res.json({ ok: true, stage, playerLevel, wild: picks });
+    const distribution = [...stat.entries()].sort((a,b)=>b[1]-a[1]).map(([name,n]) => ({ name, count:n, rate: count ? Math.round((n / count) * 1000) / 10 : 0 }));
+    const warnings = [];
+    if (built.candidates.length < 10) warnings.push(`후보 수가 ${built.candidates.length}마리로 부족합니다.`);
+    if (distribution[0]?.rate >= 30) warnings.push(`${distribution[0].name} 등장률이 ${distribution[0].rate}%로 과도합니다.`);
+    const avgBst = picks.length ? Math.round(picks.reduce((sum,p)=>sum+Number(p.bst||0),0)/picks.length) : 0;
+    res.json({ ok: true, stage, playerLevel, count, bandKey: built.bandKey, rangeKey: built.rangeKey, candidateCount: built.candidates.length, debug: built.debug, warnings, distribution, averageBst: avgBst, candidates: built.candidates.slice(0, 120), wild: picks.slice(0, 20) });
   } catch (err) { res.status(500).json({ ok: false, message: err.message }); }
 });
 
@@ -911,14 +1202,64 @@ app.post("/api/admin/adventure/test-evolution", requireAdminForWrite, (req, res)
   } catch (err) { res.status(500).json({ ok: false, message: err.message }); }
 });
 
+
+function adminPokemonStatsAtLevel(mon, level) {
+  const s = mon?.stats || {};
+  const lv = Number(level || 5);
+  const hp = Math.max(12, Math.floor(((Number(s.hp || 50) * 2 + 31) * lv) / 100) + lv + 10);
+  const stat = (v) => Math.max(5, Math.floor(((Number(v || 45) * 2 + 31) * lv) / 100) + 5);
+  return { hp, attack: stat(s.attack), defense: stat(s.defense), speed: stat(s.speed) };
+}
+function adminLearnsetRowsForPokemon(mon) {
+  const learnsets = readAdventureAdminJson("adventure_levelup_learnsets.json", {});
+  const keys = [mon?.name, mon?.apiName, String(mon?.id || "")].filter(Boolean);
+  for (const k of keys) if (Array.isArray(learnsets[k])) return learnsets[k];
+  return [];
+}
+function adminLevelupSimulation(mon, fromLevel, toLevel) {
+  const start = Math.max(1, Number(fromLevel || 5));
+  const target = Math.max(start, Number(toLevel || start + 1));
+  const beforeStats = adminPokemonStatsAtLevel(mon, start);
+  const afterStats = adminPokemonStatsAtLevel(mon, target);
+  const rows = adminLearnsetRowsForPokemon(mon);
+  const moves = rows.filter((r) => Number(r.level || r.level_learned_at || 0) > start && Number(r.level || r.level_learned_at || 0) <= target)
+    .map((r) => ({ level: Number(r.level || r.level_learned_at || 0), move: r.move || r.name || r.id }))
+    .filter((r, i, arr) => r.move && arr.findIndex(x => x.move === r.move) === i)
+    .sort((a,b)=>a.level-b.level);
+  const lookup = adventureEvolutionLookup(mon?.name || mon?.apiName || mon?.id);
+  const evo = lookup.evolution;
+  const evoLevel = Number(evo?.level || evo?.minLevel || 0);
+  const canEvolve = !!(evo && evoLevel && target >= evoLevel);
+  const targetKey = evo ? (evo.toName || evo.toApiName || evo.to || evo.toId) : null;
+  const evoTarget = targetKey ? (findAdminPokemonByKey(targetKey) || pokemonPool.find((p) => String(p.name) === String(targetKey) || String(p.apiName) === String(targetKey) || Number(p.id) === Number(targetKey))) : null;
+  return {
+    beforeLevel: start,
+    afterLevel: target,
+    beforeStats,
+    afterStats,
+    statGain: { hp: afterStats.hp - beforeStats.hp, attack: afterStats.attack - beforeStats.attack, defense: afterStats.defense - beforeStats.defense, speed: afterStats.speed - beforeStats.speed },
+    learnsetCount: rows.length,
+    learnMoves: moves,
+    evolution: evo,
+    canEvolve,
+    evolutionTarget: evoTarget ? publicPokemonLite(evoTarget) : null,
+    log: [
+      `${mon?.name || '포켓몬'} Lv.${start} → Lv.${target}`,
+      `HP +${afterStats.hp - beforeStats.hp} / 공격 +${afterStats.attack - beforeStats.attack} / 방어 +${afterStats.defense - beforeStats.defense} / 스피드 +${afterStats.speed - beforeStats.speed}`,
+      moves.length ? `배울 기술: ${moves.map(m=>`Lv.${m.level} ${m.move}`).join(', ')}` : '배울 기술 없음',
+      canEvolve ? `진화 가능: ${evoTarget?.name || targetKey || '다음 형태'}` : '진화 없음'
+    ]
+  };
+}
+
 app.post("/api/admin/adventure/test-levelup", requireAdminForWrite, (req, res) => {
   try {
     const level = Number(req.body?.level || 5);
+    const toLevel = Number(req.body?.toLevel || req.body?.targetLevel || level + Number(req.body?.levels || 1));
     const lookup = adventureEvolutionLookup(req.body?.pokemon || req.body?.pokemonKey || req.body?.id);
-    const nextLevel = level + 1;
-    const evo = lookup.evolution;
-    const canEvolve = !!(evo && Number(evo.level || evo.minLevel || 0) <= nextLevel);
-    res.json({ ok: true, pokemon: lookup.pokemon ? publicPokemonLite(lookup.pokemon) : null, beforeLevel: level, afterLevel: nextLevel, expToNext: Math.max(20, Math.floor(nextLevel * nextLevel * 6)), evolution: evo, canEvolve });
+    if (!lookup.pokemon) return res.status(404).json({ ok: false, message: "포켓몬을 찾을 수 없습니다." });
+    const result = adminLevelupSimulation(lookup.pokemon, level, toLevel);
+    res.json({ ok: true, pokemon: publicPokemonLite(lookup.pokemon), ...result, expToNext: Math.max(20, Math.floor(toLevel * toLevel * 4)) });
   } catch (err) { res.status(500).json({ ok: false, message: err.message }); }
 });
 
@@ -926,14 +1267,16 @@ app.post("/api/admin/adventure/test-moveset", requireAdminForWrite, (req, res) =
   try {
     const pokemonKey = String(req.body?.pokemon || req.body?.pokemonKey || "").trim();
     const stage = Number(req.body?.stage || 1);
+    const level = Number(req.body?.level || 5);
     const mon = findAdminPokemonByKey(pokemonKey) || pokemonPool.find((p) => String(p.name) === pokemonKey || String(p.apiName) === pokemonKey);
     if (!mon) return res.status(404).json({ ok: false, message: "포켓몬을 찾을 수 없습니다." });
-    const movesets = readAdventureAdminJson("adventure_pokemon_movesets.json", {});
-    const learnsets = readAdventureAdminJson("adventure_levelup_learnsets.json", {});
-    const stageKey = stage <= 10 ? "early" : stage <= 30 ? "mid" : stage <= 60 ? "high" : "late";
-    const custom = movesets[mon.name] || movesets[mon.apiName] || movesets[String(mon.id)] || {};
-    const names = [...new Set([...(custom?.wildMovesByStage?.[stageKey] || []), ...(learnsets[mon.name] || []).filter((x) => Number(x.level || 0) <= Number(req.body?.level || 5)).map((x) => x.move)])].slice(0, 4);
-    res.json({ ok: true, pokemon: publicPokemonLite(mon), stage, stageKey, moves: names });
+    const publicMon = publicPokemonLite(mon);
+    const moves = adminGenerateMoveset(publicMon, stage, level);
+    const allowed = adminAllowedMoveNamesForPokemon(publicMon);
+    const warnings = [];
+    if (!moves.some((m) => m.isStab && Number(m.power || 0) > 0)) warnings.push("자속 공격기가 없습니다.");
+    if (stage >= 31 && !moves.some((m) => m.isCoverage)) warnings.push("31층 이상인데 견제기가 없습니다. 단, 실제 learnset에 견제기가 없으면 정상일 수 있습니다.");
+    res.json({ ok: true, pokemon: publicMon, stage, level, moves, allowedMoveCount: allowed.length, allowedMoves: allowed.slice(0, 80), warnings, note: "견제기는 이 포켓몬의 실제 learnset/TM/허용 기술 목록 안에서만 선별됩니다." });
   } catch (err) { res.status(500).json({ ok: false, message: err.message }); }
 });
 
@@ -955,6 +1298,7 @@ app.use((req, res, next) => {
 
 
 const ADVENTURE_DATA_FILES = new Set([
+  "pokemon_master_gen1_2.json",
   "adventure_config.json",
   "adventure_learnsets.json",
   "adventure_items.json",
@@ -973,6 +1317,21 @@ const ADVENTURE_DATA_FILES = new Set([
   "adventure_blocked_moves.json",
   "adventure_equipment.json",
   "adventure_reward_effects.json",
+  "adventure_reward_balance.json",
+  "adventure_exp_balance.json",
+  "adventure_capture_balance.json",
+  "adventure_tm_rewards.json",
+  "adventure_levelup_learnsets.json",
+  "adventure_pokemon_movesets.json",
+  "adventure_pokemon_size_overrides.json",
+  "adventure_encounter_rules.json",
+  "adventure_enemy_moveset_rules.json",
+  "adventure_pokemon_allowed_moves.json",
+  "adventure_bosses.json",
+  "adventure_levelup_learnsets_raw.json",
+  "adventure_move_name_map.json",
+  "adventure_pokemon_full_learnsets.json",
+  "adventure_special_evolutions.json",
 ]);
 app.get("/data/:file", (req, res, next) => {
   const file = String(req.params.file || "");

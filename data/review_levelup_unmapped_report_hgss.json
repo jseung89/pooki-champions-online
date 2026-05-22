@@ -1,0 +1,1502 @@
+{
+  "versionGroup": "heartgold-soulsilver",
+  "pokemonCount": 251,
+  "unmappedPokemonNames": [],
+  "unmappedMoveNames": [
+    {
+      "pokemonId": 114,
+      "pokemonName": "tangela",
+      "move": "vine-whip"
+    },
+    {
+      "pokemonId": 241,
+      "pokemonName": "miltank",
+      "move": "tackle"
+    },
+    {
+      "pokemonId": 234,
+      "pokemonName": "stantler",
+      "move": "take-down"
+    },
+    {
+      "pokemonId": 242,
+      "pokemonName": "blissey",
+      "move": "growl"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "leech-seed"
+    },
+    {
+      "pokemonId": 192,
+      "pokemonName": "sunflora",
+      "move": "growth"
+    },
+    {
+      "pokemonId": 217,
+      "pokemonName": "ursaring",
+      "move": "sweet-scent"
+    },
+    {
+      "pokemonId": 192,
+      "pokemonName": "sunflora",
+      "move": "worry-seed"
+    },
+    {
+      "pokemonId": 191,
+      "pokemonName": "sunkern",
+      "move": "seed-bomb"
+    },
+    {
+      "pokemonId": 192,
+      "pokemonName": "sunflora",
+      "move": "solar-beam"
+    },
+    {
+      "pokemonId": 192,
+      "pokemonName": "sunflora",
+      "move": "petal-dance"
+    },
+    {
+      "pokemonId": 217,
+      "pokemonName": "ursaring",
+      "move": "scratch"
+    },
+    {
+      "pokemonId": 149,
+      "pokemonName": "dragonite",
+      "move": "dragon-rage"
+    },
+    {
+      "pokemonId": 244,
+      "pokemonName": "entei",
+      "move": "fire-spin"
+    },
+    {
+      "pokemonId": 248,
+      "pokemonName": "tyranitar",
+      "move": "fire-fang"
+    },
+    {
+      "pokemonId": 146,
+      "pokemonName": "moltres",
+      "move": "heat-wave"
+    },
+    {
+      "pokemonId": 230,
+      "pokemonName": "kingdra",
+      "move": "water-gun"
+    },
+    {
+      "pokemonId": 213,
+      "pokemonName": "shuckle",
+      "move": "withdraw"
+    },
+    {
+      "pokemonId": 9,
+      "pokemonName": "blastoise",
+      "move": "skull-bash"
+    },
+    {
+      "pokemonId": 205,
+      "pokemonName": "forretress",
+      "move": "protect"
+    },
+    {
+      "pokemonId": 237,
+      "pokemonName": "hitmontop",
+      "move": "rapid-spin"
+    },
+    {
+      "pokemonId": 249,
+      "pokemonName": "lugia",
+      "move": "rain-dance"
+    },
+    {
+      "pokemonId": 250,
+      "pokemonName": "ho-oh",
+      "move": "whirlwind"
+    },
+    {
+      "pokemonId": 226,
+      "pokemonName": "mantine",
+      "move": "supersonic"
+    },
+    {
+      "pokemonId": 233,
+      "pokemonName": "porygon2",
+      "move": "psybeam"
+    },
+    {
+      "pokemonId": 189,
+      "pokemonName": "jumpluff",
+      "move": "stun-spore"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "safeguard"
+    },
+    {
+      "pokemonId": 166,
+      "pokemonName": "ledian",
+      "move": "silver-wind"
+    },
+    {
+      "pokemonId": 245,
+      "pokemonName": "suicune",
+      "move": "tailwind"
+    },
+    {
+      "pokemonId": 193,
+      "pokemonName": "yanma",
+      "move": "bug-buzz"
+    },
+    {
+      "pokemonId": 241,
+      "pokemonName": "miltank",
+      "move": "captivate"
+    },
+    {
+      "pokemonId": 232,
+      "pokemonName": "donphan",
+      "move": "fury-attack"
+    },
+    {
+      "pokemonId": 15,
+      "pokemonName": "beedrill",
+      "move": "twineedle"
+    },
+    {
+      "pokemonId": 210,
+      "pokemonName": "granbull",
+      "move": "rage"
+    },
+    {
+      "pokemonId": 237,
+      "pokemonName": "hitmontop",
+      "move": "focus-energy"
+    },
+    {
+      "pokemonId": 237,
+      "pokemonName": "hitmontop",
+      "move": "endeavor"
+    },
+    {
+      "pokemonId": 232,
+      "pokemonName": "donphan",
+      "move": "assurance"
+    },
+    {
+      "pokemonId": 211,
+      "pokemonName": "qwilfish",
+      "move": "toxic-spikes"
+    },
+    {
+      "pokemonId": 234,
+      "pokemonName": "stantler",
+      "move": "sand-attack"
+    },
+    {
+      "pokemonId": 22,
+      "pokemonName": "fearow",
+      "move": "mirror-move"
+    },
+    {
+      "pokemonId": 206,
+      "pokemonName": "dunsparce",
+      "move": "roost"
+    },
+    {
+      "pokemonId": 20,
+      "pokemonName": "raticate",
+      "move": "hyper-fang"
+    },
+    {
+      "pokemonId": 20,
+      "pokemonName": "raticate",
+      "move": "super-fang"
+    },
+    {
+      "pokemonId": 248,
+      "pokemonName": "tyranitar",
+      "move": "leer"
+    },
+    {
+      "pokemonId": 145,
+      "pokemonName": "zapdos",
+      "move": "drill-peck"
+    },
+    {
+      "pokemonId": 145,
+      "pokemonName": "zapdos",
+      "move": "pluck"
+    },
+    {
+      "pokemonId": 213,
+      "pokemonName": "shuckle",
+      "move": "wrap"
+    },
+    {
+      "pokemonId": 198,
+      "pokemonName": "murkrow",
+      "move": "haze"
+    },
+    {
+      "pokemonId": 206,
+      "pokemonName": "dunsparce",
+      "move": "glare"
+    },
+    {
+      "pokemonId": 211,
+      "pokemonName": "qwilfish",
+      "move": "stockpile"
+    },
+    {
+      "pokemonId": 211,
+      "pokemonName": "qwilfish",
+      "move": "spit-up"
+    },
+    {
+      "pokemonId": 171,
+      "pokemonName": "lanturn",
+      "move": "swallow"
+    },
+    {
+      "pokemonId": 213,
+      "pokemonName": "shuckle",
+      "move": "gastro-acid"
+    },
+    {
+      "pokemonId": 224,
+      "pokemonName": "octillery",
+      "move": "gunk-shot"
+    },
+    {
+      "pokemonId": 248,
+      "pokemonName": "tyranitar",
+      "move": "thunder-fang"
+    },
+    {
+      "pokemonId": 248,
+      "pokemonName": "tyranitar",
+      "move": "ice-fang"
+    },
+    {
+      "pokemonId": 232,
+      "pokemonName": "donphan",
+      "move": "slam"
+    },
+    {
+      "pokemonId": 243,
+      "pokemonName": "raikou",
+      "move": "thunder-shock"
+    },
+    {
+      "pokemonId": 193,
+      "pokemonName": "yanma",
+      "move": "double-team"
+    },
+    {
+      "pokemonId": 242,
+      "pokemonName": "blissey",
+      "move": "light-screen"
+    },
+    {
+      "pokemonId": 237,
+      "pokemonName": "hitmontop",
+      "move": "feint"
+    },
+    {
+      "pokemonId": 243,
+      "pokemonName": "raikou",
+      "move": "discharge"
+    },
+    {
+      "pokemonId": 242,
+      "pokemonName": "blissey",
+      "move": "defense-curl"
+    },
+    {
+      "pokemonId": 217,
+      "pokemonName": "ursaring",
+      "move": "fury-swipes"
+    },
+    {
+      "pokemonId": 248,
+      "pokemonName": "tyranitar",
+      "move": "sandstorm"
+    },
+    {
+      "pokemonId": 241,
+      "pokemonName": "miltank",
+      "move": "rollout"
+    },
+    {
+      "pokemonId": 95,
+      "pokemonName": "onix",
+      "move": "sand-tomb"
+    },
+    {
+      "pokemonId": 241,
+      "pokemonName": "miltank",
+      "move": "gyro-ball"
+    },
+    {
+      "pokemonId": 28,
+      "pokemonName": "sandslash",
+      "move": "crush-claw"
+    },
+    {
+      "pokemonId": 33,
+      "pokemonName": "nidorino",
+      "move": "flatter"
+    },
+    {
+      "pokemonId": 236,
+      "pokemonName": "tyrogue",
+      "move": "helping-hand"
+    },
+    {
+      "pokemonId": 169,
+      "pokemonName": "crobat",
+      "move": "poison-fang"
+    },
+    {
+      "pokemonId": 160,
+      "pokemonName": "feraligatr",
+      "move": "superpower"
+    },
+    {
+      "pokemonId": 222,
+      "pokemonName": "corsola",
+      "move": "earth-power"
+    },
+    {
+      "pokemonId": 232,
+      "pokemonName": "donphan",
+      "move": "horn-attack"
+    },
+    {
+      "pokemonId": 119,
+      "pokemonName": "seaking",
+      "move": "horn-drill"
+    },
+    {
+      "pokemonId": 248,
+      "pokemonName": "tyranitar",
+      "move": "thrash"
+    },
+    {
+      "pokemonId": 214,
+      "pokemonName": "heracross",
+      "move": "megahorn"
+    },
+    {
+      "pokemonId": 242,
+      "pokemonName": "blissey",
+      "move": "pound"
+    },
+    {
+      "pokemonId": 242,
+      "pokemonName": "blissey",
+      "move": "double-slap"
+    },
+    {
+      "pokemonId": 242,
+      "pokemonName": "blissey",
+      "move": "minimize"
+    },
+    {
+      "pokemonId": 176,
+      "pokemonName": "togetic",
+      "move": "metronome"
+    },
+    {
+      "pokemonId": 213,
+      "pokemonName": "shuckle",
+      "move": "encore"
+    },
+    {
+      "pokemonId": 197,
+      "pokemonName": "umbreon",
+      "move": "moonlight"
+    },
+    {
+      "pokemonId": 176,
+      "pokemonName": "togetic",
+      "move": "follow-me"
+    },
+    {
+      "pokemonId": 35,
+      "pokemonName": "clefairy",
+      "move": "meteor-mash"
+    },
+    {
+      "pokemonId": 120,
+      "pokemonName": "staryu",
+      "move": "cosmic-power"
+    },
+    {
+      "pokemonId": 35,
+      "pokemonName": "clefairy",
+      "move": "gravity"
+    },
+    {
+      "pokemonId": 241,
+      "pokemonName": "miltank",
+      "move": "wake-up-slap"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "healing-wish"
+    },
+    {
+      "pokemonId": 238,
+      "pokemonName": "smoochum",
+      "move": "lucky-chant"
+    },
+    {
+      "pokemonId": 244,
+      "pokemonName": "entei",
+      "move": "roar"
+    },
+    {
+      "pokemonId": 240,
+      "pokemonName": "magby",
+      "move": "confuse-ray"
+    },
+    {
+      "pokemonId": 234,
+      "pokemonName": "stantler",
+      "move": "imprison"
+    },
+    {
+      "pokemonId": 200,
+      "pokemonName": "misdreavus",
+      "move": "grudge"
+    },
+    {
+      "pokemonId": 250,
+      "pokemonName": "ho-oh",
+      "move": "extrasensory"
+    },
+    {
+      "pokemonId": 248,
+      "pokemonName": "tyranitar",
+      "move": "payback"
+    },
+    {
+      "pokemonId": 199,
+      "pokemonName": "slowking",
+      "move": "disable"
+    },
+    {
+      "pokemonId": 185,
+      "pokemonName": "sudowoodo",
+      "move": "mimic"
+    },
+    {
+      "pokemonId": 186,
+      "pokemonName": "politoed",
+      "move": "hyper-voice"
+    },
+    {
+      "pokemonId": 238,
+      "pokemonName": "smoochum",
+      "move": "mean-look"
+    },
+    {
+      "pokemonId": 227,
+      "pokemonName": "skarmory",
+      "move": "air-cutter"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "natural-gift"
+    },
+    {
+      "pokemonId": 154,
+      "pokemonName": "meganium",
+      "move": "aromatherapy"
+    },
+    {
+      "pokemonId": 47,
+      "pokemonName": "parasect",
+      "move": "spore"
+    },
+    {
+      "pokemonId": 169,
+      "pokemonName": "crobat",
+      "move": "cross-poison"
+    },
+    {
+      "pokemonId": 236,
+      "pokemonName": "tyrogue",
+      "move": "foresight"
+    },
+    {
+      "pokemonId": 233,
+      "pokemonName": "porygon2",
+      "move": "signal-beam"
+    },
+    {
+      "pokemonId": 241,
+      "pokemonName": "miltank",
+      "move": "zen-headbutt"
+    },
+    {
+      "pokemonId": 51,
+      "pokemonName": "dugtrio",
+      "move": "fissure"
+    },
+    {
+      "pokemonId": 232,
+      "pokemonName": "donphan",
+      "move": "magnitude"
+    },
+    {
+      "pokemonId": 233,
+      "pokemonName": "porygon2",
+      "move": "tri-attack"
+    },
+    {
+      "pokemonId": 52,
+      "pokemonName": "meowth",
+      "move": "pay-day"
+    },
+    {
+      "pokemonId": 240,
+      "pokemonName": "magby",
+      "move": "feint-attack"
+    },
+    {
+      "pokemonId": 236,
+      "pokemonName": "tyrogue",
+      "move": "fake-out"
+    },
+    {
+      "pokemonId": 215,
+      "pokemonName": "sneasel",
+      "move": "taunt"
+    },
+    {
+      "pokemonId": 222,
+      "pokemonName": "corsola",
+      "move": "power-gem"
+    },
+    {
+      "pokemonId": 97,
+      "pokemonName": "hypno",
+      "move": "switcheroo"
+    },
+    {
+      "pokemonId": 221,
+      "pokemonName": "piloswine",
+      "move": "amnesia"
+    },
+    {
+      "pokemonId": 199,
+      "pokemonName": "slowking",
+      "move": "psych-up"
+    },
+    {
+      "pokemonId": 119,
+      "pokemonName": "seaking",
+      "move": "water-sport"
+    },
+    {
+      "pokemonId": 127,
+      "pokemonName": "pinsir",
+      "move": "seismic-toss"
+    },
+    {
+      "pokemonId": 244,
+      "pokemonName": "entei",
+      "move": "swagger"
+    },
+    {
+      "pokemonId": 68,
+      "pokemonName": "machamp",
+      "move": "cross-chop"
+    },
+    {
+      "pokemonId": 217,
+      "pokemonName": "ursaring",
+      "move": "covet"
+    },
+    {
+      "pokemonId": 250,
+      "pokemonName": "ho-oh",
+      "move": "punishment"
+    },
+    {
+      "pokemonId": 242,
+      "pokemonName": "blissey",
+      "move": "fling"
+    },
+    {
+      "pokemonId": 214,
+      "pokemonName": "heracross",
+      "move": "reversal"
+    },
+    {
+      "pokemonId": 231,
+      "pokemonName": "phanpy",
+      "move": "odor-sleuth"
+    },
+    {
+      "pokemonId": 245,
+      "pokemonName": "suicune",
+      "move": "bubble-beam"
+    },
+    {
+      "pokemonId": 143,
+      "pokemonName": "snorlax",
+      "move": "belly-drum"
+    },
+    {
+      "pokemonId": 195,
+      "pokemonName": "quagsire",
+      "move": "mud-shot"
+    },
+    {
+      "pokemonId": 127,
+      "pokemonName": "pinsir",
+      "move": "submission"
+    },
+    {
+      "pokemonId": 144,
+      "pokemonName": "articuno",
+      "move": "mind-reader"
+    },
+    {
+      "pokemonId": 68,
+      "pokemonName": "machamp",
+      "move": "dynamic-punch"
+    },
+    {
+      "pokemonId": 178,
+      "pokemonName": "xatu",
+      "move": "teleport"
+    },
+    {
+      "pokemonId": 243,
+      "pokemonName": "raikou",
+      "move": "reflect"
+    },
+    {
+      "pokemonId": 65,
+      "pokemonName": "alakazam",
+      "move": "kinesis"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "future-sight"
+    },
+    {
+      "pokemonId": 122,
+      "pokemonName": "mr-mime",
+      "move": "trick"
+    },
+    {
+      "pokemonId": 234,
+      "pokemonName": "stantler",
+      "move": "role-play"
+    },
+    {
+      "pokemonId": 178,
+      "pokemonName": "xatu",
+      "move": "miracle-eye"
+    },
+    {
+      "pokemonId": 150,
+      "pokemonName": "mewtwo",
+      "move": "psycho-cut"
+    },
+    {
+      "pokemonId": 250,
+      "pokemonName": "ho-oh",
+      "move": "calm-mind"
+    },
+    {
+      "pokemonId": 127,
+      "pokemonName": "pinsir",
+      "move": "vital-throw"
+    },
+    {
+      "pokemonId": 237,
+      "pokemonName": "hitmontop",
+      "move": "revenge"
+    },
+    {
+      "pokemonId": 232,
+      "pokemonName": "donphan",
+      "move": "knock-off"
+    },
+    {
+      "pokemonId": 224,
+      "pokemonName": "octillery",
+      "move": "wring-out"
+    },
+    {
+      "pokemonId": 182,
+      "pokemonName": "bellossom",
+      "move": "leaf-blade"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "leaf-storm"
+    },
+    {
+      "pokemonId": 151,
+      "pokemonName": "mew",
+      "move": "barrier"
+    },
+    {
+      "pokemonId": 224,
+      "pokemonName": "octillery",
+      "move": "constrict"
+    },
+    {
+      "pokemonId": 219,
+      "pokemonName": "magcargo",
+      "move": "rock-throw"
+    },
+    {
+      "pokemonId": 205,
+      "pokemonName": "forretress",
+      "move": "self-destruct"
+    },
+    {
+      "pokemonId": 221,
+      "pokemonName": "piloswine",
+      "move": "mud-sport"
+    },
+    {
+      "pokemonId": 208,
+      "pokemonName": "steelix",
+      "move": "rock-polish"
+    },
+    {
+      "pokemonId": 244,
+      "pokemonName": "entei",
+      "move": "stomp"
+    },
+    {
+      "pokemonId": 226,
+      "pokemonName": "mantine",
+      "move": "bounce"
+    },
+    {
+      "pokemonId": 226,
+      "pokemonName": "mantine",
+      "move": "headbutt"
+    },
+    {
+      "pokemonId": 208,
+      "pokemonName": "steelix",
+      "move": "curse"
+    },
+    {
+      "pokemonId": 230,
+      "pokemonName": "kingdra",
+      "move": "yawn"
+    },
+    {
+      "pokemonId": 80,
+      "pokemonName": "slowbro",
+      "move": "slack-off"
+    },
+    {
+      "pokemonId": 193,
+      "pokemonName": "yanma",
+      "move": "sonic-boom"
+    },
+    {
+      "pokemonId": 233,
+      "pokemonName": "porygon2",
+      "move": "zap-cannon"
+    },
+    {
+      "pokemonId": 233,
+      "pokemonName": "porygon2",
+      "move": "lock-on"
+    },
+    {
+      "pokemonId": 243,
+      "pokemonName": "raikou",
+      "move": "spark"
+    },
+    {
+      "pokemonId": 233,
+      "pokemonName": "porygon2",
+      "move": "magnet-rise"
+    },
+    {
+      "pokemonId": 205,
+      "pokemonName": "forretress",
+      "move": "mirror-shot"
+    },
+    {
+      "pokemonId": 82,
+      "pokemonName": "magneton",
+      "move": "magnet-bomb"
+    },
+    {
+      "pokemonId": 212,
+      "pokemonName": "scizor",
+      "move": "false-swipe"
+    },
+    {
+      "pokemonId": 193,
+      "pokemonName": "yanma",
+      "move": "uproar"
+    },
+    {
+      "pokemonId": 85,
+      "pokemonName": "dodrio",
+      "move": "acupressure"
+    },
+    {
+      "pokemonId": 212,
+      "pokemonName": "scizor",
+      "move": "double-hit"
+    },
+    {
+      "pokemonId": 245,
+      "pokemonName": "suicune",
+      "move": "aurora-beam"
+    },
+    {
+      "pokemonId": 221,
+      "pokemonName": "piloswine",
+      "move": "icy-wind"
+    },
+    {
+      "pokemonId": 87,
+      "pokemonName": "dewgong",
+      "move": "dive"
+    },
+    {
+      "pokemonId": 230,
+      "pokemonName": "kingdra",
+      "move": "brine"
+    },
+    {
+      "pokemonId": 226,
+      "pokemonName": "mantine",
+      "move": "aqua-ring"
+    },
+    {
+      "pokemonId": 144,
+      "pokemonName": "articuno",
+      "move": "sheer-cold"
+    },
+    {
+      "pokemonId": 110,
+      "pokemonName": "weezing",
+      "move": "sludge"
+    },
+    {
+      "pokemonId": 110,
+      "pokemonName": "weezing",
+      "move": "poison-gas"
+    },
+    {
+      "pokemonId": 134,
+      "pokemonName": "vaporeon",
+      "move": "acid-armor"
+    },
+    {
+      "pokemonId": 189,
+      "pokemonName": "jumpluff",
+      "move": "memento"
+    },
+    {
+      "pokemonId": 90,
+      "pokemonName": "shellder",
+      "move": "clamp"
+    },
+    {
+      "pokemonId": 90,
+      "pokemonName": "shellder",
+      "move": "whirlpool"
+    },
+    {
+      "pokemonId": 222,
+      "pokemonName": "corsola",
+      "move": "spike-cannon"
+    },
+    {
+      "pokemonId": 227,
+      "pokemonName": "skarmory",
+      "move": "spikes"
+    },
+    {
+      "pokemonId": 198,
+      "pokemonName": "murkrow",
+      "move": "night-shade"
+    },
+    {
+      "pokemonId": 164,
+      "pokemonName": "noctowl",
+      "move": "dream-eater"
+    },
+    {
+      "pokemonId": 97,
+      "pokemonName": "hypno",
+      "move": "nightmare"
+    },
+    {
+      "pokemonId": 206,
+      "pokemonName": "dunsparce",
+      "move": "spite"
+    },
+    {
+      "pokemonId": 211,
+      "pokemonName": "qwilfish",
+      "move": "destiny-bond"
+    },
+    {
+      "pokemonId": 208,
+      "pokemonName": "steelix",
+      "move": "bind"
+    },
+    {
+      "pokemonId": 122,
+      "pokemonName": "mr-mime",
+      "move": "meditate"
+    },
+    {
+      "pokemonId": 127,
+      "pokemonName": "pinsir",
+      "move": "vice-grip"
+    },
+    {
+      "pokemonId": 207,
+      "pokemonName": "gligar",
+      "move": "guillotine"
+    },
+    {
+      "pokemonId": 99,
+      "pokemonName": "kingler",
+      "move": "crabhammer"
+    },
+    {
+      "pokemonId": 232,
+      "pokemonName": "donphan",
+      "move": "flail"
+    },
+    {
+      "pokemonId": 245,
+      "pokemonName": "suicune",
+      "move": "mirror-coat"
+    },
+    {
+      "pokemonId": 181,
+      "pokemonName": "ampharos",
+      "move": "charge"
+    },
+    {
+      "pokemonId": 101,
+      "pokemonName": "electrode",
+      "move": "charge-beam"
+    },
+    {
+      "pokemonId": 103,
+      "pokemonName": "exeggutor",
+      "move": "barrage"
+    },
+    {
+      "pokemonId": 242,
+      "pokemonName": "blissey",
+      "move": "egg-bomb"
+    },
+    {
+      "pokemonId": 105,
+      "pokemonName": "marowak",
+      "move": "bone-club"
+    },
+    {
+      "pokemonId": 105,
+      "pokemonName": "marowak",
+      "move": "bonemerang"
+    },
+    {
+      "pokemonId": 106,
+      "pokemonName": "hitmonlee",
+      "move": "mega-kick"
+    },
+    {
+      "pokemonId": 106,
+      "pokemonName": "hitmonlee",
+      "move": "jump-kick"
+    },
+    {
+      "pokemonId": 237,
+      "pokemonName": "hitmontop",
+      "move": "rolling-kick"
+    },
+    {
+      "pokemonId": 106,
+      "pokemonName": "hitmonlee",
+      "move": "high-jump-kick"
+    },
+    {
+      "pokemonId": 231,
+      "pokemonName": "phanpy",
+      "move": "endure"
+    },
+    {
+      "pokemonId": 106,
+      "pokemonName": "hitmonlee",
+      "move": "blaze-kick"
+    },
+    {
+      "pokemonId": 166,
+      "pokemonName": "ledian",
+      "move": "comet-punch"
+    },
+    {
+      "pokemonId": 151,
+      "pokemonName": "mew",
+      "move": "mega-punch"
+    },
+    {
+      "pokemonId": 240,
+      "pokemonName": "magby",
+      "move": "fire-punch"
+    },
+    {
+      "pokemonId": 124,
+      "pokemonName": "jynx",
+      "move": "ice-punch"
+    },
+    {
+      "pokemonId": 239,
+      "pokemonName": "elekid",
+      "move": "thunder-punch"
+    },
+    {
+      "pokemonId": 237,
+      "pokemonName": "hitmontop",
+      "move": "counter"
+    },
+    {
+      "pokemonId": 237,
+      "pokemonName": "hitmontop",
+      "move": "detect"
+    },
+    {
+      "pokemonId": 107,
+      "pokemonName": "hitmonchan",
+      "move": "sky-uppercut"
+    },
+    {
+      "pokemonId": 123,
+      "pokemonName": "scyther",
+      "move": "vacuum-wave"
+    },
+    {
+      "pokemonId": 242,
+      "pokemonName": "blissey",
+      "move": "refresh"
+    },
+    {
+      "pokemonId": 234,
+      "pokemonName": "stantler",
+      "move": "me-first"
+    },
+    {
+      "pokemonId": 114,
+      "pokemonName": "tangela",
+      "move": "power-whip"
+    },
+    {
+      "pokemonId": 240,
+      "pokemonName": "magby",
+      "move": "smog"
+    },
+    {
+      "pokemonId": 217,
+      "pokemonName": "ursaring",
+      "move": "hammer-arm"
+    },
+    {
+      "pokemonId": 242,
+      "pokemonName": "blissey",
+      "move": "soft-boiled"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "ancient-power"
+    },
+    {
+      "pokemonId": 192,
+      "pokemonName": "sunflora",
+      "move": "ingrain"
+    },
+    {
+      "pokemonId": 115,
+      "pokemonName": "kangaskhan",
+      "move": "dizzy-punch"
+    },
+    {
+      "pokemonId": 120,
+      "pokemonName": "staryu",
+      "move": "camouflage"
+    },
+    {
+      "pokemonId": 122,
+      "pokemonName": "mr-mime",
+      "move": "substitute"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "baton-pass"
+    },
+    {
+      "pokemonId": 233,
+      "pokemonName": "porygon2",
+      "move": "recycle"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "magical-leaf"
+    },
+    {
+      "pokemonId": 238,
+      "pokemonName": "smoochum",
+      "move": "copycat"
+    },
+    {
+      "pokemonId": 203,
+      "pokemonName": "girafarig",
+      "move": "power-swap"
+    },
+    {
+      "pokemonId": 203,
+      "pokemonName": "girafarig",
+      "move": "guard-swap"
+    },
+    {
+      "pokemonId": 212,
+      "pokemonName": "scizor",
+      "move": "razor-wind"
+    },
+    {
+      "pokemonId": 245,
+      "pokemonName": "suicune",
+      "move": "blizzard"
+    },
+    {
+      "pokemonId": 124,
+      "pokemonName": "jynx",
+      "move": "lovely-kiss"
+    },
+    {
+      "pokemonId": 238,
+      "pokemonName": "smoochum",
+      "move": "fake-tears"
+    },
+    {
+      "pokemonId": 238,
+      "pokemonName": "smoochum",
+      "move": "avalanche"
+    },
+    {
+      "pokemonId": 250,
+      "pokemonName": "ho-oh",
+      "move": "sunny-day"
+    },
+    {
+      "pokemonId": 244,
+      "pokemonName": "entei",
+      "move": "lava-plume"
+    },
+    {
+      "pokemonId": 232,
+      "pokemonName": "donphan",
+      "move": "giga-impact"
+    },
+    {
+      "pokemonId": 189,
+      "pokemonName": "jumpluff",
+      "move": "splash"
+    },
+    {
+      "pokemonId": 245,
+      "pokemonName": "suicune",
+      "move": "mist"
+    },
+    {
+      "pokemonId": 151,
+      "pokemonName": "mew",
+      "move": "transform"
+    },
+    {
+      "pokemonId": 199,
+      "pokemonName": "slowking",
+      "move": "trump-card"
+    },
+    {
+      "pokemonId": 231,
+      "pokemonName": "phanpy",
+      "move": "last-resort"
+    },
+    {
+      "pokemonId": 195,
+      "pokemonName": "quagsire",
+      "move": "muddy-water"
+    },
+    {
+      "pokemonId": 137,
+      "pokemonName": "porygon",
+      "move": "sharpen"
+    },
+    {
+      "pokemonId": 233,
+      "pokemonName": "porygon2",
+      "move": "conversion"
+    },
+    {
+      "pokemonId": 233,
+      "pokemonName": "porygon2",
+      "move": "conversion-2"
+    },
+    {
+      "pokemonId": 233,
+      "pokemonName": "porygon2",
+      "move": "magic-coat"
+    },
+    {
+      "pokemonId": 217,
+      "pokemonName": "ursaring",
+      "move": "snore"
+    },
+    {
+      "pokemonId": 143,
+      "pokemonName": "snorlax",
+      "move": "sleep-talk"
+    },
+    {
+      "pokemonId": 185,
+      "pokemonName": "sudowoodo",
+      "move": "block"
+    },
+    {
+      "pokemonId": 144,
+      "pokemonName": "articuno",
+      "move": "hail"
+    },
+    {
+      "pokemonId": 250,
+      "pokemonName": "ho-oh",
+      "move": "sky-attack"
+    },
+    {
+      "pokemonId": 249,
+      "pokemonName": "lugia",
+      "move": "dragon-rush"
+    },
+    {
+      "pokemonId": 151,
+      "pokemonName": "mew",
+      "move": "aura-sphere"
+    },
+    {
+      "pokemonId": 244,
+      "pokemonName": "entei",
+      "move": "eruption"
+    },
+    {
+      "pokemonId": 178,
+      "pokemonName": "xatu",
+      "move": "psycho-shift"
+    },
+    {
+      "pokemonId": 168,
+      "pokemonName": "ariados",
+      "move": "spider-web"
+    },
+    {
+      "pokemonId": 168,
+      "pokemonName": "ariados",
+      "move": "shadow-sneak"
+    },
+    {
+      "pokemonId": 238,
+      "pokemonName": "smoochum",
+      "move": "sweet-kiss"
+    },
+    {
+      "pokemonId": 178,
+      "pokemonName": "xatu",
+      "move": "wish"
+    },
+    {
+      "pokemonId": 178,
+      "pokemonName": "xatu",
+      "move": "ominous-wind"
+    },
+    {
+      "pokemonId": 189,
+      "pokemonName": "jumpluff",
+      "move": "cotton-spore"
+    },
+    {
+      "pokemonId": 207,
+      "pokemonName": "gligar",
+      "move": "u-turn"
+    },
+    {
+      "pokemonId": 192,
+      "pokemonName": "sunflora",
+      "move": "grass-whistle"
+    },
+    {
+      "pokemonId": 196,
+      "pokemonName": "espeon",
+      "move": "morning-sun"
+    },
+    {
+      "pokemonId": 201,
+      "pokemonName": "unown",
+      "move": "hidden-power"
+    },
+    {
+      "pokemonId": 200,
+      "pokemonName": "misdreavus",
+      "move": "psywave"
+    },
+    {
+      "pokemonId": 200,
+      "pokemonName": "misdreavus",
+      "move": "pain-split"
+    },
+    {
+      "pokemonId": 241,
+      "pokemonName": "miltank",
+      "move": "bide"
+    },
+    {
+      "pokemonId": 213,
+      "pokemonName": "shuckle",
+      "move": "power-trick"
+    },
+    {
+      "pokemonId": 229,
+      "pokemonName": "houndoom",
+      "move": "beat-up"
+    },
+    {
+      "pokemonId": 224,
+      "pokemonName": "octillery",
+      "move": "octazooka"
+    },
+    {
+      "pokemonId": 225,
+      "pokemonName": "delibird",
+      "move": "present"
+    },
+    {
+      "pokemonId": 229,
+      "pokemonName": "houndoom",
+      "move": "howl"
+    },
+    {
+      "pokemonId": 229,
+      "pokemonName": "houndoom",
+      "move": "embargo"
+    },
+    {
+      "pokemonId": 235,
+      "pokemonName": "smeargle",
+      "move": "sketch"
+    },
+    {
+      "pokemonId": 237,
+      "pokemonName": "hitmontop",
+      "move": "triple-kick"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "heal-bell"
+    },
+    {
+      "pokemonId": 249,
+      "pokemonName": "lugia",
+      "move": "aeroblast"
+    },
+    {
+      "pokemonId": 250,
+      "pokemonName": "ho-oh",
+      "move": "weather-ball"
+    },
+    {
+      "pokemonId": 250,
+      "pokemonName": "ho-oh",
+      "move": "sacred-fire"
+    },
+    {
+      "pokemonId": 251,
+      "pokemonName": "celebi",
+      "move": "heal-block"
+    }
+  ],
+  "pokemonWithoutLevelupMoves": [],
+  "errors": [],
+  "generatedAt": "2026-05-22T03:32:22.268Z",
+  "suspiciousChecks": [
+    {
+      "key": "dratini Lv8 dragon-pulse",
+      "status": "NOT FOUND",
+      "row": null
+    },
+    {
+      "key": "dratini Lv12 tackle",
+      "status": "NOT FOUND",
+      "row": null
+    },
+    {
+      "key": "abra low-level psychic",
+      "status": "NOT FOUND",
+      "row": null
+    },
+    {
+      "key": "pikachu low-level thunder",
+      "status": "NOT FOUND",
+      "row": null
+    },
+    {
+      "key": "sandshrew Lv8 earthquake",
+      "status": "NOT FOUND",
+      "row": null
+    },
+    {
+      "key": "pikachu surf level-up",
+      "status": "NOT FOUND",
+      "row": null
+    },
+    {
+      "key": "pikachu dig level-up",
+      "status": "NOT FOUND",
+      "row": null
+    },
+    {
+      "key": "pikachu brick-break level-up",
+      "status": "NOT FOUND",
+      "row": null
+    }
+  ]
+}

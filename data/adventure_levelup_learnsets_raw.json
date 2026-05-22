@@ -1,0 +1,5 @@
+{
+  "generatedAt": "2026-05-20T08:42:49.325Z",
+  "source": "local pokemon cache availableMoveNames + existing manual learnsets; run scripts/fetch_adventure_levelup_learnsets.js online for PokeAPI refresh",
+  "count": 159
+}

@@ -1,0 +1,119 @@
+﻿apiName,koreanName,appearsInPokemonCount,minLevel,maxLevel,reason
+acupressure,,2,28,28,unsupported or state-machine-heavy effect
+aqua-ring,,11,23,47,unsupported or state-machine-heavy effect
+aromatherapy,,6,1,60,unsupported or state-machine-heavy effect
+baton-pass,,12,11,80,unsupported or state-machine-heavy effect
+beat-up,,3,27,38,unsupported or state-machine-heavy effect
+belly-drum,,3,17,37,unsupported or state-machine-heavy effect
+bide,,4,1,20,unsupported or state-machine-heavy effect
+block,,2,22,36,unsupported or state-machine-heavy effect
+camouflage,,1,19,19,unsupported or state-machine-heavy effect
+captivate,,10,35,56,unsupported or state-machine-heavy effect
+charge,,8,1,57,unsupported or state-machine-heavy effect
+confuse-ray,,20,1,37,unsupported or state-machine-heavy effect
+conversion,,2,1,1,unsupported or state-machine-heavy effect
+conversion-2,,2,1,1,unsupported or state-machine-heavy effect
+copycat,,5,1,38,unsupported or state-machine-heavy effect
+counter,,4,1,51,unsupported or state-machine-heavy effect
+covet,,3,1,1,not implemented safely in this patch
+crabhammer,,2,41,56,not implemented safely in this patch
+crush-claw,,1,22,22,unsupported or state-machine-heavy effect
+curse,,8,1,38,unsupported or state-machine-heavy effect
+destiny-bond,,7,1,55,unsupported or state-machine-heavy effect
+detect,,4,15,46,unsupported or state-machine-heavy effect
+disable,,17,1,25,unsupported or state-machine-heavy effect
+double-hit,,7,32,49,not implemented safely in this patch
+embargo,,2,40,44,unsupported or state-machine-heavy effect
+encore,,8,4,19,unsupported or state-machine-heavy effect
+endeavor,,10,21,55,unsupported or state-machine-heavy effect
+endure,,9,1,45,not implemented safely in this patch
+false-swipe,,5,13,45,not implemented safely in this patch
+fissure,,2,40,50,unsupported or state-machine-heavy effect
+flail,,14,1,63,unsupported or state-machine-heavy effect
+flatter,,4,33,38,unsupported or state-machine-heavy effect
+fling,,9,1,57,unsupported or state-machine-heavy effect
+follow-me,,5,16,24,unsupported or state-machine-heavy effect
+foresight,,12,1,37,unsupported or state-machine-heavy effect
+gastro-acid,,5,33,42,not implemented safely in this patch
+gravity,,1,34,34,unsupported or state-machine-heavy effect
+grudge,,2,41,46,unsupported or state-machine-heavy effect
+guard-swap,,6,1,78,unsupported or state-machine-heavy effect
+guillotine,,4,31,47,unsupported or state-machine-heavy effect
+hail,,1,85,85,unsupported or state-machine-heavy effect
+haze,,11,11,57,unsupported or state-machine-heavy effect
+heal-bell,,2,1,48,unsupported or state-machine-heavy effect
+heal-block,,1,55,55,unsupported or state-machine-heavy effect
+healing-wish,,4,42,73,unsupported or state-machine-heavy effect
+helping-hand,,14,1,28,unsupported or state-machine-heavy effect
+horn-drill,,6,37,58,unsupported or state-machine-heavy effect
+hyper-voice,,4,45,56,not implemented safely in this patch
+imprison,,2,21,43,unsupported or state-machine-heavy effect
+ingrain,,3,1,9,unsupported or state-machine-heavy effect
+kinesis,,2,1,1,unsupported or state-machine-heavy effect
+light-screen,,19,14,64,unsupported or state-machine-heavy effect
+lock-on,,5,6,45,unsupported or state-machine-heavy effect
+lucky-chant,,7,12,29,unsupported or state-machine-heavy effect
+magic-coat,,2,56,56,unsupported or state-machine-heavy effect
+magnet-rise,,7,23,62,unsupported or state-machine-heavy effect
+me-first,,8,20,79,unsupported or state-machine-heavy effect
+mean-look,,11,8,57,unsupported or state-machine-heavy effect
+memento,,7,43,65,unsupported or state-machine-heavy effect
+meteor-mash,,1,43,43,not implemented safely in this patch
+metronome,,5,1,31,unsupported or state-machine-heavy effect
+mimic,,3,17,41,unsupported or state-machine-heavy effect
+mind-reader,,3,22,53,unsupported or state-machine-heavy effect
+minimize,,8,1,33,unsupported or state-machine-heavy effect
+miracle-eye,,5,17,36,unsupported or state-machine-heavy effect
+mirror-coat,,5,1,57,unsupported or state-machine-heavy effect
+mirror-move,,5,21,56,not implemented safely in this patch
+mist,,8,4,48,unsupported or state-machine-heavy effect
+mud-sport,,11,1,5,unsupported or state-machine-heavy effect
+night-shade,,8,6,21,not implemented safely in this patch
+nightmare,,4,1,55,unsupported or state-machine-heavy effect
+odor-sleuth,,8,1,22,unsupported or state-machine-heavy effect
+pain-split,,1,28,28,unsupported or state-machine-heavy effect
+payback,,13,24,51,not implemented safely in this patch
+perish-song,멸망의노래,6,1,91,unsupported or state-machine-heavy effect
+power-swap,,6,1,78,unsupported or state-machine-heavy effect
+power-trick,,1,48,48,unsupported or state-machine-heavy effect
+present,,1,1,1,unsupported or state-machine-heavy effect
+protect,,11,1,34,unsupported or state-machine-heavy effect
+psych-up,,9,29,67,unsupported or state-machine-heavy effect
+psycho-shift,,4,33,47,unsupported or state-machine-heavy effect
+rage,,16,1,35,not implemented safely in this patch
+rain-dance,,17,15,85,unsupported or state-machine-heavy effect
+razor-wind,,2,33,33,not implemented safely in this patch
+recycle,,3,32,34,unsupported or state-machine-heavy effect
+reflect,,13,7,50,unsupported or state-machine-heavy effect
+refresh,,4,9,41,unsupported or state-machine-heavy effect
+reversal,,4,25,57,unsupported or state-machine-heavy effect
+role-play,,3,33,43,unsupported or state-machine-heavy effect
+safeguard,,24,1,93,unsupported or state-machine-heavy effect
+sandstorm,,7,1,52,unsupported or state-machine-heavy effect
+self-destruct,,9,1,29,not implemented safely in this patch
+sheer-cold,,3,34,78,unsupported or state-machine-heavy effect
+sketch,,1,1,91,unsupported or state-machine-heavy effect
+sleep-talk,,1,28,28,not implemented safely in this patch
+sonic-boom,,5,1,14,not implemented safely in this patch
+spider-web,,2,29,32,unsupported or state-machine-heavy effect
+spikes,,5,1,28,unsupported or state-machine-heavy effect
+spit-up,,5,1,28,unsupported or state-machine-heavy effect
+spite,,5,1,21,not implemented safely in this patch
+stockpile,,5,1,28,unsupported or state-machine-heavy effect
+substitute,,1,29,29,unsupported or state-machine-heavy effect
+sunny-day,,7,1,85,unsupported or state-machine-heavy effect
+supersonic,,22,1,22,unsupported or state-machine-heavy effect
+swagger,,8,27,45,unsupported or state-machine-heavy effect
+swallow,,4,1,28,unsupported or state-machine-heavy effect
+switcheroo,,2,1,1,unsupported or state-machine-heavy effect
+tailwind,,7,27,64,unsupported or state-machine-heavy effect
+taunt,,4,1,31,unsupported or state-machine-heavy effect
+toxic-spikes,,10,1,35,unsupported or state-machine-heavy effect
+transform,,2,1,1,unsupported or state-machine-heavy effect
+trick,,3,36,46,unsupported or state-machine-heavy effect
+trump-card,,2,53,57,unsupported or state-machine-heavy effect
+water-sport,,7,1,7,unsupported or state-machine-heavy effect
+wish,,4,28,30,unsupported or state-machine-heavy effect
+worry-seed,,9,25,40,unsupported or state-machine-heavy effect
+wring-out,,10,36,63,unsupported or state-machine-heavy effect
+yawn,하품,12,1,31,unsupported or state-machine-heavy effect

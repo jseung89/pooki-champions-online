@@ -3,45 +3,45 @@
     "early": {
       "stageMax": 10,
       "weights": {
-        "heal": 30,
-        "capture": 25,
-        "equipment": 20,
+        "heal": 25,
+        "capture": 20,
+        "equipment": 18,
         "revive": 10,
-        "growth": 10,
-        "tm": 5
+        "growth": 20,
+        "tm": 7
       }
     },
     "mid": {
       "stageMax": 30,
       "weights": {
-        "heal": 22,
-        "capture": 18,
+        "heal": 20,
+        "capture": 15,
         "equipment": 22,
-        "revive": 13,
-        "growth": 15,
-        "tm": 10
+        "revive": 12,
+        "growth": 22,
+        "tm": 9
       }
     },
     "late": {
       "stageMax": 60,
       "weights": {
-        "heal": 18,
-        "capture": 12,
+        "heal": 17,
+        "capture": 10,
         "equipment": 28,
         "revive": 17,
-        "growth": 10,
-        "tm": 15
+        "growth": 15,
+        "tm": 13
       }
     },
     "end": {
       "stageMax": 100,
       "weights": {
-        "heal": 15,
+        "heal": 14,
         "capture": 8,
         "equipment": 30,
         "revive": 22,
-        "growth": 8,
-        "tm": 17
+        "growth": 10,
+        "tm": 16
       }
     }
   },
@@ -51,5 +51,27 @@
     "철분",
     "사포닌",
     "스피드업"
-  ]
+  ],
+  "growthRewards": {
+    "rareCandy": {
+      "name": "이상한사탕",
+      "weightByStage": {
+        "early": 8,
+        "mid": 10,
+        "high": 7,
+        "late": 5,
+        "bossMultiplier": 1.5
+      }
+    },
+    "expShare": {
+      "name": "학습장치",
+      "weightByStage": {
+        "early": 4,
+        "mid": 5,
+        "high": 4,
+        "late": 3,
+        "bossMultiplier": 1.2
+      }
+    }
+  }
 }

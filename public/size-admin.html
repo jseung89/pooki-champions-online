@@ -69,7 +69,7 @@
   const ADMIN_PARAMS = new URLSearchParams(location.search);
   const ADMIN_KEY = ADMIN_PARAMS.get('adminKey') || sessionStorage.getItem('pookiAdminKey') || '';
   if (ADMIN_KEY) sessionStorage.setItem('pookiAdminKey', ADMIN_KEY);
-  const data = Array.isArray(window.POOKI_SIZE_CHECK_DATA) ? window.POOKI_SIZE_CHECK_DATA : [];
+  let data = Array.isArray(window.POOKI_SIZE_CHECK_DATA) ? window.POOKI_SIZE_CHECK_DATA.slice() : [];
   const grid = document.getElementById('grid');
   const search = document.getElementById('search');
   const filter = document.getElementById('filter');
@@ -163,7 +163,37 @@
   function changedProfilesForCopy(){ const out={}; dirty.forEach(api=>{ if(customProfiles[api]) out[api]=customProfiles[api]; else out[api]=null; }); return out; }
   function jsonText(all=true){ return JSON.stringify(all?cleanProfilesForSave():changedProfilesForCopy(), null, 2); }
   function render(){ const arr=applyFilter(data); summary.innerHTML=`<span class="badge">표시 ${arr.length} / 전체 ${data.length}</span><span class="badge">선택 ${selected.size}</span><span class="badge">저장값 ${Object.keys(customProfiles).length}</span><span class="badge">이번 변경 ${dirty.size}</span><span class="badge">${viewMode==='player'?'내 편':viewMode==='opponent'?'상대':'둘 다'} · ${bgMode==='measure'?'신체검사':'배틀'}</span>`; grid.innerHTML=arr.map(card).join(''); }
-  async function load(){ try{ const r=await fetch('/api/render-profiles/custom'); const d=await r.json(); customProfiles=d?.profiles||{}; initialCustomProfiles=clone(customProfiles); applyCustom(); }catch(e){ console.warn(e); } render(); }
+  async function loadMasterRoster(){
+    try{
+      const r=await fetch('/data/pokemon_master_gen1_2.json?v='+Date.now());
+      const master=await r.json();
+      if(Array.isArray(master) && master.length){
+        const byId=new Map(data.map(p=>[Number(p.id),p]));
+        master.forEach(m=>{
+          const id=Number(m.id); if(!id) return;
+          const old=byId.get(id)||{};
+          byId.set(id, {
+            ...old,
+            id,
+            apiName:m.apiName||m.nameEn||old.apiName,
+            name:m.nameKo||m.name||old.name,
+            types:(m.types&&m.types.length)?m.types:(old.types||[]),
+            stats:(m.stats&&Object.keys(m.stats).length)?m.stats:(m.baseStats||old.stats||{}),
+            baseStats:(m.baseStats&&Object.keys(m.baseStats).length)?m.baseStats:(m.stats||old.baseStats||{}),
+            frontSprite:old.frontSprite||m.frontSprite||m.spriteFront,
+            backSprite:old.backSprite||m.backSprite||m.spriteBack,
+            evolutionStage:m.evolutionStage??old.evolutionStage,
+            dataIncomplete:!!(m.dataIncomplete||old.dataIncomplete),
+            implemented:m.implemented!==false,
+            availableInAdventure:m.availableInAdventure!==false,
+            availableInBattle:m.availableInBattle!==false
+          });
+        });
+        data=[...byId.values()].sort((a,b)=>n(a.id)-n(b.id));
+      }
+    }catch(e){ console.warn('[size-admin] master roster load failed', e); }
+  }
+  async function load(){ await loadMasterRoster(); try{ const r=await fetch('/api/render-profiles/custom'); const d=await r.json(); customProfiles=d?.profiles||{}; initialCustomProfiles=clone(customProfiles); applyCustom(); }catch(e){ console.warn(e); } render(); }
   async function save(){ const profiles=cleanProfilesForSave(); const count=Object.keys(profiles).length; if(!confirm(`관리자 저장값 ${count}개를 저장할까요? 저장 후 게임 화면을 새로고침하면 반영됩니다.`)) return; const res=await fetch('/api/admin/render-profiles',{method:'POST',headers:{'Content-Type':'application/json','x-admin-password':adminPassword.value||'', 'x-admin-key':ADMIN_KEY||adminPassword.value||''},body:JSON.stringify({profiles})}); const payload=await res.json().catch(()=>({})); if(!res.ok||!payload.ok){ alert(payload.message||'저장 실패'); return; } dirty.clear(); customProfiles=payload.profiles||profiles; initialCustomProfiles=clone(customProfiles); applyCustom(); render(); alert(`저장 완료: ${Object.keys(customProfiles).length}개`); }
   async function clearAll(){ if(!confirm('관리자 저장값을 모두 삭제할까요? 기본 보정값으로 돌아갑니다.')) return; const res=await fetch('/api/admin/render-profiles',{method:'DELETE',headers:{'Content-Type':'application/json','x-admin-password':adminPassword.value||'', 'x-admin-key':ADMIN_KEY||adminPassword.value||''}}); const payload=await res.json().catch(()=>({})); if(!res.ok||!payload.ok){ alert(payload.message||'초기화 실패'); return; } customProfiles={}; initialCustomProfiles={}; dirty.clear(); applyCustom(); render(); }
   function showJson(all=true){ document.getElementById('jsonOutput').value=jsonText(all); document.getElementById('jsonModal').classList.add('show'); }

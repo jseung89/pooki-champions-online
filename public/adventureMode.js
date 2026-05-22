@@ -5,6 +5,27 @@
 
   const ADVENTURE_KEY = "pookiAdventureStateV618RealClone";
   const ADVENTURE_EFFECT_SHEET = "/assets/effects/capture-and-levelup-effects-sheet.png";
+  const adventureLevelGateCache = new Map();
+  function isAdventureDebugEnabled(scope){
+    try{
+      if(window.ADVENTURE_DEBUG === true) return true;
+      if(scope === "moves" && window.ADVENTURE_DEBUG_MOVES === true) return true;
+      if(scope === "starter" && window.ADVENTURE_DEBUG_STARTER === true) return true;
+      if(scope === "startup" && window.ADVENTURE_DEBUG_STARTUP === true) return true;
+    }catch(_){ /* ignore */ }
+    return false;
+  }
+  function adventureDebugLog(scope, ...args){
+    if(!isAdventureDebugEnabled(scope)) return;
+    console.log(...args);
+  }
+  function adventureDebugWarn(scope, ...args){
+    if(!isAdventureDebugEnabled(scope)) return;
+    console.warn(...args);
+  }
+  function cloneAdventureMoveCandidate(move){
+    return move ? {...move, pp:move.pp, maxPp:move.maxPp} : move;
+  }
   const DEFAULT_ADVENTURE_EFFECT_SETTINGS = {
     capture:{
       ballDisplaySize:140,
@@ -155,6 +176,7 @@
     fullLearnsets:null,
     specialEvolutions:null,
     bosses:null,
+    masterPokemon:null,
     adventureEquipment:{},
     basicConfig:null,
     starterPool:null,
@@ -248,6 +270,8 @@
       @keyframes adventureLevelUpPulse{0%{filter:brightness(1);transform:scale(1);}35%{filter:brightness(1.45) drop-shadow(0 0 18px rgba(250,204,21,.75));transform:scale(1.08);}100%{filter:brightness(1);transform:scale(1);}}
       body.adventure-mode .adventure-fail-box{display:grid;gap:12px;}
       body.adventure-mode .adventure-fail-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+      body.adventure-mode #mySprite.mine-dead{animation: adventurePlayerFaintOut .55s ease-in forwards;}
+      @keyframes adventurePlayerFaintOut{0%{opacity:1;transform:translateY(0) scale(1);}100%{opacity:.25;transform:translateY(18px) scale(.92);filter:grayscale(1);}}
       body.adventure-mode .adventure-exp-row{margin-top:8px;display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-size:12px;color:#dbeafe;font-weight:800;}
       body.adventure-mode .adventure-expbar{height:8px;border-radius:999px;background:rgba(15,23,42,.75);border:1px solid rgba(147,197,253,.25);overflow:hidden;}
       body.adventure-mode .adventure-expfill{height:100%;background:linear-gradient(90deg,#facc15,#f59e0b);transition:width .35s ease;}
@@ -278,8 +302,32 @@
     document.head.appendChild(style);
   }
 
+  async function fetchJsonSafely(url, options={}){
+    const response = await fetch(url, options);
+    const contentType = response.headers?.get?.("content-type") || "";
+    if(!response.ok){
+      const preview = await response.text().catch(()=>"");
+      const err = new Error(`[Adventure/Fetch] ${url} failed ${response.status}`);
+      err.preview = preview.slice(0,120);
+      err.status = response.status;
+      err.contentType = contentType;
+      throw err;
+    }
+    if(contentType && !contentType.includes("application/json")){
+      const preview = await response.text().catch(()=>"");
+      const err = new Error(`[Adventure/Fetch] ${url} returned non-json`);
+      err.preview = preview.slice(0,120);
+      err.status = response.status;
+      err.contentType = contentType;
+      throw err;
+    }
+    return response.json();
+  }
+
   async function loadAdventureData(){
     if(adventure.dataReady) return;
+    const loadStartedAt = performance.now();
+    adventureLevelGateCache.clear();
     const [arena, config, items, rewards, rewardEffects, rewardBalance, expBalance, captureBalance, effectSettings, pokemonMovesets, levelupLearnsets, tmRewards, sizeOverrides, capture, captureRates, learnsets, adventureMoves, expTable, baseStats, evolutions, equipmentConfig, effectMap, blockedMoves, moveTiers, basicConfig, starterPool, encounterRules, enemyMovesetRules, pokemonAllowedMoves, fullLearnsets, specialEvolutions, bosses] = await Promise.all([
       fetch("/api/test-arena/data").then(r=>r.json()),
       fetch("/data/adventure_config.json").then(r=>r.json()).catch(()=>({})),
@@ -352,6 +400,17 @@
     adventure.fullLearnsets = fullLearnsets || {};
     adventure.specialEvolutions = specialEvolutions || {};
     adventure.bosses = bosses || {};
+    const rosterLoadStartedAt = performance.now();
+    try{
+      const master = await fetchJsonSafely(`/data/pokemon_master_gen1_2.json?v=61823-${Date.now()}`);
+      adventure.masterPokemon = Array.isArray(master) ? master : [];
+      adventure.pokemon = mergeAdventureMasterPokemon(adventure.pokemon, adventure.masterPokemon);
+    }catch(err){
+      adventureDebugWarn("startup", '[Adventure Master Roster] load failed; using arena pokemon only', { message:err?.message, status:err?.status, contentType:err?.contentType, preview:err?.preview });
+      adventure.masterPokemon = [];
+    }
+    adventure.__lastRosterLoadMs = Math.round(performance.now() - rosterLoadStartedAt);
+    adventure.__lastDataLoadMs = Math.round(performance.now() - loadStartedAt);
     adventure.maxStage = Number(config?.maxStage || 100);
     adventure.bossEvery = Number(config?.bossEvery || 10);
     adventure.dataReady = true;
@@ -443,6 +502,53 @@
     if(!out.frontSprite && Number.isFinite(id)) out.frontSprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${id}.gif`;
     if(!out.backSprite && Number.isFinite(id)) out.backSprite = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/back/${id}.gif`;
     return out;
+  }
+
+  function normalizeMasterPokemonForAdventure(p){
+    if(!p) return null;
+    return normalizeAdventureBasePokemon({
+      id:p.id,
+      apiName:p.apiName || p.nameEn,
+      name:p.nameKo || p.name,
+      types:p.types || [],
+      stats:p.stats || p.baseStats || {},
+      baseStats:p.baseStats || p.stats || {},
+      frontSprite:p.frontSprite || p.spriteFront,
+      backSprite:p.backSprite || p.spriteBack,
+      evolutionStage:p.evolutionStage,
+      evolvesFrom:p.evolvesFrom,
+      evolvesTo:p.evolvesTo,
+      dataIncomplete:!!p.dataIncomplete,
+      implemented:p.implemented !== false,
+      availableInAdventure:p.availableInAdventure !== false,
+      availableInBattle:p.availableInBattle !== false
+    });
+  }
+  function mergeAdventureMasterPokemon(current, master){
+    const byId=new Map();
+    for(const raw of (current||[])){
+      const p=normalizeAdventureBasePokemon(raw);
+      if(p && Number.isFinite(Number(p.id))) byId.set(Number(p.id), p);
+    }
+    for(const raw of (master||[])){
+      const p=normalizeMasterPokemonForAdventure(raw);
+      if(!p || !Number.isFinite(Number(p.id))) continue;
+      const old=byId.get(Number(p.id)) || {};
+      byId.set(Number(p.id), normalizeAdventureBasePokemon({
+        ...p,
+        ...old,
+        name:p.name || old.name,
+        apiName:p.apiName || old.apiName,
+        types:(p.types&&p.types.length)?p.types:(old.types||[]),
+        stats:(p.stats&&Object.keys(p.stats).length)?p.stats:(old.stats||old.baseStats||{}),
+        baseStats:(p.baseStats&&Object.keys(p.baseStats).length)?p.baseStats:(old.baseStats||old.stats||{}),
+        frontSprite:old.frontSprite || p.frontSprite,
+        backSprite:old.backSprite || p.backSprite,
+        evolutionStage:p.evolutionStage ?? old.evolutionStage,
+        dataIncomplete:!!(p.dataIncomplete || old.dataIncomplete)
+      }));
+    }
+    return [...byId.values()].sort((a,b)=>Number(a.id||0)-Number(b.id||0));
   }
   function configuredBasicEntries(){
     const cfg=adventure.basicConfig||{};
@@ -596,16 +702,16 @@
     [83,95,106,107,108,113,115,122,124,125,126,127,128,131,132,137,142,143,185,200,203,206,213,214,225,226,227,234,235,241].forEach(id=>STARTER_BLOCKED_IDS.add(id));
     for(const id of blockedIds) STARTER_BLOCKED_IDS.add(id);
 
-    console.info('[Adventure Starter] pool json loaded:', poolJsonLoaded);
-    console.info('[Adventure Starter] pokemon count:', adventure.pokemon.length);
-    console.info('[Adventure Starter] threeStageFirst count:', threeStageFirst.length);
-    console.info('[Adventure Starter] twoStageFirst count:', twoStageFirst.length);
-    console.info('[Adventure Starter] evolvableBasic count:', evolvableBasic.length);
-    console.info('[Adventure Starter] safeFallback count:', safeFallback.length);
-    console.info('[Adventure Starter] blocked count:', blockedIds.size || oldBlockedSize);
+    adventureDebugLog('starter', '[Adventure Starter] pool json loaded:', poolJsonLoaded);
+    adventureDebugLog('starter', '[Adventure Starter] pokemon count:', adventure.pokemon.length);
+    adventureDebugLog('starter', '[Adventure Starter] threeStageFirst count:', threeStageFirst.length);
+    adventureDebugLog('starter', '[Adventure Starter] twoStageFirst count:', twoStageFirst.length);
+    adventureDebugLog('starter', '[Adventure Starter] evolvableBasic count:', evolvableBasic.length);
+    adventureDebugLog('starter', '[Adventure Starter] safeFallback count:', safeFallback.length);
+    adventureDebugLog('starter', '[Adventure Starter] blocked count:', blockedIds.size || oldBlockedSize);
     if(!poolJsonLoaded) console.warn('[Adventure Starter] adventure_starter_pool.json load failed. Built-in fallback is active.');
     if((threeStageFirst.length + twoStageFirst.length) < 6) console.warn('[Adventure Starter] 3-stage + 2-stage starter pool is small.', {three:threeStageFirst.length,two:twoStageFirst.length});
-    console.info('[Adventure Starter] final pool:', final.length, final.slice(0,36).map(p=>`${p.id}:${p.name}`));
+    adventureDebugLog('starter', '[Adventure Starter] final pool:', final.length, final.slice(0,36).map(p=>`${p.id}:${p.name}`));
     if(final.length<12) console.warn('[Adventure Starter] final pool is under 12. Rendering available candidates instead of blank screen.', final.map(p=>`${p.id}:${p.name}`));
     return { threeStageFirst, twoStageFirst, evolvableBasic, safeFallback, final };
   }
@@ -636,9 +742,9 @@
     picked=shuffle(picked).map(normalizeAdventureBasePokemon).filter(isAllowedStarterPokemon).slice(0,12);
     const fallbackCount=picked.filter(p=>groups.safeFallback.some(f=>Number(f.id)===Number(p.id))).length;
     if(fallbackCount>=4) console.warn('[Adventure Starter] fallback ratio is high.', fallbackCount, picked.map(p=>`${p.id}:${p.name}`));
-    console.info('[Adventure Starter] recent excluded count:', [...recentSet].length);
-    console.info('[Adventure Starter] final count:', picked.length);
-    console.info('[Adventure Starter] final names:', picked.map(p=>p.name).join(', '));
+    adventureDebugLog('starter', '[Adventure Starter] recent excluded count:', [...recentSet].length);
+    adventureDebugLog('starter', '[Adventure Starter] final count:', picked.length);
+    adventureDebugLog('starter', '[Adventure Starter] final names:', picked.map(p=>p.name).join(', '));
     writeRecentStarterIds([...readRecentStarterIds(), ...picked.map(p=>Number(p.id))]);
     return picked;
   }
@@ -1011,11 +1117,128 @@
     }
     return out;
   }
+
+
+  const ADVENTURE_EARLY_BLOCKED_MOVE_KEYS = new Set([
+    "earthquake","thunder","flamethrower","icebeam","ice-beam","psychic","thunderbolt","rockslide","rock-slide",
+    "hydropump","hydro-pump","blizzard","fireblast","fire-blast","hyperbeam","hyper-beam","solarbeam","solar-beam",
+    "지진","번개","화염방사","냉동빔","사이코키네시스","10만볼트","스톤샤워","하이드로펌프","눈보라","불대문자","파괴광선","솔라빔"
+  ]);
+  function adventureLearnLevelFromRow(row){
+    const raw = row?.level_learned_at ?? row?.level ?? row?.learnLevel ?? row?.learn_level;
+    const n=Number(raw);
+    return Number.isFinite(n) ? n : NaN;
+  }
+  function adventureLearnMethodFromRow(row){
+    return String(row?.method || row?.move_learn_method || row?.learnMethod || "level-up").trim().toLowerCase();
+  }
+  function adventureMoveNameFromRow(row){
+    return row?.move || row?.id || row?.name || row?.moveName || row?.apiName || null;
+  }
+  function adventureLevelupRowsFor(base){
+    if(!base) return [];
+    const keys=[base.name, base.apiName, String(base.id||"")].filter(Boolean);
+    for(const key of keys){
+      const rows=adventure.levelupLearnsets?.[key];
+      if(Array.isArray(rows) && rows.length){
+        return rows.map(row=>{
+          if(typeof row === "string") return { move:row, method:"level-up", level:NaN };
+          return { ...row, method: adventureLearnMethodFromRow(row) || "level-up" };
+        });
+      }
+    }
+    const full=adventureLearnsetRecordForPokemon(base) || {};
+    const rows=Array.isArray(full.levelUp) ? full.levelUp : [];
+    return rows.map(row=>{
+      if(typeof row === "string") return { move:row, method:"level-up", level:NaN };
+      return { ...row, method: adventureLearnMethodFromRow(row) || "level-up" };
+    }).filter(row=>Number.isFinite(adventureLearnLevelFromRow(row)) && adventureLearnLevelFromRow(row)>0);
+  }
+  function isAdventureEarlyFloorMoveBlocked(move, floor=adventure.stage){
+    if(Number(floor||1)>10) return false;
+    if(!move) return true;
+    const keys=[move.id, move.apiName, move.name, move.koreanName].filter(Boolean).map(adventureMoveKey).filter(Boolean);
+    if(keys.some(k=>ADVENTURE_EARLY_BLOCKED_MOVE_KEYS.has(k))) return true;
+    const power=Number(move.power||0);
+    if(Number.isFinite(power) && power>=60) return true;
+    return false;
+  }
+  function isAdventureMoveAllowedByLevelGate(row, pokemonLevel, options={}){
+    if(!row) return false;
+    const method=adventureLearnMethodFromRow(row);
+    const learnedAt=adventureLearnLevelFromRow(row);
+    const level=Number(pokemonLevel||1);
+    if(method !== "level-up") return false;
+    if(!Number.isFinite(learnedAt) || learnedAt<=0) return false;
+    if(learnedAt>level) return false;
+    const move=resolveMoveByName(adventureMoveNameFromRow(row));
+    if(!move || isBlockedAdventureMove(move)) return false;
+    if(options.earlyFloor && isAdventureEarlyFloorMoveBlocked(move, options.floor ?? adventure.stage)) return false;
+    return true;
+  }
+  function getAdventureLevelUpMovesForLevel(base, level=5, options={}){
+    const pokemonKey = base?.id || base?.apiName || base?.name || "unknown";
+    const floorKey = Number(options.floor ?? adventure.stage ?? 1);
+    const levelKey = Number(level || 1);
+    const earlyKey = options.earlyFloor ? 1 : 0;
+    const cacheKey = `${pokemonKey}:${levelKey}:${floorKey}:${earlyKey}`;
+    const cached = adventureLevelGateCache.get(cacheKey);
+    if(cached) return cached.map(cloneAdventureMoveCandidate);
+    const rows=adventureLevelupRowsFor(base);
+    const seen=new Set();
+    const accepted=[];
+    const rejected=[];
+    for(const row of rows){
+      const move=resolveMoveByName(adventureMoveNameFromRow(row));
+      const lv=adventureLearnLevelFromRow(row);
+      const method=adventureLearnMethodFromRow(row);
+      const ok=isAdventureMoveAllowedByLevelGate(row, level, options) && move && validateMoveForPokemon(base, move, level, {allowFallback:false});
+      const key=move ? (move.id || move.name || move.apiName) : adventureMoveNameFromRow(row);
+      if(!ok){ rejected.push({move:key, method, level_learned_at:lv}); continue; }
+      if(!move || seen.has(move.id||move.name)) continue;
+      seen.add(move.id||move.name);
+      accepted.push({...normalizeMove(move), pp:move.maxPp, maxPp:move.maxPp, learnLevel:lv, method:"level-up"});
+    }
+    accepted.sort((a,b)=>Number(a.learnLevel||0)-Number(b.learnLevel||0));
+    adventureLevelGateCache.set(cacheKey, accepted.map(cloneAdventureMoveCandidate));
+    adventureDebugLog("moves", "[Adventure/Moves] level gate result", { pokemon:base?.name||base?.apiName||base?.id, pokemonLevel:levelKey, floor:floorKey, accepted:accepted.map(m=>({move:m.name||m.id, power:m.power, level_learned_at:m.learnLevel})), rejected:rejected.slice(0,12) });
+    return accepted.map(cloneAdventureMoveCandidate);
+  }
+  function buildAdventureWeakFallbackMovesForPokemon(base, level=5, options={}){
+    const out=[]; const seen=new Set();
+    for(const id of safeFallbackMoveIdsForPokemon(base)){
+      const move=resolveMoveByName(id);
+      if(!move || seen.has(move.id||move.name)) continue;
+      if(!isSafeFallbackMoveForPokemon(move, base)) continue;
+      if(options.earlyFloor && isAdventureEarlyFloorMoveBlocked(move, options.floor ?? adventure.stage)) continue;
+      if(Number(move.power||0)>=60) continue;
+      seen.add(move.id||move.name);
+      out.push({...normalizeMove(move), pp:move.maxPp, maxPp:move.maxPp, fallback:true});
+      adventureDebugLog("moves", "[Adventure/Moves] fallback move used", { pokemon:base?.name||base?.apiName||base?.id, level, move:move.name||move.id, power:move.power });
+      if(out.length>=1) break;
+    }
+    return out;
+  }
+  function buildAdventureInitialMovesForPokemon(base, options={}){
+    const level=Number(options.level ?? 5);
+    const floor=Number(options.floor ?? adventure.stage ?? 1);
+    const moves=getAdventureLevelUpMovesForLevel(base, level, {floor, earlyFloor:floor<=10});
+    const final=moves.slice(-4);
+    if(!final.length) final.push(...buildAdventureWeakFallbackMovesForPokemon(base, level, {floor, earlyFloor:floor<=10}));
+    adventureDebugLog("moves", "[Adventure/Moves] build initial moves", { pokemon:base?.name||base?.apiName||base?.id, level, final:final.map(m=>m.name||m.id) });
+    return final.map(m=>({...normalizeMove(m), pp:m.maxPp, maxPp:m.maxPp}));
+  }
+  function buildAdventureWildMovesForLevel(base, floor=adventure.stage, level=5){
+    const early=Number(floor||1)<=10;
+    let moves=getAdventureLevelUpMovesForLevel(base, level, {floor, earlyFloor:early});
+    const cap=early ? 3 : 4;
+    moves=moves.slice(-cap);
+    if(!moves.length) moves=buildAdventureWeakFallbackMovesForPokemon(base, level, {floor, earlyFloor:early});
+    adventureDebugLog("moves", "[Adventure/Moves] final move set", { pokemon:base?.name||base?.apiName||base?.id, level, floor, moves:moves.map(m=>({name:m.name||m.id, power:m.power, learnLevel:m.learnLevel, fallback:!!m.fallback})) });
+    return moves.map(m=>({...normalizeMove(m), pp:m.maxPp, maxPp:m.maxPp}));
+  }
   function levelupMovesFor(base, level){
-    const keys=[base?.name, base?.apiName, String(base?.id||"")].filter(Boolean);
-    let rows=[];
-    for(const key of keys){ if(Array.isArray(adventure.levelupLearnsets?.[key])){ rows=adventure.levelupLearnsets[key]; break; } }
-    return uniqueAdventureMoves(rows.filter(r=>Number(r.level||0)<=Number(level||5)).sort((a,b)=>Number(a.level||0)-Number(b.level||0)).map(r=>r.move));
+    return getAdventureLevelUpMovesForLevel(base, level, {floor:adventure.stage, earlyFloor:Number(adventure.stage||1)<=10});
   }
   function stageMoveKey(stage){ const s=Number(stage||1); if(s<=10) return "early"; if(s<=30) return "mid"; if(s<=60) return "high"; return "late"; }
   function configuredMovesFor(base, level, stage, mode){
@@ -1028,23 +1251,20 @@
   }
 
   function candidateWeakMoves(base, level=5){
-    const banned = new Set([...(adventure.learnsets?.bannedStarterMoves || []), "rest", "sleep", "잠자기"]);
-    const merged=[];
-    const pushMove=(move, strict=false)=>{
+    const merged=[]; const seen=new Set();
+    const early=Number(adventure.stage||1)<=10;
+    const pushMove=(move, source="level-up")=>{
       const m=resolveMoveByName(move?.id||move?.name||move?.apiName||move) || move;
-      if(!m || merged.some(x=>x.id===m.id)) return;
-      if(banned.has(m.id) || banned.has(m.name) || isBlockedAdventureMove(m) || isEarlyExcludedAdventureMove(m)) return;
-      const ok = strict ? validateMoveForPokemon(base, m, level, {allowFallback:false}) : validateMoveForPokemon(base, m, level, {allowFallback:true});
-      if(!ok) return;
-      merged.push(normalizeMove(m));
+      if(!m || seen.has(m.id||m.name)) return;
+      if(isBlockedAdventureMove(m) || isEarlyExcludedAdventureMove(m)) return;
+      if(early && isAdventureEarlyFloorMoveBlocked(m, adventure.stage||1)) return;
+      if(source==="level-up" && !validateMoveForPokemon(base, m, level, {allowFallback:false})) return;
+      if(source==="fallback" && !isSafeFallbackMoveForPokemon(m, base)) return;
+      seen.add(m.id||m.name); merged.push(normalizeMove(m));
     };
-    adventureAllowedMovesForPokemon(base, level)
-      .filter(m=>Number(m.power||0)<= (Number(adventure.stage||1)<=10?55:70) || Number(m.power||0)===0)
-      .forEach(m=>pushMove(m, true));
-    const existingSource=[...(base.baseMoves||[]),...(base.currentMoves||[]),...(base.learnableMoves||[]),...((base.moves||[]).map(m=>adventure.moveMap[m.id]||m).filter(Boolean))];
-    existingSource.forEach(m=>pushMove(m, false));
-    safeFallbackMoveIdsForPokemon(base).map(id=>adventure.moveMap[id]).filter(Boolean).forEach(m=>pushMove(m, false));
-    return merged.slice(0,4).map(m=>({...m, pp:m.maxPp, maxPp:m.maxPp}));
+    getAdventureLevelUpMovesForLevel(base, level, {floor:adventure.stage||1, earlyFloor:early}).forEach(m=>pushMove(m, "level-up"));
+    if(!merged.length) safeFallbackMoveIdsForPokemon(base).map(id=>adventure.moveMap[id]).filter(Boolean).forEach(m=>pushMove(m, "fallback"));
+    return merged.slice(0, early ? 3 : 4).map(m=>({...m, pp:m.maxPp, maxPp:m.maxPp}));
   }
   function baseStatsForPokemon(baseOrMon){
     const keys=[baseOrMon?.apiName, baseOrMon?.name, String(baseOrMon?.id||"")].filter(Boolean);
@@ -1101,10 +1321,10 @@
 
   function createAdventurePokemon(base, level=5, side="player"){
     const stats = calculateAdventureStatsFromBase(baseStatsForPokemon(base), level);
-    const configured = side==="starter" ? configuredMovesFor(base, level, adventure.stage||1, "starter") : configuredMovesFor(base, level, adventure.stage||1, "wild");
-    let moves = configured.length ? configured : (side==="starter" ? candidateWeakMoves(base, level) : enemyMovesFor(base, level));
+    const floor=Number(adventure.stage||1);
+    let moves = side==="enemy" ? buildAdventureWildMovesForLevel(base, floor, level) : buildAdventureInitialMovesForPokemon(base, {level, floor});
     moves = sanitizeIllegalMovesForPokemon(base, moves, level);
-    if(!moves.length) moves = safeFallbackMoveIdsForPokemon(base).map(id=>adventure.moveMap[id]).filter(Boolean).filter(m=>validateMoveForPokemon(base,m,level,{allowFallback:true})).slice(0,4);
+    if(!moves.length) moves = buildAdventureWeakFallbackMovesForPokemon(base, level, {floor, earlyFloor:floor<=10});
     const normalizedStats = applyAdventureEarlyHpToStats(stats, adventure.stage || 1, side);
     return {
       id:base.id, apiName:base.apiName, name:base.name, level,
@@ -1215,24 +1435,25 @@
     return allowFallback ? isSafeFallbackMoveForPokemon(move, mon) : false;
   }
   function sanitizeIllegalMovesForPokemon(mon, moves, level=100){
-    const valid=[];
+    const valid=[]; const seen=new Set();
+    const floor=Number(adventure.stage||1);
+    const allowedLevelMoves=getAdventureLevelUpMovesForLevel(mon, level, {floor, earlyFloor:floor<=10});
+    const allowedKeys=new Set(allowedLevelMoves.flatMap(m=>[m.id,m.name,m.apiName].filter(Boolean).map(adventureMoveKey)));
     for(const m of (moves||[])){
       const move=resolveMoveByName(m?.id||m?.name||m?.apiName) || m;
-      if(move && validateMoveForPokemon(mon, move, level, {allowFallback:true}) && !valid.some(x=>x.id===move.id)) valid.push(normalizeMove(move));
-    }
-    if(valid.length>=4) return valid.slice(0,4);
-    const allowed=adventureAllowedMovesForPokemon(mon, level).filter(m=>!isBlockedAdventureMove(m));
-    for(const m of shuffle(allowed)){
+      if(!move) continue;
+      const keys=[move.id,move.name,move.apiName].filter(Boolean).map(adventureMoveKey);
+      const key=keys[0];
+      if(!key || seen.has(key)) continue;
+      if(!keys.some(k=>allowedKeys.has(k))) continue;
+      if(isBlockedAdventureMove(move)) continue;
+      if(floor<=10 && isAdventureEarlyFloorMoveBlocked(move, floor)) continue;
+      seen.add(key);
+      valid.push(normalizeMove(move));
       if(valid.length>=4) break;
-      if(m && !valid.some(x=>x.id===m.id)) valid.push(normalizeMove(m));
     }
-    if(valid.length<4){
-      for(const m of candidateWeakMoves(mon, level)){
-        if(valid.length>=4) break;
-        if(m && !valid.some(x=>x.id===m.id) && moveFitsPokemon(m,mon)) valid.push(normalizeMove(m));
-      }
-    }
-    return valid.slice(0,4);
+    if(valid.length) return valid.slice(0,4);
+    return buildAdventureWeakFallbackMovesForPokemon(mon, level, {floor, earlyFloor:floor<=10}).slice(0,1).map(normalizeMove);
   }
   function moveFitsPokemon(move, mon){
     if(!move || !mon) return false;
@@ -1244,31 +1465,7 @@
   }
   function enemyMovesFor(base, level){ return enemyMovesForStage(base, level, adventure.stage||1); }
   function enemyMovesForStage(base, level, stage){
-    const configured = configuredMovesFor(base, level, stage, "wild");
-    if(configured.length>=4) return sanitizeIllegalMovesForPokemon(base, configured, level).slice(0,4).map(m=>({...normalizeMove(m), pp:m.maxPp, maxPp:m.maxPp}));
-    const tiers=moveTierIdsForStage(stage);
-    const existing=(base.moves||[]).map(m=>adventure.moveMap[m.id]||m).filter(Boolean).filter(m=>!m.selfDestruct && !m.recharge && !isBlockedAdventureMove(m));
-    const byType=Object.values(adventure.moveMap||{}).filter(m=>moveFitsPokemon(m,base) && !isBlockedAdventureMove(m));
-    const allowed=adventureAllowedMovesForPokemon(base, level).filter(m=>!isBlockedAdventureMove(m));
-    const coverage=allowed.filter(m=>Number(m.power||0)>0 && !(base.types||[]).includes(m.type) && m.type!=="normal");
-    const early=movesFromIds(tiers.early).filter(m=>moveFitsPokemon(m,base));
-    const mid=movesFromIds(tiers.mid).filter(m=>moveFitsPokemon(m,base));
-    const high=movesFromIds(tiers.high).filter(m=>moveFitsPokemon(m,base));
-    const rare=movesFromIds(tiers.rare).filter(m=>moveFitsPokemon(m,base));
-    let desired=[...configured];
-    const pick=(arr,n)=>{ for(const m of shuffle(arr)){ if(!m || desired.some(x=>x.id===m.id)) continue; desired.push(normalizeMove(m)); if(desired.length>=n) break; } };
-    pick(levelupMovesFor(base, level), 4);
-    const s=Number(stage||1);
-    if(s<=10){ pick(early,4); }
-    else if(s<=20){ pick(mid,2); pick(early,4); }
-    else if(s<=40){ pick(high,1); pick(mid,3); pick(coverage,4); pick(early,4); }
-    else { pick(rare,1); pick(high,3); pick(coverage,4); pick(mid,4); }
-    const stab=[...existing,...byType].filter(m=>(base.types||[]).includes(m.type) && Number(m.power||0)>0);
-    if(!desired.some(m=>(base.types||[]).includes(m.type) && Number(m.power||0)>0)) pick(stab, Math.min(4, desired.length+1));
-    pick(existing.filter(m=>moveFitsPokemon(m,base)),4);
-    pick(byType,4);
-    pick(candidateWeakMoves(base, level),4);
-    return sanitizeIllegalMovesForPokemon(base, desired, level).slice(0,4).map(m=>({...normalizeMove(m), pp:m.maxPp, maxPp:m.maxPp}));
+    return buildAdventureWildMovesForLevel(base, stage, level);
   }
   function stageMod(stage){ const s=Math.max(-6,Math.min(6,Number(stage||0))); return s>=0 ? (2+s)/2 : 2/(2+Math.abs(s)); }
   function effectiveSpeed(mon){ return (mon.stats?.speed||1) * stageMod(mon.statStages?.speed||0); }
@@ -1308,10 +1505,16 @@
   }
 
   async function startAdventureMode(){
+    const startupStartedAt = performance.now();
+    let afterLoadAt = startupStartedAt;
+    let afterStarterAt = startupStartedAt;
     try{
       installOverrides();
       injectAdventureStyle();
+      const roleTextLoading=document.getElementById("roleText");
+      if(roleTextLoading) roleTextLoading.textContent="모험 준비 중...";
       await loadAdventureData();
+      afterLoadAt = performance.now();
       adventure.active = true;
       adventure.stage = 1;
       adventure.bag = {...(adventure.config?.startingBag||{pookiBall:5,potion:2,ether:1})};
@@ -1331,6 +1534,7 @@
       const overlay=document.getElementById("overlay"); if(overlay) overlay.classList.remove("show");
       adventure.selectedStarterId = null;
       adventure.starterCandidates = pickStarterCandidates();
+      afterStarterAt = performance.now();
       document.body.classList.add("adventure-mode");
       document.getElementById("lobbyScreen").style.display = "none";
       document.getElementById("gameScreen").classList.remove("hidden");
@@ -1338,6 +1542,16 @@
       window.currentRoomId = "adventure";
       renderAdventureHeader("스타터 선택", "시작 포켓몬을 선택하세요.");
       renderAdventureSelect();
+      const doneAt = performance.now();
+      console.info?.("[Adventure/Startup] timing", {
+        rosterLoadMs: adventure.__lastRosterLoadMs || 0,
+        dataLoadMs: Math.round(afterLoadAt - startupStartedAt),
+        starterBuildMs: Math.round(afterStarterAt - afterLoadAt),
+        renderMs: Math.round(doneAt - afterStarterAt),
+        totalMs: Math.round(doneAt - startupStartedAt),
+        rosterCount: adventure.pokemon?.length || 0,
+        finalStarterCount: adventure.starterCandidates?.length || 0
+      });
     }catch(err){
       console.error("adventure start failed", err);
       alert("모험모드 시작 중 오류가 발생했습니다. 콘솔을 확인해주세요.");
@@ -1468,6 +1682,11 @@
       adventure.pendingReward = false;
       adventure.rewardApplying = false;
       adventure.pendingCaptured = null;
+      adventure.playerFaintStarted=false;
+      adventure.playerFaintAnimationDone=false;
+      adventure.playerFaintResolved=false;
+      adventure.failResolved=false;
+      adventure.battleResolutionToken=Number(adventure.battleResolutionToken||0)+1;
       adventure.phase = "loadingNext";
       adventure.enemy = null;
       const aliveIndex = firstAliveAdventureIndex();
@@ -1537,6 +1756,160 @@
     adventure.enemy = p2 ? clone(p2) : null;
   }
   function getAdventurePokemonHp(p){ return Number(p?.hp ?? p?.currentHp ?? 0); }
+
+  function getAdventureCanonicalEnemy(reason="unknown"){
+    const stateEnemy=currentState?.players?.p2?.team?.[0] || null;
+    const adventureEnemy=adventure?.enemy || null;
+    const enemy=stateEnemy || adventureEnemy || null;
+    if(enemy){
+      console.debug?.("[Adventure/HP] canonical enemy selected", {
+        reason,
+        source: stateEnemy ? "currentState.players.p2.team[0]" : "adventure.enemy",
+        enemyName: enemy.name || enemy.koreanName || enemy.species,
+        hp: enemy.hp ?? enemy.currentHp,
+        maxHp: enemy.maxHp
+      });
+    }
+    return enemy;
+  }
+
+  function getAdventureRenderedEnemySnapshot(){
+    try{
+      if(typeof visualActivePokemon === "function") return visualActivePokemon("p2") || null;
+    }catch(_){ }
+    return currentState?.players?.p2?.team?.[0] || null;
+  }
+
+  function syncAdventureCanonicalEnemyToState(enemy, reason="unknown"){
+    if(!enemy) return false;
+    if(currentState?.players?.p2?.team?.length){
+      currentState.players.p2.team[0]=enemy;
+    }
+    adventure.enemy=clone(enemy);
+    console.debug?.("[Adventure/HP] canonical enemy synced", {
+      reason,
+      enemyName: enemy.name || enemy.koreanName || enemy.species,
+      hp: enemy.hp,
+      maxHp: enemy.maxHp,
+      fainted: enemy.fainted
+    });
+    return true;
+  }
+
+  function sanitizeAdventureCanonicalEnemyHp(reason="unknown"){
+    const enemy=getAdventureCanonicalEnemy(reason);
+    if(!enemy){ console.warn?.("[Adventure/HP] canonical enemy missing", {reason, phase:adventure.phase}); return false; }
+    const maxHp=Number(enemy.maxHp || enemy.stats?.hp || enemy.hp);
+    if(!Number.isFinite(maxHp) || maxHp<=0){
+      console.warn?.("[Adventure/HP] canonical enemy maxHp invalid", {reason, enemyName:enemy.name, maxHp});
+      return false;
+    }
+    const before=enemy.hp ?? enemy.currentHp;
+    const hp=Number(enemy.hp ?? enemy.currentHp);
+    if(!Number.isFinite(hp)){
+      console.warn?.("[Adventure/HP] canonical enemy currentHp invalid", {reason, enemyName:enemy.name, before, maxHp});
+      return false;
+    }
+    enemy.maxHp=maxHp;
+    enemy.hp=Math.max(0, Math.min(maxHp, Math.round(hp)));
+    enemy.currentHp=enemy.hp;
+    enemy.fainted=enemy.hp<=0;
+    syncAdventureCanonicalEnemyToState(enemy, reason);
+    if(Number(before)!==Number(enemy.hp)){
+      console.info?.("[Adventure/HP] canonical enemy hp clamped", {reason, enemyName:enemy.name, before, after:enemy.hp, maxHp});
+    }
+    return true;
+  }
+
+  function assertAdventureEnemyHpConsistency(reason="unknown"){
+    const canonical=getAdventureCanonicalEnemy(reason);
+    const rendered=getAdventureRenderedEnemySnapshot();
+    const adv=adventure?.enemy || null;
+    const stateEnemy=currentState?.players?.p2?.team?.[0] || null;
+    if(!canonical) return false;
+    const snap={
+      reason,
+      phase:adventure.phase,
+      currentPhase:currentState?.phase,
+      floor:adventure.stage,
+      canonicalName:canonical.name || canonical.koreanName || canonical.species,
+      canonicalHp:canonical.hp ?? canonical.currentHp,
+      canonicalMaxHp:canonical.maxHp,
+      stateEnemyHp:stateEnemy?.hp ?? stateEnemy?.currentHp,
+      adventureEnemyHp:adv?.hp ?? adv?.currentHp,
+      renderEnemyHp:rendered?.hp ?? rendered?.currentHp,
+      enemyFaintResolved:adventure.enemyFaintResolved,
+      enemyFaintAnimationDone:adventure.enemyFaintAnimationDone,
+      battleRewardClaimed:adventure.battleRewardClaimed,
+      pendingReward:adventure.pendingReward
+    };
+    const values=[snap.canonicalHp, snap.stateEnemyHp, snap.adventureEnemyHp].filter(v=>v!=null).map(Number).filter(Number.isFinite);
+    const mismatch=values.length>1 && values.some(v=>v!==values[0]);
+    if(mismatch) console.warn?.("[Adventure/HP] enemy hp source mismatch", snap);
+    return !mismatch;
+  }
+
+  function isAdventureCanonicalEnemyDefeated(reason="unknown"){
+    if(!sanitizeAdventureCanonicalEnemyHp(reason)) return false;
+    const enemy=getAdventureCanonicalEnemy(reason);
+    const hp=Number(enemy?.hp ?? enemy?.currentHp);
+    return Number.isFinite(hp) && hp<=0;
+  }
+
+  function canEnterAdventureRewardFromCanonicalHp(reason="unknown"){
+    const enemy=getAdventureCanonicalEnemy(reason);
+    if(!enemy){ console.warn?.("[Adventure/Reward] blocked: no canonical enemy", {reason, phase:adventure.phase}); return false; }
+    if(!sanitizeAdventureCanonicalEnemyHp(reason)){
+      console.warn?.("[Adventure/Reward] blocked: enemy hp sanitize failed", {reason, phase:adventure.phase});
+      return false;
+    }
+    const hp=Number(enemy.hp ?? enemy.currentHp);
+    const maxHp=Number(enemy.maxHp);
+    if(!Number.isFinite(hp) || !Number.isFinite(maxHp)){
+      console.warn?.("[Adventure/Reward] blocked: invalid canonical hp", {reason, hp, maxHp});
+      return false;
+    }
+    if(hp>0){
+      console.warn?.("[Adventure/Reward] blocked: canonical enemy still alive", {
+        reason,
+        enemyName:enemy.name || enemy.koreanName || enemy.species,
+        hp,
+        maxHp,
+        phase:adventure.phase,
+        currentPhase:currentState?.phase,
+        enemyFaintResolved:adventure.enemyFaintResolved,
+        enemyFaintAnimationDone:adventure.enemyFaintAnimationDone,
+        battleRewardClaimed:adventure.battleRewardClaimed
+      });
+      enemy.fainted=false;
+      adventure.enemyFaintResolved=false;
+      adventure.enemyFaintAnimationDone=false;
+      adventure.pendingReward=false;
+      syncAdventureCanonicalEnemyToState(enemy, `${reason}:alive-block`);
+      return false;
+    }
+    console.info?.("[Adventure/Reward] canonical hp revalidated", {reason, enemyName:enemy.name, hp, maxHp});
+    return true;
+  }
+
+  function recoverAdventureEnemyAliveFlow(reason="unknown"){
+    const enemy=getAdventureCanonicalEnemy(reason);
+    if(enemy){ enemy.fainted=false; syncAdventureCanonicalEnemyToState(enemy, `${reason}:recover`); }
+    adventure.pendingReward=false;
+    adventure.rewardApplying=false;
+    if(adventure.phase!=="defeat") adventure.phase="battle";
+    if(currentState) currentState.phase="ACTION_SELECT";
+    console.warn?.("[Adventure/Recovery] enemy alive, returning to battle flow", {
+      reason,
+      enemyName:enemy?.name,
+      hp:enemy?.hp,
+      maxHp:enemy?.maxHp,
+      phase:adventure.phase
+    });
+    renderAdventureHeader?.(`${adventure.stage}층 전투`, "행동을 선택하세요.");
+    renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
+    return false;
+  }
   function normalizeAdventureStatus(status){
     const raw=String(status||"").trim().toLowerCase();
     if(!raw || raw==="normal" || raw==="none" || raw==="null") return null;
@@ -1611,6 +1984,8 @@
     buttons.classList.remove("adventure-reward-mode");
     const mine = playerMon();
     const enemy = enemyMon();
+    if(adventure.phase === "defeat" || adventure.failResolved || currentState?.phase==="GAME_OVER"){ buttons.innerHTML=`<div class="control-title">모험 종료</div>`; return; }
+    if(adventure.phase === "playerFainting"){ buttons.innerHTML=`<div class="control-title">포켓몬이 쓰러지는 중입니다...</div>`; return; }
     if(adventure.phase === "switch"){ renderAdventureSwitchPrompt(); return; }
     if(adventure.phase === "teamReplace"){ renderAdventureTeamReplacePrompt(); return; }
     if(adventure.phase === "itemTarget"){ renderAdventureItemTargetSelect(); return; }
@@ -1624,6 +1999,7 @@
     if(adventure.rewardApplying || adventure.phase === "loadingNext" || adventure.phase === "applyingReward"){ buttons.innerHTML=`<div class="control-title">다음 층을 준비하는 중입니다.</div>`; return; }
     if(!mine || !enemy){ buttons.innerHTML=`<div class="control-title">모험 배틀 데이터를 준비하는 중입니다.</div>`; return; }
     if(animationBusy){ buttons.innerHTML=`<div class="control-title">배틀 연출 중입니다.</div>`; return; }
+    if(mine.fainted || getAdventurePokemonHp(mine)<=0){ resolveAdventurePlayerFaintSafely("render-buttons-active-zero"); buttons.innerHTML=`<div class="control-title">포켓몬이 쓰러졌습니다...</div>`; return; }
     if(currentState?.phase==="GAME_OVER"){ buttons.innerHTML=`<div class="control-title">모험 종료</div>`; return; }
     const help=document.getElementById("moveHelp"); if(help) help.innerHTML = buildMoveHelp(mine.moves[hoveredMoveIndex] || mine.moves[0], enemy);
     const moveButtons = (mine.moves||[]).map((m,idx)=>{
@@ -1659,7 +2035,7 @@
     const entries = Object.entries(adventure.items||{}).sort((a,b)=>Number(adventure.bag[b[0]]||0)-Number(adventure.bag[a[0]]||0));
     const owned = entries.filter(([key])=>Number(adventure.bag[key]||0)>0);
     const empty = entries.filter(([key])=>Number(adventure.bag[key]||0)<=0);
-    const makeRow=([key,item],emptyRow=false)=>{ const count=Number(adventure.bag[key]||0); const disabled=emptyRow || animationBusy || adventure.pendingReward || currentState?.phase==="GAME_OVER"; return `<div class="adventure-bag-row ${emptyRow?"empty":""}"><span>${escapeHtml(item.name)} x${count}</span><button ${disabled?"disabled":""} onclick="adventureUseItem('${key}')">사용</button></div>`; };
+    const makeRow=([key,item],emptyRow=false)=>{ const count=Number(adventure.bag[key]||0); const disabled=emptyRow || animationBusy || adventure.pendingReward || adventure.phase==="defeat" || adventure.phase==="playerFainting" || currentState?.phase==="GAME_OVER"; return `<div class="adventure-bag-row ${emptyRow?"empty":""}"><span>${escapeHtml(item.name)} x${count}</span><button ${disabled?"disabled":""} onclick="adventureUseItem('${key}')">사용</button></div>`; };
     const rows = [...owned.map(e=>makeRow(e,false)), ...(owned.length?[]:[`<div class="muted">보유 아이템이 없습니다.</div>`]), `<div class="muted" style="font-size:11px;margin-top:6px;">보유하지 않음</div>`, ...empty.map(e=>makeRow(e,true))].join("");
     panel.innerHTML = `<div class="chat-title">가방</div><div class="adventure-bag-list">${rows}</div>`;
   }
@@ -1803,6 +2179,11 @@
   function renderAdventureRewards(){
     const buttons=document.getElementById("buttons");
     if(!buttons) return;
+    if(!canEnterAdventureRewardFromCanonicalHp("render-reward-ui")){
+      buttons.classList.remove("adventure-reward-mode");
+      recoverAdventureEnemyAliveFlow("render-reward-ui-blocked");
+      return;
+    }
     buttons.classList.add("adventure-reward-mode");
     if(!adventure._rewardChoices || adventure._rewardChoices.length!==4) adventure._rewardChoices=generateAdventureRewardChoices();
     buttons.innerHTML=`<div class="control-title">승리 보상 4개 중 하나를 선택하세요 · 선택 후 다음 층으로 이동</div><div class="adventure-reward-grid">${adventure._rewardChoices.map((r,idx)=>`<button class="move-btn eff-super adventure-reward-card" ${adventure.rewardApplying?"disabled":""} onclick="adventureChooseReward(${idx})"><span class="reward-title">${escapeHtml(rewardDisplayTitle(r))}</span><span class="meta">${escapeHtml(r.desc||r.title||"")}<br/>선택 후 바로 다음 층으로 이동</span></button>`).join("")}</div>`;
@@ -1918,7 +2299,7 @@
   }
 
   async function adventureSelectMove(moveIndex){
-    if(animationBusy || adventure.pendingReward) return;
+    if(animationBusy || adventure.pendingReward || adventure.turnResolving) return;
     const mine=playerMon(), enemy=enemyMon();
     const move=mine?.moves?.[moveIndex];
     if(!mine || !enemy || !move || move.pp<=0) return;
@@ -1948,41 +2329,73 @@
     return pick;
   }
   async function resolveAdventureTurn(playerAction){
-    const oldState=clone(currentState);
-    const working=clone(currentState);
-    const mine=working.players.p1.team[working.players.p1.activeIndex];
-    const enemy=working.players.p2.team[0];
-    const pMove=mine.moves[playerAction.moveIndex];
-    const eMove=chooseEnemyMove(enemy, mine);
-    const order = compareMoveOrder(mine,pMove,enemy,eMove) >= 0 ? [
-      {key:"p1", mon:mine, target:enemy, move:pMove, idx:playerAction.moveIndex},
-      {key:"p2", mon:enemy, target:mine, move:eMove, idx:enemy.moves.findIndex(m=>m.id===eMove.id)}
-    ] : [
-      {key:"p2", mon:enemy, target:mine, move:eMove, idx:enemy.moves.findIndex(m=>m.id===eMove.id)},
-      {key:"p1", mon:mine, target:enemy, move:pMove, idx:playerAction.moveIndex}
-    ];
-    const events=[{id:advEventId(), type:"turnStart", turn:working.turn, text:`${adventure.stage}층 · ${working.turn}턴`}];
-    const logs=[...adventure.log, `${working.turn}턴 시작`];
-    for(const act of order){
-      if(mine.fainted || enemy.fainted) break;
-      if(act.mon.fainted || act.target.fainted) continue;
-      applyAdventureMove(act, events, logs);
+    if(adventure.turnResolving) return;
+    adventure.turnResolving=true;
+    try{
+      const oldState=clone(currentState);
+      const working=clone(currentState);
+      const mine=working.players.p1.team[working.players.p1.activeIndex];
+      const enemy=working.players.p2.team[0];
+      if(!mine || !enemy || mine.fainted || enemy.fainted){ adventure.turnResolving=false; return; }
+      const pMove=mine.moves[playerAction.moveIndex];
+      const eMove=chooseEnemyMove(enemy, mine);
+      const order = compareMoveOrder(mine,pMove,enemy,eMove) >= 0 ? [
+        {key:"p1", mon:mine, target:enemy, move:pMove, idx:playerAction.moveIndex},
+        {key:"p2", mon:enemy, target:mine, move:eMove, idx:enemy.moves.findIndex(m=>m.id===eMove.id)}
+      ] : [
+        {key:"p2", mon:enemy, target:mine, move:eMove, idx:enemy.moves.findIndex(m=>m.id===eMove.id)},
+        {key:"p1", mon:mine, target:enemy, move:pMove, idx:playerAction.moveIndex}
+      ];
+      const events=[{id:advEventId(), type:"turnStart", turn:working.turn, text:`${adventure.stage}층 · ${working.turn}턴`}];
+      const logs=[...adventure.log, `${working.turn}턴 시작`];
+      let battleEnded=false;
+      for(const act of order){
+        if(mine.fainted || enemy.fainted || getAdventurePokemonHp(mine)<=0 || getAdventurePokemonHp(enemy)<=0){ battleEnded=true; break; }
+        if(act.mon.fainted || act.target.fainted) continue;
+        applyAdventureMove(act, events, logs);
+        sanitizeAdventureHp(mine); sanitizeAdventureHp(enemy);
+        if(enemy.fainted || getAdventurePokemonHp(enemy)<=0 || mine.fainted || getAdventurePokemonHp(mine)<=0){ battleEnded=true; break; }
+      }
+      if(!battleEnded){
+        applyAdventureEndTurnStatus(working, events, logs);
+        applyAdventureEndTurnEquipment(working, events, logs);
+      }
+      working.turn += 1;
+      working.logs = logs;
+      working.phase = (mine.fainted || enemy.fainted || getAdventurePokemonHp(mine)<=0 || getAdventurePokemonHp(enemy)<=0) ? "TURN_RESOLVE" : "ACTION_SELECT";
+      prepareVisualState(oldState);
+      currentState = working;
+      adventure.log = logs;
+      adventure.moveAnimationStarted=true;
+      adventure.moveAnimationDone=false;
+      adventure.damageRenderDone=false;
+      enqueueEvents(events);
+      Promise.resolve(eventQueue).then(()=>{
+        adventure.moveAnimationDone=true;
+        adventure.damageRenderDone=true;
+        console.info?.("[Adventure/Animation] damage render done", { phase:adventure.phase, floor:adventure.stage, battleResolutionToken:adventure.battleResolutionToken });
+        commitFromCurrentState();
+        const e=enemyMon(); const p=playerMon();
+        assertAdventureEnemyHpConsistency("turn-complete");
+        if(isAdventureCanonicalEnemyDefeated("turn-complete")){ handleAdventureVictory(); }
+        else if(p?.fainted || getAdventurePokemonHp(p)<=0){ handleAdventurePlayerFainted(); }
+        else { currentState.phase="ACTION_SELECT"; renderAdventureHeader(`${adventure.stage}층 전투`, "행동을 선택하세요."); renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); }
+      }).catch(err=>{
+        console.warn('[Adventure OneShot] event queue fallback', err);
+        adventure.moveAnimationDone=true;
+        adventure.damageRenderDone=true;
+        commitFromCurrentState();
+        const e=enemyMon(); const p=playerMon();
+        assertAdventureEnemyHpConsistency("turn-fallback");
+        if(isAdventureCanonicalEnemyDefeated("turn-fallback")) handleAdventureVictory();
+        else if(p?.fainted || getAdventurePokemonHp(p)<=0) handleAdventurePlayerFainted();
+        else { currentState.phase="ACTION_SELECT"; renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); }
+      }).finally(()=>{ adventure.turnResolving=false; animationBusy=false; renderAdventureButtons(); });
+    }catch(err){
+      console.warn('[Adventure OneShot] resolve turn failed', err);
+      adventure.turnResolving=false; animationBusy=false;
+      renderBattleView(); renderAdventureButtons(); renderAdventureLogs();
     }
-    applyAdventureEndTurnStatus(working, events, logs);
-    applyAdventureEndTurnEquipment(working, events, logs);
-    working.turn += 1;
-    working.logs = logs;
-    working.phase = (mine.fainted || enemy.fainted) ? "TURN_RESOLVE" : "ACTION_SELECT";
-    prepareVisualState(oldState);
-    currentState = working;
-    adventure.log = logs;
-    enqueueEvents(events);
-    eventQueue.then(()=>{
-      commitFromCurrentState();
-      if(enemyMon()?.fainted || (enemyMon()?.hp||0)<=0) handleAdventureVictory();
-      else if(playerMon()?.fainted || (playerMon()?.hp||0)<=0) handleAdventurePlayerFainted();
-      else { currentState.phase="ACTION_SELECT"; renderAdventureHeader(`${adventure.stage}층 전투`, "행동을 선택하세요."); renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); }
-    });
   }
   function compareMoveOrder(a,aMove,b,bMove){
     const ap=Number(aMove?.priority||0), bp=Number(bMove?.priority||0);
@@ -2009,7 +2422,8 @@
     if(!Number.isFinite(hp)) hp=max;
     mon.maxHp=max;
     mon.hp=Math.max(0, Math.min(max, Math.round(hp)));
-    mon.fainted = mon.hp<=0 || !!mon.fainted;
+    mon.currentHp=mon.hp;
+    mon.fainted = mon.hp<=0;
   }
   function applyAdventureNonDamagingMove(attacker, defender, attackerKey, defenderKey, move, events, logs){
     const statChanges = collectAdventureStatChanges(move);
@@ -2144,7 +2558,23 @@
       totalDamage += amount;
       lastCritical = lastCritical || roll.critical;
       sanitizeAdventureHp(defender);
+      const hpBeforeDamage=Number(defender.hp||0);
       defender.hp=Math.max(0,Number(defender.hp||0)-amount);
+      defender.currentHp=defender.hp;
+      if(defenderKey==="p2"){
+        console.info?.("[Adventure/HP] enemy damage applied", {
+          reason:"applyAdventureMove",
+          floor:adventure.stage,
+          enemyName:defender.name,
+          hpBefore:hpBeforeDamage,
+          damage:amount,
+          hpAfter:defender.hp,
+          maxHp:defender.maxHp,
+          phase:adventure.phase,
+          enemyFaintResolved:adventure.enemyFaintResolved,
+          battleRewardClaimed:adventure.battleRewardClaimed
+        });
+      }
       if(defenderKey==="p1" && defender.hp<=0){
         const charmCount=Math.min(Number(equipmentDef("lifeCharm").maxStacks||6), Number(adventure.adventureEquipment?.lifeCharm||0));
         defender.volatile=defender.volatile||{};
@@ -2174,7 +2604,11 @@
       applyAdventureStatChanges(attacker, defender, attackerKey, defenderKey, afterHit, events, logs, true);
     }
     sanitizeAdventureHp(defender);
-    if(defender.hp<=0){ defender.fainted=true; logs.push(`${defender.name}이 쓰러졌다!`); events.push({id:advEventId(), type:"faint", target:defenderKey, name:defender.name}); }
+    if(defenderKey==="p2" && defender.hp>0 && defender.fainted){
+      console.warn?.("[Adventure/Faint] blocked: canonical enemy still alive", {reason:"applyAdventureMove-final", enemyName:defender.name, hp:defender.hp, maxHp:defender.maxHp});
+      defender.fainted=false;
+    }
+    if(defender.hp<=0){ defender.fainted=true; defender.currentHp=0; logs.push(`${defender.name}이 쓰러졌다!`); events.push({id:advEventId(), type:"faint", target:defenderKey, name:defender.name}); }
   }
   function collectAdventureStatChanges(move){
     const list=[];
@@ -2481,9 +2915,42 @@
     const keys=[mon.name, mon.apiName, String(mon.id||"")].filter(Boolean);
     for(const key of keys){
       const rows=adventure.levelupLearnsets?.[key];
-      if(Array.isArray(rows)) return rows;
+      if(Array.isArray(rows) && rows.length) return rows;
+    }
+    const full=adventureLearnsetRecordForPokemon(mon) || {};
+    const levelMoves=(full.levelUp||[]).map(x=>typeof x==="string"?x:(x?.move||x?.name)).filter(Boolean);
+    if(levelMoves.length){
+      const levels=[1,5,8,12,16,21,26,32,38,45,52,60];
+      return levelMoves.map((move,i)=>({level:levels[Math.min(i,levels.length-1)] + Math.max(0,i-levels.length+1)*8, move}));
     }
     return [];
+  }
+  function adventureLevelUpMoveNamesForPokemon(mon, level=100){
+    const keys=[mon?.name, mon?.apiName, String(mon?.id||"")].filter(Boolean);
+    const names=[];
+    for(const key of keys){
+      const rows=adventure.levelupLearnsets?.[key];
+      if(Array.isArray(rows)){
+        for(const row of rows){
+          const lv=Number(row.level || row.level_learned_at || 0);
+          if(lv<=Number(level||100)) names.push(row.move || row.id || row.name);
+        }
+      }
+    }
+    const full=adventureLearnsetRecordForPokemon(mon) || {};
+    for(const row of (full.levelUp||[])){
+      if(typeof row === "string") names.push(row);
+      else if(Number(row.level || row.level_learned_at || 0)<=Number(level||100)) names.push(row.move || row.name || row.id);
+      else if(!Number(row.level || row.level_learned_at || 0)) names.push(row.move || row.name || row.id);
+    }
+    return [...new Set(names.filter(Boolean))];
+  }
+  function validateLevelUpMoveForPokemon(mon, move, level=100){
+    if(!mon || !move) return false;
+    const allowed=adventureLevelUpMoveNamesForPokemon(mon, level).map(adventureMoveKey).filter(Boolean);
+    const keys=[move.name, move.id, move.apiName].filter(Boolean).map(adventureMoveKey).filter(Boolean);
+    if(!keys.some(k=>allowed.includes(k))) return false;
+    return validateMoveForPokemon(mon, move, level, {allowFallback:false});
   }
   function adventureLevelMovesBetween(mon, fromLevel, toLevel){
     const known=new Set((mon.moves||[]).map(m=>String(m.id||m.name).toLowerCase()));
@@ -2495,6 +2962,7 @@
       if(lv<=Number(fromLevel||0) || lv>Number(toLevel||0)) continue;
       const move=resolveMoveByName(row.move || row.id || row.name);
       if(!move || isBlockedAdventureMove(move)) continue;
+      if(!validateLevelUpMoveForPokemon(mon, move, lv)) continue;
       const key=String(move.id||move.name).toLowerCase();
       if(known.has(key) || seen.has(key)) continue;
       seen.add(key); out.push({...normalizeMove(move), pp:move.maxPp, maxPp:move.maxPp, learnLevel:lv});
@@ -2502,10 +2970,64 @@
     out.sort((a,b)=>Number(a.learnLevel||0)-Number(b.learnLevel||0));
     return out;
   }
+  function adventureMoveTierScore(move){
+    if(!move) return 0;
+    const id=String(move.id||"");
+    const tiers=adventure.moveTiers || {};
+    if((tiers.rare||[]).includes(id)) return 5;
+    if((tiers.high||[]).includes(id)) return 4;
+    if((tiers.mid||[]).includes(id)) return 3;
+    if((tiers.early||[]).includes(id)) return 2;
+    const power=Number(move.power||0);
+    if(power>=85) return 5;
+    if(power>=65) return 4;
+    if(power>=45) return 3;
+    if(power>0) return 2;
+    return 1;
+  }
+  function countDamagingAdventureMoves(moves){ return (moves||[]).filter(m=>isAdventureDamagingMove(m)).length; }
+  function chooseAdventureAutoForgetIndex(mon, newMove){
+    const moves=mon.moves||[];
+    const newTier=adventureMoveTierScore(newMove);
+    let candidates=moves.map((m,idx)=>({m,idx,tier:adventureMoveTierScore(m), damaging:isAdventureDamagingMove(m)}));
+    const damagingCount=countDamagingAdventureMoves(moves);
+    candidates=candidates.filter(c=>!(c.damaging && damagingCount<=2 && !isAdventureDamagingMove(newMove)));
+    candidates.sort((a,b)=>a.tier-b.tier || a.idx-b.idx);
+    const pick=candidates[0];
+    if(!pick) return -1;
+    if(newTier < pick.tier && moves.length>=4) return -1;
+    return pick.idx;
+  }
+  function autoLearnAdventureMove(mon, move, logs=adventure.log){
+    if(!mon || !move) return false;
+    mon.moves=Array.isArray(mon.moves)?mon.moves:[];
+    const normalized={...normalizeMove(move), pp:move.maxPp, maxPp:move.maxPp};
+    if(!validateMoveForPokemon(mon, normalized, mon.level||100, {allowFallback:false})) return false;
+    if(mon.moves.some(m=>m.id===normalized.id || m.name===normalized.name)) return false;
+    if(mon.moves.length<4){
+      mon.moves.push(normalized);
+      logs.push(`${mon.name}은/는 ${normalized.name}을/를 배웠다!`);
+      return true;
+    }
+    const idx=chooseAdventureAutoForgetIndex(mon, normalized);
+    if(idx<0 || !mon.moves[idx]) return false;
+    const old=mon.moves[idx];
+    mon.moves[idx]=normalized;
+    logs.push(`${mon.name}은/는 ${old.name}을/를 잊고 ${normalized.name}을/를 배웠다!`);
+    return true;
+  }
+  function autoLearnAdventureLevelMoves(mon, oldLevel, newLevel, logs=adventure.log){
+    let learned=0;
+    for(const move of adventureLevelMovesBetween(mon, oldLevel, newLevel)){
+      if(autoLearnAdventureMove(mon, move, logs)) learned++;
+    }
+    return learned;
+  }
   function enqueueAdventureGrowthEvents(mon, oldLevel, newLevel){
     const idx=adventureTeamIndexOf(mon);
     if(idx<0) return;
-    for(const move of adventureLevelMovesBetween(mon, oldLevel, newLevel)){
+    const learnMoves=adventureLevelMovesBetween(mon, oldLevel, newLevel);
+    for(const move of learnMoves){
       adventure.growthQueue.push({type:"learnMove", monIndex:idx, move});
     }
     const evo=getAdventureEvolutionInfo(mon);
@@ -2513,6 +3035,7 @@
     if(evo && need && Number(newLevel||0)>=need){
       adventure.growthQueue.push({type:"evolution", monIndex:idx});
     }
+    syncAdventureTeamState();
   }
   function afterAdventureGrowthDefault(){
     adventure.growthProcessing=false;
@@ -2523,8 +3046,11 @@
   }
   function continueAdventureGrowthQueue(callback, options={}){
     const force=!!options.force;
-    if(callback) adventure.afterGrowthCallback=callback;
-    if(adventure.growthProcessing && !callback && !force) return;
+    if(callback){
+      adventure.afterGrowthCallback=callback;
+      console.info?.("[Adventure/Capture] post battle continuation stored", { phase:adventure.phase, floor:adventure.stage, growthQueueLength:(adventure.growthQueue||[]).length });
+    }
+    if(adventure.growthProcessing && !force) return;
     adventure.growthProcessing=true;
     adventure.learnMoveResolving=false;
     const event=(adventure.growthQueue||[]).shift();
@@ -2534,13 +3060,25 @@
       adventure.afterGrowthCallback=null;
       adventure.pendingLevelMove=null;
       adventure.learnMoveResolving=false;
-      if(typeof done === "function") return done();
+      console.info?.("[Adventure/GrowthQueue] empty", { phase:adventure.phase, floor:adventure.stage, hasContinuation:typeof done === "function" });
+      if(typeof done === "function"){
+        if(adventure.postBattleContinuationRunning){
+          console.warn?.("[Adventure/Continuation] skipped duplicate continuation", { phase:adventure.phase, floor:adventure.stage });
+          return;
+        }
+        adventure.postBattleContinuationRunning=true;
+        console.info?.("[Adventure/Continuation] running post battle continuation", { phase:adventure.phase, floor:adventure.stage });
+        try{ return done(); }
+        finally{ adventure.postBattleContinuationRunning=false; }
+      }
       return afterAdventureGrowthDefault();
     }
     if(event.type==="learnMove"){
       const mon=adventure.team?.[event.monIndex];
       const move=event.move;
+      console.info?.("[Adventure/GrowthQueue] learnMove started", { phase:adventure.phase, floor:adventure.stage, monName:mon?.name, moveName:move?.name, growthQueueLength:(adventure.growthQueue||[]).length });
       if(!mon || !move || (mon.moves||[]).some(m=>m.id===move.id || m.name===move.name)) return continueAdventureGrowthQueue(null,{force:true});
+      if(!validateLevelUpMoveForPokemon(mon, move, Number(mon.level||100))) return continueAdventureGrowthQueue(null,{force:true});
       adventure.pendingLevelMove={monIndex:event.monIndex, move};
       adventure.phase="learnMove";
       adventure.learnMoveResolving=false;
@@ -2564,6 +3102,7 @@
     return continueAdventureGrowthQueue(null,{force:true});
   }
   function finishAdventureLevelMoveChoice(){
+    console.info?.("[Adventure/GrowthQueue] learnMove completed", { phase:adventure.phase, floor:adventure.stage, growthQueueLength:(adventure.growthQueue||[]).length, hasContinuation:typeof adventure.afterGrowthCallback === "function" });
     adventure.learnMoveResolving=false;
     syncAdventureTeamState();
     renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
@@ -2575,6 +3114,10 @@
     if(!pending || !mon || !move){ adventure.pendingLevelMove=null; return continueAdventureGrowthQueue(null,{force:true}); }
     adventure.learnMoveResolving=true;
     mon.moves=mon.moves||[];
+    if(!validateLevelUpMoveForPokemon(mon, move, Number(mon.level||100))){
+      adventure.log.push(`${mon.name}은/는 ${move.name}을/를 배울 수 없다.`);
+      adventure.pendingLevelMove=null; return finishAdventureLevelMoveChoice();
+    }
     if(mon.moves.some(m=>m.id===move.id || m.name===move.name)){
       adventure.log.push(`${mon.name}은/는 이미 ${move.name}을/를 알고 있다.`);
       adventure.pendingLevelMove=null; return finishAdventureLevelMoveChoice();
@@ -2601,6 +3144,10 @@
     const pending=adventure.pendingLevelMove; const mon=adventure.team?.[pending?.monIndex]; const move=pending?.move; const forgetIndex=Number(idx);
     if(!pending || !mon || !move || !mon.moves?.[forgetIndex]) return adventureSkipLevelMove();
     adventure.learnMoveResolving=true;
+    if(!validateLevelUpMoveForPokemon(mon, move, Number(mon.level||100))){
+      adventure.log.push(`${mon.name}은/는 ${move.name}을/를 배울 수 없다.`);
+      adventure.pendingLevelMove=null; return finishAdventureLevelMoveChoice();
+    }
     const old=mon.moves[forgetIndex];
     mon.moves[forgetIndex]={...normalizeMove(move), pp:move.maxPp, maxPp:move.maxPp};
     adventure.log.push(`${mon.name}은/는 ${old.name}을/를 잊었다!`);
@@ -2744,6 +3291,17 @@
   }
 
   function enterAdventureReward(reason){
+    if(adventure.moveAnimationStarted && (!adventure.moveAnimationDone || !adventure.damageRenderDone)){
+      console.warn?.("[Adventure/Reward] blocked: animation not completed", { reason, phase:adventure.phase, moveAnimationDone:adventure.moveAnimationDone, damageRenderDone:adventure.damageRenderDone });
+      return false;
+    }
+    if(!canEnterAdventureRewardFromCanonicalHp("enterAdventureReward")){
+      return recoverAdventureEnemyAliveFlow("enterAdventureReward-blocked");
+    }
+    visualState=null;
+    faintPending={p1:false,p2:true};
+    const enemy=getAdventureCanonicalEnemy("enterAdventureReward-sync");
+    if(enemy){ enemy.hp=0; enemy.currentHp=0; enemy.fainted=true; syncAdventureCanonicalEnemyToState(enemy, "enterAdventureReward-sync"); }
     adventure.pendingReward=true;
     adventure.rewardApplying=false;
     adventure.phase="reward";
@@ -2755,8 +3313,14 @@
     renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
   }
   function handleAdventureVictory(){
+    if(!canEnterAdventureRewardFromCanonicalHp("handleAdventureVictory")){
+      console.warn?.("[Adventure/EXP] blocked: canonical enemy still alive", {reason:"handleAdventureVictory", enemyHp:getAdventureCanonicalEnemy("handleAdventureVictory")?.hp});
+      return recoverAdventureEnemyAliveFlow("handleAdventureVictory-blocked");
+    }
+    visualState=null;
+    const defeatedEnemy=getAdventureCanonicalEnemy("handleAdventureVictory-exp");
     if(!adventure.pendingReward){
-      awardAdventureExp("defeat", adventure.enemy || enemyMon());
+      awardAdventureExp("defeat", defeatedEnemy || adventure.enemy || enemyMon());
     }
     if((adventure.growthQueue||[]).length){
       continueAdventureGrowthQueue(()=>enterAdventureReward(`${adventure.stage}층 클리어! 보상을 선택하세요.`));
@@ -2764,35 +3328,92 @@
     }
     enterAdventureReward(`${adventure.stage}층 클리어! 보상을 선택하세요.`);
   }
-  function checkAdventureDefeat(){
-    if(!adventure.active || adventure.phase !== "battle") return false;
+  function isAdventureTeamAllFainted(){
     const team = Array.isArray(adventure.team) ? adventure.team : [];
-    if(!team.length) return false;
-    return team.every(p=>!p || p.fainted || getAdventurePokemonHp(p)<=0);
+    if(!team.length) return true;
+    return !team.some(p=>{ if(!p) return false; sanitizeAdventureHp(p); return !p.fainted && getAdventurePokemonHp(p)>0; });
   }
-  function handleAdventurePlayerFainted(){
+  function hasAdventureBenchAlive(){
+    const team = Array.isArray(adventure.team) ? adventure.team : [];
+    const activeIdx=Number(adventure.activeIndex || currentState?.players?.p1?.activeIndex || 0);
+    return team.some((p,idx)=>{ if(!p || idx===activeIdx) return false; sanitizeAdventureHp(p); return !p.fainted && getAdventurePokemonHp(p)>0; });
+  }
+  function checkAdventureDefeat(){
+    if(!adventure.active) return false;
+    return isAdventureTeamAllFainted();
+  }
+  function playAdventurePlayerFaintAnimation(pokemon, token){
+    console.info?.("[Adventure/PlayerFaint] animation start", { pokemonName:pokemon?.name, token });
+    return new Promise(resolve=>{
+      const el=document.getElementById("mySprite");
+      let done=false;
+      const finish=()=>{ if(done) return; done=true; if(el) el.removeEventListener("animationend", finish); console.info?.("[Adventure/PlayerFaint] animation finished", { pokemonName:pokemon?.name, token }); resolve(); };
+      if(el){ el.classList.remove("fainting","faint","mine-dead","fainted"); void el.offsetWidth; el.addEventListener("animationend", finish, {once:true}); el.classList.add("fainting","mine-dead"); }
+      setTimeout(finish, 650);
+    });
+  }
+  async function finalizeAdventurePlayerFaint({reason="unknown", token}={}){
+    if(Number(token||0)!==Number(adventure.battleResolutionToken||0)){ console.warn?.("[Adventure/PlayerFaint] finalize ignored by stale token", { reason, token, currentToken:adventure.battleResolutionToken }); return false; }
+    console.info?.("[Adventure/PlayerFaint] finalized", { reason, phase:adventure.phase, teamAliveCount:getAliveAdventureTeam().length, playerFaintResolved:adventure.playerFaintResolved });
+    syncAdventureTeamState();
+    renderBattleView(); renderAdventureLogs(); renderAdventureBag();
+    if(isAdventureTeamAllFainted()) return enterAdventureFailPhaseSafely("team-all-fainted");
+    if(hasAdventureBenchAlive()) return enterAdventureForceSwitchPhaseSafely("active-fainted-bench-alive");
+    return enterAdventureFailPhaseSafely("no-bench-alive");
+  }
+  async function resolveAdventurePlayerFaintSafely(reason="unknown"){
+    if(!adventure.active) return false;
+    if(["reward","applyingReward","loadingNext","enemyFainting","advancingFloor"].includes(adventure.phase) || adventure.pendingReward){ console.warn?.("[Adventure/PlayerFaint] blocked by terminal enemy/reward phase", { reason, phase:adventure.phase, pendingReward:adventure.pendingReward }); return false; }
+    if(adventure.failResolved) return true;
     commitFromCurrentState();
-    if(checkAdventureDefeat()){
-      handleAdventureDefeat();
-      return;
-    }
-    adventure.phase="switch";
-    adventure.switchMode="forced";
-    adventure.pendingReward=false;
+    const active=adventure.team?.[adventure.activeIndex||0];
+    if(!active) return enterAdventureFailPhaseSafely("no-active-pokemon");
+    sanitizeAdventureHp(active);
+    if(getAdventurePokemonHp(active)>0 && !active.fainted) return false;
+    const token=Number(adventure.battleResolutionToken||0);
+    adventure.phase="playerFainting"; adventure.playerFaintStarted=true; adventure.playerFaintResolved=false; animationBusy=true;
+    if(currentState) currentState.phase="TURN_RESOLVE";
+    const faintMsg=`${active.name}이 쓰러졌다!`;
+    if(!(adventure.log||[]).includes(faintMsg)) adventure.log.push(faintMsg);
+    if(currentState) currentState.logs=[...adventure.log];
+    setMessage(`${active.name}이 쓰러졌다!`, true);
+    console.info?.("[Adventure/PlayerFaint] active faint detected", { reason, activeName:active.name, activeHp:getAdventurePokemonHp(active), activeMaxHp:active.maxHp, phase:adventure.phase, token });
+    renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
+    await playAdventurePlayerFaintAnimation(active, token);
+    if(Number(token)!==Number(adventure.battleResolutionToken||0)){ animationBusy=false; return true; }
+    adventure.playerFaintAnimationDone=true; adventure.playerFaintResolved=true; animationBusy=false;
+    return finalizeAdventurePlayerFaint({reason, token});
+  }
+  function enterAdventureForceSwitchPhaseSafely(reason="unknown"){
+    if(!hasAdventureBenchAlive()) return enterAdventureFailPhaseSafely("force-switch-no-bench");
+    adventure.phase="switch"; adventure.switchMode="forced"; adventure.pendingReward=false; adventure.playerFaintResolved=true;
     if(currentState) currentState.phase="ACTION_SELECT";
     adventure.log.push("현재 포켓몬이 쓰러졌습니다. 교체할 포켓몬을 선택하세요.");
     if(currentState) currentState.logs=[...adventure.log];
     setMessage("교체할 포켓몬을 선택하세요.", true);
+    console.info?.("[Adventure/Switch] active fainted, switch required", { reason, activeIndex:adventure.activeIndex, teamAliveCount:getAliveAdventureTeam().length });
     renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
+    return true;
+  }
+  function enterAdventureFailPhaseSafely(reason="unknown"){
+    if(adventure.pendingReward || ["reward","applyingReward","loadingNext","advancingFloor"].includes(adventure.phase)){ console.warn?.("[Adventure/Fail] blocked by reward/enemy defeat phase", { reason, phase:adventure.phase, pendingReward:adventure.pendingReward }); return false; }
+    commitFromCurrentState();
+    if(!isAdventureTeamAllFainted()){ console.warn?.("[Adventure/Fail] blocked because team is not all fainted", { reason, teamAliveCount:getAliveAdventureTeam().length }); return false; }
+    if(adventure.failResolved && adventure.phase==="defeat") return true;
+    adventure.failResolved=true; adventure.phase="defeat"; animationBusy=false;
+    if(currentState) currentState.phase="GAME_OVER";
+    const msg=`모험 실패 · 도달 층 ${adventure.stage}층`;
+    if(!(adventure.log||[]).includes(msg)) adventure.log.push(msg);
+    if(currentState) currentState.logs=[...adventure.log];
+    console.info?.("[Adventure/Fail] adventure failed", { reason, floor:adventure.stage, active:adventure.team?.[adventure.activeIndex||0]?.name });
+    renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag(); showAdventureFailOverlay();
+    return true;
+  }
+  function handleAdventurePlayerFainted(){
+    return resolveAdventurePlayerFaintSafely("legacy-handler");
   }
   function handleAdventureDefeat(){
-    if(adventure.phase !== "battle") return;
-    if(!checkAdventureDefeat()) return handleAdventurePlayerFainted();
-    currentState.phase="GAME_OVER";
-    adventure.phase="defeat";
-    adventure.log.push(`모험 실패 · 도달 층 ${adventure.stage}층`);
-    currentState.logs=[...adventure.log];
-    renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); showAdventureFailOverlay();
+    return enterAdventureFailPhaseSafely("legacy-defeat-handler");
   }
 
   function showAdventureFailOverlay(title="모험 실패", desc){
@@ -2868,6 +3489,10 @@
     }
   }
   async function advanceAdventureStage(){
+    if(!canEnterAdventureRewardFromCanonicalHp("advanceAdventureStage")){
+      console.warn?.("[Adventure/Floor] blocked: canonical enemy still alive", {reason:"advanceAdventureStage", enemyHp:getAdventureCanonicalEnemy("advanceAdventureStage")?.hp});
+      return recoverAdventureEnemyAliveFlow("advanceAdventureStage-blocked");
+    }
     adventure.stage += 1;
     adventure.pendingReward=false;
     adventure.rewardApplying=false;
@@ -2892,7 +3517,7 @@
       enqueueEvents(events);
       eventQueue.then(()=>{
         commitFromCurrentState();
-        if(adventure.active && adventure.phase==="battle" && enemyMon() && !enemyMon().fainted && playerMon() && !playerMon().fainted){
+        if(adventure.active && adventure.phase==="battle" && enemyMon() && !isAdventureCanonicalEnemyDefeated("item-turn-check") && playerMon() && !playerMon().fainted){
           resolveAdventureEnemyOnlyTurn(clone(currentState));
         }else{
           renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
@@ -2900,7 +3525,7 @@
       });
     }else{
       commitFromCurrentState();
-      if(adventure.active && adventure.phase==="battle" && enemyMon() && !enemyMon().fainted && playerMon() && !playerMon().fainted){
+      if(adventure.active && adventure.phase==="battle" && enemyMon() && !isAdventureCanonicalEnemyDefeated("item-turn-check-noevents") && playerMon() && !playerMon().fainted){
         resolveAdventureEnemyOnlyTurn(clone(currentState));
       }else{
         renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
@@ -3244,6 +3869,7 @@
     try{
       await playAdventureCaptureSequence(ballKey, success, enemy.name);
       if(success){
+        console.info?.("[Adventure/Capture] success animation done", { phase:adventure.phase, floor:adventure.stage, capturedPokemonName:enemy?.name });
         const captured=clone(enemy);
         captured.hp=Math.max(1,captured.hp); captured.fainted=false; captured.caughtAtStage=adventure.stage;
         recordAdventureHallOfFamePokemon(captured, {caughtAtStage:adventure.stage});
@@ -3298,7 +3924,7 @@
         applyAdventureEndTurnEquipment(working, events, logs);
         working.logs=logs; working.turn+=1; working.phase=mine.fainted?"TURN_RESOLVE":"ACTION_SELECT";
         prepareVisualState(old); currentState=working; adventure.log=logs; enqueueEvents(events);
-        eventQueue.then(()=>{commitFromCurrentState(); if(playerMon()?.fainted) handleAdventurePlayerFainted(); else {resetAdventureEnemyAfterCaptureFailure(); renderBattleView(); resetAdventureEnemyAfterCaptureFailure(); renderAdventureButtons(); renderAdventureLogs();}});
+        eventQueue.then(()=>{commitFromCurrentState(); if(playerMon()?.fainted || getAdventurePokemonHp(playerMon())<=0) resolveAdventurePlayerFaintSafely("capture-fail-enemy-turn"); else {resetAdventureEnemyAfterCaptureFailure(); renderBattleView(); resetAdventureEnemyAfterCaptureFailure(); renderAdventureButtons(); renderAdventureLogs();}});
       }
     }catch(err){
       console.error("[Adventure Capture] failed", err);
@@ -3349,6 +3975,11 @@
     adventure.phase="battle";
     adventure.switchMode=null;
     adventure.pendingReward=false;
+    adventure.playerFaintStarted=false;
+    adventure.playerFaintAnimationDone=false;
+    adventure.playerFaintResolved=false;
+    adventure.failResolved=false;
+    adventure.battleResolutionToken=Number(adventure.battleResolutionToken||0)+1;
 
     if(currentState){
       currentState.players.p1.activeIndex=targetIndex;
@@ -3408,7 +4039,7 @@
       if(renderToken && renderToken !== adventure.renderToken) return;
       commitFromCurrentState();
       clearAdventurePlayerVisualState("enemy-turn-after");
-      if(playerMon()?.fainted || getAdventurePokemonHp(playerMon())<=0) handleAdventurePlayerFainted();
+      if(playerMon()?.fainted || getAdventurePokemonHp(playerMon())<=0) resolveAdventurePlayerFaintSafely("enemy-only-turn");
       else {currentState.phase="ACTION_SELECT"; renderBattleView(); resetAdventureBattleSprites(); renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();}
     });
   }

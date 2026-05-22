@@ -1145,3 +1145,217 @@ README TODO:
 - size-check-data의 types / stats / evolutionStage 누락 데이터 보강
 - 크기 관리자에 데이터 불완전 / 크기 미설정 / 진화 크기 이상 필터 보강
 - 기존 일반 대전 / AI 대전 / 관전 / 관리자 / 모바일 기능 유지
+
+## v6.18.17 Adventure Master Roster + Auto Learnset + One-Shot Hotfix + Scale Baseline Patch
+
+- 1~2세대 전체 포켓몬 마스터 목록(`pokemon_master_gen1_2.json`) 추가
+- 관리자 / 크기 관리자 / 모험모드 포켓몬 목록 기준을 master roster로 통일
+- 신규 포켓몬 추가 시 관리자와 크기 관리자에 자동 표시되도록 구조 개선
+- PokeAPI 기반 full learnset 수집/정제 스크립트 보강
+- level-up / machine / tutor / egg 기술 구분 저장 구조 정리
+- 포켓몬별 allowedMoves 검증 강화
+- 레벨업 시 기술 자동 습득 방식 적용
+- 기술 4개 초과 시 낮은 티어 / 오래된 기술 자동 교체 규칙 추가
+- 자동 습득한 기술을 즉시 전투 moves 배열에 반영
+- 야생 포켓몬 기술 구성을 full learnset / allowedMoves 기반으로 개선
+- 실제 배울 수 없는 기술이 들어가지 않도록 검증 강화
+- 1층 원샷 / 효과가 뛰어난 기술 사용 후 전투가 멈추던 문제 방어 로직 추가
+- enemy faint / EXP / 성장 / 보상 흐름 안정화
+- 사용자가 제공한 1~2세대 포켓몬 크기 스케일링 표를 기본 render profile로 적용
+- 배틀모드 / 모험모드 / 명예의 전당 크기 기준 공통화
+- 신규 포켓몬 크기 추천 규칙 및 누락 검증 스크립트 추가
+- 기존 일반 대전 / AI 대전 / 관전 / 관리자 / 모바일 기능 유지
+
+README TODO:
+- 3세대 이후 master roster 확장
+- PokeAPI 수집 후 unmapped move 한글명 매핑 추가
+- 자동 기술 교체 규칙 세부 밸런스 조정
+- 관리자 원샷 전투 테스트 자동화
+- 포켓몬 height 기반 scale 추천 고도화
+
+## v6.18.17a Learn Move Choice Restore + Real Learnset Validation Hotfix
+
+- 레벨업 시 자동 기술 습득 로직 제거
+- 기술 4개 초과 시 자동 교체 로직 제거
+- 포켓몬 원작식 “배운다 / 배우지 않는다” 선택 UI 복구
+- 기술 4개 보유 시 잊을 기술 선택 UI 복구
+- 여러 레벨이 한 번에 올라도 기술 습득 이벤트가 순서대로 처리되도록 보강
+- 기술 습득/거절/교체 후 진화 체크가 정상 이어지도록 수정
+- 기술 배우기 UI에서 진행이 멈추지 않도록 growthQueue / phase / lock 보강
+- 레벨업 기술은 실제 level-up learnset 기반으로만 표시
+- allowedMoves 검증을 통과한 기술만 배울 수 있도록 유지
+- 1층 원샷 / 효과가 뛰어난 기술 후 faint / EXP / 기술 선택 / 보상 흐름 안정성 유지
+- 관리자 성장 실험실에서 기술 선택 흐름 검증 가능
+- 기존 master roster / scale baseline / 크기 관리자 개선 유지
+- 기존 일반 대전 / AI 대전 / 관전 / 관리자 / 모바일 기능 유지
+
+README TODO:
+- 기술 배우기 UI 디자인 고도화
+- 기술 정보 카드 상세화
+- 관리자에서 learnset 원본/정제 비교 기능 추가
+- 기술머신 사용 시 잊을 기술 선택 UI 공통화
+
+## v6.18.19 Adventure Move Level Gate + Player Faint Resolution Hotfix
+
+- 모험모드 초기 포켓몬/야생 포켓몬 기술 구성 시 현재 레벨 이하 level-up 기술만 사용하도록 보강
+- machine / tutor / egg 기술이 초기 기술에 섞이지 않도록 방어
+- level_learned_at <= 0 또는 현재 레벨보다 높은 기술이 초기 기술에 들어가지 않도록 수정
+- 저레벨 케이시 사이코키네시스, 저레벨 피카츄 번개 등 조기 고위력 기술 배정 방지
+- 1~10층 야생 포켓몬 고위력 기술 gate 강화
+- 기술 후보가 부족할 때만 약한 기본기 fallback을 사용하도록 정리
+- 내 active 포켓몬 HP 0 이후 playerFainting 흐름 추가
+- 벤치 생존 포켓몬이 있으면 교체 흐름으로 이동하도록 보강
+- 팀 전체 전멸 시 fail phase / game over overlay가 확실히 표시되도록 수정
+- player faint 후 아무것도 진행되지 않던 상태 방지
+- 기존 enemy faint / reward / floor advance guard 유지
+- 기존 기술 선택 UI / master roster / scale baseline / 관리자 / 모바일 / 일반 대전 / AI 대전 / 관전 기능 유지
+
+README TODO:
+
+- 층수별 야생 기술 티어 세부 밸런스 조정
+- player faint 연출 고도화
+- 강제 교체 UI UX 개선
+- 관리자 전투 상태 디버거 UI 고도화
+- PokeAPI full learnset 재수집 결과 상세 검증
+
+## v6.18.19c Adventure Start Runtime Error + Move Gate + Player Faint Minimal Hotfix
+
+- 모험모드 시작 중 `adventureLevelUpMovesForLevel` 미정의로 발생하던 ReferenceError를 현재 ZIP의 실제 함수 구조 기준으로 수정
+- `getAdventureLevelUpMovesForLevel()`이 참조하던 level-up learnset row 조회 helper를 안전하게 보강
+- 초기 포켓몬/야생 포켓몬 기술 구성 시 현재 레벨 이하 level-up 기술만 사용하도록 생성 경로를 정리
+- `sanitizeIllegalMovesForPokemon()`이 allowedMoves/full learnset으로 기술을 억지로 4개 채우던 흐름을 차단
+- machine / tutor / egg 기술과 현재 레벨보다 높은 기술이 초기 기술에 섞이지 않도록 방어
+- 1~10층 야생 포켓몬 고위력 기술 gate 및 약한 fallback 흐름 유지
+- 내 active 포켓몬 HP 0 이후 fail/game over 또는 교체 흐름으로 이어지는 기존 player faint guard 유지
+- 기존 enemy faint / reward / floor advance guard 유지
+- 기존 기술 선택 UI / master roster / scale baseline / 관리자 / 모바일 / 일반 대전 / AI 대전 / 관전 기능 유지
+
+TODO:
+
+- 브라우저 콘솔에서 모험모드 시작 ReferenceError/TypeError 미발생 수동 확인
+- 층수별 야생 기술 티어 세부 밸런스 조정
+- player faint 연출 고도화
+- 강제 교체 UI UX 개선
+- 관리자 전투 상태 디버거 UI 고도화
+
+## v6.18.20 Adventure Enemy HP Canonical Source + Reward Revalidation Hotfix
+
+- 모험모드에서 상대 HP가 남아 있는데 reward phase가 뜨던 문제 방어
+- 전투 계산용 enemy와 렌더링 enemy의 HP source 불일치 탐지 로그 추가
+- reward 진입 직전 canonical enemy HP를 재검증하도록 보강
+- canonical enemy HP가 1 이상이면 enemyFaintResolved flag가 true여도 reward / EXP / floor clear 차단
+- enemy HP가 1 이상인데 enemyFaintResolved가 true인 경우 flag를 되돌리고 전투 흐름으로 복구
+- 데미지 적용 후 enemy.hp/currentHp에 clamp 결과를 반영하도록 보강
+- enemy HP가 NaN/null/undefined일 때 reward로 보내지 않고 차단 로그를 남기도록 방어
+- reward UI 렌더링 및 보상 선택 시점에도 enemy HP 재검증
+- 기존 enemy faint / reward / floor advance guard 유지
+- 기존 기술 선택 UI / master roster / scale baseline / 관리자 / 모바일 / 일반 대전 / AI 대전 / 관전 기능 유지
+
+TODO:
+
+- adventure_levelup_learnsets.json 전체 재정리
+- Gen2 포켓몬 adventure 데이터 무결성 검사
+- 데미지 공식 / 스탯 fallback 밸런스 검증
+- 전투 상태 디버거 UI 고도화
+
+## v6.18.21 PokeAPI Level-Up Learnset Review Export
+
+- PokeAPI 기준 `heartgold-soulsilver` version_group의 level-up 기술만 수집하는 검수 스크립트 추가
+- `machine` / `tutor` / `egg` / `event` / `level 0` 기술은 이번 level-up 검수 데이터에서 제외
+- 기존 `data/adventure_levelup_learnsets.json`은 덮어쓰지 않음
+- 게임 전투 로직 / 모험모드 로직은 수정하지 않음
+- 검수용 JSON / CSV / 샘플 CSV / unmapped report / validation summary 생성 경로를 분리
+- 미뇽, 피카츄, 케이시, 모래두지, 마릴, 코산호 등 주요 샘플 포켓몬의 레벨업 기술 검수 기반 마련
+
+생성/출력 파일:
+
+- `data/review_levelup_learnsets_hgss.json`
+- `data/review_levelup_learnsets_hgss.csv`
+- `data/review_levelup_learnsets_samples_hgss.csv`
+- `data/review_levelup_unmapped_report_hgss.json`
+- `data/review_levelup_validation_summary_hgss.txt`
+- `scripts/fetch_pokeapi_levelup_learnsets_review.js`
+
+주의:
+
+- 이 스크립트는 실행 환경에서 `https://pokeapi.co` DNS/네트워크 접근이 가능해야 실제 검수 데이터를 생성한다.
+- 네트워크 접근이 불가능한 환경에서는 preflight 단계에서 실패 보고서만 생성하고 종료한다.
+- 게임 연결은 사용자가 샘플 CSV를 확인한 뒤 다음 패치에서 진행한다.
+
+TODO:
+
+- 사용자가 샘플 CSV 검수
+- 검수 완료 후 `adventure_levelup_learnsets.json` 교체 패치 진행
+- 초기 기술 / 야생 기술 / 레벨업 UI를 새 level-up 데이터에 연결
+- TM / tutor / egg 기술 시스템은 별도 패치에서 검토
+
+
+## v6.18.22 Adventure HGSS Level-Up Learnset Apply + Move Coverage Implementation Patch
+
+- PokeAPI heartgold-soulsilver 기준 level-up 런셋을 게임용 `data/adventure_levelup_learnsets.json`에 적용했습니다.
+- 기존 `data/adventure_levelup_learnsets.json`은 `data/adventure_levelup_learnsets.backup_pre_v6.18.22.json`으로 보존했습니다.
+- TM / tutor / egg / event 기술은 레벨업 런셋에서 제외했고, level 0 기술도 이번 적용에서 제외했습니다.
+- HGSS level-up 런셋에 등장하는 기술을 게임 배틀엔진 기준으로 coverage audit 했습니다.
+- 구현 가능한 단순 공격기 / 상태이상 / 능력치 변화 / 회복 기술을 기존 move schema에 맞춰 추가했습니다.
+- 위험한 특수효과 기술은 deferred report에 남기고 게임 적용에서 제외했습니다.
+- 한글 기술명 매핑 누락을 보강하고 mapping gap report를 생성했습니다.
+- 저레벨 미뇽 용의파동, 저레벨 케이시 사이코키네시스, 저레벨 피카츄 번개, 모래두지 Lv8 지진 등 기존 오염 런셋 문제를 제거했습니다.
+- 스타팅 / 야생 / 레벨업 UI가 현재 레벨 이하 level-up 기술만 사용하도록 기존 guard를 유지했습니다.
+- 기존 enemy HP canonical reward guard / player faint guard / 관리자 / 모바일 / 일반 대전 / AI 대전 / 관전 기능을 유지했습니다.
+
+생성/갱신 파일:
+
+- `data/adventure_levelup_learnsets.json`
+- `data/adventure_levelup_learnsets.backup_pre_v6.18.22.json`
+- `data/review_hgss_move_coverage.csv`
+- `data/review_hgss_move_missing_simple_attacks.csv`
+- `data/review_hgss_move_deferred_special_effects.csv`
+- `data/review_hgss_move_korean_name_gaps.csv`
+- `data/review_hgss_move_apply_report.json`
+
+TODO:
+
+- deferred special effect 기술의 단계적 구현
+- TM / tutor / egg 별도 시스템 설계
+- level 0 기본기 정책 별도 정리
+- 기술 이펙트/애니메이션 매핑 고도화
+- 배틀엔진 특공/특방/명중률/회피율 확장 검토
+
+## v6.18.23 Adventure Smooth Startup + Roster JSON Response Guard Hotfix
+
+- 모험모드 시작 시 `/data/pokemon_master_gen1_2.json` 요청이 HTML/404를 반환해 JSON parse 오류가 발생하던 문제를 방어했습니다.
+- `pokemon_master_gen1_2.json`을 서버의 adventure data allowlist에 추가해 브라우저에서 JSON으로 응답되도록 보강했습니다.
+- master roster JSON fetch 시 `response.ok`와 `content-type`을 검증하는 안전 fetch guard를 추가했습니다.
+- JSON이 아닌 응답은 무리하게 파싱하지 않고 조용히 fallback 처리하도록 정리했습니다.
+- `[Adventure/Moves] level gate result` 등 반복 디버그 로그를 기본 비활성화했습니다.
+- `window.ADVENTURE_DEBUG_MOVES = true`일 때만 세부 기술 gate 로그가 출력되도록 변경했습니다.
+- 모험모드 시작 중 반복되는 level gate 계산에 최소 캐시를 적용했습니다.
+- 모험모드 시작 성능 측정 로그 `[Adventure/Startup] timing`을 추가했습니다.
+- 모험모드 버튼 클릭 직후 `모험 준비 중...` 상태 문구를 표시해 초기 응답성을 개선했습니다.
+- 기존 HGSS level-up 런셋, 기술 구현, enemy HP reward guard, player faint guard는 유지했습니다.
+- 기존 관리자 / 모바일 / 일반 대전 / AI 대전 / 관전 기능은 유지했습니다.
+
+TODO:
+
+- 모험모드 데이터 preloading 구조 정리
+- 관리자용 성능 디버거 UI 추가
+- 초기 진입 이미지/sprite lazy loading 최적화
+- level-up 기술 후보 캐시 영속화 검토
+
+## v6.18.24 Adventure Move Animation Fallback + Capture GrowthQueue Sequencing Hotfix
+
+- 일부 기술 사용 시 기술 연출/피격/HP 감소 표시가 생략되고 바로 보상으로 넘어가던 문제를 방어했습니다.
+- 염동력(confusion), 할퀴기(scratch), 꼬리흔들기류 변화기처럼 전용 이펙트가 없거나 약한 기술도 공통 fallback 연출을 거치도록 보강했습니다.
+- 변화기 이벤트에서 variation 이펙트가 탐지되었지만 실제 연출을 재생하지 않고 즉시 종료하던 흐름을 수정했습니다.
+- move animation / damage render 완료 전 reward phase로 진입하지 않도록 animation guard를 추가했습니다.
+- 포획 성공 후 EXP/레벨업/기술 배우기 UI가 끼어들어 다음 진행 callback이 유실될 수 있던 growthQueue 재진입 조건을 보강했습니다.
+- capture success → growthQueue → learnMove/replaceMove/evolution → postBattleContinuation 순서가 한 번만 이어지도록 continuation guard를 추가했습니다.
+- learnMove UI의 배운다/배우지 않는다/잊을 기술 선택 종료 경로에서 growthQueue가 계속 이어지도록 기존 흐름을 유지하면서 로그를 보강했습니다.
+- 기존 HGSS level-up 런셋, 원활함 패치, enemy HP canonical reward guard, player faint guard를 유지했습니다.
+
+TODO:
+
+- 타입별 전용 기술 이펙트 매핑 고도화
+- 보류 특수효과 기술의 단계적 구현
+- 전투 상태 디버거 UI에 animation/growthQueue/continuation 상태 표시 추가
+- 포획 연출 UX 개선

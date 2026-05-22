@@ -3418,16 +3418,28 @@
         if(ev.isStatusMove){
           const variationKey=variationEffectKeyFromMoveName(ev.moveName);
           if(variationKey){
-            await sleep(180);
+            if(attackerEl){
+              attackerEl.classList.add(isMine?"attack-up":"attack-down");
+              await sleep(Math.max(120, Math.floor(DELAY.lunge*.65)));
+              attackerEl.classList.remove("attack-up","attack-down");
+            } else {
+              await sleep(180);
+            }
+            await playVariationMoveEffect(variationKey, variationTargetFromMoveName(ev.moveName, ev.attacker, ev.defender));
+            await sleep(160);
             return;
           }
           const statusKind=statusFromMoveName(ev.moveName, ev.moveType);
           if(statusKind){
-            attackerEl.classList.add(isMine?"attack-up":"attack-down");
-            await sleep(DELAY.lunge);
-            attackerEl.classList.remove("attack-up","attack-down");
+            if(attackerEl){
+              attackerEl.classList.add(isMine?"attack-up":"attack-down");
+              await sleep(DELAY.lunge);
+              attackerEl.classList.remove("attack-up","attack-down");
+            } else {
+              await sleep(DELAY.lunge);
+            }
             if(isSingMoveName(ev.moveName)){
-              await playSpriteMoveEffect(ev.moveType, ev.attacker, ev.defender, ev.moveName);
+              await playSpriteMoveEffect(ev.moveType || "normal", ev.attacker, ev.defender, ev.moveName);
               await playStatusSpriteEffect(statusKind,"apply",ev.defender);
             } else {
               await playStatusSpriteEffect(statusKind,"apply",ev.defender);
@@ -3435,16 +3447,28 @@
             await sleep(120);
             return;
           }
-          // 변화기 전용 스프라이트가 없고 상태이상도 아닌 기술은
-          // 기존 화살표 이모지 연출을 표시하지 않는다.
+          // 전용 이펙트가 없는 변화기/신규 기술도 즉시 결과 처리하지 않고
+          // 최소 공통 연출을 거친다. 꼬리흔들기/구슬던지기류 스킵 방지.
+          if(attackerEl){
+            attackerEl.classList.add(isMine?"attack-up":"attack-down");
+            await sleep(Math.max(120, Math.floor(DELAY.lunge*.65)));
+            attackerEl.classList.remove("attack-up","attack-down");
+          } else {
+            await sleep(180);
+          }
+          await playSpriteMoveEffect(ev.moveType || "normal", ev.attacker, ev.defender, ev.moveName || "fallback", false);
           await sleep(180);
           return;
         }
         if(!ev.isMultiHit){
-          attackerEl.classList.add(isMine?"attack-up":"attack-down");
-          await sleep(DELAY.lunge);
-          attackerEl.classList.remove("attack-up","attack-down");
-          await playSpriteMoveEffect(ev.moveType, ev.attacker, ev.defender, ev.moveName, false);
+          if(attackerEl){
+            attackerEl.classList.add(isMine?"attack-up":"attack-down");
+            await sleep(DELAY.lunge);
+            attackerEl.classList.remove("attack-up","attack-down");
+          } else {
+            await sleep(DELAY.lunge);
+          }
+          await playSpriteMoveEffect(ev.moveType || "normal", ev.attacker, ev.defender, ev.moveName, false);
         }
         await sleep(120);
         return;

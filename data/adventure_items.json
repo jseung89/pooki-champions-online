@@ -116,5 +116,20 @@
     "healRatio": 1.0,
     "cureStatus": true,
     "ppRatio": 0.5
+  },
+  "evolutionStone": {
+    "name": "진화의돌",
+    "kind": "specialEvolution",
+    "specialEvolutionType": "stone"
+  },
+  "linkCable": {
+    "name": "연결의끈",
+    "kind": "specialEvolution",
+    "specialEvolutionType": "trade"
+  },
+  "evolutionLight": {
+    "name": "진화의빛",
+    "kind": "specialEvolution",
+    "specialEvolutionType": "universal"
   }
 }

@@ -1,59 +1,36 @@
 {
   "moves": [
     {
-      "id": "smallFlame",
-      "apiName": "ember",
-      "name": "작은불꽃",
-      "type": "fire",
-      "power": 35,
+      "id": "bugBite",
+      "apiName": "bug-bite",
+      "name": "벌레먹음",
+      "type": "bug",
+      "power": 60,
       "accuracy": 100,
-      "pp": 30,
-      "maxPp": 30
+      "pp": 20,
+      "maxPp": 20,
+      "priority": 0
     },
     {
-      "id": "bubble",
-      "apiName": "bubble",
-      "name": "거품",
-      "type": "water",
-      "power": 35,
+      "apiName": "bug-buzz",
+      "id": "bugBuzz",
+      "name": "벌레의야단법석",
+      "type": "bug",
+      "power": 90,
       "accuracy": 100,
-      "pp": 30,
-      "maxPp": 30
+      "pp": 10,
+      "maxPp": 10
     },
     {
-      "id": "absorb",
-      "apiName": "absorb",
-      "name": "흡수",
-      "type": "grass",
-      "power": 30,
-      "accuracy": 100,
-      "pp": 25,
-      "maxPp": 25,
-      "drain": 0.5
-    },
-    {
-      "id": "poisonSting",
-      "apiName": "poison-sting",
-      "name": "독침",
-      "type": "poison",
-      "power": 35,
-      "accuracy": 100,
-      "pp": 35,
-      "maxPp": 35,
-      "effect": {
-        "status": "poison",
-        "chance": 20
-      }
-    },
-    {
-      "id": "acid",
-      "apiName": "acid",
-      "name": "용해액",
-      "type": "poison",
+      "apiName": "fury-cutter",
+      "id": "furyCutter",
+      "name": "연속자르기",
+      "type": "bug",
       "power": 40,
-      "accuracy": 100,
-      "pp": 30,
-      "maxPp": 30
+      "accuracy": 95,
+      "highCrit": false,
+      "pp": 35,
+      "maxPp": 35
     },
     {
       "id": "leechLife",
@@ -65,6 +42,50 @@
       "pp": 25,
       "maxPp": 25,
       "drain": 0.5
+    },
+    {
+      "apiName": "megahorn",
+      "id": "megahorn",
+      "name": "메가혼",
+      "type": "bug",
+      "power": 120,
+      "accuracy": 85,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "id": "pinMissile",
+      "apiName": "pin-missile",
+      "name": "바늘미사일",
+      "type": "bug",
+      "power": 25,
+      "accuracy": 95,
+      "pp": 20,
+      "maxPp": 20,
+      "multiHit": {
+        "min": 2,
+        "max": 5
+      }
+    },
+    {
+      "apiName": "signal-beam",
+      "id": "signalBeam",
+      "name": "시그널빔",
+      "type": "bug",
+      "power": 75,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "silver-wind",
+      "id": "silverWind",
+      "name": "은빛바람",
+      "type": "bug",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
     },
     {
       "id": "stringShot",
@@ -80,6 +101,977 @@
         "stat": "speed",
         "amount": -1
       }
+    },
+    {
+      "apiName": "twineedle",
+      "id": "twineedle",
+      "name": "더블니들",
+      "type": "bug",
+      "power": 25,
+      "accuracy": 100,
+      "multiHit": {
+        "fixed": 2
+      },
+      "effect": {
+        "status": "poison",
+        "chance": 20
+      },
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "u-turn",
+      "id": "uTurn",
+      "name": "유턴",
+      "type": "bug",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "x-scissor",
+      "id": "xScissor",
+      "name": "시저크로스",
+      "type": "bug",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "assurance",
+      "id": "assurance",
+      "name": "승부굳히기",
+      "type": "dark",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "id": "bite",
+      "apiName": "bite",
+      "name": "물기",
+      "type": "dark",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "id": "crunch",
+      "apiName": "crunch",
+      "name": "깨물어부수기",
+      "type": "dark",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "dark-pulse",
+      "id": "darkPulse",
+      "name": "악의파동",
+      "type": "dark",
+      "power": 80,
+      "accuracy": 100,
+      "flinchChance": 20,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "fake-tears",
+      "id": "fakeTears",
+      "name": "거짓울음",
+      "type": "dark",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "enemy",
+        "stat": "defense",
+        "amount": -2
+      },
+      "tags": [
+        "utility"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "feint-attack",
+      "id": "feintAttack",
+      "name": "속여때리기",
+      "type": "dark",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "knock-off",
+      "id": "knockOff",
+      "name": "탁쳐서떨구기",
+      "type": "dark",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "night-slash",
+      "id": "nightSlash",
+      "name": "깜짝베기",
+      "type": "dark",
+      "power": 70,
+      "accuracy": 100,
+      "highCrit": true,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "punishment",
+      "id": "punishment",
+      "name": "혼내기",
+      "type": "dark",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "id": "pursuit",
+      "apiName": "pursuit",
+      "name": "따라가때리기",
+      "type": "dark",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "sucker-punch",
+      "id": "suckerPunch",
+      "name": "기습",
+      "type": "dark",
+      "power": 70,
+      "accuracy": 100,
+      "priority": 1,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "id": "dragonBreathLite",
+      "apiName": "dragon-breath",
+      "name": "용의숨결",
+      "type": "dragon",
+      "power": 45,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20,
+      "effect": {
+        "status": "paralyze",
+        "chance": 10
+      }
+    },
+    {
+      "apiName": "dragon-claw",
+      "id": "dragonClaw",
+      "name": "드래곤클로",
+      "type": "dragon",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "dragon-dance",
+      "id": "dragonDance",
+      "name": "용의춤",
+      "type": "dragon",
+      "power": 0,
+      "accuracy": 100,
+      "statChanges": [
+        {
+          "target": "self",
+          "stat": "attack",
+          "amount": 1
+        },
+        {
+          "target": "self",
+          "stat": "speed",
+          "amount": 1
+        }
+      ],
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "id": "dragonPulse",
+      "apiName": "dragon-pulse",
+      "name": "용의파동",
+      "type": "dragon",
+      "power": 85,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "dragon-rage",
+      "id": "dragonRage",
+      "name": "용의분노",
+      "type": "dragon",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "dragon-rush",
+      "id": "dragonRush",
+      "name": "드래곤다이브",
+      "type": "dragon",
+      "power": 100,
+      "accuracy": 75,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "outrage",
+      "id": "outrage",
+      "name": "역린",
+      "type": "dragon",
+      "power": 120,
+      "accuracy": 100,
+      "recoil": {
+        "ratio": 0.12
+      },
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "id": "twister",
+      "apiName": "twister",
+      "name": "회오리",
+      "type": "dragon",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "charge-beam",
+      "id": "chargeBeam",
+      "name": "차지빔",
+      "type": "electric",
+      "power": 50,
+      "accuracy": 90,
+      "effect": {
+        "status": "paralyze",
+        "chance": 10
+      },
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "discharge",
+      "id": "discharge",
+      "name": "방전",
+      "type": "electric",
+      "power": 80,
+      "accuracy": 100,
+      "effect": {
+        "status": "paralyze",
+        "chance": 10
+      },
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "id": "shockWave",
+      "apiName": "shock-wave",
+      "name": "전격파",
+      "type": "electric",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "spark",
+      "id": "spark",
+      "name": "스파크",
+      "type": "electric",
+      "power": 65,
+      "accuracy": 100,
+      "effect": {
+        "status": "paralyze",
+        "chance": 10
+      },
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "thunder",
+      "id": "thunder",
+      "name": "번개",
+      "type": "electric",
+      "power": 120,
+      "accuracy": 75,
+      "effect": {
+        "status": "paralyze",
+        "chance": 10
+      },
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "thunder-fang",
+      "id": "thunderFang",
+      "name": "번개엄니",
+      "type": "electric",
+      "power": 65,
+      "accuracy": 95,
+      "effect": {
+        "status": "paralyze",
+        "chance": 10
+      },
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "thunder-punch",
+      "id": "thunderPunch",
+      "name": "번개펀치",
+      "type": "electric",
+      "power": 75,
+      "accuracy": 100,
+      "effect": {
+        "status": "paralyze",
+        "chance": 10
+      },
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "thunder-shock",
+      "id": "thunderShock",
+      "name": "전기쇼크",
+      "type": "electric",
+      "power": 40,
+      "accuracy": 100,
+      "effect": {
+        "status": "paralyze",
+        "chance": 10
+      },
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "thunderWave",
+      "apiName": "thunder-wave",
+      "name": "전기자석파",
+      "type": "electric",
+      "power": 0,
+      "accuracy": 90,
+      "pp": 20,
+      "maxPp": 20,
+      "effect": {
+        "status": "paralyze",
+        "chance": 100
+      }
+    },
+    {
+      "id": "thunderbolt",
+      "apiName": "thunderbolt",
+      "name": "10만볼트",
+      "type": "electric",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15,
+      "effect": {
+        "status": "paralyze",
+        "chance": 10
+      }
+    },
+    {
+      "apiName": "zap-cannon",
+      "id": "zapCannon",
+      "name": "전자포",
+      "type": "electric",
+      "power": 120,
+      "accuracy": 50,
+      "effect": {
+        "status": "paralyze",
+        "chance": 10
+      },
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "charm",
+      "id": "charm",
+      "name": "애교부리기",
+      "type": "fairy",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "enemy",
+        "stat": "attack",
+        "amount": -2
+      },
+      "tags": [
+        "utility"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "id": "disarmingVoice",
+      "apiName": "disarming-voice",
+      "name": "차밍보이스",
+      "type": "fairy",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15,
+      "priority": 0
+    },
+    {
+      "id": "fairyWind",
+      "apiName": "fairy-wind",
+      "name": "요정의바람",
+      "type": "fairy",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 30,
+      "maxPp": 30
+    },
+    {
+      "apiName": "moonlight",
+      "id": "moonlight",
+      "name": "moonlight",
+      "type": "fairy",
+      "power": 0,
+      "accuracy": 100,
+      "heal": {
+        "target": "self",
+        "ratio": 0.33
+      },
+      "tags": [
+        "recovery"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "sweet-kiss",
+      "id": "sweetKiss",
+      "name": "sweet-kiss",
+      "type": "fairy",
+      "power": 0,
+      "accuracy": 75,
+      "statChange": {
+        "target": "enemy",
+        "stat": "attack",
+        "amount": -1
+      },
+      "tags": [
+        "utility"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "aura-sphere",
+      "id": "auraSphere",
+      "name": "파동탄",
+      "type": "fighting",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "id": "bulkUp",
+      "apiName": "bulk-up",
+      "name": "벌크업",
+      "type": "fighting",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20,
+      "selfStatChanges": {
+        "attack": 1,
+        "defense": 1
+      }
+    },
+    {
+      "apiName": "cross-chop",
+      "id": "crossChop",
+      "name": "크로스촙",
+      "type": "fighting",
+      "power": 100,
+      "accuracy": 80,
+      "highCrit": true,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "id": "doubleKick",
+      "apiName": "double-kick",
+      "name": "두번차기",
+      "type": "fighting",
+      "power": 30,
+      "accuracy": 100,
+      "pp": 30,
+      "maxPp": 30,
+      "multiHit": {
+        "min": 2,
+        "max": 2
+      }
+    },
+    {
+      "id": "drainPunch",
+      "apiName": "drain-punch",
+      "name": "드레인펀치",
+      "type": "fighting",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10,
+      "drain": 0.5
+    },
+    {
+      "apiName": "dynamic-punch",
+      "id": "dynamicPunch",
+      "name": "폭발펀치",
+      "type": "fighting",
+      "power": 100,
+      "accuracy": 50,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "hammer-arm",
+      "id": "hammerArm",
+      "name": "암해머",
+      "type": "fighting",
+      "power": 100,
+      "accuracy": 90,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "high-jump-kick",
+      "id": "highJumpKick",
+      "name": "high-jump-kick",
+      "type": "fighting",
+      "power": 130,
+      "accuracy": 90,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "jump-kick",
+      "id": "jumpKick",
+      "name": "점프킥",
+      "type": "fighting",
+      "power": 100,
+      "accuracy": 95,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "karate-chop",
+      "id": "karateChop",
+      "name": "태권당수",
+      "type": "fighting",
+      "power": 70,
+      "accuracy": 100,
+      "highCrit": true,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "id": "lowKick",
+      "apiName": "low-kick",
+      "name": "안다리걸기",
+      "type": "fighting",
+      "power": 45,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "mach-punch",
+      "id": "machPunch",
+      "name": "마하펀치",
+      "type": "fighting",
+      "power": 40,
+      "accuracy": 100,
+      "priority": 1,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "powerUpPunch",
+      "apiName": "power-up-punch",
+      "name": "그로우펀치",
+      "type": "fighting",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20,
+      "selfStatAfterHit": {
+        "stat": "attack",
+        "amount": 1
+      }
+    },
+    {
+      "apiName": "revenge",
+      "id": "revenge",
+      "name": "리벤지",
+      "type": "fighting",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "rolling-kick",
+      "id": "rollingKick",
+      "name": "돌려차기",
+      "type": "fighting",
+      "power": 60,
+      "accuracy": 85,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "seismic-toss",
+      "id": "seismicToss",
+      "name": "지구던지기",
+      "type": "fighting",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "sky-uppercut",
+      "id": "skyUppercut",
+      "name": "sky-uppercut",
+      "type": "fighting",
+      "power": 85,
+      "accuracy": 90,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "submission",
+      "id": "submission",
+      "name": "지옥의바퀴",
+      "type": "fighting",
+      "power": 80,
+      "accuracy": 80,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "superpower",
+      "id": "superpower",
+      "name": "엄청난힘",
+      "type": "fighting",
+      "power": 120,
+      "accuracy": 100,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "triple-kick",
+      "id": "tripleKick",
+      "name": "트리플킥",
+      "type": "fighting",
+      "power": 20,
+      "accuracy": 90,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "vacuum-wave",
+      "id": "vacuumWave",
+      "name": "진공파",
+      "type": "fighting",
+      "power": 40,
+      "accuracy": 100,
+      "priority": 1,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "vital-throw",
+      "id": "vitalThrow",
+      "name": "받아던지기",
+      "type": "fighting",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "wake-up-slap",
+      "id": "wakeUpSlap",
+      "name": "잠깨움뺨치기",
+      "type": "fighting",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "blaze-kick",
+      "id": "blazeKick",
+      "name": "블레이즈킥",
+      "type": "fire",
+      "power": 85,
+      "accuracy": 90,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      },
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "id": "smallFlame",
+      "apiName": "ember",
+      "name": "작은불꽃",
+      "type": "fire",
+      "power": 35,
+      "accuracy": 100,
+      "pp": 30,
+      "maxPp": 30
+    },
+    {
+      "apiName": "eruption",
+      "id": "eruption",
+      "name": "분화",
+      "type": "fire",
+      "power": 120,
+      "accuracy": 100,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      },
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "fire-blast",
+      "id": "fireBlast",
+      "name": "불대문자",
+      "type": "fire",
+      "power": 110,
+      "accuracy": 85,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      },
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "fire-fang",
+      "id": "fireFang",
+      "name": "불꽃엄니",
+      "type": "fire",
+      "power": 65,
+      "accuracy": 95,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      },
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "fire-punch",
+      "id": "firePunch",
+      "name": "불꽃펀치",
+      "type": "fire",
+      "power": 75,
+      "accuracy": 100,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      },
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "fire-spin",
+      "id": "fireSpin",
+      "name": "회오리불꽃",
+      "type": "fire",
+      "power": 35,
+      "accuracy": 85,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      },
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "flameCharge",
+      "apiName": "flame-charge",
+      "name": "니트로차지",
+      "type": "fire",
+      "power": 50,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20,
+      "selfStatAfterHit": {
+        "stat": "speed",
+        "amount": 1
+      }
+    },
+    {
+      "id": "flameWheel",
+      "apiName": "flame-wheel",
+      "name": "화염자동차",
+      "type": "fire",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      }
+    },
+    {
+      "id": "flamethrower",
+      "apiName": "flamethrower",
+      "name": "화염방사",
+      "type": "fire",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      }
+    },
+    {
+      "apiName": "heat-wave",
+      "id": "heatWave",
+      "name": "열풍",
+      "type": "fire",
+      "power": 95,
+      "accuracy": 90,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      },
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "lava-plume",
+      "id": "lavaPlume",
+      "name": "분연",
+      "type": "fire",
+      "power": 80,
+      "accuracy": 100,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      },
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "sacred-fire",
+      "id": "sacredFire",
+      "name": "성스러운불꽃",
+      "type": "fire",
+      "power": 100,
+      "accuracy": 95,
+      "effect": {
+        "status": "burn",
+        "chance": 10
+      },
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "id": "aerialAce",
+      "apiName": "aerial-ace",
+      "name": "제비반환",
+      "type": "flying",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "aeroblast",
+      "id": "aeroblast",
+      "name": "에어로블라스트",
+      "type": "flying",
+      "power": 100,
+      "accuracy": 95,
+      "highCrit": true,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "air-cutter",
+      "id": "airCutter",
+      "name": "에어컷터",
+      "type": "flying",
+      "power": 60,
+      "accuracy": 95,
+      "highCrit": true,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "air-slash",
+      "id": "airSlash",
+      "name": "에어슬래시",
+      "type": "flying",
+      "power": 75,
+      "accuracy": 95,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "bounce",
+      "id": "bounce",
+      "name": "bounce",
+      "type": "flying",
+      "power": 85,
+      "accuracy": 85,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "drill-peck",
+      "id": "drillPeck",
+      "name": "회전부리",
+      "type": "flying",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
     },
     {
       "id": "gust",
@@ -102,29 +1094,61 @@
       "maxPp": 35
     },
     {
-      "id": "mudSlap",
-      "apiName": "mud-slap",
-      "name": "진흙뿌리기",
-      "type": "ground",
+      "apiName": "pluck",
+      "id": "pluck",
+      "name": "쪼아대기",
+      "type": "flying",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "roost",
+      "id": "roost",
+      "name": "날개쉬기",
+      "type": "flying",
+      "power": 0,
+      "accuracy": 100,
+      "heal": {
+        "target": "self",
+        "ratio": 0.33
+      },
+      "tags": [
+        "recovery"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "sky-attack",
+      "id": "skyAttack",
+      "name": "불새",
+      "type": "flying",
+      "power": 140,
+      "accuracy": 90,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "id": "wingAttack",
+      "apiName": "wing-attack",
+      "name": "날개치기",
+      "type": "flying",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "astonish",
+      "apiName": "astonish",
+      "name": "놀래키기",
+      "type": "ghost",
       "power": 35,
       "accuracy": 100,
       "pp": 25,
-      "maxPp": 25,
-      "statChange": {
-        "target": "opponent",
-        "stat": "accuracy",
-        "amount": -1
-      }
-    },
-    {
-      "id": "lowKick",
-      "apiName": "low-kick",
-      "name": "안다리걸기",
-      "type": "fighting",
-      "power": 45,
-      "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20
+      "maxPp": 25
     },
     {
       "id": "lick",
@@ -141,24 +1165,530 @@
       }
     },
     {
-      "id": "astonish",
-      "apiName": "astonish",
-      "name": "놀래키기",
+      "apiName": "ominous-wind",
+      "id": "ominousWind",
+      "name": "괴상한바람",
       "type": "ghost",
-      "power": 35,
+      "power": 60,
       "accuracy": 100,
       "pp": 25,
       "maxPp": 25
     },
     {
-      "id": "pursuit",
-      "apiName": "pursuit",
-      "name": "따라가때리기",
-      "type": "dark",
-      "power": 40,
+      "id": "shadowBall",
+      "apiName": "shadow-ball",
+      "name": "섀도볼",
+      "type": "ghost",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "id": "shadowPunch",
+      "apiName": "shadow-punch",
+      "name": "섀도펀치",
+      "type": "ghost",
+      "power": 60,
       "accuracy": 100,
       "pp": 20,
       "maxPp": 20
+    },
+    {
+      "apiName": "shadow-sneak",
+      "id": "shadowSneak",
+      "name": "야습",
+      "type": "ghost",
+      "power": 40,
+      "accuracy": 100,
+      "priority": 1,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "absorb",
+      "apiName": "absorb",
+      "name": "흡수",
+      "type": "grass",
+      "power": 30,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25,
+      "drain": 0.5
+    },
+    {
+      "id": "bulletSeed",
+      "apiName": "bullet-seed",
+      "name": "씨기관총",
+      "type": "grass",
+      "power": 25,
+      "accuracy": 100,
+      "pp": 30,
+      "maxPp": 30,
+      "multiHit": {
+        "min": 2,
+        "max": 5
+      }
+    },
+    {
+      "apiName": "cotton-spore",
+      "id": "cottonSpore",
+      "name": "목화포자",
+      "type": "grass",
+      "power": 0,
+      "accuracy": 85,
+      "statChange": {
+        "target": "enemy",
+        "stat": "speed",
+        "amount": -2
+      },
+      "tags": [
+        "utility"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "giga-drain",
+      "id": "gigaDrain",
+      "name": "기가드레인",
+      "type": "grass",
+      "power": 75,
+      "accuracy": 100,
+      "drain": {
+        "ratio": 0.5
+      },
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "grass-whistle",
+      "id": "grassWhistle",
+      "name": "풀피리",
+      "type": "grass",
+      "power": 0,
+      "accuracy": 55,
+      "statusMove": {
+        "target": "enemy",
+        "status": "sleep"
+      },
+      "tags": [
+        "status"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "leaf-blade",
+      "id": "leafBlade",
+      "name": "리프블레이드",
+      "type": "grass",
+      "power": 90,
+      "accuracy": 100,
+      "highCrit": true,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "leaf-storm",
+      "id": "leafStorm",
+      "name": "리프스톰",
+      "type": "grass",
+      "power": 130,
+      "accuracy": 90,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "id": "leechSeed",
+      "apiName": "leech-seed",
+      "name": "씨뿌리기",
+      "type": "grass",
+      "power": 0,
+      "accuracy": 90,
+      "pp": 10,
+      "maxPp": 10,
+      "statChange": {
+        "target": "enemy",
+        "stat": "defense",
+        "amount": -1
+      },
+      "tags": [
+        "utility",
+        "safe-simplified"
+      ]
+    },
+    {
+      "apiName": "magical-leaf",
+      "id": "magicalLeaf",
+      "name": "메지컬리프",
+      "type": "grass",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "id": "megaDrain",
+      "apiName": "mega-drain",
+      "name": "메가드레인",
+      "type": "grass",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15,
+      "drain": 0.5
+    },
+    {
+      "apiName": "petal-dance",
+      "id": "petalDance",
+      "name": "꽃잎댄스",
+      "type": "grass",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "power-whip",
+      "id": "powerWhip",
+      "name": "파워휩",
+      "type": "grass",
+      "power": 120,
+      "accuracy": 85,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "id": "razorLeaf",
+      "apiName": "razor-leaf",
+      "name": "잎날가르기",
+      "type": "grass",
+      "power": 55,
+      "accuracy": 95,
+      "pp": 25,
+      "maxPp": 25,
+      "priority": 0
+    },
+    {
+      "apiName": "seed-bomb",
+      "id": "seedBomb",
+      "name": "씨폭탄",
+      "type": "grass",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "sleep-powder",
+      "id": "sleepPowder",
+      "name": "수면가루",
+      "type": "grass",
+      "power": 0,
+      "accuracy": 55,
+      "statusMove": {
+        "target": "enemy",
+        "status": "sleep"
+      },
+      "tags": [
+        "status"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "solar-beam",
+      "id": "solarBeam",
+      "name": "솔라빔",
+      "type": "grass",
+      "power": 120,
+      "accuracy": 100,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "spore",
+      "id": "spore",
+      "name": "버섯포자",
+      "type": "grass",
+      "power": 0,
+      "accuracy": 100,
+      "statusMove": {
+        "target": "enemy",
+        "status": "sleep"
+      },
+      "tags": [
+        "status"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "stun-spore",
+      "id": "stunSpore",
+      "name": "저리가루",
+      "type": "grass",
+      "power": 0,
+      "accuracy": 75,
+      "statusMove": {
+        "target": "enemy",
+        "status": "paralyze"
+      },
+      "tags": [
+        "status"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "synthesis",
+      "id": "synthesis",
+      "name": "광합성",
+      "type": "grass",
+      "power": 0,
+      "accuracy": 100,
+      "heal": {
+        "target": "self",
+        "ratio": 0.33
+      },
+      "tags": [
+        "recovery"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "vine-whip",
+      "id": "vineWhip",
+      "name": "덩굴채찍",
+      "type": "grass",
+      "power": 45,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "bone-club",
+      "id": "boneClub",
+      "name": "뼈다귀치기",
+      "type": "ground",
+      "power": 65,
+      "accuracy": 85,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "bonemerang",
+      "id": "bonemerang",
+      "name": "뼈다귀부메랑",
+      "type": "ground",
+      "power": 50,
+      "accuracy": 90,
+      "multiHit": {
+        "fixed": 2
+      },
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "dig",
+      "id": "dig",
+      "name": "구멍파기",
+      "type": "ground",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "earth-power",
+      "id": "earthPower",
+      "name": "대지의힘",
+      "type": "ground",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "id": "earthquake",
+      "apiName": "earthquake",
+      "name": "지진",
+      "type": "ground",
+      "power": 100,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "magnitude",
+      "id": "magnitude",
+      "name": "매그니튜드",
+      "type": "ground",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "id": "mudBomb",
+      "apiName": "mud-bomb",
+      "name": "진흙폭탄",
+      "type": "ground",
+      "power": 65,
+      "accuracy": 85,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "mud-shot",
+      "id": "mudShot",
+      "name": "머드숏",
+      "type": "ground",
+      "power": 55,
+      "accuracy": 95,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "id": "mudSlap",
+      "apiName": "mud-slap",
+      "name": "진흙뿌리기",
+      "type": "ground",
+      "power": 35,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25,
+      "statChange": {
+        "target": "opponent",
+        "stat": "accuracy",
+        "amount": -1
+      }
+    },
+    {
+      "id": "sandAttack",
+      "apiName": "sand-attack",
+      "name": "모래뿌리기",
+      "type": "ground",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20,
+      "statChange": {
+        "target": "enemy",
+        "stat": "attack",
+        "amount": -1
+      },
+      "tags": [
+        "utility",
+        "safe-simplified"
+      ]
+    },
+    {
+      "apiName": "sand-tomb",
+      "id": "sandTomb",
+      "name": "sand-tomb",
+      "type": "ground",
+      "power": 35,
+      "accuracy": 85,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "aurora-beam",
+      "id": "auroraBeam",
+      "name": "오로라빔",
+      "type": "ice",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "avalanche",
+      "id": "avalanche",
+      "name": "눈사태",
+      "type": "ice",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "blizzard",
+      "id": "blizzard",
+      "name": "눈보라",
+      "type": "ice",
+      "power": 110,
+      "accuracy": 70,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "id": "iceBeam",
+      "apiName": "ice-beam",
+      "name": "냉동빔",
+      "type": "ice",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "ice-fang",
+      "id": "iceFang",
+      "name": "얼음엄니",
+      "type": "ice",
+      "power": 65,
+      "accuracy": 95,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "ice-punch",
+      "id": "icePunch",
+      "name": "냉동펀치",
+      "type": "ice",
+      "power": 75,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "id": "iceShard",
+      "apiName": "ice-shard",
+      "name": "얼음뭉치",
+      "type": "ice",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 30,
+      "maxPp": 30,
+      "priority": 1
+    },
+    {
+      "id": "icicleSpear",
+      "apiName": "icicle-spear",
+      "name": "고드름침",
+      "type": "ice",
+      "power": 25,
+      "accuracy": 100,
+      "pp": 30,
+      "maxPp": 30,
+      "multiHit": {
+        "min": 2,
+        "max": 5
+      }
+    },
+    {
+      "apiName": "icy-wind",
+      "id": "icyWind",
+      "name": "얼다바람",
+      "type": "ice",
+      "power": 55,
+      "accuracy": 95,
+      "pp": 25,
+      "maxPp": 25
     },
     {
       "id": "powderSnow",
@@ -175,10 +1705,454 @@
       }
     },
     {
-      "id": "iceShard",
-      "apiName": "ice-shard",
-      "name": "얼음뭉치",
-      "type": "ice",
+      "apiName": "barrage",
+      "id": "barrage",
+      "name": "구슬던지기",
+      "type": "normal",
+      "power": 15,
+      "accuracy": 85,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "bind",
+      "apiName": "bind",
+      "name": "조이기",
+      "type": "normal",
+      "power": 35,
+      "accuracy": 85,
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "comet-punch",
+      "id": "cometPunch",
+      "name": "연속펀치",
+      "type": "normal",
+      "power": 18,
+      "accuracy": 85,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "constrict",
+      "apiName": "constrict",
+      "name": "휘감기",
+      "type": "normal",
+      "power": 25,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "defense-curl",
+      "id": "defenseCurl",
+      "name": "웅크리기",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "self",
+        "stat": "defense",
+        "amount": 1
+      },
+      "tags": [
+        "utility"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "dizzy-punch",
+      "id": "dizzyPunch",
+      "name": "잼잼펀치",
+      "type": "normal",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "double-edge",
+      "id": "doubleEdge",
+      "name": "이판사판태클",
+      "type": "normal",
+      "power": 120,
+      "accuracy": 100,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "double-slap",
+      "id": "doubleSlap",
+      "name": "연속뺨치기",
+      "type": "normal",
+      "power": 15,
+      "accuracy": 85,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "doubleTeam",
+      "apiName": "double-team",
+      "name": "그림자분신",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15,
+      "statChange": {
+        "target": "self",
+        "stat": "speed",
+        "amount": 1
+      },
+      "tags": [
+        "utility",
+        "safe-simplified"
+      ]
+    },
+    {
+      "apiName": "egg-bomb",
+      "id": "eggBomb",
+      "name": "알폭탄",
+      "type": "normal",
+      "power": 100,
+      "accuracy": 75,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "fake-out",
+      "id": "fakeOut",
+      "name": "속이다",
+      "type": "normal",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "feint",
+      "id": "feint",
+      "name": "페인트",
+      "type": "normal",
+      "power": 50,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "id": "focusEnergy",
+      "apiName": "focus-energy",
+      "name": "기충전",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20,
+      "statChange": {
+        "target": "self",
+        "stat": "attack",
+        "amount": 1
+      },
+      "tags": [
+        "setup",
+        "safe-simplified"
+      ]
+    },
+    {
+      "apiName": "fury-attack",
+      "id": "furyAttack",
+      "name": "마구찌르기",
+      "type": "normal",
+      "power": 15,
+      "accuracy": 85,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "fury-swipes",
+      "id": "furySwipes",
+      "name": "마구할퀴기",
+      "type": "normal",
+      "power": 18,
+      "accuracy": 80,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "giga-impact",
+      "id": "gigaImpact",
+      "name": "기가임팩트",
+      "type": "normal",
+      "power": 150,
+      "accuracy": 90,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "glare",
+      "id": "glare",
+      "name": "뱀눈초리",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 75,
+      "statusMove": {
+        "target": "enemy",
+        "status": "paralyze"
+      },
+      "tags": [
+        "status"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "growl",
+      "id": "growl",
+      "name": "울음소리",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "enemy",
+        "stat": "attack",
+        "amount": -1
+      },
+      "tags": [
+        "utility"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "growth",
+      "id": "growth",
+      "name": "성장",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "self",
+        "stat": "attack",
+        "amount": 1
+      },
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "harden",
+      "id": "harden",
+      "name": "방어태세",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "self",
+        "stat": "defense",
+        "amount": 1
+      },
+      "tags": [
+        "utility"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "headbutt",
+      "id": "headbutt",
+      "name": "박치기",
+      "type": "normal",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "hidden-power",
+      "id": "hiddenPower",
+      "name": "잠재파워",
+      "type": "normal",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "horn-attack",
+      "id": "hornAttack",
+      "name": "뿔찌르기",
+      "type": "normal",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "howl",
+      "id": "howl",
+      "name": "멀리짖기",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "self",
+        "stat": "attack",
+        "amount": 1
+      },
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "hyper-fang",
+      "id": "hyperFang",
+      "name": "필살앞니",
+      "type": "normal",
+      "power": 80,
+      "accuracy": 90,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "last-resort",
+      "id": "lastResort",
+      "name": "뒀다쓰기",
+      "type": "normal",
+      "power": 130,
+      "accuracy": 100,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "leer",
+      "id": "leer",
+      "name": "째려보기",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "enemy",
+        "stat": "defense",
+        "amount": -1
+      },
+      "tags": [
+        "utility"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "lovely-kiss",
+      "id": "lovelyKiss",
+      "name": "악마의키스",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 75,
+      "statusMove": {
+        "target": "enemy",
+        "status": "sleep"
+      },
+      "tags": [
+        "status"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "mega-kick",
+      "id": "megaKick",
+      "name": "메가톤킥",
+      "type": "normal",
+      "power": 120,
+      "accuracy": 75,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "mega-punch",
+      "id": "megaPunch",
+      "name": "메가톤펀치",
+      "type": "normal",
+      "power": 80,
+      "accuracy": 85,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "milk-drink",
+      "id": "milkDrink",
+      "name": "우유마시기",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "heal": {
+        "target": "self",
+        "ratio": 0.33
+      },
+      "tags": [
+        "recovery"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "morning-sun",
+      "id": "morningSun",
+      "name": "morning-sun",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "heal": {
+        "target": "self",
+        "ratio": 0.33
+      },
+      "tags": [
+        "recovery"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "natural-gift",
+      "id": "naturalGift",
+      "name": "자연의은혜",
+      "type": "normal",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "pay-day",
+      "id": "payDay",
+      "name": "고양이돈받기",
+      "type": "normal",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "pound",
+      "id": "pound",
+      "name": "막치기",
+      "type": "normal",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "quickAttack",
+      "apiName": "quick-attack",
+      "name": "전광석화",
+      "type": "normal",
       "power": 40,
       "accuracy": 100,
       "pp": 30,
@@ -186,73 +2160,50 @@
       "priority": 1
     },
     {
-      "id": "twister",
-      "apiName": "twister",
-      "name": "회오리",
-      "type": "dragon",
-      "power": 40,
+      "id": "rapidSpin",
+      "apiName": "rapid-spin",
+      "name": "고속스핀",
+      "type": "normal",
+      "power": 50,
       "accuracy": 100,
       "pp": 20,
       "maxPp": 20
     },
     {
-      "id": "dragonBreathLite",
-      "apiName": "dragon-breath",
-      "name": "용의숨결",
-      "type": "dragon",
-      "power": 45,
+      "apiName": "recover",
+      "id": "recover",
+      "name": "HP회복",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "heal": {
+        "target": "self",
+        "ratio": 0.33
+      },
+      "tags": [
+        "recovery"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "id": "roar",
+      "apiName": "roar",
+      "name": "울부짖기",
+      "type": "normal",
+      "power": 0,
       "accuracy": 100,
       "pp": 20,
       "maxPp": 20,
-      "effect": {
-        "status": "paralyze",
-        "chance": 10
-      }
-    },
-    {
-      "id": "metalClaw",
-      "apiName": "metal-claw",
-      "name": "메탈클로",
-      "type": "steel",
-      "power": 50,
-      "accuracy": 95,
-      "pp": 25,
-      "maxPp": 25
-    },
-    {
-      "id": "fairyWind",
-      "apiName": "fairy-wind",
-      "name": "요정의바람",
-      "type": "fairy",
-      "power": 40,
-      "accuracy": 100,
-      "pp": 30,
-      "maxPp": 30
-    },
-    {
-      "id": "tailWhip",
-      "apiName": "tail-whip",
-      "name": "꼬리흔들기",
-      "type": "normal",
-      "power": 0,
-      "accuracy": 100,
-      "pp": 30,
-      "maxPp": 30,
       "statChange": {
-        "target": "opponent",
-        "stat": "defense",
+        "target": "enemy",
+        "stat": "attack",
         "amount": -1
-      }
-    },
-    {
-      "id": "smokescreen",
-      "apiName": "smokescreen",
-      "name": "연막",
-      "type": "normal",
-      "power": 0,
-      "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20
+      },
+      "tags": [
+        "utility",
+        "safe-simplified"
+      ]
     },
     {
       "id": "scaryFace",
@@ -270,6 +2221,16 @@
       }
     },
     {
+      "apiName": "scratch",
+      "id": "scratch",
+      "name": "할퀴기",
+      "type": "normal",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
       "id": "screech",
       "apiName": "screech",
       "name": "싫은소리",
@@ -285,32 +2246,448 @@
       }
     },
     {
-      "id": "thunderWave",
-      "apiName": "thunder-wave",
-      "name": "전기자석파",
-      "type": "electric",
+      "apiName": "sharpen",
+      "id": "sharpen",
+      "name": "각지기",
+      "type": "normal",
       "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "self",
+        "stat": "attack",
+        "amount": 1
+      },
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "sing",
+      "id": "sing",
+      "name": "노래하기",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 50,
+      "statusMove": {
+        "target": "enemy",
+        "status": "sleep"
+      },
+      "tags": [
+        "status"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "skull-bash",
+      "id": "skullBash",
+      "name": "로케트박치기",
+      "type": "normal",
+      "power": 100,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "slack-off",
+      "id": "slackOff",
+      "name": "slack-off",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "heal": {
+        "target": "self",
+        "ratio": 0.33
+      },
+      "tags": [
+        "recovery"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "slam",
+      "id": "slam",
+      "name": "힘껏치기",
+      "type": "normal",
+      "power": 80,
+      "accuracy": 75,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "slash",
+      "id": "slash",
+      "name": "베어가르기",
+      "type": "normal",
+      "power": 70,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "id": "smokescreen",
+      "apiName": "smokescreen",
+      "name": "연막",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "snore",
+      "id": "snore",
+      "name": "코골기",
+      "type": "normal",
+      "power": 50,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "soft-boiled",
+      "id": "softBoiled",
+      "name": "알낳기",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "heal": {
+        "target": "self",
+        "ratio": 0.33
+      },
+      "tags": [
+        "recovery"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "spike-cannon",
+      "id": "spikeCannon",
+      "name": "가시대포",
+      "type": "normal",
+      "power": 20,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "splash",
+      "apiName": "splash",
+      "name": "튀어오르기",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 40,
+      "maxPp": 40,
+      "statChange": {
+        "target": "self",
+        "stat": "speed",
+        "amount": 0
+      },
+      "tags": [
+        "utility",
+        "no-op"
+      ]
+    },
+    {
+      "apiName": "stomp",
+      "id": "stomp",
+      "name": "짓밟기",
+      "type": "normal",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "super-fang",
+      "id": "superFang",
+      "name": "분노의앞니",
+      "type": "normal",
+      "power": 1,
       "accuracy": 90,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "sweetScent",
+      "apiName": "sweet-scent",
+      "name": "달콤한향기",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
       "pp": 20,
       "maxPp": 20,
-      "effect": {
-        "status": "paralyze",
-        "chance": 100
+      "statChange": {
+        "target": "enemy",
+        "stat": "defense",
+        "amount": -1
+      },
+      "tags": [
+        "utility",
+        "safe-simplified"
+      ]
+    },
+    {
+      "id": "swift",
+      "apiName": "swift",
+      "name": "스피드스타",
+      "type": "normal",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "id": "swordsDance",
+      "apiName": "swords-dance",
+      "name": "칼춤",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20,
+      "selfStat": {
+        "stat": "attack",
+        "amount": 2
       }
     },
     {
-      "id": "hypnosis",
-      "apiName": "hypnosis",
-      "name": "최면술",
-      "type": "psychic",
+      "apiName": "tackle",
+      "id": "tackle",
+      "name": "몸통박치기",
+      "type": "normal",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "tailWhip",
+      "apiName": "tail-whip",
+      "name": "꼬리흔들기",
+      "type": "normal",
       "power": 0,
-      "accuracy": 60,
+      "accuracy": 100,
+      "pp": 30,
+      "maxPp": 30,
+      "statChange": {
+        "target": "opponent",
+        "stat": "defense",
+        "amount": -1
+      }
+    },
+    {
+      "apiName": "take-down",
+      "id": "takeDown",
+      "name": "돌진",
+      "type": "normal",
+      "power": 90,
+      "accuracy": 85,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "thrash",
+      "id": "thrash",
+      "name": "난동부리기",
+      "type": "normal",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "tri-attack",
+      "id": "triAttack",
+      "name": "트라이어택",
+      "type": "normal",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "uproar",
+      "id": "uproar",
+      "name": "소란피기",
+      "type": "normal",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "vice-grip",
+      "id": "viceGrip",
+      "name": "찝기",
+      "type": "normal",
+      "power": 55,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "weather-ball",
+      "id": "weatherBall",
+      "name": "웨더볼",
+      "type": "normal",
+      "power": 50,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "id": "whirlwind",
+      "apiName": "whirlwind",
+      "name": "날려버리기",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 100,
       "pp": 20,
       "maxPp": 20,
+      "statChange": {
+        "target": "enemy",
+        "stat": "attack",
+        "amount": -1
+      },
+      "tags": [
+        "utility",
+        "safe-simplified"
+      ]
+    },
+    {
+      "id": "wrap",
+      "apiName": "wrap",
+      "name": "김밥말이",
+      "type": "normal",
+      "power": 35,
+      "accuracy": 90,
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "yawn",
+      "id": "yawn",
+      "name": "하품",
+      "type": "normal",
+      "power": 0,
+      "accuracy": 85,
+      "statusMove": {
+        "target": "enemy",
+        "status": "sleep"
+      },
+      "tags": [
+        "status"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "id": "acid",
+      "apiName": "acid",
+      "name": "용해액",
+      "type": "poison",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 30,
+      "maxPp": 30
+    },
+    {
+      "apiName": "acid-armor",
+      "id": "acidArmor",
+      "name": "녹기",
+      "type": "poison",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "self",
+        "stat": "defense",
+        "amount": 2
+      },
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "cross-poison",
+      "id": "crossPoison",
+      "name": "크로스포이즌",
+      "type": "poison",
+      "power": 70,
+      "accuracy": 100,
       "effect": {
-        "status": "sleep",
-        "chance": 100
-      }
+        "status": "poison",
+        "chance": 20
+      },
+      "highCrit": true,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "gunk-shot",
+      "id": "gunkShot",
+      "name": "더스트슈트",
+      "type": "poison",
+      "power": 120,
+      "accuracy": 80,
+      "effect": {
+        "status": "poison",
+        "chance": 20
+      },
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "poison-fang",
+      "id": "poisonFang",
+      "name": "독엄니",
+      "type": "poison",
+      "power": 50,
+      "accuracy": 100,
+      "effect": {
+        "status": "poison",
+        "chance": 20
+      },
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "poison-gas",
+      "id": "poisonGas",
+      "name": "독가스",
+      "type": "poison",
+      "power": 0,
+      "accuracy": 90,
+      "statusMove": {
+        "target": "enemy",
+        "status": "poison"
+      },
+      "tags": [
+        "status"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "poison-jab",
+      "id": "poisonJab",
+      "name": "독찌르기",
+      "type": "poison",
+      "power": 80,
+      "accuracy": 100,
+      "effect": {
+        "status": "poison",
+        "chance": 20
+      },
+      "pp": 15,
+      "maxPp": 15
     },
     {
       "id": "poisonPowder",
@@ -327,60 +2704,331 @@
       }
     },
     {
-      "id": "doubleKick",
-      "apiName": "double-kick",
-      "name": "두번차기",
-      "type": "fighting",
+      "id": "poisonSting",
+      "apiName": "poison-sting",
+      "name": "독침",
+      "type": "poison",
+      "power": 35,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35,
+      "effect": {
+        "status": "poison",
+        "chance": 20
+      }
+    },
+    {
+      "apiName": "sludge",
+      "id": "sludge",
+      "name": "오물공격",
+      "type": "poison",
+      "power": 65,
+      "accuracy": 100,
+      "effect": {
+        "status": "poison",
+        "chance": 20
+      },
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "sludge-bomb",
+      "id": "sludgeBomb",
+      "name": "오물폭탄",
+      "type": "poison",
+      "power": 90,
+      "accuracy": 100,
+      "effect": {
+        "status": "poison",
+        "chance": 20
+      },
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "smog",
+      "id": "smog",
+      "name": "스모그",
+      "type": "poison",
       "power": 30,
+      "accuracy": 70,
+      "effect": {
+        "status": "poison",
+        "chance": 20
+      },
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "id": "agility",
+      "apiName": "agility",
+      "name": "고속이동",
+      "type": "psychic",
+      "power": 0,
       "accuracy": 100,
       "pp": 30,
       "maxPp": 30,
-      "multiHit": {
-        "min": 2,
-        "max": 2
+      "selfStat": {
+        "stat": "speed",
+        "amount": 2
       }
     },
     {
-      "id": "bulletSeed",
-      "apiName": "bullet-seed",
-      "name": "씨기관총",
-      "type": "grass",
-      "power": 25,
+      "apiName": "amnesia",
+      "id": "amnesia",
+      "name": "망각술",
+      "type": "psychic",
+      "power": 0,
       "accuracy": 100,
-      "pp": 30,
-      "maxPp": 30,
-      "multiHit": {
-        "min": 2,
-        "max": 5
-      }
+      "statChange": {
+        "target": "self",
+        "stat": "defense",
+        "amount": 2
+      },
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
     },
     {
-      "id": "pinMissile",
-      "apiName": "pin-missile",
-      "name": "바늘미사일",
-      "type": "bug",
-      "power": 25,
-      "accuracy": 95,
+      "apiName": "barrier",
+      "id": "barrier",
+      "name": "배리어",
+      "type": "psychic",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "self",
+        "stat": "defense",
+        "amount": 2
+      },
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "calm-mind",
+      "id": "calmMind",
+      "name": "명상",
+      "type": "psychic",
+      "power": 0,
+      "accuracy": 100,
+      "statChange": {
+        "target": "self",
+        "stat": "attack",
+        "amount": 1
+      },
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "confusion",
+      "id": "confusion",
+      "name": "염동력",
+      "type": "psychic",
+      "power": 50,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "cosmic-power",
+      "id": "cosmicPower",
+      "name": "코스믹파워",
+      "type": "psychic",
+      "power": 0,
+      "accuracy": 100,
+      "statChanges": [
+        {
+          "target": "self",
+          "stat": "defense",
+          "amount": 1
+        },
+        {
+          "target": "self",
+          "stat": "attack",
+          "amount": 1
+        }
+      ],
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "dream-eater",
+      "id": "dreamEater",
+      "name": "꿈먹기",
+      "type": "psychic",
+      "power": 100,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "extrasensory",
+      "id": "extrasensory",
+      "name": "신통력",
+      "type": "psychic",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "future-sight",
+      "id": "futureSight",
+      "name": "미래예지",
+      "type": "psychic",
+      "power": 100,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "id": "hypnosis",
+      "apiName": "hypnosis",
+      "name": "최면술",
+      "type": "psychic",
+      "power": 0,
+      "accuracy": 60,
       "pp": 20,
       "maxPp": 20,
-      "multiHit": {
-        "min": 2,
-        "max": 5
+      "effect": {
+        "status": "sleep",
+        "chance": 100
       }
     },
     {
-      "id": "icicleSpear",
-      "apiName": "icicle-spear",
-      "name": "고드름침",
-      "type": "ice",
-      "power": 25,
+      "apiName": "meditate",
+      "id": "meditate",
+      "name": "명상",
+      "type": "psychic",
+      "power": 0,
       "accuracy": 100,
-      "pp": 30,
-      "maxPp": 30,
-      "multiHit": {
-        "min": 2,
-        "max": 5
-      }
+      "statChange": {
+        "target": "self",
+        "stat": "attack",
+        "amount": 1
+      },
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "apiName": "psybeam",
+      "id": "psybeam",
+      "name": "환상빔",
+      "type": "psychic",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "id": "psychic",
+      "apiName": "psychic",
+      "name": "사이코키네시스",
+      "type": "psychic",
+      "power": 90,
+      "accuracy": 100,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "psycho-cut",
+      "id": "psychoCut",
+      "name": "사이코커터",
+      "type": "psychic",
+      "power": 70,
+      "accuracy": 100,
+      "highCrit": true,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "psywave",
+      "id": "psywave",
+      "name": "사이코웨이브",
+      "type": "psychic",
+      "power": 60,
+      "accuracy": 80,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "rest",
+      "id": "rest",
+      "name": "잠자기",
+      "type": "psychic",
+      "power": 0,
+      "accuracy": 100,
+      "rest": {
+        "turns": 2
+      },
+      "tags": [
+        "recovery"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "id": "teleport",
+      "apiName": "teleport",
+      "name": "순간이동",
+      "type": "psychic",
+      "power": 0,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20,
+      "statChange": {
+        "target": "self",
+        "stat": "speed",
+        "amount": 1
+      },
+      "tags": [
+        "utility",
+        "safe-simplified"
+      ]
+    },
+    {
+      "apiName": "zen-headbutt",
+      "id": "zenHeadbutt",
+      "name": "사념의박치기",
+      "type": "psychic",
+      "power": 80,
+      "accuracy": 90,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "ancient-power",
+      "id": "ancientPower",
+      "name": "원시의힘",
+      "type": "rock",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "power-gem",
+      "id": "powerGem",
+      "name": "파워젬",
+      "type": "rock",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
     },
     {
       "id": "rockBlast",
@@ -397,59 +3045,42 @@
       }
     },
     {
-      "id": "bite",
-      "apiName": "bite",
-      "name": "물기",
-      "type": "dark",
-      "power": 60,
+      "apiName": "rock-polish",
+      "id": "rockPolish",
+      "name": "록커트",
+      "type": "rock",
+      "power": 0,
       "accuracy": 100,
+      "statChange": {
+        "target": "self",
+        "stat": "speed",
+        "amount": 2
+      },
+      "tags": [
+        "setup"
+      ],
+      "pp": 20,
+      "maxPp": 20
+    },
+    {
+      "id": "rockSlide",
+      "apiName": "rock-slide",
+      "name": "록슬라이드",
+      "type": "rock",
+      "power": 75,
+      "accuracy": 90,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "rock-throw",
+      "id": "rockThrow",
+      "name": "rock-throw",
+      "type": "rock",
+      "power": 50,
+      "accuracy": 90,
       "pp": 25,
       "maxPp": 25
-    },
-    {
-      "id": "flameCharge",
-      "apiName": "flame-charge",
-      "name": "니트로차지",
-      "type": "fire",
-      "power": 50,
-      "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20,
-      "selfStatAfterHit": {
-        "stat": "speed",
-        "amount": 1
-      }
-    },
-    {
-      "id": "shockWave",
-      "apiName": "shock-wave",
-      "name": "전격파",
-      "type": "electric",
-      "power": 60,
-      "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20
-    },
-    {
-      "id": "megaDrain",
-      "apiName": "mega-drain",
-      "name": "메가드레인",
-      "type": "grass",
-      "power": 40,
-      "accuracy": 100,
-      "pp": 15,
-      "maxPp": 15,
-      "drain": 0.5
-    },
-    {
-      "id": "swift",
-      "apiName": "swift",
-      "name": "스피드스타",
-      "type": "normal",
-      "power": 60,
-      "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20
     },
     {
       "id": "rockTomb",
@@ -467,113 +3098,45 @@
       }
     },
     {
-      "id": "mudBomb",
-      "apiName": "mud-bomb",
-      "name": "진흙폭탄",
-      "type": "ground",
-      "power": 65,
-      "accuracy": 85,
-      "pp": 10,
-      "maxPp": 10
-    },
-    {
-      "id": "wingAttack",
-      "apiName": "wing-attack",
-      "name": "날개치기",
-      "type": "flying",
-      "power": 60,
-      "accuracy": 100,
+      "apiName": "rollout",
+      "id": "rollout",
+      "name": "구르기",
+      "type": "rock",
+      "power": 30,
+      "accuracy": 90,
       "pp": 35,
       "maxPp": 35
     },
     {
-      "id": "waterPulse",
-      "apiName": "water-pulse",
-      "name": "물의파동",
-      "type": "water",
-      "power": 60,
-      "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20
-    },
-    {
-      "id": "flameWheel",
-      "apiName": "flame-wheel",
-      "name": "화염자동차",
-      "type": "fire",
-      "power": 60,
-      "accuracy": 100,
-      "pp": 25,
-      "maxPp": 25,
-      "effect": {
-        "status": "burn",
-        "chance": 10
-      }
-    },
-    {
-      "id": "aerialAce",
-      "apiName": "aerial-ace",
-      "name": "제비반환",
-      "type": "flying",
-      "power": 60,
-      "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20
-    },
-    {
-      "id": "shadowPunch",
-      "apiName": "shadow-punch",
-      "name": "섀도펀치",
-      "type": "ghost",
-      "power": 60,
-      "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20
-    },
-    {
-      "id": "drainPunch",
-      "apiName": "drain-punch",
-      "name": "드레인펀치",
-      "type": "fighting",
-      "power": 65,
-      "accuracy": 100,
-      "pp": 10,
-      "maxPp": 10,
-      "drain": 0.5
-    },
-    {
-      "id": "rockSlide",
-      "apiName": "rock-slide",
-      "name": "록슬라이드",
+      "id": "stoneEdge",
+      "apiName": "stone-edge",
+      "name": "스톤샤워",
       "type": "rock",
-      "power": 75,
-      "accuracy": 90,
-      "pp": 10,
-      "maxPp": 10
+      "power": 90,
+      "accuracy": 80,
+      "pp": 5,
+      "maxPp": 5
     },
     {
-      "id": "crunch",
-      "apiName": "crunch",
-      "name": "깨물어부수기",
-      "type": "dark",
+      "apiName": "bullet-punch",
+      "id": "bulletPunch",
+      "name": "불릿펀치",
+      "type": "steel",
+      "power": 40,
+      "accuracy": 100,
+      "priority": 1,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "gyro-ball",
+      "id": "gyroBall",
+      "name": "자이로볼",
+      "type": "steel",
       "power": 80,
       "accuracy": 100,
       "pp": 15,
       "maxPp": 15
-    },
-    {
-      "id": "swordsDance",
-      "apiName": "swords-dance",
-      "name": "칼춤",
-      "type": "normal",
-      "power": 0,
-      "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20,
-      "selfStat": {
-        "stat": "attack",
-        "amount": 2
-      }
     },
     {
       "id": "ironDefense",
@@ -590,84 +3153,165 @@
       }
     },
     {
-      "id": "bulkUp",
-      "apiName": "bulk-up",
-      "name": "벌크업",
-      "type": "fighting",
-      "power": 0,
+      "apiName": "iron-head",
+      "id": "ironHead",
+      "name": "아이언헤드",
+      "type": "steel",
+      "power": 80,
       "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20,
-      "selfStatChanges": {
-        "attack": 1,
-        "defense": 1
-      }
-    },
-    {
-      "id": "powerUpPunch",
-      "apiName": "power-up-punch",
-      "name": "그로우펀치",
-      "type": "fighting",
-      "power": 40,
-      "accuracy": 100,
-      "pp": 20,
-      "maxPp": 20,
-      "selfStatAfterHit": {
-        "stat": "attack",
-        "amount": 1
-      }
-    },
-    {
-      "id": "agility",
-      "apiName": "agility",
-      "name": "고속이동",
-      "type": "psychic",
-      "power": 0,
-      "accuracy": 100,
-      "pp": 30,
-      "maxPp": 30,
-      "selfStat": {
-        "stat": "speed",
-        "amount": 2
-      }
-    },
-    {
-      "id": "flamethrower",
-      "apiName": "flamethrower",
-      "name": "화염방사",
-      "type": "fire",
-      "power": 90,
-      "accuracy": 100,
+      "flinchChance": 30,
       "pp": 15,
-      "maxPp": 15,
-      "effect": {
-        "status": "burn",
-        "chance": 10
-      }
+      "maxPp": 15
     },
     {
-      "id": "thunderbolt",
-      "apiName": "thunderbolt",
-      "name": "10만볼트",
-      "type": "electric",
-      "power": 90,
-      "accuracy": 100,
-      "pp": 15,
-      "maxPp": 15,
-      "effect": {
-        "status": "paralyze",
-        "chance": 10
-      }
-    },
-    {
-      "id": "iceBeam",
-      "apiName": "ice-beam",
-      "name": "냉동빔",
-      "type": "ice",
-      "power": 90,
-      "accuracy": 100,
+      "apiName": "iron-tail",
+      "id": "ironTail",
+      "name": "아이언테일",
+      "type": "steel",
+      "power": 100,
+      "accuracy": 75,
       "pp": 10,
       "maxPp": 10
+    },
+    {
+      "apiName": "magnet-bomb",
+      "id": "magnetBomb",
+      "name": "마그넷봄",
+      "type": "steel",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "id": "metalClaw",
+      "apiName": "metal-claw",
+      "name": "메탈클로",
+      "type": "steel",
+      "power": 50,
+      "accuracy": 95,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "mirror-shot",
+      "id": "mirrorShot",
+      "name": "미러숏",
+      "type": "steel",
+      "power": 65,
+      "accuracy": 85,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "steel-wing",
+      "id": "steelWing",
+      "name": "강철날개",
+      "type": "steel",
+      "power": 70,
+      "accuracy": 90,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "aqua-jet",
+      "id": "aquaJet",
+      "name": "아쿠아제트",
+      "type": "water",
+      "power": 40,
+      "accuracy": 100,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "aqua-tail",
+      "id": "aquaTail",
+      "name": "아쿠아테일",
+      "type": "water",
+      "power": 90,
+      "accuracy": 90,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "brine",
+      "id": "brine",
+      "name": "소금물",
+      "type": "water",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "id": "bubble",
+      "apiName": "bubble",
+      "name": "거품",
+      "type": "water",
+      "power": 35,
+      "accuracy": 100,
+      "pp": 30,
+      "maxPp": 30
+    },
+    {
+      "apiName": "bubble-beam",
+      "id": "bubbleBeam",
+      "name": "거품광선",
+      "type": "water",
+      "power": 65,
+      "accuracy": 100,
+      "pp": 25,
+      "maxPp": 25
+    },
+    {
+      "apiName": "clamp",
+      "id": "clamp",
+      "name": "조이기",
+      "type": "water",
+      "power": 35,
+      "accuracy": 85,
+      "pp": 35,
+      "maxPp": 35
+    },
+    {
+      "apiName": "dive",
+      "id": "dive",
+      "name": "다이빙",
+      "type": "water",
+      "power": 80,
+      "accuracy": 100,
+      "pp": 15,
+      "maxPp": 15
+    },
+    {
+      "apiName": "hydro-pump",
+      "id": "hydroPump",
+      "name": "하이드로펌프",
+      "type": "water",
+      "power": 120,
+      "accuracy": 80,
+      "pp": 5,
+      "maxPp": 5
+    },
+    {
+      "apiName": "muddy-water",
+      "id": "muddyWater",
+      "name": "탁류",
+      "type": "water",
+      "power": 95,
+      "accuracy": 85,
+      "pp": 10,
+      "maxPp": 10
+    },
+    {
+      "apiName": "octazooka",
+      "id": "octazooka",
+      "name": "대포무노포",
+      "type": "water",
+      "power": 65,
+      "accuracy": 85,
+      "pp": 25,
+      "maxPp": 25
     },
     {
       "id": "surf",
@@ -680,54 +3324,62 @@
       "maxPp": 15
     },
     {
-      "id": "earthquake",
-      "apiName": "earthquake",
-      "name": "지진",
-      "type": "ground",
-      "power": 100,
+      "apiName": "water-gun",
+      "id": "waterGun",
+      "name": "물대포",
+      "type": "water",
+      "power": 40,
       "accuracy": 100,
-      "pp": 10,
-      "maxPp": 10
+      "pp": 35,
+      "maxPp": 35
     },
     {
-      "id": "stoneEdge",
-      "apiName": "stone-edge",
-      "name": "스톤샤워",
-      "type": "rock",
-      "power": 90,
-      "accuracy": 80,
-      "pp": 5,
-      "maxPp": 5
+      "id": "waterPulse",
+      "apiName": "water-pulse",
+      "name": "물의파동",
+      "type": "water",
+      "power": 60,
+      "accuracy": 100,
+      "pp": 20,
+      "maxPp": 20
     },
     {
-      "id": "shadowBall",
-      "apiName": "shadow-ball",
-      "name": "섀도볼",
-      "type": "ghost",
+      "apiName": "waterfall",
+      "id": "waterfall",
+      "name": "폭포오르기",
+      "type": "water",
       "power": 80,
       "accuracy": 100,
       "pp": 15,
       "maxPp": 15
     },
     {
-      "id": "psychic",
-      "apiName": "psychic",
-      "name": "사이코키네시스",
-      "type": "psychic",
-      "power": 90,
-      "accuracy": 100,
-      "pp": 10,
-      "maxPp": 10
+      "apiName": "whirlpool",
+      "id": "whirlpool",
+      "name": "바다회오리",
+      "type": "water",
+      "power": 35,
+      "accuracy": 85,
+      "pp": 35,
+      "maxPp": 35
     },
     {
-      "id": "dragonPulse",
-      "apiName": "dragon-pulse",
-      "name": "용의파동",
-      "type": "dragon",
-      "power": 85,
+      "apiName": "withdraw",
+      "id": "withdraw",
+      "name": "웅크리기",
+      "type": "water",
+      "power": 0,
       "accuracy": 100,
-      "pp": 10,
-      "maxPp": 10
+      "statChange": {
+        "target": "self",
+        "stat": "defense",
+        "amount": 1
+      },
+      "tags": [
+        "utility"
+      ],
+      "pp": 20,
+      "maxPp": 20
     }
   ]
 }

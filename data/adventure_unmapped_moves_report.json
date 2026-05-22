@@ -1,0 +1,5 @@
+{
+  "generatedFrom": "local_existing_data",
+  "unmappedMoves": [],
+  "note": "Run scripts/fetch_adventure_full_learnsets.js with internet access to refresh from PokeAPI."
+}
