@@ -1594,7 +1594,16 @@
       left:auto!important;
       top:12px!important;
     }
+/* Adventure mode only: Pokémon battle position tuning */
+body.adventure-mode .mine-sprite {
+  left: 17% !important;
+  bottom: 48px !important;
+}
 
+body.adventure-mode .opponent-sprite {
+  right: 16% !important;
+  bottom: 152px !important;
+}
 </style>
 
 </head>
@@ -2544,8 +2553,14 @@
 
     function renderOverlay(){
       const overlay=document.getElementById("overlay"), title=document.getElementById("overlayTitle"), desc=document.getElementById("overlayDesc"), btn=document.getElementById("overlayResetButton");
-      if(currentState.phase==="LOADING"){ overlay.classList.add("show"); title.textContent="포켓몬 데이터 로딩 중"; desc.textContent="처음 실행이면 캐시를 만들고 있습니다. 터미널 상태를 확인하세요."; btn.style.display="none"; updateRoomExitButtons(); setMessage("데이터를 준비하는 중...",true); return; }
-      if(currentState.phase==="WAITING"){ overlay.classList.add("show"); title.textContent="상대 접속 대기"; desc.textContent="친구가 IP 주소로 접속하면 팀 선택이 시작됩니다."; btn.style.display="none"; updateRoomExitButtons(); setMessage("상대 접속을 기다리는 중...",true); return; }
+      if(window.__POOKI_ADVENTURE_EVENT_QUEUE_ACTIVE && document.body?.classList?.contains("adventure-mode")) return;
+      if(!overlay || !title || !desc){
+        if(window.__POOKI_ADVENTURE_EVENT_QUEUE_ACTIVE || document.body?.classList?.contains("adventure-mode")) return;
+        console.warn?.("[Battle Overlay] missing overlay DOM", {hasOverlay:!!overlay, hasTitle:!!title, hasDesc:!!desc, hasButton:!!btn});
+        return;
+      }
+      if(currentState.phase==="LOADING"){ overlay.classList.add("show"); title.textContent="포켓몬 데이터 로딩 중"; desc.textContent="처음 실행이면 캐시를 만들고 있습니다. 터미널 상태를 확인하세요."; if(btn) btn.style.display="none"; updateRoomExitButtons(); setMessage("데이터를 준비하는 중...",true); return; }
+      if(currentState.phase==="WAITING"){ overlay.classList.add("show"); title.textContent="상대 접속 대기"; desc.textContent="친구가 IP 주소로 접속하면 팀 선택이 시작됩니다."; if(btn) btn.style.display="none"; updateRoomExitButtons(); setMessage("상대 접속을 기다리는 중...",true); return; }
       if(currentState.phase==="GAME_OVER"){
         if(animationBusy){ overlay.classList.remove("show"); return; }
         if(!gameOverSfxPlayedForState){ gameOverSfxPlayedForState=true; playGameSfx("game-over"); }
@@ -2557,13 +2572,13 @@
           : (rr
             ? `랭킹 반영 완료<br><div class="rank-result">${escapeHtml(rr.winnerName)} +30점 (${rr.winnerScore}점) / ${escapeHtml(rr.loserName)} -10점 (${rr.loserScore}점)</div>`
             : "다시 하기 버튼으로 새 후보를 받아 재시작할 수 있습니다.");
-        btn.style.display="inline-block";
+        if(btn) btn.style.display="inline-block";
         updateRoomExitButtons();
         setMessage(`${currentState.winner} 승리!`,false);
         return;
       }
       if(currentState.phase!=="GAME_OVER") gameOverSfxPlayedForState=false;
-      overlay.classList.remove("show"); btn.style.display="none";
+      overlay.classList.remove("show"); if(btn) btn.style.display="none";
     }
 
     function renderEmptyBattle(){ clearGhostResidues(); document.getElementById("opponentInfo").innerHTML=`<div class="name-row"><span>상대 포켓몬 대기</span></div>`; document.getElementById("myInfo").innerHTML=`<div class="name-row"><span>내 포켓몬 대기</span></div>`; document.getElementById("bench").innerHTML=""; document.getElementById("opponentSprite").removeAttribute("src"); document.getElementById("mySprite").removeAttribute("src"); }
@@ -3103,7 +3118,7 @@
       socket.emit("surrender");
     }
 
-    function enqueueEvents(events){ const fresh=[]; for(const ev of events){ if(lastEventIds.has(ev.id))continue; lastEventIds.add(ev.id); fresh.push(ev); } if(fresh.length===0)return; eventQueue=eventQueue.then(async()=>{ animationBusy=true; renderButtons(); await sleep(DELAY.turnStart); for(const ev of fresh) await playEventSlow(ev); await sleep(DELAY.end); animationBusy=false; syncVisualToFinal(); if(currentState?.phase==="ACTION_SELECT")setMessage("행동을 선택하세요.",false); else if(currentState?.phase==="FORCE_SWITCH")setMessage("교체할 포켓몬을 선택하세요.",false); renderButtons(); renderOverlay(); startLocalTimer(); }); if(lastEventIds.size>200) lastEventIds=new Set([...lastEventIds].slice(-100)); }
+    function enqueueEvents(events){ const fresh=[]; for(const ev of events){ if(lastEventIds.has(ev.id))continue; lastEventIds.add(ev.id); fresh.push(ev); } if(fresh.length===0)return; eventQueue=eventQueue.then(async()=>{ animationBusy=true; renderButtons(); await sleep(DELAY.turnStart); for(const ev of fresh) await playEventSlow(ev); await sleep(DELAY.end); animationBusy=false; syncVisualToFinal(); if(currentState?.phase==="ACTION_SELECT")setMessage("행동을 선택하세요.",false); else if(currentState?.phase==="FORCE_SWITCH")setMessage("교체할 포켓몬을 선택하세요.",false); renderButtons(); if(!(window.__POOKI_ADVENTURE_EVENT_QUEUE_ACTIVE && document.body?.classList?.contains("adventure-mode"))) renderOverlay(); startLocalTimer(); }); if(lastEventIds.size>200) lastEventIds=new Set([...lastEventIds].slice(-100)); }
 
     
     function isSingMoveName(moveName){

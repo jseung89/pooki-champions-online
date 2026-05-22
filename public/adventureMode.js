@@ -117,12 +117,16 @@
     247:{id:247, apiName:"pupitar", name:"데기라스", types:["rock","ground"], stats:{hp:70,attack:84,defense:70,speed:51}}
   };
   const ADVENTURE_BATTLE_BACKGROUNDS = [
-    { maxStage:10, url:"/assets/lobby/evergreen-city-card.png" },
-    { maxStage:20, url:"/assets/lobby/city-gray-banner.png" },
-    { maxStage:30, url:"/assets/lobby/city-blue-banner.png" },
-    { maxStage:40, url:"/assets/lobby/fuchsia-city-card.png" },
-    { maxStage:50, url:"/assets/lobby/lavender-town-card.png" },
-    { maxStage:999, url:"/assets/lobby/adventure-card.png" }
+    { maxStage:10, url:"/assets/adventure/backgrounds/adventure-battle-bg-floor-001-010.png" },
+    { maxStage:20, url:"/assets/adventure/backgrounds/adventure-battle-bg-floor-011-020.png" },
+    { maxStage:30, url:"/assets/adventure/backgrounds/adventure-battle-bg-floor-021-030.png" },
+    { maxStage:40, url:"/assets/adventure/backgrounds/adventure-battle-bg-floor-031-040.png" },
+    { maxStage:50, url:"/assets/adventure/backgrounds/adventure-battle-bg-floor-041-050.png" },
+    { maxStage:60, url:"/assets/adventure/backgrounds/adventure-battle-bg-floor-051-060.png" },
+    { maxStage:70, url:"/assets/adventure/backgrounds/adventure-battle-bg-floor-061-070.png" },
+    { maxStage:80, url:"/assets/adventure/backgrounds/adventure-battle-bg-floor-071-080.png" },
+    { maxStage:90, url:"/assets/adventure/backgrounds/adventure-battle-bg-floor-081-090.png" },
+    { maxStage:999, url:"/assets/adventure/backgrounds/adventure-battle-bg-floor-091-100.png" }
   ];
   const TYPE_BY_ID = {
     1:["grass","poison"],4:["fire"],7:["water"],10:["bug"],13:["bug","poison"],16:["normal","flying"],19:["normal"],21:["normal","flying"],23:["poison"],27:["ground"],29:["poison"],32:["poison"],37:["fire"],41:["poison","flying"],43:["grass","poison"],46:["bug","grass"],48:["bug","poison"],50:["ground"],52:["normal"],54:["water"],56:["fighting"],58:["fire"],60:["water"],63:["psychic"],66:["fighting"],69:["grass","poison"],72:["water","poison"],74:["rock","ground"],77:["fire"],79:["water","psychic"],81:["electric","steel"],84:["normal","flying"],86:["water"],88:["poison"],90:["water"],92:["ghost","poison"],96:["psychic"],98:["water"],100:["electric"],102:["grass","psychic"],104:["ground"],109:["poison"],111:["ground","rock"],116:["water"],118:["water"],120:["water"],129:["water"],133:["normal"],138:["rock","water"],140:["rock","water"],147:["dragon"],152:["grass"],155:["fire"],158:["water"],161:["normal"],163:["normal","flying"],165:["bug","flying"],167:["bug","poison"],170:["water","electric"],172:["electric"],173:["fairy"],174:["normal","fairy"],175:["fairy"],177:["psychic","flying"],179:["electric"],187:["grass","flying"],190:["normal"],191:["grass"],193:["bug","flying"],194:["water","ground"],198:["dark","flying"],204:["bug"],207:["ground","flying"],209:["fairy"],216:["normal"],218:["fire"],220:["ice","ground"],223:["water"],228:["dark","fire"],231:["ground"],236:["fighting"],238:["ice","psychic"],239:["electric"],240:["fire"],246:["rock","ground"]
@@ -2366,31 +2370,23 @@
       prepareVisualState(oldState);
       currentState = working;
       adventure.log = logs;
-      adventure.moveAnimationStarted=true;
-      adventure.moveAnimationDone=false;
-      adventure.damageRenderDone=false;
-      enqueueEvents(events);
-      Promise.resolve(eventQueue).then(()=>{
-        adventure.moveAnimationDone=true;
-        adventure.damageRenderDone=true;
-        console.info?.("[Adventure/Animation] damage render done", { phase:adventure.phase, floor:adventure.stage, battleResolutionToken:adventure.battleResolutionToken });
-        commitFromCurrentState();
-        const e=enemyMon(); const p=playerMon();
-        assertAdventureEnemyHpConsistency("turn-complete");
-        if(isAdventureCanonicalEnemyDefeated("turn-complete")){ handleAdventureVictory(); }
-        else if(p?.fainted || getAdventurePokemonHp(p)<=0){ handleAdventurePlayerFainted(); }
-        else { currentState.phase="ACTION_SELECT"; renderAdventureHeader(`${adventure.stage}층 전투`, "행동을 선택하세요."); renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); }
-      }).catch(err=>{
-        console.warn('[Adventure OneShot] event queue fallback', err);
-        adventure.moveAnimationDone=true;
-        adventure.damageRenderDone=true;
-        commitFromCurrentState();
-        const e=enemyMon(); const p=playerMon();
-        assertAdventureEnemyHpConsistency("turn-fallback");
-        if(isAdventureCanonicalEnemyDefeated("turn-fallback")) handleAdventureVictory();
-        else if(p?.fainted || getAdventurePokemonHp(p)<=0) handleAdventurePlayerFainted();
-        else { currentState.phase="ACTION_SELECT"; renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); }
-      }).finally(()=>{ adventure.turnResolving=false; animationBusy=false; renderAdventureButtons(); });
+      const primaryActor=order[0]?.key || "p1";
+      await enqueueAdventureEventsSafely(events, {reason:"turn-events", attackerSide:primaryActor, defenderSide:primaryActor === "p2" ? "p1" : "p2"});
+      commitFromCurrentState();
+      const e=enemyMon(); const p=playerMon();
+      assertAdventureEnemyHpConsistency("turn-complete");
+      if(isAdventureCanonicalEnemyDefeated("turn-complete")){
+        if(!adventure.moveAnimationDone || !adventure.damageRenderDone){
+          console.warn?.("[Adventure/Reward] blocked: animation not completed", {reason:"turn-complete", moveAnimationDone:adventure.moveAnimationDone, damageRenderDone:adventure.damageRenderDone});
+          await playAdventureFallbackHitAnimation(primaryActor, primaryActor === "p2" ? "p1" : "p2", "reward-sequence-guard");
+          adventure.moveAnimationDone=true;
+          adventure.damageRenderDone=true;
+        }
+        handleAdventureVictory();
+      }
+      else if(p?.fainted || getAdventurePokemonHp(p)<=0){ handleAdventurePlayerFainted(); }
+      else { currentState.phase="ACTION_SELECT"; renderAdventureHeader(`${adventure.stage}층 전투`, "행동을 선택하세요."); renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); }
+      adventure.turnResolving=false; animationBusy=false; renderAdventureButtons();
     }catch(err){
       console.warn('[Adventure OneShot] resolve turn failed', err);
       adventure.turnResolving=false; animationBusy=false;
@@ -2658,6 +2654,127 @@
       mon.hp=Math.min(mon.maxHp, mon.hp+heal);
       logs.push(`먹다남은음식으로 ${mon.name}의 HP가 ${heal} 회복되었다! (${left}중첩 · 1/8씩)`);
       events.push({id:advEventId(), type:"heal", target:"p1", name:mon.name, amount:heal, hp:mon.hp});
+    }
+  }
+
+
+  function getAdventureEventQueuePromise(){
+    try{
+      if(typeof eventQueue !== "undefined" && eventQueue && typeof eventQueue.then === "function") return eventQueue;
+    }catch(_){ /* global eventQueue may not exist in some contexts */ }
+    return Promise.resolve();
+  }
+  async function playAdventureFallbackHitAnimation(attackerSide="p1", defenderSide="p2", reason="fallback"){
+    const attackerId=attackerSide === "p2" ? "opponentSprite" : "mySprite";
+    const defenderId=defenderSide === "p2" ? "opponentSprite" : "mySprite";
+    const attacker=document.getElementById(attackerId);
+    const defender=document.getElementById(defenderId);
+    console.info?.("[Adventure/Animation] fallback hit animation start", {reason, attackerSide, defenderSide});
+    try{
+      if(attacker){
+        attacker.classList.remove("attack","shake","hit");
+        void attacker.offsetWidth;
+        attacker.classList.add("attack");
+        attacker.style.transition="transform 120ms ease, filter 120ms ease";
+        attacker.style.transform=attackerSide === "p2" ? "translateX(-14px) scale(1.03)" : "translateX(14px) scale(1.03)";
+        attacker.style.filter="brightness(1.08)";
+      }
+      await sleep(130);
+      if(defender){
+        defender.classList.remove("hit","shake");
+        void defender.offsetWidth;
+        defender.classList.add("hit","shake");
+        defender.style.transition="transform 90ms ease, filter 90ms ease";
+        defender.style.transform="translateX(-8px)";
+        defender.style.filter="brightness(1.25) saturate(1.15)";
+      }
+      if(attacker){
+        attacker.style.transform="";
+        attacker.style.filter="";
+      }
+      await sleep(120);
+      if(defender){
+        defender.style.transform="translateX(6px)";
+        await sleep(80);
+        defender.style.transform="";
+        defender.style.filter="";
+      }
+      await sleep(120);
+      renderBattleView();
+      await sleep(100);
+    }catch(err){
+      console.warn?.("[Adventure/Animation] fallback hit animation failed", {reason, err});
+      try{ renderBattleView(); }catch(_){}
+    }finally{
+      if(attacker){ attacker.classList.remove("attack"); attacker.style.transform=""; attacker.style.filter=""; }
+      if(defender){ defender.classList.remove("hit","shake"); defender.style.transform=""; defender.style.filter=""; }
+      console.info?.("[Adventure/Animation] fallback hit animation done", {reason, attackerSide, defenderSide});
+    }
+  }
+
+  async function playAdventureEnemyFaintAnimationSafely(reason="enemy-faint"){
+    if(adventure.enemyFaintAnimationDone) return true;
+    adventure.enemyFaintStarted=true;
+    adventure.enemyFaintResolved=true;
+    const enemyEl=document.getElementById("opponentSprite");
+    console.info?.("[Adventure/Animation] enemy faint animation start", {reason, enemyName:enemyMon()?.name, phase:adventure.phase});
+    try{
+      renderBattleView();
+      if(enemyEl){
+        enemyEl.classList.remove("hit","shake","attack","fainting","faint","enemy-dead","fainted");
+        void enemyEl.offsetWidth;
+        enemyEl.style.transition="opacity 420ms ease, transform 420ms ease, filter 420ms ease";
+        enemyEl.classList.add("fainting","enemy-dead");
+        enemyEl.style.transform="translateY(18px) scale(0.92)";
+        enemyEl.style.opacity="0.35";
+        enemyEl.style.filter="grayscale(0.65) brightness(0.8)";
+      }
+      await sleep(480);
+      renderBattleView();
+      await sleep(120);
+    }catch(err){
+      console.warn?.("[Adventure/Animation] enemy faint animation fallback failed", {reason, err});
+    }finally{
+      adventure.enemyFaintAnimationDone=true;
+      adventure.enemyFaintResolved=true;
+      console.info?.("[Adventure/Animation] enemy faint animation done", {reason, enemyName:enemyMon()?.name, phase:adventure.phase});
+    }
+    return true;
+  }
+
+  async function enqueueAdventureEventsSafely(events=[], context={}){
+    const list=Array.isArray(events) ? events : [];
+    if(!list.length){
+      adventure.moveAnimationStarted=false;
+      adventure.moveAnimationDone=true;
+      adventure.damageRenderDone=true;
+      return true;
+    }
+    adventure.moveAnimationStarted=true;
+    adventure.moveAnimationDone=false;
+    adventure.damageRenderDone=false;
+    const firstMove=list.find(ev=>ev && (ev.type === "move" || ev.type === "damage" || ev.type === "hit")) || {};
+    const attackerSide=context.attackerSide || firstMove.actor || firstMove.source || firstMove.side || "p1";
+    const defenderSide=context.defenderSide || firstMove.target || (attackerSide === "p2" ? "p1" : "p2");
+    try{
+      window.__POOKI_ADVENTURE_EVENT_QUEUE_ACTIVE = true;
+      if(typeof enqueueEvents === "function") enqueueEvents(list);
+      else throw new Error("global enqueueEvents is not available");
+      await Promise.resolve(getAdventureEventQueuePromise());
+      adventure.moveAnimationDone=true;
+      adventure.damageRenderDone=true;
+      renderBattleView();
+      console.info?.("[Adventure/Animation] damage render done", { reason:context.reason||"events-complete", phase:adventure.phase, floor:adventure.stage, battleResolutionToken:adventure.battleResolutionToken });
+      return true;
+    }catch(err){
+      console.warn("[Adventure/EventQueue] failed, using adventure fallback animation", err);
+      await playAdventureFallbackHitAnimation(attackerSide, defenderSide, context.reason || "event-queue-fallback");
+      adventure.moveAnimationDone=true;
+      adventure.damageRenderDone=true;
+      renderBattleView();
+      return false;
+    }finally{
+      window.__POOKI_ADVENTURE_EVENT_QUEUE_ACTIVE = false;
     }
   }
 
@@ -3295,6 +3412,12 @@
       console.warn?.("[Adventure/Reward] blocked: animation not completed", { reason, phase:adventure.phase, moveAnimationDone:adventure.moveAnimationDone, damageRenderDone:adventure.damageRenderDone });
       return false;
     }
+    const rewardReason=String(reason || "");
+    const requiresEnemyFaintAnimation=!/포획 성공|capture/i.test(rewardReason);
+    if(requiresEnemyFaintAnimation && !adventure.enemyFaintAnimationDone){
+      console.warn?.("[Adventure/Reward] blocked: enemy faint animation not completed", { reason, phase:adventure.phase, enemyFaintResolved:adventure.enemyFaintResolved, enemyFaintAnimationDone:adventure.enemyFaintAnimationDone });
+      return false;
+    }
     if(!canEnterAdventureRewardFromCanonicalHp("enterAdventureReward")){
       return recoverAdventureEnemyAliveFlow("enterAdventureReward-blocked");
     }
@@ -3312,11 +3435,19 @@
     setMessage("보상을 선택하세요.", false);
     renderBattleView(); renderAdventureButtons(); renderAdventureLogs(); renderAdventureBag();
   }
-  function handleAdventureVictory(){
+  async function handleAdventureVictory(){
+    if(adventure.pendingReward || adventure.phase === "reward") return true;
     if(!canEnterAdventureRewardFromCanonicalHp("handleAdventureVictory")){
       console.warn?.("[Adventure/EXP] blocked: canonical enemy still alive", {reason:"handleAdventureVictory", enemyHp:getAdventureCanonicalEnemy("handleAdventureVictory")?.hp});
       return recoverAdventureEnemyAliveFlow("handleAdventureVictory-blocked");
     }
+    if(adventure.moveAnimationStarted && (!adventure.moveAnimationDone || !adventure.damageRenderDone)){
+      console.warn?.("[Adventure/Reward] blocked: animation not completed", {reason:"handleAdventureVictory", moveAnimationDone:adventure.moveAnimationDone, damageRenderDone:adventure.damageRenderDone});
+      await playAdventureFallbackHitAnimation("p1", "p2", "victory-animation-guard");
+      adventure.moveAnimationDone=true;
+      adventure.damageRenderDone=true;
+    }
+    await playAdventureEnemyFaintAnimationSafely("handleAdventureVictory");
     visualState=null;
     const defeatedEnemy=getAdventureCanonicalEnemy("handleAdventureVictory-exp");
     if(!adventure.pendingReward){
@@ -3324,9 +3455,9 @@
     }
     if((adventure.growthQueue||[]).length){
       continueAdventureGrowthQueue(()=>enterAdventureReward(`${adventure.stage}층 클리어! 보상을 선택하세요.`));
-      return;
+      return true;
     }
-    enterAdventureReward(`${adventure.stage}층 클리어! 보상을 선택하세요.`);
+    return enterAdventureReward(`${adventure.stage}층 클리어! 보상을 선택하세요.`);
   }
   function isAdventureTeamAllFainted(){
     const team = Array.isArray(adventure.team) ? adventure.team : [];
@@ -3514,8 +3645,7 @@
     if(currentState) currentState.logs=[...adventure.log];
     if(events.length){
       prepareVisualState(oldState);
-      enqueueEvents(events);
-      eventQueue.then(()=>{
+      enqueueAdventureEventsSafely(events, {reason:"item-turn-events", attackerSide:"p2", defenderSide:"p1"}).then(()=>{
         commitFromCurrentState();
         if(adventure.active && adventure.phase==="battle" && enemyMon() && !isAdventureCanonicalEnemyDefeated("item-turn-check") && playerMon() && !playerMon().fainted){
           resolveAdventureEnemyOnlyTurn(clone(currentState));
@@ -3923,8 +4053,8 @@
         applyAdventureEndTurnStatus(working, events, logs);
         applyAdventureEndTurnEquipment(working, events, logs);
         working.logs=logs; working.turn+=1; working.phase=mine.fainted?"TURN_RESOLVE":"ACTION_SELECT";
-        prepareVisualState(old); currentState=working; adventure.log=logs; enqueueEvents(events);
-        eventQueue.then(()=>{commitFromCurrentState(); if(playerMon()?.fainted || getAdventurePokemonHp(playerMon())<=0) resolveAdventurePlayerFaintSafely("capture-fail-enemy-turn"); else {resetAdventureEnemyAfterCaptureFailure(); renderBattleView(); resetAdventureEnemyAfterCaptureFailure(); renderAdventureButtons(); renderAdventureLogs();}});
+        prepareVisualState(old); currentState=working; adventure.log=logs;
+        enqueueAdventureEventsSafely(events, {reason:"capture-fail-enemy-turn", attackerSide:"p2", defenderSide:"p1"}).then(()=>{commitFromCurrentState(); if(playerMon()?.fainted || getAdventurePokemonHp(playerMon())<=0) resolveAdventurePlayerFaintSafely("capture-fail-enemy-turn"); else {resetAdventureEnemyAfterCaptureFailure(); renderBattleView(); resetAdventureEnemyAfterCaptureFailure(); renderAdventureButtons(); renderAdventureLogs();}});
       }
     }catch(err){
       console.error("[Adventure Capture] failed", err);
@@ -4034,8 +4164,7 @@
     applyAdventureEndTurnEquipment(working, events, logs);
     working.logs=logs; working.turn+=1; working.phase=mine.fainted?"TURN_RESOLVE":"ACTION_SELECT";
     prepareVisualState(old); currentState=working; adventure.log=logs;
-    enqueueEvents(events);
-    eventQueue.then(()=>{
+    enqueueAdventureEventsSafely(events, {reason:"enemy-only-turn", attackerSide:"p2", defenderSide:"p1"}).then(()=>{
       if(renderToken && renderToken !== adventure.renderToken) return;
       commitFromCurrentState();
       clearAdventurePlayerVisualState("enemy-turn-after");

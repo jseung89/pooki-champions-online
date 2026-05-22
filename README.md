@@ -1359,3 +1359,54 @@ TODO:
 - 보류 특수효과 기술의 단계적 구현
 - 전투 상태 디버거 UI에 animation/growthQueue/continuation 상태 표시 추가
 - 포획 연출 UX 개선
+
+## v6.18.24 Adventure Event Queue Isolation + Move Animation Fallback Hotfix
+
+- 모험모드 기술 사용 중 일반 대전 `renderOverlay`가 호출되어 `null.style` 오류가 발생하던 문제를 방어했습니다.
+- 일반 대전 `renderOverlay`에 overlay DOM null guard를 추가해 모험모드/비전투 화면에서 TypeError가 발생하지 않도록 했습니다.
+- 모험모드 기술 이벤트 처리에 `enqueueAdventureEventsSafely` wrapper를 추가해 일반 대전 event queue 실패 시 adventure 전용 fallback animation을 실행하도록 보강했습니다.
+- 전용 이펙트가 없는 기술도 최소 공통 타격 연출을 거친 뒤 HP 렌더와 결과 처리를 진행하도록 보강했습니다.
+- 염동력(confusion)처럼 전용 이펙트가 약한 기술 사용 시 기술 연출 없이 reward로 넘어가는 흐름을 방어했습니다.
+- event queue 실패 시 바로 reward/victory로 점프하지 않고 fallback animation → HP 렌더 → canonical HP 검증 → faint 처리 순서로 복구합니다.
+- reward 진입 전 move animation / damage render / enemy faint animation 완료 조건을 강화했습니다.
+- 기존 enemy HP canonical reward guard / player faint guard / HGSS level-up 런셋 / 원활함 패치를 유지했습니다.
+- 기존 일반 대전 / AI 대전 / 관전 / 관리자 / 모바일 기능을 유지했습니다.
+
+TODO:
+
+- psychic 타입 전용 모험모드 이펙트 추가
+- 타입별 모험모드 전용 이펙트 매핑 고도화
+- 일반 대전 큐와 모험모드 큐 완전 분리 리팩토링
+- animation timeline 디버거 추가
+
+## v6.18.25 Adventure Battle Background Visual Update Patch
+
+- 모험모드 배틀 배경 이미지를 10층 단위 신규 이미지로 교체
+- 1~100층까지 층수에 따라 서로 다른 배틀 배경이 표시되도록 정리
+- 1~50층은 따뜻한 초원/마을/산기슭 진행감 유지
+- 51~100층은 높은 산을 오르는 느낌, 설산과 정상부로 향하는 progression 강화
+- 포켓몬 좌측/우측 전투 위치가 잘 보이도록 제작된 신규 배경 적용
+- 기존 일반 대전 / AI 대전 / 관전 / 관리자 / 모바일 기능은 유지
+- 기존 HGSS level-up 런셋 / reward guard / player faint guard / 연출 안정화 패치 유지
+- 전투 로직, 데미지 공식, 기술 데이터는 변경하지 않음
+
+생성/교체 이미지:
+
+- `public/assets/adventure/backgrounds/adventure-battle-bg-floor-001-010.png`
+- `public/assets/adventure/backgrounds/adventure-battle-bg-floor-011-020.png`
+- `public/assets/adventure/backgrounds/adventure-battle-bg-floor-021-030.png`
+- `public/assets/adventure/backgrounds/adventure-battle-bg-floor-031-040.png`
+- `public/assets/adventure/backgrounds/adventure-battle-bg-floor-041-050.png`
+- `public/assets/adventure/backgrounds/adventure-battle-bg-floor-051-060.png`
+- `public/assets/adventure/backgrounds/adventure-battle-bg-floor-061-070.png`
+- `public/assets/adventure/backgrounds/adventure-battle-bg-floor-071-080.png`
+- `public/assets/adventure/backgrounds/adventure-battle-bg-floor-081-090.png`
+- `public/assets/adventure/backgrounds/adventure-battle-bg-floor-091-100.png`
+
+TODO:
+
+- 포켓몬 스프라이트 위치와 신규 배경 전투판 좌표 정밀 조정
+- 모바일 화면에서 배경 crop 최적화
+- 보스층 전용 배경/연출 추가 검토
+- 배경 프리로드 최적화 검토
+
