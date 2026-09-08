@@ -385,7 +385,7 @@
       adventureDebugWarn("startup", "[Adventure/Startup] optional json failed", { url, message:err?.message, status:err?.status, preview:err?.preview });
       return fallback;
     });
-    const [arena, config, items, rewards, rewardEffects, rewardBalance, expBalance, captureBalance, effectSettings, pokemonMovesets, levelupLearnsets, tmRewards, sizeOverrides, capture, captureRates, learnsets, adventureMoves, expTable, baseStats, evolutions, equipmentConfig, effectMap, blockedMoves, moveTiers, basicConfig, starterPool, encounterRules, enemyMovesetRules, pokemonAllowedMoves, fullLearnsets, specialEvolutions, bosses] = await Promise.all([
+    /* Master roster loads in parallel with configuration data. */ const rosterLoadStartedAt = performance.now(); const masterPromise = fetchJsonSafely(adventureStaticUrl("/data/pokemon_master_gen1_2.json")).catch(err=>{ adventureDebugWarn("startup", "[Adventure Master Roster] load failed; using arena pokemon only", { message:err?.message, status:err?.status, contentType:err?.contentType, preview:err?.preview }); return []; }); const [arena, config, items, rewards, rewardEffects, rewardBalance, expBalance, captureBalance, effectSettings, pokemonMovesets, levelupLearnsets, tmRewards, sizeOverrides, capture, captureRates, learnsets, adventureMoves, expTable, baseStats, evolutions, equipmentConfig, effectMap, blockedMoves, moveTiers, basicConfig, starterPool, encounterRules, enemyMovesetRules, pokemonAllowedMoves, fullLearnsets, specialEvolutions, bosses, master] = await Promise.all([
       jsonFetch("/api/test-arena/data", {pokemon:[], moves:[]}),
       jsonFetch(adventureStaticUrl("/data/adventure_config.json"), {}),
       jsonFetch(adventureStaticUrl("/data/adventure_items.json"), {}),
@@ -417,7 +417,7 @@
       jsonFetch(adventureStaticUrl("/data/adventure_pokemon_allowed_moves.json"), {}),
       jsonFetch(adventureStaticUrl("/data/adventure_pokemon_full_learnsets.json"), {}),
       jsonFetch(adventureStaticUrl("/data/adventure_special_evolutions.json"), {}),
-      jsonFetch(adventureStaticUrl("/data/adventure_bosses.json"), {})
+      jsonFetch(adventureStaticUrl("/data/adventure_bosses.json"), {}), masterPromise
     ]);
     adventure.__lastRequiredJsonLoadMs = Math.round(performance.now() - requiredJsonStartedAt);
     adventure.pokemon = Array.isArray(arena?.pokemon) ? arena.pokemon : [];
@@ -458,9 +458,9 @@
     adventure.fullLearnsets = fullLearnsets || {};
     adventure.specialEvolutions = specialEvolutions || {};
     adventure.bosses = bosses || {};
-    const rosterLoadStartedAt = performance.now();
+    /* roster timer started with the parallel request */
     try{
-      const master = await fetchJsonSafely(adventureStaticUrl("/data/pokemon_master_gen1_2.json"));
+      /* master loaded in parallel */
       adventure.masterPokemon = Array.isArray(master) ? master : [];
       adventure.pokemon = mergeAdventureMasterPokemon(adventure.pokemon, adventure.masterPokemon);
     }catch(err){
@@ -1583,9 +1583,9 @@
       document.body.classList.add("adventure-starting");
       const roleTextLoading=document.getElementById("roleText");
       if(roleTextLoading) roleTextLoading.textContent="모험 준비 중...";
-      await loadAdventureData();
+      const firstBattleBackgroundPromise = preloadImageQuietly(adventureBattleBackgroundForStage(1)); await loadAdventureData();
       const bgStartedAt = performance.now();
-      await preloadImageQuietly(adventureBattleBackgroundForStage(1));
+      await firstBattleBackgroundPromise;
       adventure.__lastCurrentBattleBackgroundLoadMs = Math.round(performance.now() - bgStartedAt);
       afterLoadAt = performance.now();
       adventure.active = true;
