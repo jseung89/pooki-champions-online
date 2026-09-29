@@ -4,6 +4,7 @@
   "description": "Pookimon Champions ONLINE LAN test 3 Pokemon battle with image battle field",
   "main": "server.js",
   "scripts": {
+    "test": "node --test tests/*.test.js",
     "start": "node server.js",
     "check": "node --check server.js && node --check src/dataLoader.js && node --check src/typeChart.js && node --check src/moveLibrary.js && node --check src/moveBuilder.js && node --check src/randomDraft.js && node --check src/battleEngine.js"
   },

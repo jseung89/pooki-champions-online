@@ -5,6 +5,8 @@ const path = require("path");
 const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
+const { createJsonCache } = require("./src/jsonCache");
+const adventureJsonCache = createJsonCache();
 
 const { loadPokemonData } = require("./src/dataLoader");
 const { createDraft } = require("./src/randomDraft");
@@ -800,8 +802,7 @@ function adventureAdminDataPath(file) {
 
 function readAdventureAdminJson(file, fallback = {}) {
   const p = adventureAdminDataPath(file);
-  if (!fs.existsSync(p)) return fallback;
-  return JSON.parse(fs.readFileSync(p, "utf8") || "{}");
+  return adventureJsonCache.read(p, fallback);
 }
 
 function writeAdventureAdminJson(file, data) {
@@ -811,7 +812,14 @@ function writeAdventureAdminJson(file, data) {
     const backup = `${p}.bak.${Date.now()}`;
     try { fs.copyFileSync(p, backup); } catch (err) { console.warn("[AdventureAdmin] backup failed", err.message); }
   }
-  fs.writeFileSync(p, `${JSON.stringify(data, null, 2)}\n`, "utf8");
+  const temporaryPath = `${p}.${crypto.randomUUID()}.tmp`;
+  try {
+    fs.writeFileSync(temporaryPath, `${JSON.stringify(data, null, 2)}\n`, { encoding: "utf8", flag: "wx" });
+    fs.renameSync(temporaryPath, p);
+    adventureJsonCache.invalidate(p);
+  } finally {
+    if (fs.existsSync(temporaryPath)) fs.unlinkSync(temporaryPath);
+  }
   return data;
 }
 
