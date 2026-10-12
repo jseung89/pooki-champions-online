@@ -21,12 +21,14 @@
   function preloadImageQuietly(url){
     if(!url) return Promise.resolve(false);
     return new Promise(resolve=>{
+      const timeout=setTimeout(()=>resolve(false),8000);
+      const finish=value=>{clearTimeout(timeout);resolve(value);};
       try{
         const img=new Image();
-        img.onload=()=>resolve(true);
-        img.onerror=()=>resolve(false);
+        img.onload=()=>finish(true);
+        img.onerror=()=>finish(false);
         img.src=url;
-      }catch(_){ resolve(false); }
+      }catch(_){ finish(false); }
     });
   }
   function scheduleAdventureNearbyBackgroundPreload(stage=1){
@@ -339,7 +341,7 @@
   }
 
   async function fetchJsonSafely(url, options={}){
-    const response = await fetch(url, options);
+    const response = await fetch(url, {...options, signal:options.signal ?? AbortSignal.timeout(20000)});
     const contentType = response.headers?.get?.("content-type") || "";
     if(!response.ok){
       const preview = await response.text().catch(()=>"");
@@ -1553,11 +1555,11 @@
           <div>1층부터 100층까지 이어지는 생존 배틀</div>
           <div>스타터 1마리 선택 · 포획으로 팀 확장</div>
           <div>HP/PP 유지 · 패배 시 모험 종료</div>
-          <div>기존 배틀 UI/이펙트 기반</div>
+          <div>동료를 모으고, 당신만의 파티를 완성하세요.</div>
         </div>
       </div>
       <div class="room-actions">
-        <button class="room-enter" onclick="startAdventureMode()">모험 모드</button>
+        <button class="room-enter" onclick="startAdventureMode()">새 모험 떠나기 →</button>
       </div>
     </article>`;
   }
@@ -1573,7 +1575,15 @@
     };
   }
 
+  let adventureStarting = false;
   async function startAdventureMode(){
+    if(adventureStarting) return;
+    adventureStarting = true;
+    let startupSucceeded = false;
+    let startupNotice=document.getElementById("adventureStartupNotice");
+    if(!startupNotice){startupNotice=document.createElement("div");startupNotice.id="adventureStartupNotice";startupNotice.setAttribute("role","status");document.body.append(startupNotice);}
+    startupNotice.hidden=false;
+    startupNotice.textContent="여행 준비 중 · 동료와 지역 데이터를 불러오고 있어요…";
     const startupStartedAt = performance.now();
     let afterLoadAt = startupStartedAt;
     let afterStarterAt = startupStartedAt;
@@ -1617,6 +1627,7 @@
       window.currentRoomId = "adventure";
       renderAdventureHeader("스타터 선택", "시작 포켓몬을 선택하세요.");
       renderAdventureSelect();
+      startupSucceeded = true;
       const doneAt = performance.now();
       console.info?.("[Adventure/Startup] timing", {
         rosterLoadMs: adventure.__lastRosterLoadMs || 0,
@@ -1636,13 +1647,17 @@
     }catch(err){
       document.body.classList.remove("adventure-starting");
       console.error("adventure start failed", err);
-      alert("모험모드 시작 중 오류가 발생했습니다. 콘솔을 확인해주세요.");
+      startupNotice.textContent="모험을 준비하지 못했어요. 연결을 확인하고 다시 시도해 주세요.";
+      const retry=document.createElement("button");retry.type="button";retry.textContent="다시 시도";retry.onclick=()=>startAdventureMode();startupNotice.append(retry);
+    }finally{
+      adventureStarting=false;
+      if(startupSucceeded) startupNotice.hidden=true;
     }
   }
 
   function renderAdventureHeader(phase, role){
     const title=document.querySelector(".title"); if(title) title.textContent="푸끼몬 챔피언스 온라인";
-    const roleText=document.getElementById("roleText"); if(roleText) roleText.textContent="모험 모드 · 기존 UI 클론";
+    const roleText=document.getElementById("roleText"); if(roleText) roleText.textContent=`모험 ${adventure.stage}/${adventure.maxStage}층 · 다음 보스 ${nextBossFloor()}층`;
     const roleChip=document.getElementById("roleChip"); if(roleChip) roleChip.textContent="모험가";
     const phaseTextEl=document.getElementById("phaseText"); if(phaseTextEl) phaseTextEl.textContent=phase;
     const timer=document.getElementById("timer"); if(timer) timer.textContent="-";
